@@ -1,0 +1,33 @@
+<Actor type="GroundPlane" resource="Actors\SpotLight.xml">
+  
+  <TransformComponent>
+    <Scale x ="30" y ="0.5" z="30" />
+    <Rotation yaw="0" pitch ="0" roll ="0" />
+    <Translation x="0" y="0" z="0" />
+  </TransformComponent>
+
+  <!--<PlaneRenderComponent>
+    <SubDivisions>500</SubDivisions>
+    <Texture resource = "Textures/SeamlessBrick.jpg" tileU = "5" tileV="5" />
+  </PlaneRenderComponent>-->
+
+  <CubeRenderComponent>
+    <Material>
+      <Diffuse a="1.0f" r="0.5" g="1.0" b="0.0" />
+    </Material>
+  </CubeRenderComponent>
+  
+  <PhysicsComponent>
+    <Density>0</Density>
+    <Friction>1.0</Friction>
+    <Restitution>0.5</Restitution>
+    <Shape>
+      <!--<Plane a="0" b="1" c="0" d="0" />-->
+      <Box width="15" height="0.25" length="15" />
+    </Shape>
+    <RigidBodyTransform>
+      <Translation x="0" y="0" z="0.0"/>
+    </RigidBodyTransform>
+  </PhysicsComponent>
+  
+</Actor>

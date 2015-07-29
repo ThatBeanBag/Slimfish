@@ -1,0 +1,29 @@
+<UserInterface name="HostGame" resource="UserInterfaces/HostGame.xml">
+
+  <StaticImage name="MessageBoxStatic" width ="600" height="200" anchor="middle middle">
+    <Image>Images/MessageBox.png</Image>
+  </StaticImage>
+
+  <EditBox name="ServerNameEditBox" x="-40" y="0" width="493" height="30" anchor="middle middle">
+    <TextBox x="245" y="0" width="245" height="30"/>
+    <Image>Images/ServerNameEditBox.png</Image>
+    <MaxCharacters>25</MaxCharacters>
+    <FontHeight>18</FontHeight>
+    <FontColour r="255" g="255" b="255" />
+  </EditBox>
+
+  <Button name="OkButton" x="260" y="0" width="70" height ="30" anchor="middle middle">
+    <Image>Images/OkButton.png</Image>
+    <OutMask x="0" y="0" />
+    <HoverMask x="0" y="30" />
+    <PressedMask x="0" y="60" />
+  </Button>
+
+  <Button name="BackButton" x="0" y="40" width="114" height ="30" anchor="middle middle">
+    <Image>Images/BackButton.png</Image>
+    <OutMask x="0" y="0" />
+    <HoverMask x="0" y="30" />
+    <PressedMask x="0" y="60" />
+  </Button>
+  
+</UserInterface>

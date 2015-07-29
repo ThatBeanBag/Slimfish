@@ -1,0 +1,40 @@
+<UserInterface name="HostGame" resource="UserInterfaces/HostGame.xml">
+
+  <StaticImage name="MessageBoxStatic" width ="600" height="200" anchor="middle middle">
+    <Image>Images/MessageBox.png</Image>
+  </StaticImage>
+
+  <StaticImage name="FailedToJoinServerStatic" x="0" y="-30" width="265" height="22" anchor ="middle middle">
+    <Image>Images/FailedToJoinServerStatic.png</Image>
+  </StaticImage>
+  
+  <!--Responses-->
+    <StaticImage name="GameInSessionStatic" x="0" y="0" width="312" height="22" anchor ="middle middle">
+      <Image>Images/GameInSessionStatic.png</Image>
+      <Hidden></Hidden>
+    </StaticImage>
+
+    <StaticImage name="UserNameInUseStatic" x="0" y="0" width="214" height="22" anchor ="middle middle">
+      <Image>Images/UserNameInUseStatic.png</Image>
+      <Hidden></Hidden>
+    </StaticImage>
+
+    <StaticImage name="LobbyFullStatic" x="0" y="0" width="144" height="22" anchor ="middle middle">
+      <Image>Images/LobbyFullStatic.png</Image>
+      <Hidden></Hidden>
+    </StaticImage>
+
+    <StaticImage name="ConnectionLostStatic" x="0" y="0" width="215" height="22" anchor ="middle middle">
+      <Image>Images/ConnectionLostStatic.png</Image>
+      <Hidden></Hidden>
+    </StaticImage>
+  <!--Responses-->
+
+  <Button name="BackButton" x="0" y="40" width="114" height ="30" anchor="middle middle">
+    <Image>Images/BackButton.png</Image>
+    <OutMask x="0" y="0" />
+    <HoverMask x="0" y="30" />
+    <PressedMask x="0" y="60" />
+  </Button>
+
+</UserInterface>

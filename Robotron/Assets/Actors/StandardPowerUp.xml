@@ -1,0 +1,49 @@
+<Actor type="StandardPowerUp" resource="Actors\StandardPowerUp.xml">
+
+  <TransformComponent>
+    <Scale x ="0.5" y ="0.5" z="0.5" />
+    <Rotation yaw="0" pitch ="0" roll ="0" />
+    <Translation x="4.0" y="0.0" z="0" />
+
+    <Spawns>
+      <Spawn x="2.0" y="3.0" z="0.0" />
+      <Spawn x="-2.0" y="3.0" z="0.0" />
+      <Spawn x="2.0" y="3.0" z="2.0" />
+      <Spawn x="2.0" y="3.0" z="-2.0" />
+      <Spawn x="-2.0" y="3.0" z="-2.0" />
+      <Spawn x="-2.0" y="3.0" z="2.0" />
+      <Spawn x="0.0" y="3.0" z="2.0" />
+      <Spawn x="0.0" y="3.0" z="-2.0" />
+    </Spawns>
+  </TransformComponent>
+
+  <MeshRenderComponent>
+    <Mesh>Meshes\Apple\applered.x</Mesh>
+  </MeshRenderComponent>
+
+  <PhysicsComponent>
+    <Density>0.5</Density>
+    <Friction>0.8</Friction>
+    <Restitution>0.01</Restitution>
+    <Shape>
+      <Sphere radius="0.3"/>
+    </Shape>
+    <RigidBodyTransform>
+      <Scale x ="1.0" y ="1.0" z="1.0" />
+      <Rotation yaw="0" pitch ="0" roll ="0" />
+      <Translation x="0.0" y="0.2" z="0.0" />
+    </RigidBodyTransform>
+  </PhysicsComponent>
+
+  <AIComponent>
+    <MaxForce>3.0</MaxForce>
+    <MaxSpeed>1.0</MaxSpeed>
+    <Containment width="27" length="27" />
+
+    <!--Actions-->
+    <Actions>
+      <SeekPlayer actor_type="Player" action="Evade" distance="1.5f" />
+    </Actions>
+  </AIComponent>
+
+</Actor>

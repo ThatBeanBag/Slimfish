@@ -1,0 +1,106 @@
+<UserInterface name="ServerList" resource="UserInterfaces/ServerList.xml">
+
+  <Menu name="ServerNameMenu"
+        x="200"
+        y="20"
+        direction ="vertical"
+        align ="left"
+        gap ="2"
+        anchor="top left"
+  >
+    <StaticText name ="ServerNameText" width ="200" height="24">
+      <Text>SERVER NAME:</Text>
+      <FontHeight>24</FontHeight>
+      <FontColour r="255" g="255" b="255"/>
+    </StaticText>
+    
+  </Menu>
+
+  <Menu name="CurrentPlayersMenu"
+        x="0"
+        y="20"
+        direction ="vertical"
+        align ="middle"
+        gap ="2"
+        anchor="top middle"
+  >
+    <StaticText name ="CurrentPlayersText" width ="200" height="24">
+      <Text>CURRENT PLAYERS:</Text>
+      <FontHeight>24</FontHeight>
+      <FontColour r="255" g="255" b="255"/>
+    </StaticText>
+
+  </Menu>
+
+  <Menu name="StatusMenu"
+        x="200"
+        y="20"
+        direction ="vertical"
+        align ="right"
+        gap ="2"
+        anchor="top right"
+  >
+    <StaticText name ="StatusText" width ="200" height="24">
+      <Text>STATUS:</Text>
+      <FontHeight>24</FontHeight>
+      <FontColour r="255" g="255" b="255"/>
+    </StaticText>
+    
+  </Menu>
+
+  <Menu name="ButtonMenu"
+        x="200"
+        y="20"
+        direction ="vertical"
+        align ="middle"
+        gap ="2"
+        anchor="top left"
+  >
+    <Button name="ServerListButtonTemplate" width="800" height="24">
+      <Image>Images/ServerListButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="24" />
+      <PressedMask x="0" y="48" />
+      <Toggled></Toggled>
+    </Button>
+    
+  </Menu>
+
+
+  <!--<Menu name="DirectConnectMenu"
+        x="0"
+        y="20"
+        anchor="bottom middle"
+        gap="30"
+        direction ="horizontal">
+    <EditBox name="DirectConnectEditBox" x="0" y="40" width="257" height ="30" anchor="bottom middle">
+      <Image>Images/EditBox.png</Image>
+      <TextBox x="4" y="0" width="252" height="30"/>
+      <MaxCharacters>25</MaxCharacters>
+      <FontHeight>18</FontHeight>
+      <FontColour r="255" g="255" b="255" />
+    </EditBox>
+    
+    <Button name="DirectConnectButton" x="0" y="40" width="314" height ="30" anchor="bottom middle">
+      <Image>Images/DirectConnectButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+   </Menu>-->
+    
+  <Button name="JoinServerButton" x="20" y="20" width="208" height ="30" anchor="bottom right">
+    <Image>Images/JoinGameButton.png</Image>
+    <OutMask x="0" y="0" />
+    <HoverMask x="0" y="30" />
+    <PressedMask x="0" y="60" />
+  </Button>
+  
+  <Button name="CancelButton" x="20" y="20" width="157" height ="30" anchor="bottom left">
+    <Image>Images/CancelButton.png</Image>
+    <OutMask x="0" y="0" />
+    <HoverMask x="0" y="30" />
+    <PressedMask x="0" y="60" />
+  </Button>
+  
+</UserInterface>

@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{54B344DC-0CF6-4112-9424-FF3DCEFDFA27}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>SpiningCubes</RootNamespace>
+    <ProjectName>HeightMap</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)..\..\Lib\$(ProjectName)$(PlatformName)$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\Temp\$(ProjectName)$(PlatformName)$(Configuration)\</IntDir>
+    <TargetName>$(PlatformName)$(Configuration)</TargetName>
+    <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(ProjectDir)..\..\DirectX9Framework\3rdParty\bullet3-2.83.4\Msvc\lib\Debug;$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\DirectX9Framework\3rdParty\bullet3-2.83.4;$(ProjectDir)..\..\DirectX9Framework\3rdParty\tinyxml;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)..\..\Lib\$(ProjectName)$(PlatformName)$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\Temp\$(ProjectName)$(PlatformName)$(Configuration)\</IntDir>
+    <TargetName>$(PlatformName)$(Configuration)</TargetName>
+    <LibraryPath>$(ProjectDir)..\..\DirectX9Framework\3rdParty\bullet3-2.83.4\Msvc\lib\Release;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)..\..\DirectX9Framework\3rdParty\bullet3-2.83.4;$(ProjectDir)..\..\DirectX9Framework\3rdParty\tinyxml;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeaderFile>RobotronStd.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>DirectX9Framework.lib;winmm.lib;d3dx9.lib;d3d9.lib;Ws2_32.lib;BulletCollision.lib;BulletDynamics.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeaderFile>RobotronStd.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>DirectX9Framework.lib;winmm.lib;d3dx9.lib;d3d9.lib;Ws2_32.lib;BulletCollision.lib;BulletDynamics.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Assets\Actors\StandardPowerUp.xml" />
+    <ClInclude Include="..\AiView.h" />
+    <ClInclude Include="..\EventData_ActorKilled.h" />
+    <ClInclude Include="..\EventData_ChangeDirection.h" />
+    <ClInclude Include="..\EventData_FireBullet.h" />
+    <ClInclude Include="..\EventData_PlayerStateChange.h" />
+    <ClInclude Include="..\EventData_LevelStateChange.h" />
+    <ClInclude Include="..\PlayerComponent.h" />
+    <ClInclude Include="..\RobotronApp.h" />
+    <ClInclude Include="..\RobotronHumanView.h" />
+    <ClInclude Include="..\RobotronLogic.h" />
+    <ClInclude Include="..\RobotronStd.h" />
+    <ClInclude Include="..\LobbyView.h" />
+    <ClInclude Include="..\MainMenuView.h" />
+    <ClInclude Include="..\TwinStickController.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\AIView.cpp" />
+    <ClCompile Include="..\EventData_ActorKilled.cpp" />
+    <ClCompile Include="..\EventData_ChangeDirection.cpp" />
+    <ClCompile Include="..\EventData_FireBullet.cpp" />
+    <ClCompile Include="..\EventData_LevelStateChange.cpp" />
+    <ClCompile Include="..\EventData_PlayerStateChange.cpp" />
+    <ClCompile Include="..\PlayerComponent.cpp" />
+    <ClCompile Include="..\RobotronApp.cpp" />
+    <ClCompile Include="..\RobotronHumanView.cpp" />
+    <ClCompile Include="..\RobotronLogic.cpp" />
+    <ClCompile Include="..\RobotronStd.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\LobbyView.cpp" />
+    <ClCompile Include="..\MainMenuView.cpp" />
+    <ClCompile Include="..\TwinStickController.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Spinning Cubes.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="HeightMap.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Assets\Settings.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\..\Assets\Actors\Bullet.xml" />
+    <Xml Include="..\..\..\Assets\Actors\ChargeRam.xml" />
+    <Xml Include="..\..\..\Assets\Actors\CratePowerUp.xml" />
+    <Xml Include="..\..\..\Assets\Actors\Enemy.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\GoldenBullet.xml" />
+    <Xml Include="..\..\..\Assets\Actors\GoldenPowerUp.xml" />
+    <Xml Include="..\..\..\Assets\Actors\TinyRam.xml" />
+    <Xml Include="..\..\..\Assets\Actors\Tree.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\GroundPlane.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\KillPlane.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\Player.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\SpotLight.xml" />
+    <Xml Include="..\..\..\Assets\Actors\Wall.xml" />
+    <Xml Include="..\..\..\Assets\UserInterfaces\Controls.xml" />
+    <Xml Include="..\..\..\Assets\UserInterfaces\GameOverMessage.xml" />
+    <Xml Include="..\..\..\Assets\UserInterfaces\HostGame.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\InGameMenu.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\InGameUI.xml" />
+    <Xml Include="..\..\..\Assets\UserInterfaces\JoinGameResponseMessage.xml" />
+    <Xml Include="..\..\..\Assets\UserInterfaces\LobbyMenu.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\MainMenu.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\MultiplayerMenu.xml" />
+    <Xml Include="..\..\..\Assets\UserInterfaces\ServerList.xml" />
+    <Xml Include="..\..\..\Assets\UserInterfaces\Username.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\DirectX9Framework\Msvc\DirectX9Framework.vcxproj">
+      <Project>{b6f1cbd8-70c2-4c27-a076-3932f014c5a6}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

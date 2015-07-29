@@ -1,0 +1,52 @@
+<Actor type="Enemy" resource="Actors\Enemy.xml">
+
+  <TransformComponent>
+    <Scale x ="0.8" y ="0.8" z="0.8" />
+    <Rotation yaw="0" pitch ="0" roll ="0" />
+    <Translation x="0.0" y="0.2" z="0.0" />
+
+    <!--<Spawns>
+      <Spawn x="4.0" y="0.0" z="0.0" />
+      <Spawn x="-4.0" y="0.0" z="0.0" />
+      <Spawn x="4.0" y="0.0" z="4.0" />
+      <Spawn x="4.0" y="0.0" z="-4.0" />
+      <Spawn x="-4.0" y="0.0" z="-4.0" />
+      <Spawn x="-4.0" y="0.0" z="4.0" />
+      <Spawn x="0.0" y="0.0" z="4.0" />
+      <Spawn x="0.0" y="0.0" z="-4.0" />
+
+      <Spawn x="8.0" y="0.0" z="0.0" />
+      <Spawn x="8.0" y="0.0" z="8.0" />
+      <Spawn x="8.0" y="0.0" z="-8.0" />
+      <Spawn x="-8.0" y="0.0" z="0.0" />
+      <Spawn x="-8.0" y="0.0" z="-4.0" />
+      <Spawn x="-8.0" y="0.0" z="8.0" />
+      <Spawn x="0.0" y="0.0" z="8.0" />
+      <Spawn x="0.0" y="0.0" z="-8.0" />
+    </Spawns>-->
+    
+  </TransformComponent>
+
+  <MeshRenderComponent>
+    <Mesh>Meshes\Tree\Tree.x</Mesh>
+  </MeshRenderComponent>
+
+  <BasicAnimationComponent>
+    <ScaleAnimation time ="1.0f" />
+  </BasicAnimationComponent>
+
+  <PhysicsComponent>
+    <Density>0.0</Density>
+    <Friction>0.8</Friction>
+    <Restitution>0.01</Restitution>
+    <Shape>
+      <Box length ="0.5" width="0.2" height="1.0"/>
+    </Shape>
+    <RigidBodyTransform>
+      <Scale x ="1.0" y ="1.0" z="1.0" />
+      <Rotation yaw="0" pitch ="0" roll ="0" />
+      <Translation x="0.0" y="0.2" z="0.0" />
+    </RigidBodyTransform>
+  </PhysicsComponent>
+  
+</Actor>

@@ -1,0 +1,24 @@
+<Actor type="SpotLight" resource="Actors\SpotLight.xml">
+
+  <TransformComponent>
+    <Scale x ="1.0" y ="1.0" z="1.0" />
+    <Rotation yaw="-90" pitch ="60" roll ="0" />
+    <Translation x="0.0" y="0.0" z="0.0" />
+  </TransformComponent>
+
+   <LightRenderComponent>
+    <Light type = "directional">
+      <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
+      <!--Attenuation constant = "0.0" linear = "0.25" exponential = "0.0"/>
+      <Size range = "0.1" falloff = "0.0" theta = "0.0" phi = "5.0"/>-->
+    </Light>
+  </LightRenderComponent>
+
+  <!--<PhysicsComponent>
+    <Density>0</Density>
+    <Shape>
+      <Plane a="0" b="1" c="0" d="0" />
+    </Shape>
+  </PhysicsComponent>-->
+
+</Actor>

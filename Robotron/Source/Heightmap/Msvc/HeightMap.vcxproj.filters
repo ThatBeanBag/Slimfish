@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{ac172f46-c7e2-4c2c-88c4-956fa2ce2741}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{911a0157-b667-427e-8490-10bcf5b51d9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\Actors">
+      <UniqueIdentifier>{cb4a8dfe-69e5-477c-bd8d-65c377f964b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets\UserInterfaces">
+      <UniqueIdentifier>{e09baaa8-fd79-4e19-ba32-b8906186b2f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Events">
+      <UniqueIdentifier>{9a4178d1-4cd0-473c-b648-20255cd5cd57}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\TwinStickController.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\MainMenuView.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\EventData_FireBullet.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\EventData_ChangeDirection.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\LobbyView.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AiView.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RobotronApp.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RobotronHumanView.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RobotronLogic.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\RobotronStd.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\EventData_ActorKilled.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PlayerComponent.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Assets\Actors\StandardPowerUp.xml">
+      <Filter>Assets\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\EventData_PlayerStateChange.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\EventData_LevelStateChange.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\TwinStickController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\MainMenuView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\EventData_ChangeDirection.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\EventData_FireBullet.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\LobbyView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AIView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RobotronApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RobotronHumanView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RobotronLogic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\RobotronStd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\PlayerComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\EventData_ActorKilled.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\EventData_PlayerStateChange.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\EventData_LevelStateChange.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="HeightMap.rc">
+      <Filter>Resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Spinning Cubes.ico">
+      <Filter>Resource</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Assets\Settings.ini">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\..\Assets\Actors\Player.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\SpotLight.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\GroundPlane.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\Wall.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\Enemy.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\MainMenu.xml">
+      <Filter>Assets\UserInterfaces</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\Bullet.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\KillPlane.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\HostGame.xml">
+      <Filter>Assets\UserInterfaces</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\MultiplayerMenu.xml">
+      <Filter>Assets\UserInterfaces</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\ServerList.xml">
+      <Filter>Assets\UserInterfaces</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\LobbyMenu.xml">
+      <Filter>Assets\UserInterfaces</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\InGameMenu.xml">
+      <Filter>Assets\UserInterfaces</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\ChargeRam.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\Tree.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\GoldenBullet.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\CratePowerUp.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\GoldenPowerUp.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\Controls.xml">
+      <Filter>Assets\UserInterfaces</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\Username.xml">
+      <Filter>Assets\UserInterfaces</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\JoinGameResponseMessage.xml">
+      <Filter>Assets\UserInterfaces</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\Actors\TinyRam.xml">
+      <Filter>Assets\Actors</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\InGameUI.xml">
+      <Filter>Assets\UserInterfaces</Filter>
+    </Xml>
+    <Xml Include="..\..\..\Assets\UserInterfaces\GameOverMessage.xml">
+      <Filter>Assets\UserInterfaces</Filter>
+    </Xml>
+  </ItemGroup>
+</Project>

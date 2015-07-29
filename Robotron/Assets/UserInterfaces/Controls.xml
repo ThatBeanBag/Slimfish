@@ -1,0 +1,14 @@
+<UserInterface name="Controls" resource="UserInterfaces/Controls.xml">
+
+  <StaticImage name="ControlsStatic" width ="700" height="350" anchor="mid mid">
+    <Image>Images\ControlsStatic.png</Image>
+  </StaticImage>
+
+  <Button name="BackButton" x="0" y="20" width="114" height ="30" anchor="bottom middle">
+    <Image>Images/BackButton.png</Image>
+    <OutMask x="0" y="0" />
+    <HoverMask x="0" y="30" />
+    <PressedMask x="0" y="60" />
+  </Button>
+  
+</UserInterface>

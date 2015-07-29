@@ -1,0 +1,699 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source Files\GameBase">
+      <UniqueIdentifier>{6de40784-3482-4bba-96ad-cf371db8c548}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Renderer">
+      <UniqueIdentifier>{c5f41bde-5907-42cb-a4c0-2b519d81ddf0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utilities">
+      <UniqueIdentifier>{fd55f328-0a04-4380-8fb1-cfba107f2258}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\View">
+      <UniqueIdentifier>{2a9541ab-af5b-434a-bc39-d53233c7a7cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controller">
+      <UniqueIdentifier>{330fed02-da9d-4e14-8033-bedfc6f664f7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3DGraphics">
+      <UniqueIdentifier>{38a63215-4fb5-4beb-8aef-06083275179e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Geometry">
+      <UniqueIdentifier>{1b466cab-3e27-4db1-be48-d703d4a33b4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Debugging">
+      <UniqueIdentifier>{f7732068-7414-4e2d-92d3-f9142897ae51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Events">
+      <UniqueIdentifier>{8e4f010c-f513-4f0c-9be4-5765607bea25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Actors">
+      <UniqueIdentifier>{2b6cd90b-60c1-4cd0-80d6-b8e80c1e716b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\3rdParty">
+      <UniqueIdentifier>{e07b6a73-d7e8-48e9-9fdf-945524f6bfec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Physics">
+      <UniqueIdentifier>{18d3f5e1-e4bc-4ee2-b9d3-517504238fe5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Physics\CollisionShapes">
+      <UniqueIdentifier>{3d5f7493-487c-47cd-b134-1e0e21ac07f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\UserInterface">
+      <UniqueIdentifier>{4f28c66c-e705-4400-a61b-aa8a442d7bbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Renderer\DirectX9">
+      <UniqueIdentifier>{03ce2a62-4273-4518-b3c5-f735b5d27dca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Resource">
+      <UniqueIdentifier>{be8cbea8-6321-4003-9e8e-b02be3a8d561}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Network">
+      <UniqueIdentifier>{1a553700-646e-4e35-a35a-a941f7beed9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AI">
+      <UniqueIdentifier>{384196d0-b2a5-42f1-8a7b-80f0a1d2902f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\GameBase\WinMain.cpp">
+      <Filter>Source Files\GameBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameBase\GameApp.cpp">
+      <Filter>Source Files\GameBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameBase\GameLogic.cpp">
+      <Filter>Source Files\GameBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utilities\Rect.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utilities\Point.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utilities\Colour.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utilities\InitDocument.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer\Types.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utilities\Math.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\View\HumanView.cpp">
+      <Filter>Source Files\View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3DGraphics\CameraNode.cpp">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3DGraphics\Material.cpp">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3DGraphics\MeshNode.cpp">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3DGraphics\Scene.cpp">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3DGraphics\SceneNode.cpp">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Controller\FlyingController.cpp">
+      <Filter>Source Files\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Utilities\String.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer\Image.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3DGraphics\LightNode.cpp">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\Matrix4x4.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\Plane.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\Frustum.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\AABB.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\Vec3.cpp">
+      <Filter>Source Files\Geometry</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Debugging\Logger.cpp">
+      <Filter>Source Files\Debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Debugging\LogMessenger.cpp">
+      <Filter>Source Files\Debugging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventManager.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\Actor.cpp">
+      <Filter>Source Files\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\ActorComponent.cpp">
+      <Filter>Source Files\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\TransformComponent.cpp">
+      <Filter>Source Files\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\ActorFactory.cpp">
+      <Filter>Source Files\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\RenderComponent.cpp">
+      <Filter>Source Files\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_NewRenderComponent.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdParty\tinyxml\tinystr.cpp">
+      <Filter>Source Files\3rdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdParty\tinyxml\tinyxml.cpp">
+      <Filter>Source Files\3rdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdParty\tinyxml\tinyxmlerror.cpp">
+      <Filter>Source Files\3rdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\3rdParty\tinyxml\tinyxmlparser.cpp">
+      <Filter>Source Files\3rdParty</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_MoveActor.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_DestroyActor.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\LightRenderComponent.cpp">
+      <Filter>Source Files\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\MeshRenderComponent.cpp">
+      <Filter>Source Files\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\PhysicsComponent.cpp">
+      <Filter>Source Files\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Physics\BulletSDKPhysics.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Physics\BulletMotionState.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Physics\CollisionSphere.cpp">
+      <Filter>Source Files\Physics\CollisionShapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Physics\CollisionShape.cpp">
+      <Filter>Source Files\Physics\CollisionShapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Physics\CollisionBox.cpp">
+      <Filter>Source Files\Physics\CollisionShapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Physics\CollisionPlane.cpp">
+      <Filter>Source Files\Physics\CollisionShapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Physics\CollisionCapsule.cpp">
+      <Filter>Source Files\Physics\CollisionShapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_CollisionSeparation.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_Collision.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Physics\BulletDebugDrawer.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_StartMoving.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\AIComponent.cpp">
+      <Filter>Source Files\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_StopMoving.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer\D3D9Renderer.cpp">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer\D3D9StaticBuffer.cpp">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer\D3D9Texture.cpp">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer\D3D9Mesh.cpp">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UserInterface\StaticImage.cpp">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UserInterface\GUIElement.cpp">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Resource\ResourceManager.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UserInterface\BaseGUI.cpp">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UserInterface\Button.cpp">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UserInterface\Menu.cpp">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer\D3D9Sprite.cpp">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameStd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Controller\GamepadManager.cpp">
+      <Filter>Source Files\Controller</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UserInterface\EditBox.cpp">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Resource\XmlResource.cpp">
+      <Filter>Source Files\Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer\Mesh.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer\Sprite.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer\Texture.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_RequestNewActor.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\Packet.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\Socket.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\NetworkEventForwarder.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\BaseNetwork.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_RequestStartGame.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\PlaneRenderComponent.cpp">
+      <Filter>Source Files\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\AlphaNode.cpp">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_ClientJoin.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\CubeRenderComponent.cpp">
+      <Filter>Source Files\Actors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_RemotePlayerActorAssignment.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\ClientNetwork.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Network\ServerNetwork.cpp">
+      <Filter>Source Files\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\View\NetworkView.cpp">
+      <Filter>Source Files\View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\View\UserInterfaceView.cpp">
+      <Filter>Source Files\View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\UserInterface\StaticText.cpp">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_RequestDestroyActor.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_PlayerReady.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_PlayerLeft.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_JoinGame.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_HostGame.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_LoadedGame.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\AI\SteeringBehaviours.cpp">
+      <Filter>Source Files\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer\NormalMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Renderer\D3D9NormalMap.cpp">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Actor\BasicAnimationComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Events\EventData_LostConnection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\GameBase\GameApp.h">
+      <Filter>Source Files\GameBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameStd.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameBase\GameLogic.h">
+      <Filter>Source Files\GameBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\Renderer.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\Types.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\Rect.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\Point.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\Colour.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\IniDocument.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\Math.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\View\HumanView.h">
+      <Filter>Source Files\View</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Controller\ControllerInterfaces.h">
+      <Filter>Source Files\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\View\GameView.h">
+      <Filter>Source Files\View</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3DGraphics\CameraNode.h">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3DGraphics\Material.h">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3DGraphics\MeshNode.h">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3DGraphics\Scene.h">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3DGraphics\SceneNode.h">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Controller\FlyingController.h">
+      <Filter>Source Files\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\String.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\SimulatedAnnealing.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\Image.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3DGraphics\LightNode.h">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\Plane.h">
+      <Filter>Source Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\Matrix4x4.h">
+      <Filter>Source Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\Frustum.h">
+      <Filter>Source Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\AABB.h">
+      <Filter>Source Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\StaticBuffer.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\Vec3.h">
+      <Filter>Source Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Debugging\Logger.h">
+      <Filter>Source Files\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Debugging\LogMessenger.h">
+      <Filter>Source Files\Debugging</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventManager.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\ActorComponent.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\Actor.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\ActorFactory.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\TransformComponent.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\RenderComponent.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\Mesh.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_NewRenderComponent.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdParty\tinyxml\tinystr.h">
+      <Filter>Source Files\3rdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3rdParty\tinyxml\tinyxml.h">
+      <Filter>Source Files\3rdParty</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_MoveActor.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_DestroyActor.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\ObjectFactory.h">
+      <Filter>Source Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Geometry\RayCast.h">
+      <Filter>Source Files\Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\MeshRenderComponent.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\LightRenderComponent.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Physics\Physics.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\PhysicsComponent.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Physics\BulletSDKPhysics.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Physics\BulletMotionState.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_Collision.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Physics\CollisionShape.h">
+      <Filter>Source Files\Physics\CollisionShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Physics\CollisionSphere.h">
+      <Filter>Source Files\Physics\CollisionShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Physics\CollisionBox.h">
+      <Filter>Source Files\Physics\CollisionShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Physics\CollisionPlane.h">
+      <Filter>Source Files\Physics\CollisionShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Physics\CollisionCapsule.h">
+      <Filter>Source Files\Physics\CollisionShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Physics\BulletDebugDrawer.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_StartMoving.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_StopMoving.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\AIComponent.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UserInterface\Button.h">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UserInterface\StaticImage.h">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\Texture.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\Sprite.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\D3D9Texture.h">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\D3D9Mesh.h">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\D3D9Renderer.h">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\D3D9StaticBuffer.h">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\D3D9Surface.h">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\D3D9Sprite.h">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UserInterface\StaticText.h">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UserInterface\GUIElement.h">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UserInterface\Menu.h">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UserInterface\BaseGUI.h">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Resource\ResourceManager.h">
+      <Filter>Source Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\UserInterface\EditBox.h">
+      <Filter>Source Files\UserInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\View\AppMsg.h">
+      <Filter>Source Files\View</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Controller\GamepadManager.h">
+      <Filter>Source Files\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Resource\XmlResource.h">
+      <Filter>Source Files\Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_RequestNewActor.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\Packet.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\Socket.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\BaseNetwork.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\NetworkEventForwarder.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_RequestStartGame.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\PlaneRenderComponent.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\3DGraphics\AlphaNode.h">
+      <Filter>Source Files\3DGraphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_ClientJoin.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\CubeRenderComponent.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\View\NetworkView.h">
+      <Filter>Source Files\View</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_RemotePlayerActorAssignment.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\ClientNetwork.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Network\ServerNetwork.h">
+      <Filter>Source Files\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_RequestDestroyActor.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\View\UserInterfaceView.h">
+      <Filter>Source Files\View</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_PlayerReady.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_PlayerLeft.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_JoinGame.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_HostGame.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_LoadedGame.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\AI\SteeringBehaviours.h">
+      <Filter>Source Files\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\SpawnComponent.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\D3D9NormalMap.h">
+      <Filter>Source Files\Renderer\DirectX9</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Renderer\NormalMap.h">
+      <Filter>Source Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Actor\BasicAnimationComponent.h">
+      <Filter>Source Files\Actors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Events\EventData_LostConnection.h">
+      <Filter>Source Files\Events</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Events\EventData_CollisionSeparation.h">
+      <Filter>Source Files\Events</Filter>
+    </None>
+  </ItemGroup>
+</Project>

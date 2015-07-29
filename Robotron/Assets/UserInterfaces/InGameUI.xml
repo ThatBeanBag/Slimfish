@@ -1,0 +1,67 @@
+<UserInterface name="InGameUI" resource="UserInterfaces/InGameUI.xml">
+
+  <Menu name ="Menu" x="20" y="20" anchor ="top left" align="left" gap="5" direction ="horizontal">
+    <StaticImage name="AmmoStatic" x="20" y="20" width="132" height="28">
+      <Image>Images\AmmoStatic.png</Image>
+    </StaticImage>
+
+    <StaticText name="AmmoText"
+                x="20"
+                y="20"
+                  width="50"
+                  height ="35">
+      <Text>0</Text>
+      <FontHeight>22</FontHeight>
+      <FontColour r="255" g="255" b="255" />
+    </StaticText>
+
+    <StaticImage name="LivesStatic" x="20" y="20" width="102" height="28">
+      <Image>Images\LivesStatic.png</Image>
+    </StaticImage>
+
+    <StaticText name="LivesText"
+                x="20"
+                y="20"
+                width="50"
+                height ="35">
+      <Text>0</Text>
+      <FontHeight>22</FontHeight>
+      <FontColour r="255" g="255" b="255" />
+    </StaticText>
+
+    <StaticImage name="RoundStatic" width="132" height="28">
+      <Image>Images\RoundStatic.png</Image>
+    </StaticImage>
+    
+    <StaticText name="LevelText"
+                x="20"
+                y="20"
+                width="50"
+                height ="35">
+      <Text>0</Text>
+      <FontHeight>22</FontHeight>
+      <FontColour r="255" g="255" b="255" />
+    </StaticText>
+
+    <StaticImage name="EnemiesStatic" x="20" y="20" width="132" height="28">
+      <Image>Images\Enemies.png</Image>
+    </StaticImage>
+
+    <StaticText name="EnemiesText"
+                x="20"
+                y="20"
+                width="50"
+                height ="35">
+      <Text>0</Text>
+      <FontHeight>22</FontHeight>
+      <FontColour r="255" g="255" b="255" />
+    </StaticText>
+  </Menu>
+
+  <StaticText name ="PlayerLeftText" x="20" y="40" anchor="bottom left">
+    <Text>-</Text>
+    <FontHeight>22</FontHeight>
+    <FontColour r="255" g="255" b="255" />
+  </StaticText>
+  
+</UserInterface>

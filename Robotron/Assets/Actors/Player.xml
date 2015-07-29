@@ -1,0 +1,55 @@
+<Actor type="Player" resource="Actors\Player.xml">
+  
+  <TransformComponent>
+    <Scale x ="1.5" y ="1.5" z="1.5" />
+    <Rotation yaw="0" pitch ="0" roll ="0" />
+    <Translation x="0.0" y="0.0" z="0" />
+    <Spawns>
+      <Spawn x="4.0" y="0.0" z="0.0" />
+      <Spawn x="-4.0" y="0.0" z="0.0" />
+      <Spawn x="4.0" y="0.0" z="4.0" />
+      <Spawn x="4.0" y="0.0" z="-4.0" />
+      <Spawn x="-4.0" y="0.0" z="-4.0" />
+      <Spawn x="-4.0" y="0.0" z="4.0" />
+      <Spawn x="0.0" y="0.0" z="4.0" />
+      <Spawn x="0.0" y="0.0" z="-4.0" />
+    </Spawns>
+  </TransformComponent>
+
+  <PlayerComponent>
+    <StartingLives>3</StartingLives>
+    <StartingAmmo>0</StartingAmmo>
+  </PlayerComponent>
+
+  <!--<LightRenderComponent>
+    <Light type = "point">
+      <Diffuse r="1.0" g="1.0" b="1.0" a="1.0"/>
+      <Attenuation constant = "0.0" linear = "10.0" exponential = "0.0"/>
+      <Size range = "0.15" falloff = "0.5" theta = "0.0" phi = "5.0"/>
+    </Light>
+  </LightRenderComponent>-->
+  
+  <MeshRenderComponent>
+    <Mesh>Meshes\Pig\Piggy.x</Mesh>
+  </MeshRenderComponent>
+
+  <BasicAnimationComponent>
+    <WalkAnimation time ="0.07" height="0.12" speed ="0.1"/>
+  </BasicAnimationComponent>
+  
+  <PhysicsComponent>
+    <Density>1.4</Density>
+    <Friction>1.2</Friction>
+    <Restitution>0.5</Restitution>
+    <Shape>
+      <!--<Capsule radius="1.0" height="0.15"/>-->
+      <Box length ="0.5" width="0.2" height="0.5"/>
+    </Shape>
+    <RigidBodyTransform>
+      <Scale x ="1.0" y ="1.0" z="1.0" />
+      <Rotation yaw="180" pitch ="0" roll ="0" />
+      <Translation x="0.0" y="0.2" z="0.0" />
+    </RigidBodyTransform>
+  </PhysicsComponent>
+
+</Actor>

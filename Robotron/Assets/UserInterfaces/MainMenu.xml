@@ -1,0 +1,68 @@
+<UserInterface name="MainMenu" resource="UserInterfaces/MainMenu.xml">
+
+  <!--<StaticImage x="0" y="0" alpha="255">
+    <Image>Images/BackgroundImage.png</Image>
+  </StaticImage>-->
+
+  <!--<EditBox name="EditBox" x="0" y="10" width="490" height="30" anchor="bottom mid">
+    <TextBox x="174" y="0" width="300" height="20"/>
+    <Image>Images/EditBox.png</Image>
+    <MaxCharacters>25</MaxCharacters>
+    <FontHeight>18</FontHeight>
+    <FontColour r="255" g="255" b="255" />
+  </EditBox>-->
+
+  <Menu name="MainMenu"
+      x="40"
+      y="40"
+      direction ="vertical"
+      align ="left"
+      gap ="4"
+      anchor="bottom left"
+  >
+    <!--Buttons-->
+
+    <Button name="PlayButton" width="108" height ="30">
+      <Image>Images/PlayButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+
+    <Button name="HostGameButton" width="216" height ="30">
+      <Image>Images/HostGameButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+
+    <Button name="JoinGameButton" width="208" height ="30">
+      <Image>Images/JoinGameButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+
+    <Button name="ControlsButton" width="202" height ="30">
+      <Image>Images/ControlsButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+
+    <Button name="GraphicsButton" width="192" height ="30">
+      <Image>Images/GraphicsButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+
+    <Button name="QuitButton" width="100" height ="30">
+      <Image>Images/QuitButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+  </Menu>
+  
+</UserInterface>

@@ -1,0 +1,34 @@
+<UserInterface name="MultiplayerMenu" resource="UserInterfaces/MainMenu.xml">
+
+  <Menu name="MultiplayerMenu"
+        x="20"
+        y="20"
+        direction ="vertical"
+        align ="left"
+        gap ="1"
+        anchor="bottom middle"
+    >
+    <!--Buttons-->
+    <Button name="HostGameButton" width="252" height ="30">
+      <Image>Images/HostGameButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+
+    <Button name="JoinGameButton" width="252" height ="30">
+      <Image>Images/JoinGameButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+
+    <Button name="BackButton" width="114" height ="30">
+      <Image>Images/BackButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+  </Menu>
+
+</UserInterface>

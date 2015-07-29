@@ -1,0 +1,312 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B6F1CBD8-70C2-4C27-A076-3932F014C5A6}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>DirectX9Framework</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\Temp\$(ProjectName)$(PlatformName)$(Configuration)\</IntDir>
+    <IncludePath>$(ProjectDir)..\;$(ProjectDir)..\3rdParty\bullet3-2.83.4\src;$(ProjectDir)..\3rdParty\tinyxml;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\..\Temp\$(ProjectName)$(PlatformName)$(Configuration)\</IntDir>
+    <IncludePath>$(ProjectDir)..\;$(ProjectDir)..\3rdParty\bullet3-2.83.4\src;$(ProjectDir)..\3rdParty\tinyxml;C:\Program Files %28x86%29\Visual Leak Detector\include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeaderFile>GameStd.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <PrecompiledHeaderFile>GameStd.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(ProjectDir)C:\Program Files (x86)\Visual Leak Detector\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\3DGraphics\AlphaNode.h" />
+    <ClInclude Include="..\3DGraphics\CameraNode.h" />
+    <ClInclude Include="..\3DGraphics\LightNode.h" />
+    <ClInclude Include="..\3DGraphics\Material.h" />
+    <ClInclude Include="..\3DGraphics\MeshNode.h" />
+    <ClInclude Include="..\3DGraphics\Scene.h" />
+    <ClInclude Include="..\3DGraphics\SceneNode.h" />
+    <ClInclude Include="..\3rdParty\tinyxml\tinystr.h" />
+    <ClInclude Include="..\3rdParty\tinyxml\tinyxml.h" />
+    <ClInclude Include="..\Actor\Actor.h" />
+    <ClInclude Include="..\Actor\ActorComponent.h" />
+    <ClInclude Include="..\Actor\ActorFactory.h" />
+    <ClInclude Include="..\Actor\AIComponent.h" />
+    <ClInclude Include="..\Actor\BasicAnimationComponent.h" />
+    <ClInclude Include="..\Actor\CubeRenderComponent.h" />
+    <ClInclude Include="..\Actor\LightRenderComponent.h" />
+    <ClInclude Include="..\Actor\MeshRenderComponent.h" />
+    <ClInclude Include="..\Actor\PhysicsComponent.h" />
+    <ClInclude Include="..\Actor\PlaneRenderComponent.h" />
+    <ClInclude Include="..\Actor\RenderComponent.h" />
+    <ClInclude Include="..\Actor\SpawnComponent.h" />
+    <ClInclude Include="..\Actor\TransformComponent.h" />
+    <ClInclude Include="..\AI\SteeringBehaviours.h" />
+    <ClInclude Include="..\Controller\ControllerInterfaces.h" />
+    <ClInclude Include="..\Controller\FlyingController.h" />
+    <ClInclude Include="..\Controller\GamepadManager.h" />
+    <ClInclude Include="..\Debugging\Logger.h" />
+    <ClInclude Include="..\Debugging\LogMessenger.h" />
+    <ClInclude Include="..\Events\EventData_LoadedGame.h" />
+    <ClInclude Include="..\Events\EventData_HostGame.h" />
+    <ClInclude Include="..\Events\EventData.h" />
+    <ClInclude Include="..\Events\EventData_ClientJoin.h" />
+    <ClInclude Include="..\Events\EventData_JoinGame.h" />
+    <ClInclude Include="..\Events\EventData_LostConnection.h" />
+    <ClInclude Include="..\Events\EventData_PlayerLeft.h" />
+    <ClInclude Include="..\Events\EventData_PlayerReady.h" />
+    <ClInclude Include="..\Events\EventData_Collision.h" />
+    <ClInclude Include="..\Events\EventData_DestroyActor.h" />
+    <ClInclude Include="..\Events\EventData_MoveActor.h" />
+    <ClInclude Include="..\Events\EventData_NewRenderComponent.h" />
+    <ClInclude Include="..\Events\EventData_RemotePlayerActorAssignment.h" />
+    <ClInclude Include="..\Events\EventData_RequestDestroyActor.h" />
+    <ClInclude Include="..\Events\EventData_RequestNewActor.h" />
+    <ClInclude Include="..\Events\EventData_RequestStartGame.h" />
+    <ClInclude Include="..\Events\EventData_StartMoving.h" />
+    <ClInclude Include="..\Events\EventData_StopMoving.h" />
+    <ClInclude Include="..\Events\EventManager.h" />
+    <ClInclude Include="..\GameBase\GameApp.h" />
+    <ClInclude Include="..\GameBase\GameLogic.h" />
+    <ClInclude Include="..\GameStd.h" />
+    <ClInclude Include="..\Geometry\AABB.h" />
+    <ClInclude Include="..\Geometry\Frustum.h" />
+    <ClInclude Include="..\Geometry\Matrix4x4.h" />
+    <ClInclude Include="..\Geometry\Plane.h" />
+    <ClInclude Include="..\Geometry\RayCast.h" />
+    <ClInclude Include="..\Geometry\Vec3.h" />
+    <ClInclude Include="..\Network\BaseNetwork.h" />
+    <ClInclude Include="..\Network\ClientNetwork.h" />
+    <ClInclude Include="..\Network\NetworkEventForwarder.h" />
+    <ClInclude Include="..\Network\Packet.h" />
+    <ClInclude Include="..\Network\ServerNetwork.h" />
+    <ClInclude Include="..\Network\Socket.h" />
+    <ClInclude Include="..\Physics\BulletDebugDrawer.h" />
+    <ClInclude Include="..\Physics\BulletMotionState.h" />
+    <ClInclude Include="..\Physics\BulletSDKPhysics.h" />
+    <ClInclude Include="..\Physics\CollisionBox.h" />
+    <ClInclude Include="..\Physics\CollisionCapsule.h" />
+    <ClInclude Include="..\Physics\CollisionPlane.h" />
+    <ClInclude Include="..\Physics\CollisionShape.h" />
+    <ClInclude Include="..\Physics\Physics.h" />
+    <ClInclude Include="..\Physics\CollisionSphere.h" />
+    <ClInclude Include="..\Renderer\D3D9Mesh.h" />
+    <ClInclude Include="..\Renderer\D3D9NormalMap.h" />
+    <ClInclude Include="..\Renderer\D3D9Renderer.h" />
+    <ClInclude Include="..\Renderer\D3D9Sprite.h" />
+    <ClInclude Include="..\Renderer\D3D9Surface.h" />
+    <ClInclude Include="..\Renderer\D3D9StaticBuffer.h" />
+    <ClInclude Include="..\Renderer\D3D9Texture.h" />
+    <ClInclude Include="..\Renderer\Image.h" />
+    <ClInclude Include="..\Renderer\NormalMap.h" />
+    <ClInclude Include="..\Renderer\Mesh.h" />
+    <ClInclude Include="..\Renderer\Renderer.h" />
+    <ClInclude Include="..\Renderer\Sprite.h" />
+    <ClInclude Include="..\Renderer\StaticBuffer.h" />
+    <ClInclude Include="..\Renderer\Texture.h" />
+    <ClInclude Include="..\Renderer\Types.h" />
+    <ClInclude Include="..\Resource\ResourceManager.h" />
+    <ClInclude Include="..\Resource\XmlResource.h" />
+    <ClInclude Include="..\UserInterface\BaseGUI.h" />
+    <ClInclude Include="..\UserInterface\Button.h" />
+    <ClInclude Include="..\UserInterface\EditBox.h" />
+    <ClInclude Include="..\UserInterface\Menu.h" />
+    <ClInclude Include="..\UserInterface\StaticImage.h" />
+    <ClInclude Include="..\UserInterface\StaticText.h" />
+    <ClInclude Include="..\UserInterface\GUIElement.h" />
+    <ClInclude Include="..\Utilities\Colour.h" />
+    <ClInclude Include="..\Utilities\IniDocument.h" />
+    <ClInclude Include="..\Utilities\Math.h" />
+    <ClInclude Include="..\Utilities\ObjectFactory.h" />
+    <ClInclude Include="..\Utilities\Point.h" />
+    <ClInclude Include="..\Utilities\Rect.h" />
+    <ClInclude Include="..\Utilities\SimulatedAnnealing.h" />
+    <ClInclude Include="..\Utilities\String.h" />
+    <ClInclude Include="..\View\AppMsg.h" />
+    <ClInclude Include="..\View\GameView.h" />
+    <ClInclude Include="..\View\HumanView.h" />
+    <ClInclude Include="..\View\NetworkView.h" />
+    <ClInclude Include="..\View\UserInterfaceView.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\3DGraphics\CameraNode.cpp" />
+    <ClCompile Include="..\3DGraphics\LightNode.cpp" />
+    <ClCompile Include="..\3DGraphics\Material.cpp" />
+    <ClCompile Include="..\3DGraphics\MeshNode.cpp" />
+    <ClCompile Include="..\3DGraphics\Scene.cpp" />
+    <ClCompile Include="..\3DGraphics\SceneNode.cpp" />
+    <ClCompile Include="..\3rdParty\tinyxml\tinystr.cpp" />
+    <ClCompile Include="..\3rdParty\tinyxml\tinyxml.cpp" />
+    <ClCompile Include="..\3rdParty\tinyxml\tinyxmlerror.cpp" />
+    <ClCompile Include="..\3rdParty\tinyxml\tinyxmlparser.cpp" />
+    <ClCompile Include="..\Actor\Actor.cpp" />
+    <ClCompile Include="..\Actor\ActorComponent.cpp" />
+    <ClCompile Include="..\Actor\ActorFactory.cpp" />
+    <ClCompile Include="..\Actor\AIComponent.cpp" />
+    <ClCompile Include="..\Actor\AlphaNode.cpp" />
+    <ClCompile Include="..\Actor\BasicAnimationComponent.cpp" />
+    <ClCompile Include="..\Actor\CubeRenderComponent.cpp" />
+    <ClCompile Include="..\Actor\LightRenderComponent.cpp" />
+    <ClCompile Include="..\Actor\MeshRenderComponent.cpp" />
+    <ClCompile Include="..\Actor\PhysicsComponent.cpp" />
+    <ClCompile Include="..\Actor\PlaneRenderComponent.cpp" />
+    <ClCompile Include="..\Actor\RenderComponent.cpp" />
+    <ClCompile Include="..\Actor\TransformComponent.cpp" />
+    <ClCompile Include="..\AI\SteeringBehaviours.cpp" />
+    <ClCompile Include="..\Controller\FlyingController.cpp" />
+    <ClCompile Include="..\Controller\GamepadManager.cpp" />
+    <ClCompile Include="..\Debugging\Logger.cpp" />
+    <ClCompile Include="..\Debugging\LogMessenger.cpp" />
+    <ClCompile Include="..\Events\EventData_LoadedGame.cpp" />
+    <ClCompile Include="..\Events\EventData_HostGame.cpp" />
+    <ClCompile Include="..\Events\EventData.cpp" />
+    <ClCompile Include="..\Events\EventData_ClientJoin.cpp" />
+    <ClCompile Include="..\Events\EventData_JoinGame.cpp" />
+    <ClCompile Include="..\Events\EventData_LostConnection.cpp" />
+    <ClCompile Include="..\Events\EventData_PlayerLeft.cpp" />
+    <ClCompile Include="..\Events\EventData_PlayerReady.cpp" />
+    <ClCompile Include="..\Events\EventData_Collision.cpp" />
+    <ClCompile Include="..\Events\EventData_CollisionSeparation.cpp" />
+    <ClCompile Include="..\Events\EventData_DestroyActor.cpp" />
+    <ClCompile Include="..\Events\EventData_MoveActor.cpp" />
+    <ClCompile Include="..\Events\EventData_NewRenderComponent.cpp" />
+    <ClCompile Include="..\Events\EventData_RemotePlayerActorAssignment.cpp" />
+    <ClCompile Include="..\Events\EventData_RequestDestroyActor.cpp" />
+    <ClCompile Include="..\Events\EventData_RequestNewActor.cpp" />
+    <ClCompile Include="..\Events\EventData_RequestStartGame.cpp" />
+    <ClCompile Include="..\Events\EventData_StartMoving.cpp" />
+    <ClCompile Include="..\Events\EventData_StopMoving.cpp" />
+    <ClCompile Include="..\Events\EventManager.cpp" />
+    <ClCompile Include="..\GameBase\GameApp.cpp" />
+    <ClCompile Include="..\GameBase\GameLogic.cpp" />
+    <ClCompile Include="..\GameBase\WinMain.cpp" />
+    <ClCompile Include="..\GameStd.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\Geometry\AABB.cpp" />
+    <ClCompile Include="..\Geometry\Frustum.cpp" />
+    <ClCompile Include="..\Geometry\Matrix4x4.cpp" />
+    <ClCompile Include="..\Geometry\Plane.cpp" />
+    <ClCompile Include="..\Geometry\Vec3.cpp" />
+    <ClCompile Include="..\Network\BaseNetwork.cpp" />
+    <ClCompile Include="..\Network\ClientNetwork.cpp" />
+    <ClCompile Include="..\Network\NetworkEventForwarder.cpp" />
+    <ClCompile Include="..\Network\Packet.cpp" />
+    <ClCompile Include="..\Network\ServerNetwork.cpp" />
+    <ClCompile Include="..\Network\Socket.cpp" />
+    <ClCompile Include="..\Physics\BulletDebugDrawer.cpp" />
+    <ClCompile Include="..\Physics\BulletMotionState.cpp" />
+    <ClCompile Include="..\Physics\BulletSDKPhysics.cpp" />
+    <ClCompile Include="..\Physics\CollisionBox.cpp" />
+    <ClCompile Include="..\Physics\CollisionCapsule.cpp" />
+    <ClCompile Include="..\Physics\CollisionPlane.cpp" />
+    <ClCompile Include="..\Physics\CollisionShape.cpp" />
+    <ClCompile Include="..\Physics\CollisionSphere.cpp" />
+    <ClCompile Include="..\Renderer\D3D9Mesh.cpp" />
+    <ClCompile Include="..\Renderer\D3D9NormalMap.cpp" />
+    <ClCompile Include="..\Renderer\D3D9Renderer.cpp" />
+    <ClCompile Include="..\Renderer\D3D9Sprite.cpp" />
+    <ClCompile Include="..\Renderer\D3D9StaticBuffer.cpp" />
+    <ClCompile Include="..\Renderer\D3D9Texture.cpp" />
+    <ClCompile Include="..\Renderer\Image.cpp" />
+    <ClCompile Include="..\Renderer\Mesh.cpp" />
+    <ClCompile Include="..\Renderer\NormalMap.cpp" />
+    <ClCompile Include="..\Renderer\Sprite.cpp" />
+    <ClCompile Include="..\Renderer\Texture.cpp" />
+    <ClCompile Include="..\Renderer\Types.cpp" />
+    <ClCompile Include="..\Resource\ResourceManager.cpp" />
+    <ClCompile Include="..\Resource\XmlResource.cpp" />
+    <ClCompile Include="..\UserInterface\BaseGUI.cpp" />
+    <ClCompile Include="..\UserInterface\Button.cpp" />
+    <ClCompile Include="..\UserInterface\EditBox.cpp" />
+    <ClCompile Include="..\UserInterface\Menu.cpp" />
+    <ClCompile Include="..\UserInterface\StaticImage.cpp" />
+    <ClCompile Include="..\UserInterface\GUIElement.cpp" />
+    <ClCompile Include="..\UserInterface\StaticText.cpp" />
+    <ClCompile Include="..\Utilities\Colour.cpp" />
+    <ClCompile Include="..\Utilities\InitDocument.cpp" />
+    <ClCompile Include="..\Utilities\Math.cpp" />
+    <ClCompile Include="..\Utilities\Point.cpp" />
+    <ClCompile Include="..\Utilities\Rect.cpp" />
+    <ClCompile Include="..\Utilities\String.cpp" />
+    <ClCompile Include="..\View\HumanView.cpp" />
+    <ClCompile Include="..\View\NetworkView.cpp" />
+    <ClCompile Include="..\View\UserInterfaceView.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Events\EventData_CollisionSeparation.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

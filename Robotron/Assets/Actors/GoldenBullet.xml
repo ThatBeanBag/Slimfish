@@ -1,0 +1,24 @@
+<Actor type="Bullet" resource="Actors\GoldenBullet.xml">
+  <TransformComponent>
+    <Scale x="0.6" y="0.6" z ="0.6" />
+    <Translation x ="0" y="0.0" z ="0" />
+  </TransformComponent>
+
+  <PhysicsComponent>
+    <Density>300.0</Density>
+    <Shape>
+      <Sphere radius="0.35"/>
+    </Shape>
+  </PhysicsComponent>
+
+  <!--<CubeRenderComponent>
+    <Material>
+      <Diffuse a="1.0" r="1.0" g="0.0" b="1.0" />
+      <Ambient a="1.0" r="0.0" g="0.0" b="1.0" />
+    </Material>
+  </CubeRenderComponent>-->
+
+  <MeshRenderComponent>
+    <Mesh>Meshes\Apple\applegold.x</Mesh>
+  </MeshRenderComponent>
+</Actor>

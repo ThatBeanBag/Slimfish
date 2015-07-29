@@ -1,0 +1,12 @@
+<Actor type="Wall" resource="Actors\Wall.xml">
+  <TransformComponent>
+    <Translation x="1" y ="0" z="0" />
+  </TransformComponent>
+
+  <PhysicsComponent>
+    <Density>0</Density>
+    <Shape>
+      <Plane a ="-1" b ="0" c="0" d="0"/>
+    </Shape>
+  </PhysicsComponent>
+</Actor>

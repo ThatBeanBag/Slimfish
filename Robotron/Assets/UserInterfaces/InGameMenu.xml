@@ -1,0 +1,41 @@
+<UserInterface name="InGameMenu" resource ="UserInterfaces\InGameMenu.xml" >
+
+  <Menu name="MainMenu"
+      x="20"
+      y="20"
+      direction ="vertical"
+      align ="left"
+      gap ="4"
+      anchor="bottom middle"
+  >
+    <Button name="ResumeButton" width="164" height ="30">
+      <Image>Images/ResumeButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+    
+   <!--<Button name="ControlsButton" width="202" height ="30">
+      <Image>Images/ControlsButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+
+    <Button name="GraphicsButton" width="192" height ="30">
+      <Image>Images/GraphicsButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>-->
+      
+    <Button name="MainMenuButton" width="218" height ="30">
+      <Image>Images/MainMenuButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+    
+  </Menu>     
+  
+</UserInterface>

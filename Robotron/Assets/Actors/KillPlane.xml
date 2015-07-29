@@ -1,0 +1,49 @@
+<Actor type="KillPlane" resource="Actors\KillPlane.xml">
+
+  <TransformComponent>
+    <Scale x ="1000" y ="10.0" z="1000" />
+    <Rotation yaw="0" pitch ="0" roll ="0" />
+    <Translation x="0" y="-20.0" z="0" />
+  </TransformComponent>
+
+  <PlaneRenderComponent>
+    <SubDivisions>4</SubDivisions>
+    <Texture resource="Textures/Lava.jpg" tileU="10" tileV="10" />
+    <!--<NormalMap resource="Textures/LavaNormal.jpg" tileU="4" tileV="4" />-->
+    <Material>
+      <Diffuse a="0.6" r="1.0" g="1.0" b="1.0"/>
+    </Material>
+  </PlaneRenderComponent>
+
+  <PhysicsComponent>
+    <Density>0</Density>
+    <Friction>0.0</Friction>
+    <Restitution>0.0</Restitution>
+    
+    <Shape>
+      <Plane a="0" b="1" c="0" d="0" />
+      <!--<Box width="1000" height="10" length="1000" />-->
+    </Shape>
+    
+    <RigidBodyTransform>
+      <Translation x="0" y="-2.0" z="0"/>
+    </RigidBodyTransform>
+
+    <NoCollide></NoCollide>
+    
+  </PhysicsComponent>
+
+  <!--<PhysicsComponent>
+    <Density>0</Density>
+    <Friction>0.1</Friction>
+    <Restitution>0.5</Restitution>
+    <Shape>
+      --><!--<Plane a="0" b="1" c="0" d="0" />--><!--
+      <Box width="0.5" height="0.025" length="0.5" />
+    </Shape>
+    <RigidBodyTransform>
+      <Translation x="0" y="0" z="0.0"/>
+    </RigidBodyTransform>
+  </PhysicsComponent>-->
+
+</Actor>

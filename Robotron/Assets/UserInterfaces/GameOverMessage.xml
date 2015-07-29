@@ -1,0 +1,18 @@
+<UserInterface>
+
+  <StaticImage name="MessageBoxStatic" width ="600" height="200" anchor="middle middle">
+    <Image>Images/MessageBox.png</Image>
+  </StaticImage>
+
+  <StaticImage name="GameOverStatic" width ="329" height="53" anchor="middle middle">
+    <Image>Images/GameOverStatic.png</Image>
+  </StaticImage>
+
+  <Button name="OkButton" x="0" y="65" width="70" height ="30" anchor="middle middle">
+    <Image>Images/OkButton.png</Image>
+    <OutMask x="0" y="0" />
+    <HoverMask x="0" y="30" />
+    <PressedMask x="0" y="60" />
+  </Button>
+
+</UserInterface>

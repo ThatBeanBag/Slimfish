@@ -1,0 +1,86 @@
+<UserInterface name="LobbyMenu" resource="UserInterfaces/LobbyMenu.xml">
+
+    <Button name="ReadyButton" x="20" y="20" width ="45" height="45" anchor="bottom left">
+      <Image>Images/ReadyButton.png</Image>
+      <OutMask x="0" y="0" width="90" height="90" />
+      <HoverMask x="0" y="0" width="90" height="90"/>
+      <PressedMask x="0" y="90" width="90" height="90"/>
+      <Toggled></Toggled>
+    </Button>
+     
+    <StaticImage name="ImReadyStatic" x="75" y="30" width="175" height="26" anchor="bottom left">
+      <Image>Images/I'mReadyStatic.png</Image>
+    </StaticImage>
+  
+   <Menu name="ButtonMenu"
+         x="20"
+         y="20"
+         gap="10"
+         direction="horizontal"
+         anchor="bottom right">
+    <Button name="StartGameButton" width ="232" height="30" anchor="bottom right">
+      <Image>Images/StartGameButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+        
+    <Button name="CancelButton" width ="157" height="30" anchor="bottom right">
+      <Image>Images/CancelButton.png</Image>
+      <OutMask x="0" y="0" />
+      <HoverMask x="0" y="30" />
+      <PressedMask x="0" y="60" />
+    </Button>
+
+  </Menu>
+
+  <Menu name="UsernameMenu"
+        x="50"
+        y="20"
+        direction ="vertical"
+        anchor ="top left"
+        >
+    <StaticText name ="PlayersStatic" width ="200" height ="20">
+      <Text>PLAYERS</Text>
+      <FontHeight>22</FontHeight>
+      <FontColour r="255" g="255" b="255" />
+    </StaticText>
+    
+  </Menu>
+  
+  <Menu name="ReadyMenu"
+        x="500"
+        y="20"
+        direction ="vertical"
+        anchor ="top left"
+        >
+    <StaticText name ="ReadyStatic" width ="200" height ="20">
+      <Text>READY?</Text>
+      <FontHeight>22</FontHeight>
+      <FontColour r="255" g="255" b="255" />
+    </StaticText>
+    
+    
+  </Menu>
+  
+  <!--Templates-->
+  <StaticImage name ="ReadyTemplate" width ="35" height ="35">
+      <Image>Images/Ready.png</Image>
+      <Hidden></Hidden>
+  </StaticImage>
+  
+  <StaticImage name ="NotReadyTemplate" width ="35" height ="35">
+      <Image>Images/NotReady.png</Image>
+      <Hidden></Hidden>
+  </StaticImage>
+  
+  <StaticText name="UsernameTemplate"
+                width="200"
+                height ="35">
+      <Text>-</Text>
+      <FontHeight>22</FontHeight>
+      <FontColour r="255" g="255" b="255" />
+      <Hidden></Hidden>
+  </StaticText>
+  
+</UserInterface>
