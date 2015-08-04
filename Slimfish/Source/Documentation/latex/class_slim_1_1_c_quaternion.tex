@@ -1,0 +1,249 @@
+\hypertarget{class_slim_1_1_c_quaternion}{}\section{Slim\+:\+:C\+Quaternion Class Reference}
+\label{class_slim_1_1_c_quaternion}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+
+
+{\ttfamily \#include $<$Slim\+Quaternion.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_slim_1_1_c_quaternion_a6b203d70c2539992936e128f10af4943}{C\+Quaternion} ()
+\item 
+\hyperlink{class_slim_1_1_c_quaternion_a9930265285f9b59d6387de29a464c712}{C\+Quaternion} (float real, float i, float j, float k)
+\item 
+\hyperlink{class_slim_1_1_c_quaternion_a2a833ce7252f087b99fa0315bc759b26}{C\+Quaternion} (const \hyperlink{class_slim_1_1_c_vec3}{C\+Vec3} \&axis, float rad\+Angle)
+\item 
+\hyperlink{class_slim_1_1_c_quaternion_aeb67c425871d6eecc88bc8dc093cdee9}{C\+Quaternion} (const \hyperlink{class_slim_1_1_c_vec3}{C\+Vec3} \&right, const \hyperlink{class_slim_1_1_c_vec3}{C\+Vec3} \&up, const \hyperlink{class_slim_1_1_c_vec3}{C\+Vec3} \&forward)
+\item 
+\hyperlink{class_slim_1_1_c_quaternion_ab08702a7e44a32d8691ac69eb8f8d269}{$\sim$\+C\+Quaternion} ()
+\item 
+\hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \& \hyperlink{class_slim_1_1_c_quaternion_ad57ed86c8328d270abb32e514caf02ad}{operator$\ast$=} (const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \&other)
+\item 
+\hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \& \hyperlink{class_slim_1_1_c_quaternion_a2bf36f0b6e70af784d2aab92a0347c55}{operator+=} (const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \&other)
+\item 
+\hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \& \hyperlink{class_slim_1_1_c_quaternion_a0bcc8750ca86a96ed88d3f9818a0fe0d}{operator-\/=} (const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \&other)
+\item 
+\hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \& \hyperlink{class_slim_1_1_c_quaternion_aea1e5f6339e08df7c8fd45bc028a2ed0}{operator$\ast$=} (float scalar)
+\item 
+bool \hyperlink{class_slim_1_1_c_quaternion_ae702da6dd85b8520fcd969ff425df1ab}{operator==} (const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \&other)
+\item 
+bool \hyperlink{class_slim_1_1_c_quaternion_a6f5fd7a33993d47eae16eaf987503616}{operator!=} (const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \&other)
+\item 
+const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \hyperlink{class_slim_1_1_c_quaternion_a1d10b8aef87ed8578fe17fe8b690c41e}{operator+} (const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \&other) const 
+\item 
+const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \hyperlink{class_slim_1_1_c_quaternion_a4f39555697a07dd6b082ab9ae45cd527}{operator-\/} (const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \&other) const 
+\item 
+const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \hyperlink{class_slim_1_1_c_quaternion_af617fcc60aab13aa7e3a2babcf86a18b}{operator$\ast$} (const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \&other) const 
+\item 
+const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \hyperlink{class_slim_1_1_c_quaternion_ad7d286d57f99599784f38d5d19f20c8c}{operator$\ast$} (float scalar) const 
+\item 
+const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \hyperlink{class_slim_1_1_c_quaternion_afea39fd5c5606cc33f333bc557c28fac}{Get\+Normalise} () const 
+\item 
+const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \hyperlink{class_slim_1_1_c_quaternion_ac745bca24979214bcf3e2168b7ec8dcf}{Get\+Conjugate} () const 
+\item 
+const \hyperlink{class_slim_1_1_c_quaternion}{C\+Quaternion} \hyperlink{class_slim_1_1_c_quaternion_af6968149423a919825257d5ab48937ca}{Get\+Inverse} () const 
+\item 
+const float \hyperlink{class_slim_1_1_c_quaternion_ab2ab086de3a1807123757595cdabd906}{Get\+Magnitude} () const 
+\item 
+const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \hyperlink{class_slim_1_1_c_quaternion_aa128721304f429ea52bee5097557644c}{To\+Rotation\+Matrix} () const 
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_slim_1_1_c_quaternion_a6b203d70c2539992936e128f10af4943}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!C\+Quaternion@{C\+Quaternion}}
+\index{C\+Quaternion@{C\+Quaternion}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{C\+Quaternion()}]{\setlength{\rightskip}{0pt plus 5cm}Slim\+::\+C\+Quaternion\+::\+C\+Quaternion (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_quaternion_a6b203d70c2539992936e128f10af4943}
+Default constructor
+
+Initializes to identity rotation (0 degrees).
+
+\begin{DoxyAuthor}{Author}
+\+: Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_quaternion_a9930265285f9b59d6387de29a464c712}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!C\+Quaternion@{C\+Quaternion}}
+\index{C\+Quaternion@{C\+Quaternion}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{C\+Quaternion(float real, float i, float j, float k)}]{\setlength{\rightskip}{0pt plus 5cm}Slim\+::\+C\+Quaternion\+::\+C\+Quaternion (
+\begin{DoxyParamCaption}
+\item[{float}]{real, }
+\item[{float}]{i, }
+\item[{float}]{j, }
+\item[{float}]{k}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_quaternion_a9930265285f9b59d6387de29a464c712}
+Constructs a quaternion from explicit real, i, j and k values.
+
+\begin{DoxyAuthor}{Author}
+\+: Hayden Asplet 
+\end{DoxyAuthor}
+
+\begin{DoxyParams}{Parameters}
+{\em } & \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_slim_1_1_c_quaternion_a2a833ce7252f087b99fa0315bc759b26}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!C\+Quaternion@{C\+Quaternion}}
+\index{C\+Quaternion@{C\+Quaternion}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{C\+Quaternion(const C\+Vec3 \&axis, float rad\+Angle)}]{\setlength{\rightskip}{0pt plus 5cm}Slim\+::\+C\+Quaternion\+::\+C\+Quaternion (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Vec3} \&}]{axis, }
+\item[{float}]{rad\+Angle}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_quaternion_a2a833ce7252f087b99fa0315bc759b26}
+Constructs a quaternion from an axis/angle.
+
+\begin{DoxyAuthor}{Author}
+\+: Hayden Asplet 
+\end{DoxyAuthor}
+
+\begin{DoxyParams}{Parameters}
+{\em } & \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_slim_1_1_c_quaternion_aeb67c425871d6eecc88bc8dc093cdee9}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!C\+Quaternion@{C\+Quaternion}}
+\index{C\+Quaternion@{C\+Quaternion}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{C\+Quaternion(const C\+Vec3 \&right, const C\+Vec3 \&up, const C\+Vec3 \&forward)}]{\setlength{\rightskip}{0pt plus 5cm}Slim\+::\+C\+Quaternion\+::\+C\+Quaternion (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Vec3} \&}]{right, }
+\item[{const {\bf C\+Vec3} \&}]{up, }
+\item[{const {\bf C\+Vec3} \&}]{forward}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_quaternion_aeb67c425871d6eecc88bc8dc093cdee9}
+Constructs a quaternion from 3 perpendicular axis.
+
+\begin{DoxyAuthor}{Author}
+\+: Hayden Asplet 
+\end{DoxyAuthor}
+
+\begin{DoxyParams}{Parameters}
+{\em } & \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_slim_1_1_c_quaternion_ab08702a7e44a32d8691ac69eb8f8d269}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!````~C\+Quaternion@{$\sim$\+C\+Quaternion}}
+\index{````~C\+Quaternion@{$\sim$\+C\+Quaternion}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{$\sim$\+C\+Quaternion()}]{\setlength{\rightskip}{0pt plus 5cm}Slim\+::\+C\+Quaternion\+::$\sim$\+C\+Quaternion (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_quaternion_ab08702a7e44a32d8691ac69eb8f8d269}
+Destructs a quaternion
+
+\begin{DoxyAuthor}{Author}
+\+: Hayden Asplet 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_slim_1_1_c_quaternion_ac745bca24979214bcf3e2168b7ec8dcf}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!Get\+Conjugate@{Get\+Conjugate}}
+\index{Get\+Conjugate@{Get\+Conjugate}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{Get\+Conjugate() const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Quaternion} Slim\+::\+C\+Quaternion\+::\+Get\+Conjugate (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_quaternion_ac745bca24979214bcf3e2168b7ec8dcf}
+\hypertarget{class_slim_1_1_c_quaternion_af6968149423a919825257d5ab48937ca}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!Get\+Inverse@{Get\+Inverse}}
+\index{Get\+Inverse@{Get\+Inverse}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{Get\+Inverse() const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Quaternion} Slim\+::\+C\+Quaternion\+::\+Get\+Inverse (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_quaternion_af6968149423a919825257d5ab48937ca}
+\hypertarget{class_slim_1_1_c_quaternion_ab2ab086de3a1807123757595cdabd906}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!Get\+Magnitude@{Get\+Magnitude}}
+\index{Get\+Magnitude@{Get\+Magnitude}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{Get\+Magnitude() const }]{\setlength{\rightskip}{0pt plus 5cm}const float Slim\+::\+C\+Quaternion\+::\+Get\+Magnitude (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_quaternion_ab2ab086de3a1807123757595cdabd906}
+\hypertarget{class_slim_1_1_c_quaternion_afea39fd5c5606cc33f333bc557c28fac}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!Get\+Normalise@{Get\+Normalise}}
+\index{Get\+Normalise@{Get\+Normalise}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{Get\+Normalise() const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Quaternion} Slim\+::\+C\+Quaternion\+::\+Get\+Normalise (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_quaternion_afea39fd5c5606cc33f333bc557c28fac}
+\hypertarget{class_slim_1_1_c_quaternion_a6f5fd7a33993d47eae16eaf987503616}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!operator"!=@{operator"!=}}
+\index{operator"!=@{operator"!=}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{operator"!=(const C\+Quaternion \&other)}]{\setlength{\rightskip}{0pt plus 5cm}bool Slim\+::\+C\+Quaternion\+::operator!= (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Quaternion} \&}]{other}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_quaternion_a6f5fd7a33993d47eae16eaf987503616}
+\hypertarget{class_slim_1_1_c_quaternion_af617fcc60aab13aa7e3a2babcf86a18b}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{operator$\ast$(const C\+Quaternion \&other) const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Quaternion} Slim\+::\+C\+Quaternion\+::operator$\ast$ (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Quaternion} \&}]{other}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_quaternion_af617fcc60aab13aa7e3a2babcf86a18b}
+\hypertarget{class_slim_1_1_c_quaternion_ad7d286d57f99599784f38d5d19f20c8c}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{operator$\ast$(float scalar) const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Quaternion} Slim\+::\+C\+Quaternion\+::operator$\ast$ (
+\begin{DoxyParamCaption}
+\item[{float}]{scalar}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_quaternion_ad7d286d57f99599784f38d5d19f20c8c}
+\hypertarget{class_slim_1_1_c_quaternion_ad57ed86c8328d270abb32e514caf02ad}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!operator$\ast$=@{operator$\ast$=}}
+\index{operator$\ast$=@{operator$\ast$=}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{operator$\ast$=(const C\+Quaternion \&other)}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+Quaternion} \& Slim\+::\+C\+Quaternion\+::operator$\ast$= (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Quaternion} \&}]{other}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_quaternion_ad57ed86c8328d270abb32e514caf02ad}
+\hypertarget{class_slim_1_1_c_quaternion_aea1e5f6339e08df7c8fd45bc028a2ed0}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!operator$\ast$=@{operator$\ast$=}}
+\index{operator$\ast$=@{operator$\ast$=}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{operator$\ast$=(float scalar)}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+Quaternion} \& Slim\+::\+C\+Quaternion\+::operator$\ast$= (
+\begin{DoxyParamCaption}
+\item[{float}]{scalar}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_quaternion_aea1e5f6339e08df7c8fd45bc028a2ed0}
+\hypertarget{class_slim_1_1_c_quaternion_a1d10b8aef87ed8578fe17fe8b690c41e}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!operator+@{operator+}}
+\index{operator+@{operator+}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{operator+(const C\+Quaternion \&other) const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Quaternion} Slim\+::\+C\+Quaternion\+::operator+ (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Quaternion} \&}]{other}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_quaternion_a1d10b8aef87ed8578fe17fe8b690c41e}
+\hypertarget{class_slim_1_1_c_quaternion_a2bf36f0b6e70af784d2aab92a0347c55}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!operator+=@{operator+=}}
+\index{operator+=@{operator+=}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{operator+=(const C\+Quaternion \&other)}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+Quaternion} \& Slim\+::\+C\+Quaternion\+::operator+= (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Quaternion} \&}]{other}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_quaternion_a2bf36f0b6e70af784d2aab92a0347c55}
+\hypertarget{class_slim_1_1_c_quaternion_a4f39555697a07dd6b082ab9ae45cd527}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!operator-\/@{operator-\/}}
+\index{operator-\/@{operator-\/}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{operator-\/(const C\+Quaternion \&other) const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Quaternion} Slim\+::\+C\+Quaternion\+::operator-\/ (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Quaternion} \&}]{other}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_quaternion_a4f39555697a07dd6b082ab9ae45cd527}
+\hypertarget{class_slim_1_1_c_quaternion_a0bcc8750ca86a96ed88d3f9818a0fe0d}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!operator-\/=@{operator-\/=}}
+\index{operator-\/=@{operator-\/=}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{operator-\/=(const C\+Quaternion \&other)}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+Quaternion} \& Slim\+::\+C\+Quaternion\+::operator-\/= (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Quaternion} \&}]{other}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_quaternion_a0bcc8750ca86a96ed88d3f9818a0fe0d}
+\hypertarget{class_slim_1_1_c_quaternion_ae702da6dd85b8520fcd969ff425df1ab}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!operator==@{operator==}}
+\index{operator==@{operator==}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{operator==(const C\+Quaternion \&other)}]{\setlength{\rightskip}{0pt plus 5cm}bool Slim\+::\+C\+Quaternion\+::operator== (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Quaternion} \&}]{other}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_quaternion_ae702da6dd85b8520fcd969ff425df1ab}
+\hypertarget{class_slim_1_1_c_quaternion_aa128721304f429ea52bee5097557644c}{}\index{Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}!To\+Rotation\+Matrix@{To\+Rotation\+Matrix}}
+\index{To\+Rotation\+Matrix@{To\+Rotation\+Matrix}!Slim\+::\+C\+Quaternion@{Slim\+::\+C\+Quaternion}}
+\subsubsection[{To\+Rotation\+Matrix() const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Matrix4x4} Slim\+::\+C\+Quaternion\+::\+To\+Rotation\+Matrix (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_quaternion_aa128721304f429ea52bee5097557644c}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+Playtech/\+Documents/\+Git\+Hub/\+Slimfish/\+Slimfish/\+Source/\+Math/\hyperlink{_slim_quaternion_8h}{Slim\+Quaternion.\+h}\item 
+C\+:/\+Users/\+Playtech/\+Documents/\+Git\+Hub/\+Slimfish/\+Slimfish/\+Source/\+Math/\hyperlink{_slim_quaternion_8cpp}{Slim\+Quaternion.\+cpp}\end{DoxyCompactItemize}

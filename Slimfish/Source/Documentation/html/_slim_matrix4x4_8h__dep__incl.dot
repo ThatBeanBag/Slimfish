@@ -1,0 +1,12 @@
+digraph "C:/Users/Playtech/Documents/GitHub/Slimfish/Slimfish/Source/Math/SlimMatrix4x4.h"
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="C:/Users/Playtech/Documents\l/GitHub/Slimfish/Slimfish\l/Source/Math/SlimMatrix4x4.h",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled", fontcolor="black"];
+  Node1 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node2 [label="C:/Users/Playtech/Documents\l/GitHub/Slimfish/Slimfish\l/Source/Math/SlimMatrix4x4.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_slim_matrix4x4_8cpp.html"];
+  Node1 -> Node3 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node3 [label="C:/Users/Playtech/Documents\l/GitHub/Slimfish/Slimfish\l/Source/Math/SlimQuaternion.h",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_slim_quaternion_8h.html"];
+  Node3 -> Node4 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node4 [label="C:/Users/Playtech/Documents\l/GitHub/Slimfish/Slimfish\l/Source/Math/SlimQuaternion.cpp",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$_slim_quaternion_8cpp.html"];
+}

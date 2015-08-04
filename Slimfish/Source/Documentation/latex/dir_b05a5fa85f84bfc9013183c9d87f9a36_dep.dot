@@ -1,0 +1,6 @@
+digraph "C:/Users/Playtech/Documents/GitHub/Slimfish/Slimfish/Source/Utilities" {
+  compound=true
+  node [ fontsize="10", fontname="Helvetica"];
+  edge [ labelfontsize="10", labelfontname="Helvetica"];
+  dir_b05a5fa85f84bfc9013183c9d87f9a36 [shape=box, label="Utilities", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_b05a5fa85f84bfc9013183c9d87f9a36.html"];
+}

@@ -25,114 +25,105 @@
 
 namespace Slim {
 
-/************************************************************************/
-/* CMatrix4x4
-/*
-/* A standard 4 by 4 matrix class.
-/*
-/* All matrices are column-major and should be concatenated appropriately.
-/*
-/* Standard transformation ordering: 
-/* Translation * Rotation * Scale.
-/*
-/* Coordinate system is right-handed.
-/* Rotation matrices are of the form:
-/*	 Rx =  1       0       0		0
-/*	       0     cos(t) -sin(t)		0
-/*	       0     sin(t)  cos(t)		0
-/*		   0	   0	   0		1
-/* where t is a counterclockwise rotation about the yz-plane.
-/*
-/*	 Ry =  cos(t)  0    sin(t)		0
-/*	       0       1	   0		0
-/*		   -sin(t) 0    cos(t)		0
-/*		   0	   0	   0		1
-/* where t is a counterclockwise rotation about the xz-plane.
-/*
-/*	 Rz =  cos(t) -sin(t)	0		0
-/*	       sin(t)  cos(t)	0		0
-/*		   0	   0		1	    0
-/*		   0	   0		0		1
-/* where t is a counterclockwise rotation about the xy-plane.
-/*
-/* Elements of the matrix can be indexed by matrix[row][column].
-/* A visualization of the layout is as follows:
-/*	|	[0][0]	[0][1]	[0][2]	[0][3]	|	
-/*	|	[1][0]	[1][1]	[1][2]	[1][3]	|
-/*	|	[2][0]	[2][1]	[2][2]	[2][3]	|
-/*	|	[3][0]	[3][1]	[3][2]	[3][3]	|
-/*
-/************************************************************************/
+/** Standard 4 by 4 homogeneous matrix class for affine transformations of vectors.
+	@remarks
+		All matrices are column-major and should be concatenated appropriately.
+	@par
+		Transformation ordering is Translation * Rotation * Scale.
+	@par
+		Coordinate system is right-handed. Thus rotation matrices are of the form:
+			 Rx =  1       0       0		0
+				   0     cos(t) -sin(t)		0
+				   0     sin(t)  cos(t)		0
+				   0	   0	   0		1
+		where t is a counterclockwise rotation about the yz-plane.
+	@par
+			 Ry =  cos(t)  0    sin(t)		0
+				   0       1	   0		0
+				   -sin(t) 0    cos(t)		0
+				   0	   0	   0		1
+		where t is a counterclockwise rotation about the xz-plane.
+	@par
+			 Rz =  cos(t) -sin(t)	0		0
+				   sin(t)  cos(t)	0		0
+				   0	   0		1	    0
+				   0	   0		0		1
+		where t is a counterclockwise rotation about the xy-plane.
+	@par
+		Elements of the matrix can be indexed by matrix[row][column].
+		A visualization of the layout is as follows:
+			|	[0][0]	[0][1]	[0][2]	[0][3]	|	
+			|	[1][0]	[1][1]	[1][2]	[1][3]	|
+			|	[2][0]	[2][1]	[2][2]	[2][3]	|
+			|	[3][0]	[3][1]	[3][2]	[3][3]	|
+*/
 class CMatrix4x4 {
 	// Member Functions
 public:
-	/**
-	* Constructs a 4 by 4 matrix with all 16 values set to 0.
-	* 
-	* @author: 	Hayden Asplet
+	/** Construct a 4 by 4 matrix with all values set to 0.
+	 	@author
+	 		Hayden Asplet		
 	*/
 	CMatrix4x4();
 
-	/**
-	* Constructs a 4 by 4 matrix from an array of 16 floats in a row first ordering.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	pMatrix[4][4] - elements of the matrix.
+	/** Construct a 4 by 4 matrix from a 4 by 4 array.
+	 	@author
+	 		Hayden Asplet
+	 	@param
+			pMatrix[4][4] Array of floats that make up the matrix.	
 	*/
 	CMatrix4x4(float pMatrix[4][4]);
 
-	/**
-	* Constructs a 4 by 4 matrix from 16 floats.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	float v11 - row 1 column 1.
-	* @param:	float v12 - row 1 column 2.
-	* @param:	float v13 - row 1 column 3.
-	* @param:	float v14 - row 1 column 4.
-	* @param:	float v21 - row 2 column 1.
-	* @param:	float v22 - row 2 column 2.
-	* @param:	float v23 - row 2 column 3.
-	* @param:	float v24 - row 2 column 4.
-	* @param:	float v31 - row 3 column 1.
-	* @param:	float v32 - row 3 column 2.
-	* @param:	float v33 - row 3 column 3.
-	* @param:	float v34 - row 3 column 4.
-	* @param:	float v41 - row 4 column 1.
-	* @param:	float v42 - row 4 column 2.
-	* @param:	float v43 - row 4 column 3.
-	* @param:	float v44 - row 4 column 4.
+	/** Construct a 4 by 4 matrix from 16 floats.
+	 	@author
+	 		Hayden Asplet
 	*/
 	CMatrix4x4(float v11, float v12, float v13, float v14,
 			   float v21, float v22, float v23, float v24,
 			   float v31, float v32, float v33, float v34, 
 			   float v41, float v42, float v43, float v44);
 
-	/**
-	* Constructs a 4 by 4 matrix from another 4 by 4 matrix.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	other - another matrix to copy from.
+	/** Construct a 4 by 4 matrix by copying another 4 by 4 matrix.
+	 	@author
+	 		Hayden Asplet	
 	*/
 	CMatrix4x4(const CMatrix4x4& other);
 
-	/**
-	* Destructs a 4 by 4 matrix.
-	* 
-	* @author: 	Hayden Asplet
+	/** Destruct a 4 by 4 matrix.
+	 	@author
+	 		Hayden Asplet
 	*/
 	~CMatrix4x4();
 
+	/** Assign a matrix
+	 	@author
+	 		Hayden Asplet
+	*/
 	CMatrix4x4& operator=(const CMatrix4x4& other);
+
+	/** Multiply and assign a matrix
+		@author
+			Hayden Asplet
+	*/
 	CMatrix4x4& operator*=(const CMatrix4x4& other);
+
+	/** Add and assign a matrix
+		@author
+			Hayden Asplet
+	*/
 	CMatrix4x4& operator+=(const CMatrix4x4& other);
+
+	/** Subtract and assign a matrix
+		@author
+			Hayden Asplet
+	*/
 	CMatrix4x4& operator-=(const CMatrix4x4& other);
 
-	/**
-	* Transforms a vector by the matrix.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	vector - vector to transform.
-	* @return:  const CVec3 - transformed vector.
+	/** Transform a vector 3
+		@remarks
+			resultant vector is homogenized prior to returning.
+	 	@author
+	 		Hayden Asplet
 	*/
 	const CVec3 Transform(const CVec3& vector);
 
@@ -140,145 +131,121 @@ public:
 	/* Accessor Methods
 	/************************************************************************/
 
-	/**
-	* Access a row of the matrix, allows use of operator matrix[r][c];
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	size_t row - row to retrieve.
-	* @return:  const float* - row;
+	/** Access a row of the matrix, allows use of operator matrix[row][column];
+	 	@author
+	 		Hayden Asplet
 	*/
 	const float* operator[](size_t row) const;
 
-	/**
-	* Access a row of the matrix, allows use of operator matrix[r][c];
-	*
-	* @author: 	Hayden Asplet
-	* @param:	size_t row - row to retrieve.
-	* @return:  const float* - row;
+	/** Access a row of the matrix, allows use of operator matrix[row][column];
+	 	@author
+	 		Hayden Asplet
 	*/
 	float* operator[](size_t row);
 
-	/**
-	* Sets the elements of the matrix from an array of 16 floating point values.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	pMatrix[16] - elements of the matrix to set.
-	* @return:  void
+	/** Set the elements of the matrix from a 4 by 4 array.
+	 	@author
+	 		Hayden Asplet
 	*/
 	void SetElements(float pMatrix[4][4]);
 
-	/**
-	* Sets the translational component of the transform.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	x - x component of the position to set.
-	* @param:	y - y component of the position to set.
-	* @param:	z - z component of the position to set.
-	* @return:  void
+	/** Set the translational component of the transform.
+	 	@author
+	 		Hayden Asplet
 	*/
 	void SetPosition(float x, float y, float z);
 
-	/**
-	* Sets the translational component of the transform.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	position - position vector to set.
-	* @return:  void
+	/** Set the translational component of the transform.
+	 	@author
+	 		Hayden Asplet
 	*/
 	void SetPosition(const CVec3& position);
 
-	/**
-	* Sets the scale of the transform.
-	*
-	* BEWARE: This will only produce a valid result if the transform is an identity matrix
-	* or only contains translational information. If the transform has rotational information
-	* setting the scale will not work as intended.
-	*
-	* If you want to add scale to a rotation transform DO NOT use this method, first build a
-	* scale matrix using BuildScale() then concatenate the two transforms by multiplying the 
-	* two matrices like so: Scale * Rotation.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	float xScale - x component of the scale to set.
-	* @param:	float yScale - y component of the scale to set.
-	* @param:	float zScale - z component of the scale to set.
-	* @return:  void
+	/** Set the scale of the transform.
+		@remarks
+			BEWARE: This will only produce a valid result if the transform is an identity matrix
+			or only contains translational information. If the transform has rotational information
+			setting the scale will yield undefined behavior.
+		@par
+			If you want to add scale to a rotation transform DO NOT use this method, first build a
+			scale matrix using BuildScale() then concatenate the two transforms by multiplying the
+			two matrices like so: Rotation * Scale.
+	 	@author
+	 		Hayden Asplet
 	*/
 	void SetScale(float xScale, float yScale, float zScale);
 
-	/**
-	* Sets the scale of the transform.
-	*
-	* BEWARE: This will only produce a valid result if the transform is an identity matrix
-	* or only contains translational information. If the transform has rotational information
-	* setting the scale will not work as intended.
-	*
-	* If you want to add scale to a rotation transform DO NOT use this method, first build a
-	* scale matrix using BuildScale() then concatenate the two transforms by multiplying the
-	* two matrices like so: Scale * Rotation.
-	*
-	* @author: 	Hayden Asplet
-	* @param:	scale - scale to set.
-	* @return:  void
+	/** Set the scale of the transform.
+		@remarks
+			BEWARE: This will only produce a valid result if the transform is an identity matrix
+			or only contains translational information. If the transform has rotational information
+			setting the scale will yield undefined behavior.
+		@par
+			If you want to add scale to a rotation transform DO NOT use this method, first build a
+			scale matrix using BuildScale() then concatenate the two transforms by multiplying the
+			two matrices like so: Rotation * Scale.
+	 	@author
+	 		Hayden Asplet
 	*/
 	void SetScale(const CVec3& scale);
 
-	/**
-	* Retrieves the transposed matrix.
-	* 
-	* @author: 	Hayden Asplet
-	* @return:  const CMatrix4x4 - transposed matrix.
+	/** Create a new matrix by transposing the rows and columns of this matrix.
+	 	@author
+	 		Hayden Asplet
 	*/
 	const CMatrix4x4 GetTranspose() const;
 
-	/**
-	* Retrieves the inverse matrix.
-	* 
-	* @author: 	Hayden Asplet
-	* @return:  const CMatrix4x4 - inverted matrix.
+	/** Create a new matrix by inversing this matrix.
+		@remarks
+			This method is particularly slow and should be called as frequently as possible.
+			There are several situations where this method can be avoided resulting is higher
+			performance code, which are described as follows:
+		@par
+			The inverse of a rotation only matrix is its transpose. Transposing a matrix is
+			much less of a performance hit and thus GetTranpose() should be used inplace of 
+			GetInverse() in situations with rotation only matrices.
+		@par
+			The inverse of a scale only matrix is a matrix built from the reciprocals of the
+			Scale components which can be made from BuildScaleMatrix(1 / x, 1 / y, 1 / z).
+		@par
+			The inverse of a translation only matrix is simply a translation in the other direction.
+			Building a matrix from the negative of the position will result in an inverted matrix.
+			Use BuildTranslationMatrix( -position ) for translational only matrices.
+		@author
+			Hayden Asplet
 	*/
 	const CMatrix4x4 GetInverse() const;
 
-	/**
-	* Retrieves the position of the transform.
-	* 
-	* @author: 	Hayden Asplet
-	* @return:  const CVec3 - position of the transform.
+	/** Get the position of the transform.
+	 	@author
+	 		Hayden Asplet
 	*/
 	const CVec3 GetPosition() const;
-	/**
-	* Retrieves the rotational direction (look or forward) of the transform.
-	* 
-	* @author: 	Hayden Asplet
-	* @return:  const CVec3 - direction of the transform.
+
+	/** Retrieve the rotational direction (look or forward) of the transform.
+	 	@author
+	 		Hayden Asplet
 	*/
 	const CVec3 GetDirection() const;
 
-	/**
-	* Retrieves the right vector of the transform.
-	* 
-	* @author: 	Hayden Asplet
-	* @return:  const CVec3 - right vector of the transform.
+	/** Retrieve the right vector of the transform.
+	 	@author
+	 		Hayden Asplet
 	*/
 	const CVec3 GetRight() const;
 
-	/**
-	* Get the up vector of the transform.
-	* 
-	* @author: 	Hayden Asplet
-	* @return:  const CVec3 - up vector of the transform.
+	/** Get the up vector of the transform.
+	 	@author
+	 		Hayden Asplet
 	*/
 	const CVec3 GetUp() const;
 protected:
 private:
-	/**
-	* Helper function that copies a matrix to another.
-	*
-	* Assignment operator and copy constructor call this method to avoid code duplication.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	other - matrix to copy.
-	* @return:  void
+	/** Internal helper function to copy a matrix to this matrix.
+		@remarks
+			Assignment operator and copy constructor call this method to avoid code duplication.
+	 	@author
+	 		Hayden Asplet
 	*/
 	void Copy(const float pMatrix[4][4]);
 

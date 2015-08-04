@@ -1,0 +1,23 @@
+var searchData=
+[
+  ['g_5falpha_5fopaque',['g_ALPHA_OPAQUE',['../namespace_slim.html#a419bbbee1dad7339601b213985586aaa',1,'Slim']]],
+  ['g_5falpha_5ftransperant',['g_ALPHA_TRANSPERANT',['../namespace_slim.html#a3bb4e8854dc9c24551616564779f72f4',1,'Slim']]],
+  ['g_5falpha_5fvalue_5fopaque',['g_ALPHA_VALUE_OPAQUE',['../namespace_slim.html#ad94a83e754d3f801b7d684641e650f76',1,'Slim']]],
+  ['g_5falpha_5fvalue_5ftransperant',['g_ALPHA_VALUE_TRANSPERANT',['../namespace_slim.html#a5c452a9999f4307444c7496757b290c7',1,'Slim']]],
+  ['g_5fcolour_5fblack',['g_COLOUR_BLACK',['../namespace_slim.html#a8f55af55b9d6bd5d1a247ae77239e9ec',1,'Slim']]],
+  ['g_5fcolour_5fblue',['g_COLOUR_BLUE',['../namespace_slim.html#a2ff65ee94b0f7dbb4cc7614b6d34b075',1,'Slim']]],
+  ['g_5fcolour_5fcyan',['g_COLOUR_CYAN',['../namespace_slim.html#a3f18a21d67a8e4342f45d6dc38491e84',1,'Slim']]],
+  ['g_5fcolour_5fgreen',['g_COLOUR_GREEN',['../namespace_slim.html#a9720f56180098de9f641858511f0a3f8',1,'Slim']]],
+  ['g_5fcolour_5fmagenta',['g_COLOUR_MAGENTA',['../namespace_slim.html#a78adc5a20e7e82b76aa186b20213e74d',1,'Slim']]],
+  ['g_5fcolour_5fred',['g_COLOUR_RED',['../namespace_slim.html#a3ebe25e5235634ded92715ea38733109',1,'Slim']]],
+  ['g_5fcolour_5fvalue_5fblack',['g_COLOUR_VALUE_BLACK',['../namespace_slim.html#ae8fc69dad906fd2dda213c5f71c59923',1,'Slim']]],
+  ['g_5fcolour_5fvalue_5fblue',['g_COLOUR_VALUE_BLUE',['../namespace_slim.html#a583e99a4fe716782182405126b9d97ea',1,'Slim']]],
+  ['g_5fcolour_5fvalue_5fcyan',['g_COLOUR_VALUE_CYAN',['../namespace_slim.html#a411f3278744ab504f50bbf0a0991a603',1,'Slim']]],
+  ['g_5fcolour_5fvalue_5fgreen',['g_COLOUR_VALUE_GREEN',['../namespace_slim.html#a74ceafe45f27d59e1e7a540771745597',1,'Slim']]],
+  ['g_5fcolour_5fvalue_5fmagenta',['g_COLOUR_VALUE_MAGENTA',['../namespace_slim.html#a17d9ae16f160ff0d39bd10efc45b47f8',1,'Slim']]],
+  ['g_5fcolour_5fvalue_5fred',['g_COLOUR_VALUE_RED',['../namespace_slim.html#a41bde6b9797170aa873ca87b475f76ca',1,'Slim']]],
+  ['g_5fcolour_5fvalue_5fwhite',['g_COLOUR_VALUE_WHITE',['../namespace_slim.html#a9c8494b2d8142c2a5348b46f2f84f221',1,'Slim']]],
+  ['g_5fcolour_5fvalue_5fyellow',['g_COLOUR_VALUE_YELLOW',['../namespace_slim.html#a8e2fd0c514f1ec5a9986b1573e3c9a74',1,'Slim']]],
+  ['g_5fcolour_5fwhite',['g_COLOUR_WHITE',['../namespace_slim.html#aabd7d1ab5686441d89da465b5d78e06c',1,'Slim']]],
+  ['g_5fcolour_5fyellow',['g_COLOUR_YELLOW',['../namespace_slim.html#aff93ca871b54f6167a23aaaedf4eba95',1,'Slim']]]
+];

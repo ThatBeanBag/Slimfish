@@ -24,6 +24,10 @@
 
 namespace Slim {
 
+const CVec3 CVec3::s_FORWARD = CVec3(0, 0, 1);
+const CVec3 CVec3::s_RIGHT = CVec3(1, 0, 0);
+const CVec3 CVec3::s_UP = CVec3(0, 1, 0);
+
 CVec3::CVec3()
 	:m_x(0), m_y(0), m_z(0)
 {

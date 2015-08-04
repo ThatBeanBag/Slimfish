@@ -1,0 +1,403 @@
+\hypertarget{class_slim_1_1_c_matrix4x4}{}\section{Slim\+:\+:C\+Matrix4x4 Class Reference}
+\label{class_slim_1_1_c_matrix4x4}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+
+
+{\ttfamily \#include $<$Slim\+Matrix4x4.\+h$>$}
+
+
+
+Collaboration diagram for Slim\+:\+:C\+Matrix4x4\+:
+% FIG 0
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_slim_1_1_c_matrix4x4_ab0db69253f596fd2ff81c7a887cf55ca}{C\+Matrix4x4} ()
+\item 
+\hyperlink{class_slim_1_1_c_matrix4x4_a1f3131adf631af7ec192dc4a21a91c80}{C\+Matrix4x4} (float p\+Matrix\mbox{[}4\mbox{]}\mbox{[}4\mbox{]})
+\item 
+\hyperlink{class_slim_1_1_c_matrix4x4_a0eb2b9efbf077425e4202fe80023fe38}{C\+Matrix4x4} (float v11, float v12, float v13, float v14, float v21, float v22, float v23, float v24, float v31, float v32, float v33, float v34, float v41, float v42, float v43, float v44)
+\item 
+\hyperlink{class_slim_1_1_c_matrix4x4_aae54c87f8026b9347d756ae37029b60b}{C\+Matrix4x4} (const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \&other)
+\item 
+\hyperlink{class_slim_1_1_c_matrix4x4_a33ff914f4d409bd664c451f6b1e33ead}{$\sim$\+C\+Matrix4x4} ()
+\item 
+\hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \& \hyperlink{class_slim_1_1_c_matrix4x4_afaff0b0992ac0b60c6763cfb77601f60}{operator=} (const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \&other)
+\item 
+\hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \& \hyperlink{class_slim_1_1_c_matrix4x4_a9ce4ed68708773116f32e67046eac069}{operator$\ast$=} (const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \&other)
+\item 
+\hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \& \hyperlink{class_slim_1_1_c_matrix4x4_a460e6ceef684206fdf1c91acccecbae9}{operator+=} (const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \&other)
+\item 
+\hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \& \hyperlink{class_slim_1_1_c_matrix4x4_afc033c8833fc14c6548098a9d41ff30c}{operator-\/=} (const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \&other)
+\item 
+const \hyperlink{class_slim_1_1_c_vec3}{C\+Vec3} \hyperlink{class_slim_1_1_c_matrix4x4_a0b55456e4983fb00133e127c5113c772}{Transform} (const \hyperlink{class_slim_1_1_c_vec3}{C\+Vec3} \&vector)
+\item 
+const float $\ast$ \hyperlink{class_slim_1_1_c_matrix4x4_a3cb4f46da0cb8fa17fe6cb488fe99468}{operator\mbox{[}$\,$\mbox{]}} (size\+\_\+t row) const 
+\item 
+float $\ast$ \hyperlink{class_slim_1_1_c_matrix4x4_a417fe6567da3c7ded966b21705a33e2e}{operator\mbox{[}$\,$\mbox{]}} (size\+\_\+t row)
+\item 
+void \hyperlink{class_slim_1_1_c_matrix4x4_aabcd275ef9454c0e3e29099738bba0e1}{Set\+Elements} (float p\+Matrix\mbox{[}4\mbox{]}\mbox{[}4\mbox{]})
+\item 
+void \hyperlink{class_slim_1_1_c_matrix4x4_adbc23b4e5c849e8bcc1ec548a66e9608}{Set\+Position} (float x, float y, float z)
+\item 
+void \hyperlink{class_slim_1_1_c_matrix4x4_a98ecd6f1c87b546d5b7f681d6a44c4fe}{Set\+Position} (const \hyperlink{class_slim_1_1_c_vec3}{C\+Vec3} \&position)
+\item 
+void \hyperlink{class_slim_1_1_c_matrix4x4_a1f158d7f4fa92644dbdf430cc9ba8467}{Set\+Scale} (float x\+Scale, float y\+Scale, float z\+Scale)
+\item 
+void \hyperlink{class_slim_1_1_c_matrix4x4_a42e67bd1346774307c27b2487f893d56}{Set\+Scale} (const \hyperlink{class_slim_1_1_c_vec3}{C\+Vec3} \&scale)
+\item 
+const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \hyperlink{class_slim_1_1_c_matrix4x4_a236b09b2a7e6d8b6ba6535c312d11207}{Get\+Transpose} () const 
+\item 
+const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \hyperlink{class_slim_1_1_c_matrix4x4_a93e90b7c1a34161f42e986888887a7c6}{Get\+Inverse} () const 
+\item 
+const \hyperlink{class_slim_1_1_c_vec3}{C\+Vec3} \hyperlink{class_slim_1_1_c_matrix4x4_a5bf8d7c2e53eaf8c9bfcff3ef4eee668}{Get\+Position} () const 
+\item 
+const \hyperlink{class_slim_1_1_c_vec3}{C\+Vec3} \hyperlink{class_slim_1_1_c_matrix4x4_a4522975e2aaf76a9cf872ab44d2bf9e5}{Get\+Direction} () const 
+\item 
+const \hyperlink{class_slim_1_1_c_vec3}{C\+Vec3} \hyperlink{class_slim_1_1_c_matrix4x4_a586cc677b3e9fb446b4a9421c2b5f25e}{Get\+Right} () const 
+\item 
+const \hyperlink{class_slim_1_1_c_vec3}{C\+Vec3} \hyperlink{class_slim_1_1_c_matrix4x4_aa6ee649eca4fdba71059f41e373c8083}{Get\+Up} () const 
+\end{DoxyCompactItemize}
+\subsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \hyperlink{class_slim_1_1_c_matrix4x4_adf215fa14b06548d37871d1a8e604e99}{s\+\_\+\+I\+D\+E\+N\+T\+I\+T\+Y}
+\item 
+static const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \hyperlink{class_slim_1_1_c_matrix4x4_a234226d5a92f3d8d26c73b6cb55d0721}{s\+\_\+\+Z\+E\+R\+O}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Standard 4 by 4 homogeneous matrix class for affine transformations of vectors. \begin{DoxyRemark}{Remarks}
+All matrices are column-\/major and should be concatenated appropriately. 
+\end{DoxyRemark}
+\begin{DoxyParagraph}{}
+Transformation ordering is Translation $\ast$ Rotation $\ast$ Scale. 
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{}
+Coordinate system is right-\/handed. Thus rotation matrices are of the form\+: Rx = 1 0 0 0 0 cos(t) -\/sin(t) 0 0 sin(t) cos(t) 0 0 0 0 1 where t is a counterclockwise rotation about the yz-\/plane. 
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{}
+Ry = cos(t) 0 sin(t) 0 0 1 0 0 -\/sin(t) 0 cos(t) 0 0 0 0 1 where t is a counterclockwise rotation about the xz-\/plane. 
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{}
+Rz = cos(t) -\/sin(t) 0 0 sin(t) cos(t) 0 0 0 0 1 0 0 0 0 1 where t is a counterclockwise rotation about the xy-\/plane. 
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{}
+Elements of the matrix can be indexed by matrix\mbox{[}row\mbox{]}\mbox{[}column\mbox{]}. A visualization of the layout is as follows\+: $\vert$ \mbox{[}0\mbox{]}\mbox{[}0\mbox{]} \mbox{[}0\mbox{]}\mbox{[}1\mbox{]} \mbox{[}0\mbox{]}\mbox{[}2\mbox{]} \mbox{[}0\mbox{]}\mbox{[}3\mbox{]} $\vert$ $\vert$ \mbox{[}1\mbox{]}\mbox{[}0\mbox{]} \mbox{[}1\mbox{]}\mbox{[}1\mbox{]} \mbox{[}1\mbox{]}\mbox{[}2\mbox{]} \mbox{[}1\mbox{]}\mbox{[}3\mbox{]} $\vert$ $\vert$ \mbox{[}2\mbox{]}\mbox{[}0\mbox{]} \mbox{[}2\mbox{]}\mbox{[}1\mbox{]} \mbox{[}2\mbox{]}\mbox{[}2\mbox{]} \mbox{[}2\mbox{]}\mbox{[}3\mbox{]} $\vert$ $\vert$ \mbox{[}3\mbox{]}\mbox{[}0\mbox{]} \mbox{[}3\mbox{]}\mbox{[}1\mbox{]} \mbox{[}3\mbox{]}\mbox{[}2\mbox{]} \mbox{[}3\mbox{]}\mbox{[}3\mbox{]} $\vert$ 
+\end{DoxyParagraph}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_slim_1_1_c_matrix4x4_ab0db69253f596fd2ff81c7a887cf55ca}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!C\+Matrix4x4@{C\+Matrix4x4}}
+\index{C\+Matrix4x4@{C\+Matrix4x4}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{C\+Matrix4x4()}]{\setlength{\rightskip}{0pt plus 5cm}Slim\+::\+C\+Matrix4x4\+::\+C\+Matrix4x4 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_ab0db69253f596fd2ff81c7a887cf55ca}
+Construct a 4 by 4 matrix with all values set to 0. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a1f3131adf631af7ec192dc4a21a91c80}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!C\+Matrix4x4@{C\+Matrix4x4}}
+\index{C\+Matrix4x4@{C\+Matrix4x4}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{C\+Matrix4x4(float p\+Matrix[4][4])}]{\setlength{\rightskip}{0pt plus 5cm}Slim\+::\+C\+Matrix4x4\+::\+C\+Matrix4x4 (
+\begin{DoxyParamCaption}
+\item[{float}]{p\+Matrix\mbox{[}4\mbox{]}\mbox{[}4\mbox{]}}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_a1f3131adf631af7ec192dc4a21a91c80}
+Construct a 4 by 4 matrix from a 4 by 4 array. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+
+\begin{DoxyParams}{Parameters}
+{\em p\+Matrix\mbox{[}4\mbox{]}\mbox{[}4\mbox{]}} & Array of floats that make up the matrix. \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_slim_1_1_c_matrix4x4_a0eb2b9efbf077425e4202fe80023fe38}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!C\+Matrix4x4@{C\+Matrix4x4}}
+\index{C\+Matrix4x4@{C\+Matrix4x4}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{C\+Matrix4x4(float v11, float v12, float v13, float v14, float v21, float v22, float v23, float v24, float v31, float v32, float v33, float v34, float v41, float v42, float v43, float v44)}]{\setlength{\rightskip}{0pt plus 5cm}Slim\+::\+C\+Matrix4x4\+::\+C\+Matrix4x4 (
+\begin{DoxyParamCaption}
+\item[{float}]{v11, }
+\item[{float}]{v12, }
+\item[{float}]{v13, }
+\item[{float}]{v14, }
+\item[{float}]{v21, }
+\item[{float}]{v22, }
+\item[{float}]{v23, }
+\item[{float}]{v24, }
+\item[{float}]{v31, }
+\item[{float}]{v32, }
+\item[{float}]{v33, }
+\item[{float}]{v34, }
+\item[{float}]{v41, }
+\item[{float}]{v42, }
+\item[{float}]{v43, }
+\item[{float}]{v44}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_a0eb2b9efbf077425e4202fe80023fe38}
+Construct a 4 by 4 matrix from 16 floats. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_aae54c87f8026b9347d756ae37029b60b}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!C\+Matrix4x4@{C\+Matrix4x4}}
+\index{C\+Matrix4x4@{C\+Matrix4x4}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{C\+Matrix4x4(const C\+Matrix4x4 \&other)}]{\setlength{\rightskip}{0pt plus 5cm}Slim\+::\+C\+Matrix4x4\+::\+C\+Matrix4x4 (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Matrix4x4} \&}]{other}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_aae54c87f8026b9347d756ae37029b60b}
+Construct a 4 by 4 matrix by copying another 4 by 4 matrix. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a33ff914f4d409bd664c451f6b1e33ead}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!````~C\+Matrix4x4@{$\sim$\+C\+Matrix4x4}}
+\index{````~C\+Matrix4x4@{$\sim$\+C\+Matrix4x4}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{$\sim$\+C\+Matrix4x4()}]{\setlength{\rightskip}{0pt plus 5cm}Slim\+::\+C\+Matrix4x4\+::$\sim$\+C\+Matrix4x4 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_a33ff914f4d409bd664c451f6b1e33ead}
+Destruct a 4 by 4 matrix. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_slim_1_1_c_matrix4x4_a4522975e2aaf76a9cf872ab44d2bf9e5}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!Get\+Direction@{Get\+Direction}}
+\index{Get\+Direction@{Get\+Direction}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{Get\+Direction() const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Vec3} Slim\+::\+C\+Matrix4x4\+::\+Get\+Direction (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_matrix4x4_a4522975e2aaf76a9cf872ab44d2bf9e5}
+Retrieve the rotational direction (look or forward) of the transform. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a93e90b7c1a34161f42e986888887a7c6}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!Get\+Inverse@{Get\+Inverse}}
+\index{Get\+Inverse@{Get\+Inverse}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{Get\+Inverse() const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Matrix4x4} Slim\+::\+C\+Matrix4x4\+::\+Get\+Inverse (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_matrix4x4_a93e90b7c1a34161f42e986888887a7c6}
+Create a new matrix by inversing this matrix. \begin{DoxyRemark}{Remarks}
+This method is particularly slow and should be called as frequently as possible. There are several situations where this method can be avoided resulting is higher performance code, which are described as follows\+: 
+\end{DoxyRemark}
+\begin{DoxyParagraph}{}
+The inverse of a rotation only matrix is its transpose. Transposing a matrix is much less of a performance hit and thus Get\+Tranpose() should be used inplace of \hyperlink{class_slim_1_1_c_matrix4x4_a93e90b7c1a34161f42e986888887a7c6}{Get\+Inverse()} in situations with rotation only matrices. 
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{}
+The inverse of a scale only matrix is a matrix built from the reciprocals of the Scale components which can be made from Build\+Scale\+Matrix(1 / x, 1 / y, 1 / z). 
+\end{DoxyParagraph}
+\begin{DoxyParagraph}{}
+The inverse of a translation only matrix is simply a translation in the other direction. Building a matrix from the negative of the position will result in an inverted matrix. Use Build\+Translation\+Matrix( -\/position ) for translational only matrices. 
+\end{DoxyParagraph}
+\begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a5bf8d7c2e53eaf8c9bfcff3ef4eee668}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!Get\+Position@{Get\+Position}}
+\index{Get\+Position@{Get\+Position}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{Get\+Position() const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Vec3} Slim\+::\+C\+Matrix4x4\+::\+Get\+Position (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_matrix4x4_a5bf8d7c2e53eaf8c9bfcff3ef4eee668}
+Get the position of the transform. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a586cc677b3e9fb446b4a9421c2b5f25e}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!Get\+Right@{Get\+Right}}
+\index{Get\+Right@{Get\+Right}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{Get\+Right() const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Vec3} Slim\+::\+C\+Matrix4x4\+::\+Get\+Right (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_matrix4x4_a586cc677b3e9fb446b4a9421c2b5f25e}
+Retrieve the right vector of the transform. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a236b09b2a7e6d8b6ba6535c312d11207}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!Get\+Transpose@{Get\+Transpose}}
+\index{Get\+Transpose@{Get\+Transpose}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{Get\+Transpose() const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Matrix4x4} Slim\+::\+C\+Matrix4x4\+::\+Get\+Transpose (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_matrix4x4_a236b09b2a7e6d8b6ba6535c312d11207}
+Create a new matrix by transposing the rows and columns of this matrix. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_aa6ee649eca4fdba71059f41e373c8083}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!Get\+Up@{Get\+Up}}
+\index{Get\+Up@{Get\+Up}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{Get\+Up() const }]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Vec3} Slim\+::\+C\+Matrix4x4\+::\+Get\+Up (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_matrix4x4_aa6ee649eca4fdba71059f41e373c8083}
+Get the up vector of the transform. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a9ce4ed68708773116f32e67046eac069}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!operator$\ast$=@{operator$\ast$=}}
+\index{operator$\ast$=@{operator$\ast$=}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{operator$\ast$=(const C\+Matrix4x4 \&other)}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+Matrix4x4} \& Slim\+::\+C\+Matrix4x4\+::operator$\ast$= (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Matrix4x4} \&}]{other}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_a9ce4ed68708773116f32e67046eac069}
+Multiply and assign a matrix \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a460e6ceef684206fdf1c91acccecbae9}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!operator+=@{operator+=}}
+\index{operator+=@{operator+=}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{operator+=(const C\+Matrix4x4 \&other)}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+Matrix4x4} \& Slim\+::\+C\+Matrix4x4\+::operator+= (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Matrix4x4} \&}]{other}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_a460e6ceef684206fdf1c91acccecbae9}
+Add and assign a matrix \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_afc033c8833fc14c6548098a9d41ff30c}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!operator-\/=@{operator-\/=}}
+\index{operator-\/=@{operator-\/=}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{operator-\/=(const C\+Matrix4x4 \&other)}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+Matrix4x4} \& Slim\+::\+C\+Matrix4x4\+::operator-\/= (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Matrix4x4} \&}]{other}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_afc033c8833fc14c6548098a9d41ff30c}
+Subtract and assign a matrix \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_afaff0b0992ac0b60c6763cfb77601f60}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!operator=@{operator=}}
+\index{operator=@{operator=}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{operator=(const C\+Matrix4x4 \&other)}]{\setlength{\rightskip}{0pt plus 5cm}{\bf C\+Matrix4x4} \& Slim\+::\+C\+Matrix4x4\+::operator= (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Matrix4x4} \&}]{other}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_afaff0b0992ac0b60c6763cfb77601f60}
+Assign a matrix \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a3cb4f46da0cb8fa17fe6cb488fe99468}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
+\index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{operator[](size\+\_\+t row) const }]{\setlength{\rightskip}{0pt plus 5cm}const float $\ast$ Slim\+::\+C\+Matrix4x4\+::operator\mbox{[}$\,$\mbox{]} (
+\begin{DoxyParamCaption}
+\item[{size\+\_\+t}]{row}
+\end{DoxyParamCaption}
+) const}\label{class_slim_1_1_c_matrix4x4_a3cb4f46da0cb8fa17fe6cb488fe99468}
+Access a row of the matrix, allows use of operator matrix\mbox{[}row\mbox{]}\mbox{[}column\mbox{]}; \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a417fe6567da3c7ded966b21705a33e2e}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
+\index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{operator[](size\+\_\+t row)}]{\setlength{\rightskip}{0pt plus 5cm}float $\ast$ Slim\+::\+C\+Matrix4x4\+::operator\mbox{[}$\,$\mbox{]} (
+\begin{DoxyParamCaption}
+\item[{size\+\_\+t}]{row}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_a417fe6567da3c7ded966b21705a33e2e}
+Access a row of the matrix, allows use of operator matrix\mbox{[}row\mbox{]}\mbox{[}column\mbox{]}; \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_aabcd275ef9454c0e3e29099738bba0e1}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!Set\+Elements@{Set\+Elements}}
+\index{Set\+Elements@{Set\+Elements}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{Set\+Elements(float p\+Matrix[4][4])}]{\setlength{\rightskip}{0pt plus 5cm}void Slim\+::\+C\+Matrix4x4\+::\+Set\+Elements (
+\begin{DoxyParamCaption}
+\item[{float}]{p\+Matrix\mbox{[}4\mbox{]}\mbox{[}4\mbox{]}}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_aabcd275ef9454c0e3e29099738bba0e1}
+Set the elements of the matrix from a 4 by 4 array. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_adbc23b4e5c849e8bcc1ec548a66e9608}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!Set\+Position@{Set\+Position}}
+\index{Set\+Position@{Set\+Position}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{Set\+Position(float x, float y, float z)}]{\setlength{\rightskip}{0pt plus 5cm}void Slim\+::\+C\+Matrix4x4\+::\+Set\+Position (
+\begin{DoxyParamCaption}
+\item[{float}]{x, }
+\item[{float}]{y, }
+\item[{float}]{z}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_adbc23b4e5c849e8bcc1ec548a66e9608}
+Set the translational component of the transform. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a98ecd6f1c87b546d5b7f681d6a44c4fe}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!Set\+Position@{Set\+Position}}
+\index{Set\+Position@{Set\+Position}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{Set\+Position(const C\+Vec3 \&position)}]{\setlength{\rightskip}{0pt plus 5cm}void Slim\+::\+C\+Matrix4x4\+::\+Set\+Position (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Vec3} \&}]{position}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_a98ecd6f1c87b546d5b7f681d6a44c4fe}
+Set the translational component of the transform. \begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a1f158d7f4fa92644dbdf430cc9ba8467}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!Set\+Scale@{Set\+Scale}}
+\index{Set\+Scale@{Set\+Scale}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{Set\+Scale(float x\+Scale, float y\+Scale, float z\+Scale)}]{\setlength{\rightskip}{0pt plus 5cm}void Slim\+::\+C\+Matrix4x4\+::\+Set\+Scale (
+\begin{DoxyParamCaption}
+\item[{float}]{x\+Scale, }
+\item[{float}]{y\+Scale, }
+\item[{float}]{z\+Scale}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_a1f158d7f4fa92644dbdf430cc9ba8467}
+Set the scale of the transform. \begin{DoxyRemark}{Remarks}
+B\+E\+W\+A\+R\+E\+: This will only produce a valid result if the transform is an identity matrix or only contains translational information. If the transform has rotational information setting the scale will yield undefined behavior. 
+\end{DoxyRemark}
+\begin{DoxyParagraph}{}
+If you want to add scale to a rotation transform D\+O N\+O\+T use this method, first build a scale matrix using Build\+Scale() then concatenate the two transforms by multiplying the two matrices like so\+: Rotation $\ast$ Scale. 
+\end{DoxyParagraph}
+\begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a42e67bd1346774307c27b2487f893d56}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!Set\+Scale@{Set\+Scale}}
+\index{Set\+Scale@{Set\+Scale}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{Set\+Scale(const C\+Vec3 \&scale)}]{\setlength{\rightskip}{0pt plus 5cm}void Slim\+::\+C\+Matrix4x4\+::\+Set\+Scale (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Vec3} \&}]{scale}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_a42e67bd1346774307c27b2487f893d56}
+Set the scale of the transform. \begin{DoxyRemark}{Remarks}
+B\+E\+W\+A\+R\+E\+: This will only produce a valid result if the transform is an identity matrix or only contains translational information. If the transform has rotational information setting the scale will yield undefined behavior. 
+\end{DoxyRemark}
+\begin{DoxyParagraph}{}
+If you want to add scale to a rotation transform D\+O N\+O\+T use this method, first build a scale matrix using Build\+Scale() then concatenate the two transforms by multiplying the two matrices like so\+: Rotation $\ast$ Scale. 
+\end{DoxyParagraph}
+\begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+\hypertarget{class_slim_1_1_c_matrix4x4_a0b55456e4983fb00133e127c5113c772}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!Transform@{Transform}}
+\index{Transform@{Transform}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{Transform(const C\+Vec3 \&vector)}]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Vec3} Slim\+::\+C\+Matrix4x4\+::\+Transform (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Vec3} \&}]{vector}
+\end{DoxyParamCaption}
+)}\label{class_slim_1_1_c_matrix4x4_a0b55456e4983fb00133e127c5113c772}
+Transform a vector 3 \begin{DoxyRemark}{Remarks}
+resultant vector is homogenized prior to returning. 
+\end{DoxyRemark}
+\begin{DoxyAuthor}{Author}
+Hayden Asplet 
+\end{DoxyAuthor}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{class_slim_1_1_c_matrix4x4_adf215fa14b06548d37871d1a8e604e99}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!s\+\_\+\+I\+D\+E\+N\+T\+I\+T\+Y@{s\+\_\+\+I\+D\+E\+N\+T\+I\+T\+Y}}
+\index{s\+\_\+\+I\+D\+E\+N\+T\+I\+T\+Y@{s\+\_\+\+I\+D\+E\+N\+T\+I\+T\+Y}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{s\+\_\+\+I\+D\+E\+N\+T\+I\+T\+Y}]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Matrix4x4} Slim\+::\+C\+Matrix4x4\+::s\+\_\+\+I\+D\+E\+N\+T\+I\+T\+Y\hspace{0.3cm}{\ttfamily [static]}}\label{class_slim_1_1_c_matrix4x4_adf215fa14b06548d37871d1a8e604e99}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{ 1.0f, 0.0f, 0.0f, 0.0f,
+                                            0.0f, 1.0f, 0.0f, 0.0f,
+                                            0.0f, 0.0f, 1.0f, 0.0f,
+                                            0.0f, 0.0f, 0.0f, 1.0f \}
+\end{DoxyCode}
+\hypertarget{class_slim_1_1_c_matrix4x4_a234226d5a92f3d8d26c73b6cb55d0721}{}\index{Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}!s\+\_\+\+Z\+E\+R\+O@{s\+\_\+\+Z\+E\+R\+O}}
+\index{s\+\_\+\+Z\+E\+R\+O@{s\+\_\+\+Z\+E\+R\+O}!Slim\+::\+C\+Matrix4x4@{Slim\+::\+C\+Matrix4x4}}
+\subsubsection[{s\+\_\+\+Z\+E\+R\+O}]{\setlength{\rightskip}{0pt plus 5cm}const {\bf C\+Matrix4x4} Slim\+::\+C\+Matrix4x4\+::s\+\_\+\+Z\+E\+R\+O\hspace{0.3cm}{\ttfamily [static]}}\label{class_slim_1_1_c_matrix4x4_a234226d5a92f3d8d26c73b6cb55d0721}
+{\bfseries Initial value\+:}
+\begin{DoxyCode}
+= \{ 0.0f, 0.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f, 0.0f, 0.0f,
+                                        0.0f, 0.0f, 0.0f, 0.0f \}
+\end{DoxyCode}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+Playtech/\+Documents/\+Git\+Hub/\+Slimfish/\+Slimfish/\+Source/\+Math/\hyperlink{_slim_matrix4x4_8h}{Slim\+Matrix4x4.\+h}\item 
+C\+:/\+Users/\+Playtech/\+Documents/\+Git\+Hub/\+Slimfish/\+Slimfish/\+Source/\+Math/\hyperlink{_slim_matrix4x4_8cpp}{Slim\+Matrix4x4.\+cpp}\end{DoxyCompactItemize}

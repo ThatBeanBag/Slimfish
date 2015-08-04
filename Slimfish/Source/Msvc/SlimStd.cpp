@@ -18,3 +18,9 @@
 #include "SlimStd.h"
 
 // Local Includes
+
+
+namespace Slim {
+	// Constant definitions
+
+}

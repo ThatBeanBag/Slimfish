@@ -1,0 +1,129 @@
+\hypertarget{class_slim_1_1_i_renderer}{}\section{Slim\+:\+:I\+Renderer Class Reference}
+\label{class_slim_1_1_i_renderer}\index{Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}}
+
+
+{\ttfamily \#include $<$Slim\+Renderer.\+h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual \hyperlink{class_slim_1_1_i_renderer_adf85c7721097f6c9b41022086b0082fa}{$\sim$\+I\+Renderer} ()
+\item 
+virtual void \hyperlink{class_slim_1_1_i_renderer_ab9d0e8b1c68abcf080641118e4f26a94}{V\+Set\+World\+Transform} (const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \&world\+Transform)=0
+\item 
+virtual void \hyperlink{class_slim_1_1_i_renderer_a9bc7f2660e822a10ec062ce727d5d4d9}{V\+Set\+View\+Transform} (const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \&view\+Transform)=0
+\item 
+virtual void \hyperlink{class_slim_1_1_i_renderer_a88f1c03045d721435a3762cc5c8a6da0}{V\+Set\+Projection\+Transform} (const \hyperlink{class_slim_1_1_c_matrix4x4}{C\+Matrix4x4} \&projection\+Transform)=0
+\item 
+virtual void \hyperlink{class_slim_1_1_i_renderer_a86d55f523502b74282bc6f81683655a7}{V\+Set\+Ambient\+Colour} (const \hyperlink{struct_slim_1_1_t_colour}{T\+Colour} \&colour)=0
+\item 
+virtual void \hyperlink{class_slim_1_1_i_renderer_a68ed64b8a7f530a2a487a3c65ae1ea0e}{V\+Set\+Background\+Colour} (const \hyperlink{struct_slim_1_1_t_colour}{T\+Colour} \&colour)=0
+\end{DoxyCompactItemize}
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{class_slim_1_1_i_renderer_adf85c7721097f6c9b41022086b0082fa}{}\index{Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}!````~I\+Renderer@{$\sim$\+I\+Renderer}}
+\index{````~I\+Renderer@{$\sim$\+I\+Renderer}!Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}}
+\subsubsection[{$\sim$\+I\+Renderer()}]{\setlength{\rightskip}{0pt plus 5cm}virtual Slim\+::\+I\+Renderer\+::$\sim$\+I\+Renderer (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [virtual]}}\label{class_slim_1_1_i_renderer_adf85c7721097f6c9b41022086b0082fa}
+Destructs the renderer.
+
+\begin{DoxyAuthor}{Author}
+\+: Hayden Asplet 
+\end{DoxyAuthor}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{class_slim_1_1_i_renderer_a86d55f523502b74282bc6f81683655a7}{}\index{Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}!V\+Set\+Ambient\+Colour@{V\+Set\+Ambient\+Colour}}
+\index{V\+Set\+Ambient\+Colour@{V\+Set\+Ambient\+Colour}!Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}}
+\subsubsection[{V\+Set\+Ambient\+Colour(const T\+Colour \&colour)=0}]{\setlength{\rightskip}{0pt plus 5cm}virtual void Slim\+::\+I\+Renderer\+::\+V\+Set\+Ambient\+Colour (
+\begin{DoxyParamCaption}
+\item[{const {\bf T\+Colour} \&}]{colour}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\label{class_slim_1_1_i_renderer_a86d55f523502b74282bc6f81683655a7}
+Sets the ambient colour
+
+\begin{DoxyAuthor}{Author}
+\+: Hayden Asplet 
+\end{DoxyAuthor}
+
+\begin{DoxyParams}{Parameters}
+{\em } & \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_slim_1_1_i_renderer_a68ed64b8a7f530a2a487a3c65ae1ea0e}{}\index{Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}!V\+Set\+Background\+Colour@{V\+Set\+Background\+Colour}}
+\index{V\+Set\+Background\+Colour@{V\+Set\+Background\+Colour}!Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}}
+\subsubsection[{V\+Set\+Background\+Colour(const T\+Colour \&colour)=0}]{\setlength{\rightskip}{0pt plus 5cm}virtual void Slim\+::\+I\+Renderer\+::\+V\+Set\+Background\+Colour (
+\begin{DoxyParamCaption}
+\item[{const {\bf T\+Colour} \&}]{colour}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\label{class_slim_1_1_i_renderer_a68ed64b8a7f530a2a487a3c65ae1ea0e}
+Sets the background the colour.
+
+\begin{DoxyAuthor}{Author}
+\+: Hayden Asplet 
+\end{DoxyAuthor}
+
+\begin{DoxyParams}{Parameters}
+{\em } & \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_slim_1_1_i_renderer_a88f1c03045d721435a3762cc5c8a6da0}{}\index{Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}!V\+Set\+Projection\+Transform@{V\+Set\+Projection\+Transform}}
+\index{V\+Set\+Projection\+Transform@{V\+Set\+Projection\+Transform}!Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}}
+\subsubsection[{V\+Set\+Projection\+Transform(const C\+Matrix4x4 \&projection\+Transform)=0}]{\setlength{\rightskip}{0pt plus 5cm}virtual void Slim\+::\+I\+Renderer\+::\+V\+Set\+Projection\+Transform (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Matrix4x4} \&}]{projection\+Transform}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\label{class_slim_1_1_i_renderer_a88f1c03045d721435a3762cc5c8a6da0}
+Sets the projection transform.
+
+\begin{DoxyAuthor}{Author}
+\+: Hayden Asplet 
+\end{DoxyAuthor}
+
+\begin{DoxyParams}{Parameters}
+{\em } & \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_slim_1_1_i_renderer_a9bc7f2660e822a10ec062ce727d5d4d9}{}\index{Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}!V\+Set\+View\+Transform@{V\+Set\+View\+Transform}}
+\index{V\+Set\+View\+Transform@{V\+Set\+View\+Transform}!Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}}
+\subsubsection[{V\+Set\+View\+Transform(const C\+Matrix4x4 \&view\+Transform)=0}]{\setlength{\rightskip}{0pt plus 5cm}virtual void Slim\+::\+I\+Renderer\+::\+V\+Set\+View\+Transform (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Matrix4x4} \&}]{view\+Transform}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\label{class_slim_1_1_i_renderer_a9bc7f2660e822a10ec062ce727d5d4d9}
+Sets the view transform
+
+\begin{DoxyAuthor}{Author}
+\+: Hayden Asplet 
+\end{DoxyAuthor}
+
+\begin{DoxyParams}{Parameters}
+{\em } & \\
+\hline
+\end{DoxyParams}
+\hypertarget{class_slim_1_1_i_renderer_ab9d0e8b1c68abcf080641118e4f26a94}{}\index{Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}!V\+Set\+World\+Transform@{V\+Set\+World\+Transform}}
+\index{V\+Set\+World\+Transform@{V\+Set\+World\+Transform}!Slim\+::\+I\+Renderer@{Slim\+::\+I\+Renderer}}
+\subsubsection[{V\+Set\+World\+Transform(const C\+Matrix4x4 \&world\+Transform)=0}]{\setlength{\rightskip}{0pt plus 5cm}virtual void Slim\+::\+I\+Renderer\+::\+V\+Set\+World\+Transform (
+\begin{DoxyParamCaption}
+\item[{const {\bf C\+Matrix4x4} \&}]{world\+Transform}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [pure virtual]}}\label{class_slim_1_1_i_renderer_ab9d0e8b1c68abcf080641118e4f26a94}
+Sets the world transform.
+
+\begin{DoxyAuthor}{Author}
+\+: Hayden Asplet 
+\end{DoxyAuthor}
+
+\begin{DoxyParams}{Parameters}
+{\em } & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+Playtech/\+Documents/\+Git\+Hub/\+Slimfish/\+Slimfish/\+Source/\+Graphics/\hyperlink{_slim_renderer_8h}{Slim\+Renderer.\+h}\end{DoxyCompactItemize}

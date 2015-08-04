@@ -22,47 +22,49 @@
 // Local Includes
 
 namespace Slim {
-	/************************************************************************/
-	/* ASingleton
-	/*
-	/* A template class which implements that basic singleton design pattern
-	/* using unique_ptr.
-	/*
-	/* This class is intended to be base class for classes that desire to be
-	/* singletons.
-	/************************************************************************/
+	/** Template class implementing the basic and common singleton design pattern
+		@remarks
+			Classes should derive from this class if they desire to be made a 
+			singleton.
+	*/
 	template<class T>
 	class ASingleton {
 		// Member Functions
 	public:
-		virtual  ~ASingleton() = 0;	// pure virtual so that ASingleton is not instance able.
+		/** Destructor
+			@note
+				Pure virtual so that ASingleton can't be created.
+		 	@author
+		 		Hayden Asplet
+		*/
+		virtual  ~ASingleton() = 0;
 
-		/**
-		* Retrieval method for getting a pointer to the singleton.
-		*
-		* @author: 	Hayden Asplet
-		* @return:  ASingleton* - pointer to the singleton.
+		/** Get a pointer to the singleton
+			@remarks
+				Creates a single instance of the singleton if one is yet to be created.
+		 	@author
+		 		Hayden Asplet
 		*/
 		static ASingleton* GetInstance();
 	protected:
 	private:
-		/**
-		* Constructor
-		*
-		* @author: 	Hayden Asplet
+		/** Default constructor
+			@note 
+				This is made private as singletons cannot be instantiated.
+		 	@author
+		 		Hayden Asplet
 		*/
 		ASingleton();
 
-		/**
-		* Copy constructor
-		*
-		* Singletons shouldn't be copied so this method is deleted.
+		/** Deleted copy constructor.
+			@author
+				Hayden Asplet
 		*/
 		ASingleton(const ASingleton<T>& _krOther) = delete;
-		/**
-		* Assignment operator
-		*
-		* Singletons shouldn't be copied so this method is deleted.
+
+		/** Delete assignment operator.
+		 	@author
+		 		Hayden Asplet
 		*/
 		ASingleton& operator=(const ASingleton<T>& _krOther) = delete;
 
@@ -70,7 +72,7 @@ namespace Slim {
 	public:
 	protected:
 	private:
-		static std::unique_ptr<ASingleton> m_pSingleton;	// Singleton instance.
+		static std::unique_ptr<ASingleton> m_pSingleton;
 	};
 
 	// Implementation
@@ -82,7 +84,7 @@ namespace Slim {
 	}
 
 	template<class T>
-	ASingleton* ASingleton<T>::GetInstance()
+	ASingleton<T>* ASingleton<T>::GetInstance()
 	{
 		if (!m_pSingleton) {
 			m_pSingleton.reset(new ASingleton<T>());

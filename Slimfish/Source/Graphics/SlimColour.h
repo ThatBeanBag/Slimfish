@@ -23,58 +23,53 @@
 
 namespace Slim {
 
-/************************************************************************/
-/* TColour
-/*
-/* A standard colour structure which packs alpha, red, green and blue
-/* colour channels together.
-/*
-/* Channel have the range 0 to 255. This is the difference between TColour
-/* and TColourValue where TColourValue's channels range from 0 to 1.
-/************************************************************************/
+/** Basic colour structure  
+@remarks
+	Colour channels have the range 0 to 255. This is different from TColourValue
+	where TColourValue's channels range from 0 to 1.
+*/
 struct TColour {
 	unsigned char m_a;
 	unsigned char m_r;
 	unsigned char m_g;
 	unsigned char m_b;
+
+	static const TColour s_WHITE;
+	static const TColour s_BLACK;
+	static const TColour s_RED;
+	static const TColour s_GREEN;
+	static const TColour s_BLUE;
+	static const TColour s_YELLOW;
+	static const TColour s_CYAN;
+	static const TColour s_MAGENTA;
+
+	static const unsigned char s_ALPHA_OPAQUE;
+	static const unsigned char s_ALPHA_TRANSPERANT;
 };
 
-/************************************************************************/
-/* TColourValue
-/*
-/* A standard colour structure which packs alpha, red, green and blue
-/* colour channels together with floating point precision.
-/*
-/* Channel have the range 0 to 1. This is the difference between TColour
-/* and TColourValue where TColourValue's channels range from 0 to 255.
-/************************************************************************/
+/** Basic colour value structure 
+@remarks
+	Channel have the range 0 to 1. This is different from TColour where
+	TColour's channels range from 0 to 255.
+*/
 struct TColourValue {
 	float m_a;
 	float m_r;
 	float m_g;
 	float m_b;
+
+	static const TColourValue s_WHITE;
+	static const TColourValue s_BLACK;
+	static const TColourValue s_RED;
+	static const TColourValue s_GREEN;
+	static const TColourValue s_BLUE;
+	static const TColourValue s_YELLOW;
+	static const TColourValue s_CYAN;
+	static const TColourValue s_MAGENTA;
+
+	static const float s_ALPHA_OPAQUE;
+	static const float s_ALPHA_TRANSPERANT;
 };
-
-/************************************************************************/
-/* Frequently used colours and alphas.
-/************************************************************************/
-extern const TColour g_COLOUR_WHITE;
-extern const TColour g_COLOUR_BLACK;
-extern const TColour g_COLOUR_RED;
-extern const TColour g_COLOUR_GREEN;
-extern const TColour g_COLOUR_BLUE;
-extern const TColour g_COLOUR_YELLOW;
-extern const TColour g_COLOUR_CYAN;
-extern const TColour g_COLOUR_MAGENTA;
-
-extern const TColourValue g_COLOUR_VALUE_WHITE;
-extern const TColourValue g_COLOUR_VALUE_BLACK;
-extern const TColourValue g_COLOUR_VALUE_RED;
-extern const TColourValue g_COLOUR_VALUE_GREEN;
-extern const TColourValue g_COLOUR_VALUE_BLUE;
-extern const TColourValue g_COLOUR_VALUE_YELLOW;
-extern const TColourValue g_COLOUR_VALUE_CYAN;
-extern const TColourValue g_COLOUR_VALUE_MAGENTA;
 
 extern const unsigned char g_ALPHA_OPAQUE;
 extern const unsigned char g_ALPHA_TRANSPERANT;
@@ -86,59 +81,27 @@ extern const float g_ALPHA_VALUE_TRANSPERANT;
 /* Helper creation functions
 /************************************************************************/
 
-/**
-* Creates a colour from Red, Green and Blue colour values.
-*
-* Channel values range from 0 to 255.
-* The alpha value will be set to opaque.
-* 
-* @author: 	Hayden Asplet
-* @param:	red - red channel value. 
-* @param:	green - green channel value.
-* @param:	blue - blue channel value.
-* @return:  Slim::TColour - resultant colour.
+/** Create a colour from red, green and blue colour channels.
+ 	@author
+ 		Hayden Asplet
 */
 TColour CreateColourRGB(unsigned char red, unsigned char green, unsigned char blue);
 
-/**
-* Creates a colour from Alpha, Red, Green and Blue colour values.
-*
-* Channel values range from 0 to 255.
-*
-* @author: 	Hayden Asplet
-* @param:   alpha - alpha channel value.
-* @param:	red - red channel value.
-* @param:	green - green channel value.
-* @param:	blue - blue channel value.
-* @return:  Slim::TColour - resultant colour.
+/** Create a colour from alpha, red, green and blue colour channels.
+ 	@author
+ 		Hayden Asplet
 */
 TColour CreateColourARGB(unsigned alpha, unsigned char red, unsigned char green, unsigned char blue);
 
-/**
-* Creates a colour value structure from Red, Green and Blue colour values.
-*
-* Channel values range from 0 to 1.
-* The alpha channel will be set to opaque (255).
-*
-* @author: 	Hayden Asplet
-* @param:	red - red channel value.
-* @param:	green - green channel value.
-* @param:	blue - blue channel value.
-* @return:  Slim::TColour - resultant colour.
+/** Create a colour value from red, green and blue colour values.
+ 	@author
+ 		Hayden Asplet
 */
 TColourValue CreateColourValueRGB(float red, float green, float blue);
 
-/**
-* Creates a colour value structure from Alpha, Red, Green and Blue colour values.
-*
-* Channel values range from 0 to 1.
-*
-* @author: 	Hayden Asplet
-* @param:   alpha - alpha channel value.
-* @param:	red - red channel value.
-* @param:	green - green channel value.
-* @param:	blue - blue channel value.
-* @return:  Slim::TColour - resultant colour.
+/** Create a colour value from alpha, red, green and blue colour values.
+ 	@author
+ 		Hayden Asplet
 */
 TColourValue CreateColourValueARGB(float alpha, float red, float green, float blue);
 
@@ -146,39 +109,27 @@ TColourValue CreateColourValueARGB(float alpha, float red, float green, float bl
 /* Conversions
 /************************************************************************/
 
-/**
-* Converts a TColourValue to a TColour.
-* 
-* @author: 	Hayden Asplet
-* @param:	colourValue - TColourValue to convert to TColour.
-* @return:  Slim::TColour - converted TColour.
+/** Convert from a TColourValue to a TColour.
+ 	@author
+ 		Hayden Asplet
 */
 TColour ValueToColour(const TColourValue& colourValue);
 
-/**
-* Converts a TColour to a TColourValue.
-* 
-* @author: 	Hayden Asplet
-* @param:	colour - TColour to convert.
-* @return:  Slim::TColourValue - converted TColourValue.
+/** Convert from a TColour to a TColourValue.
+ 	@author
+ 		Hayden Asplet
 */
 TColourValue ColourToValue(const TColour& colour);
 
-/**
-* Converts a TColour to a DWORD
-* 
-* @author: 	Hayden Asplet
-* @param:	colour - TColour to convert
-* @return:  unsigned long - converted DWORD
+/** Convert from a TColour to a DWORD
+ 	@author
+ 		Hayden Asplet
 */
 unsigned long  ColourToDWORD(TColour colour);
 
-/**
-* Converts a DWORD to a TColour
-* 
-* @author: 	Hayden Asplet
-* @param:	unsigned long dwColour - DWORD to convert.
-* @return:  Slim::TColour - converted TColour.
+/** Convert from a DWORD to a TColour
+	@author
+		Hayden Asplet
 */
 TColour DWORDToColour(unsigned long  dwColour);
 

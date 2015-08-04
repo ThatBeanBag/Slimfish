@@ -28,29 +28,29 @@ namespace Slim {
 /************************************************************************/
 /* Frequently used colours and alphas.
 /************************************************************************/
-const TColour g_COLOUR_WHITE = CreateColourRGB(255, 255, 255);
-const TColour g_COLOUR_BLACK = CreateColourRGB(0, 0, 0);
-const TColour g_COLOUR_RED = CreateColourRGB(255, 0, 0);
-const TColour g_COLOUR_GREEN = CreateColourRGB(0, 255, 0);
-const TColour g_COLOUR_BLUE = CreateColourRGB(0, 0, 255);
-const TColour g_COLOUR_YELLOW = CreateColourRGB(255, 255, 0);
-const TColour g_COLOUR_CYAN = CreateColourRGB(0, 255, 255);
-const TColour g_COLOUR_MAGENTA = CreateColourRGB(255, 0, 255);
+const TColour TColour::s_WHITE = CreateColourRGB(255, 255, 255);
+const TColour TColour::s_BLACK = CreateColourRGB(0, 0, 0);
+const TColour TColour::s_RED = CreateColourRGB(255, 0, 0);
+const TColour TColour::s_GREEN = CreateColourRGB(0, 255, 0);
+const TColour TColour::s_BLUE = CreateColourRGB(0, 0, 255);
+const TColour TColour::s_YELLOW = CreateColourRGB(255, 255, 0);
+const TColour TColour::s_CYAN = CreateColourRGB(0, 255, 255);
+const TColour TColour::s_MAGENTA = CreateColourRGB(255, 0, 255);
 
-const TColourValue g_COLOUR_VALUE_WHITE = CreateColourValueRGB(1.0f, 0.0f, 0.0f);
-const TColourValue g_COLOUR_VALUE_BLACK = CreateColourValueRGB(0.0f, 0.0f, 0.0f);
-const TColourValue g_COLOUR_VALUE_RED = CreateColourValueRGB(1.0f, 0.0f, 0.0f);
-const TColourValue g_COLOUR_VALUE_GREEN = CreateColourValueRGB(0.0f, 1.0f, 0.0f);
-const TColourValue g_COLOUR_VALUE_BLUE = CreateColourValueRGB(0.0f, 0.0f, 1.0f);
-const TColourValue g_COLOUR_VALUE_YELLOW = CreateColourValueRGB(1.0f, 1.0f, 0.0f);
-const TColourValue g_COLOUR_VALUE_CYAN = CreateColourValueRGB(0.0f, 1.0f, 1.0f);
-const TColourValue g_COLOUR_VALUE_MAGENTA = CreateColourValueRGB(1.0f, 0.0f, 1.0f);
+const unsigned char TColour::s_ALPHA_OPAQUE = 255;
+const unsigned char TColour::s_ALPHA_TRANSPERANT = 0;
 
-const unsigned char g_ALPHA_OPAQUE = 255;
-const unsigned char g_ALPHA_TRANSPERANT = 0;
+const TColourValue TColourValue::s_WHITE = CreateColourValueRGB(1.0f, 0.0f, 0.0f);
+const TColourValue TColourValue::s_BLACK = CreateColourValueRGB(0.0f, 0.0f, 0.0f);
+const TColourValue TColourValue::s_RED = CreateColourValueRGB(1.0f, 0.0f, 0.0f);
+const TColourValue TColourValue::s_GREEN = CreateColourValueRGB(0.0f, 1.0f, 0.0f);
+const TColourValue TColourValue::s_BLUE = CreateColourValueRGB(0.0f, 0.0f, 1.0f);
+const TColourValue TColourValue::s_YELLOW = CreateColourValueRGB(1.0f, 1.0f, 0.0f);
+const TColourValue TColourValue::s_CYAN = CreateColourValueRGB(0.0f, 1.0f, 1.0f);
+const TColourValue TColourValue::s_MAGENTA = CreateColourValueRGB(1.0f, 0.0f, 1.0f);
 
-const float g_ALPHA_VALUE_OPAQUE = 1.0f;
-const float g_ALPHA_VALUE_TRANSPERANT = 0.0f;
+const float TColourValue::s_ALPHA_OPAQUE = 1.0f;
+const float TColourValue::s_ALPHA_TRANSPERANT = 0.0f;
 
 /************************************************************************/
 /* Helper creation functions

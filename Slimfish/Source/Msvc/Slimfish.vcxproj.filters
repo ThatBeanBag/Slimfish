@@ -10,6 +10,15 @@
     <Filter Include="Graphics">
       <UniqueIdentifier>{628d281d-003d-433d-a076-9abaaa44d8c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\D3D9">
+      <UniqueIdentifier>{f776ed7e-3c2d-4b84-a8cb-0ecfab08b955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\D3D10">
+      <UniqueIdentifier>{5a6aa22f-e8ad-4550-b2a6-8352ae0e8e8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Debug">
+      <UniqueIdentifier>{a136c114-24da-4341-886d-d1b8a44b0c18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Graphics\SlimColour.cpp">
@@ -24,6 +33,15 @@
     <ClCompile Include="..\Math\SlimVector.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="SlimStd.cpp" />
+    <ClCompile Include="..\Graphics\SlimTextureLayer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimRenderer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimGPUBuffer.cpp" />
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -49,6 +67,34 @@
     </ClInclude>
     <ClInclude Include="..\Utilities\SlimSingleton.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimScene.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimTexture.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="SlimStd.h" />
+    <ClInclude Include="..\Graphics\SlimTextureLayer.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimGPUBuffer.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D9\SlimD3D9Renderer.h">
+      <Filter>Graphics\D3D9</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D9\SlimD3D9Texture.h">
+      <Filter>Graphics\D3D9</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Debug\SlimLogger.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10Renderer.h">
+      <Filter>Graphics\D3D10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimTypes.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

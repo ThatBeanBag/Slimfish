@@ -24,152 +24,122 @@
 
 namespace Slim {
 
-/************************************************************************/
-/* CVec3
-/*
-/* Implementation of a standard 3D vector.
-/* 
-/* Represents a coordinate (x, y, z) in 3D space.
-/* Implements various useful vector math operators and arithmetic.
-/************************************************************************/
+/** Class encapsulating a standard 3D vector.
+	@remarks
+		Represents a coordinate (x, y, z) in 3D space and implements 
+		various useful vector math operators and arithmetic.
+*/
 class CVec3 {
 	// Member Functions
 public:
-	/**
-	* Constructs a vector with x, y and z being set to 0.
-	* 
-	* @author: 	Hayden Asplet
+	/** Construct a vector with the x, y and z values being set to 0.
+	 	@author
+	 		Hayden Asplet
 	*/
 	CVec3();
 
-	/**
-	* Constructs a vector from x, y and z values.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	x
-	* @param:	y
-	* @param:	z
+	/** Construct a vector from x, y, and z values.
+	 	@author
+	 		Hayden Asplet 		
 	*/
 	CVec3(float x, float y, float z);
 
-	/**
-	* Destructs a vector
-	* 
-	* @author: 	Hayden Asplet
+	/** Destruct a vector
+	 	@author
+	 		Hayden Asplet
 	*/
 	~CVec3();
 
-	/**
-	* Adds two vectors and assigns the result.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	other - vector to add.
-	* @return:  CVec3& - resultant vector
+	/** Add two vectors together and assign the vector to the result.
+	 	@author
+	 		Hayden Asplet
 	*/
 	CVec3& operator+=(const CVec3& other);
 
-	/**
-	* Subtracts one vector from another and assigns the result.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	other - vector to subtract.
-	* @return:  CVec3& - resultant subtracted vector.
+	/** Subtract a vector from the vector and assign the vector to the result.
+		@author
+			Hayden Asplet
 	*/
 	CVec3& operator-=(const CVec3& other);
-	/**
-	* Multiplies a vector by a scalar and assigns the result.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	float scalar - scalar to multiply.
-	* @return:  CVec3& - resultant multiplied vector.
+
+	/** Multiply the vector by a scalar and assign the vector to the result.
+	 	@author
+	 		Hayden Asplet
 	*/
 	CVec3& operator*=(float scalar);
 
-	/**
-	* Sets the X value.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	x
-	* @return:  void
+	/** Set the X value of the vector.
+		@author
+			Hayden Asplet
 	*/
 	void SetX(float x) { m_x = x; }
 
-	/**
-	* Sets the Y value.
-	*
-	* @author: 	Hayden Asplet
-	* @param:	y
-	* @return:  void
+	/** Set the Y value of the vector.
+		@author
+			Hayden Asplet
 	*/
 	void SetY(float y) { m_y = y; }
 
-	/**
-	* Sets the Z value.
-	*
-	* @author: 	Hayden Asplet
-	* @param:	z
-	* @return:  void
+	/** Set the Z value of the vector.
+	 	@author
+	 		Hayden Asplet
 	*/
 	void SetZ(float z) { m_z = z; }
 
-	/**
-	* Gets the X value.
-	*
-	* @author: 	Hayden Asplet
-	* @return:  const float - x value.
+
+	/** Get the X value of vector.
+		@author
+			Hayden Asplet
 	*/
 	const float GetX() const { return m_x; }
 
-	/**
-	* Gets the Y value.
-	*
-	* @author: 	Hayden Asplet
-	* @return:  const float - y value.
+	/** Get the Y value of vector.
+		@author
+			Hayden Asplet
 	*/
 	const float GetY() const { return m_y; }
 
-	/**
-	* Gets the Z value.
-	*
-	* @author: 	Hayden Asplet
-	* @return:  const float - z value.
+	/** Get the Z value of vector.
+	 	@author
+	 		Hayden Asplet
 	*/
 	const float GetZ() const { return m_z; }
 
-	/**
-	* Gets the length (magnitude) of the vector.
-	*
-	* This method uses the sqrt() function to determine the length if you just want 
-	* the length for comparison purposes use GetLengthSquared() instead.
-	* 
-	* @author: 	Hayden Asplet
-	* @return:  const float - length (magnitude) of the vector.
+	/** Get the length (magnitude) of the vector.
+		@remarks
+			This method uses the sqrt() function to determine the length if you just want
+			the length for comparison purposes, use GetLengthSquared() instead.
+	 	@author
+	 		Hayden Asplet
+	 	@return   
+	 		const float
 	*/
 	const float GetLength() const { return sqrt(GetLengthSquared()); }
 
-	/**
-	* Calculates the length (magnitude) of the vector without square rooting it.
-	*
-	* This method is useful for comparisons with the length in order to maintain 
-	* performance in performance critical code.
-	*
-	* You can use this method to improve performance like so:
-	* if(vector.GetLengthSquared() < minDistance * minDistance) {
-	*		// Do something.
-	* }
-	* This is preferable to:
-	* if(vector.GetLength() < minDistance) {
-	*		// Do something.
-	* }
-	* 
-	* @author: 	Hayden Asplet
-	* @return:  const float - length (magnitude) of the vector squared.
+	/** Calculate the length (magnitude) of the vector without square rooting it.
+		@remarks
+			This method is useful for comparisons with the length in order to maintain
+			performance in performance critical code.
+			
+			You can use this method to improve performance like so:
+			if(vector.GetLengthSquared() < minDistance * minDistance) {
+					// Do something.
+			}
+			This is preferable to:
+			if(vector.GetLength() < minDistance) {
+					// Do something.
+			}
+	 	@author
+	 		Hayden Asplet
 	*/
 	const float GetLengthSquared() const { return (m_x * m_x + m_y * m_y + m_z * m_z); }
 protected:
 private:
 	// Member Variables
 public:
+	static const CVec3 s_FORWARD;
+	static const CVec3 s_RIGHT;
+	static const CVec3 s_UP;
 protected:
 private:
 	float m_x;
@@ -177,37 +147,47 @@ private:
 	float m_z;
 };
 
+/** Add two vectors together
+ 	@author
+ 		Hayden Asplet
+*/
 const CVec3 operator+(const CVec3& vec3A, const CVec3& vec3B);
+
+/** Subtract a vector from another.
+ 	@author
+ 		Hayden Asplet
+*/
 const CVec3 operator-(const CVec3& vec3A, const CVec3& vec3B);
+
+/** Multiply a vector by a scalar.
+ 	@author
+ 		Hayden Asplet
+*/
 const CVec3 operator*(const CVec3& vec3, float scalar);
+
+/** Multiply a vector by a scalar.
+ 	@author
+ 		Hayden Asplet
+*/
 const CVec3 operator*(float scalar, const CVec3& vec3);
 
-/**
-* Normalises a CVec3 so that length of the vector is 1 and returns the result.
-* 
-* @author: 	Hayden Asplet
-* @param:	vec3 - vector to normalise.
-* @return:  const CVec3 - normalised vector.
+/** Normalise a vector3 so that the length of the vector is 1.
+ 	@author
+ 		Hayden Asplet
 */
 const CVec3 Normalise(const CVec3& vec3);
 
-/**
-* Retrieves the cross product of two vectors.
-* 
-* @author: 	Hayden Asplet
-* @param:	vec3A
-* @param:	vec3B
-* @return:  const CVec3 - cross product.
+/** Get the cross product of two vectors.
+	@remarks
+		This operation is not commutative as in CrossProduct(A,B) != CrossProduct(B,A).
+ 	@author
+ 		Hayden Asplet
 */
 const CVec3 CrossProduct(const CVec3& vec3A, const CVec3& vec3B);
 
-/**
-* Retrieves the dot product of two vectors.
-* 
-* @author: 	Hayden Asplet
-* @param:	vec3A 
-* @param:	vec3B
-* @return:  const float - dot product.
+/** Retrieve the dot product of two vectors.
+ 	@author
+ 		Hayden Asplet
 */
 const float DotProduct(const CVec3& vec3A, const CVec3& vec3B);
 
