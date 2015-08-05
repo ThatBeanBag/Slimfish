@@ -24,11 +24,52 @@
 
 namespace Slim {
 
+	CD3D10Renderer::CD3D10Renderer(int width, int height, bool isWindowed)
+		:ARenderer(width, height, isWindowed),
+		m_pD3DDevice(nullptr),
+		m_pSwapChain(nullptr),
+		m_pRenderTargetView(nullptr),
+		m_pDepthStencilState(nullptr),
+		m_pRasterizerState(nullptr)
+	{
+		memset(m_ppSamplerStates, 0, sizeof(m_ppSamplerStates));
+		memset(m_ppTextures, 0, sizeof(m_ppTextures));
+	}
+
 	bool CD3D10Renderer::VInitialize()
 	{
-		DXGI_SWAP_CHAIN_DESC swapChainDesc;
-		swapChainDesc.BufferCount = 1;
-		swapChainDesc.Windowed
+		UINT deviceFlags = 0;
+
+#ifdef _DEBUG
+		deviceFlags = D3D10_CREATE_DEVICE_DEBUG;
+#endif // _DEBUG
+
+		// Create the device.
+		HRESULT hResult = D3D10CreateDevice(0,	// Default adapter.
+											D3D10_DRIVER_TYPE_HARDWARE,	// Driver type.
+											0,							// Software device.
+											deviceFlags,				// Device flags.
+											D3D10_SDK_VERSION, 
+											&m_pD3DDevice);
+		if (FAILED(hResult)) {
+			throw CRenderingError();
+			return false;
+		}
+
+		RECT rect;
+		GetClientRect(g_pApp->GetHwnd(), &rect);
+		m_width = rect.right;
+		m_height = rect.bottom;
+
+		ZeroMemory(&m_d3dpp, sizeof(DXGI_SWAP_CHAIN_DESC));
+		m_d3dpp.BufferCount = 1;
+		m_d3dpp.BufferDesc.Width = m_width;
+		m_d3dpp.BufferDesc.Height = m_height;
+		m_d3dpp.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		m_d3dpp.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		m_d3dpp.Windowed = m_isWindowed;
+		m_d3dpp.OutputWindow = g_pApp->GetHwnd();
+		m_d3dpp.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
 	}
 

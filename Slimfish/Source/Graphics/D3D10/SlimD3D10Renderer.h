@@ -28,11 +28,11 @@ namespace Slim {
 class CD3D10Renderer :public ARenderer {
 	// Member Functions
 public:
-	CD3D10Renderer();
+	CD3D10Renderer(int width, int height, bool isWindowed);
 	virtual ~CD3D10Renderer();
 
 	/* @copydoc ARenderer::VInitialize() */
-	virtual bool VInitialize(bool m_bIsWindowed) override;
+	virtual bool VInitialize() override;
 	virtual void VPreRender() override;
 	virtual void VPostRender() override;
 
@@ -62,7 +62,7 @@ private:
 public:
 protected:
 private:
-	ID3D10Device* m_pDevice;
+	ID3D10Device* m_pD3DDevice;
 	IDXGISwapChain* m_pSwapChain;
 	ID3D10RenderTargetView* m_pRenderTargetView;
 	ID3D10DepthStencilState* m_pDepthStencilState;
@@ -70,6 +70,9 @@ private:
 	ID3D10RasterizerState* m_pRasterizerState;
 	ID3D10SamplerState* m_ppSamplerStates[g_MAX_TEXTURE_LAYERS];
 	ID3D10ShaderResourceView* m_ppTextures[g_MAX_TEXTURE_LAYERS];
+	
+	DXGI_SAMPLE_DESC m_sampleDesc;
+	DXGI_SWAP_CHAIN_DESC m_d3dpp;	// Presentation parameters.
 };
 
 }

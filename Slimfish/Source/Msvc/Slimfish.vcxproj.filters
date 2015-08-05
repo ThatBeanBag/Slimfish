@@ -41,7 +41,9 @@
       <Filter>Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\Graphics\SlimGPUBuffer.cpp" />
-    <ClCompile Include="..\Graphics\D3D10\SlimD3D10Renderer.cpp" />
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10Renderer.cpp">
+      <Filter>Graphics\D3D10</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">

@@ -30,6 +30,10 @@ namespace Slim {
 	class ATexture;
 	struct TColour;
 
+	class CRenderingError {
+
+	};
+
 	/** Abstract class encapsulating a rendering system.
 	@remarks
 		
