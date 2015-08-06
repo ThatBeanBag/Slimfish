@@ -29,6 +29,7 @@
     <ClInclude Include="..\Debug\SlimLogger.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Conversions.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Forward.h" />
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Renderer.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Texture.h" />
     <ClInclude Include="..\Graphics\D3D9\SlimD3D9Renderer.h" />
@@ -41,6 +42,7 @@
     <ClInclude Include="..\Graphics\SlimScene.h" />
     <ClInclude Include="..\Graphics\SlimTexture.h" />
     <ClInclude Include="..\Graphics\SlimTextureLayer.h" />
+    <ClInclude Include="..\Graphics\SlimVertexGpuBuffer.h" />
     <ClInclude Include="..\Math\SlimMatrix4x4.h" />
     <ClInclude Include="..\Math\SlimQuaternion.h" />
     <ClInclude Include="..\Math\SlimVector.h" />

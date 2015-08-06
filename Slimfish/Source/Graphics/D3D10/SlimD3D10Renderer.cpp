@@ -181,12 +181,12 @@ namespace Slim {
 		m_pSwapChain->Present(0, 0);
 	}
 
-	shared_ptr<AVertexGPUBuffer> CD3D10Renderer::VCreateVertexBuffer(size_t stride, size_t numVerts, AGPUBuffer::EUsage usage)
+	shared_ptr<AVertexGPUBuffer> CD3D10Renderer::VCreateVertexBuffer(size_t stride, size_t numVerts, AGpuBuffer::EUsage usage)
 	{
 		throw std::logic_error("The method or operation is not implemented.");
 	}
 
-	shared_ptr<AIndexGPUBuffer> CD3D10Renderer::VCreateIndexBuffer(size_t stride, size_t numIndices, AGPUBuffer::EUsage usage)
+	shared_ptr<AIndexGPUBuffer> CD3D10Renderer::VCreateIndexBuffer(size_t stride, size_t numIndices, AGpuBuffer::EUsage usage)
 	{
 		throw std::logic_error("The method or operation is not implemented.");
 	}

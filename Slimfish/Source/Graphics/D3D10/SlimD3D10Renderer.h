@@ -37,8 +37,8 @@ public:
 	virtual void VPreRender() override;
 	virtual void VPostRender() override;
 
-	virtual shared_ptr<AVertexGPUBuffer> VCreateVertexBuffer(size_t stride, size_t numVerts, AGPUBuffer::EUsage usage) override;
-	virtual shared_ptr<AIndexGPUBuffer> VCreateIndexBuffer(size_t stride, size_t numIndices, AGPUBuffer::EUsage usage) override;
+	virtual shared_ptr<AVertexGPUBuffer> VCreateVertexBuffer(size_t stride, size_t numVerts, AGpuBuffer::EUsage usage) override;
+	virtual shared_ptr<AIndexGPUBuffer> VCreateIndexBuffer(size_t stride, size_t numIndices, AGpuBuffer::EUsage usage) override;
 
 	virtual shared_ptr<ATexture> VLoadTexture(const string& name, ATexture::EType textureType, ATexture::EUsage usage) override;
 

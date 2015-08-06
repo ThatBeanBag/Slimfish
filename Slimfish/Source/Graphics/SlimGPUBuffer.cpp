@@ -24,7 +24,7 @@
 
 namespace Slim {
 
-AGPUBuffer::AGPUBuffer(EUsage usage, bool isInSystemMemory)
+AGpuBuffer::AGpuBuffer(EUsage usage, bool isInSystemMemory)
 	:m_usage(usage),
 	m_bufferSize(0),
 	m_isInSystemMemory(isInSystemMemory),
@@ -35,12 +35,12 @@ AGPUBuffer::AGPUBuffer(EUsage usage, bool isInSystemMemory)
 
 }
 
-AGPUBuffer::~AGPUBuffer()
+AGpuBuffer::~AGpuBuffer()
 {
 
 }
 
-void* AGPUBuffer::Lock(size_t offset, size_t size, ELockType lockType)
+void* AGpuBuffer::Lock(size_t offset, size_t size, ELockType lockType)
 {
 	assert(offset + size <= m_bufferSize);	// Don't overrun the buffers.
 	assert(!m_isLocked);	// Locking the buffer twice without unlocking is invalid.
@@ -52,7 +52,7 @@ void* AGPUBuffer::Lock(size_t offset, size_t size, ELockType lockType)
 	return VLock(offset, size, lockType);
 }
 
-void AGPUBuffer::Unlock()
+void AGpuBuffer::Unlock()
 {
 	assert(m_isLocked);	// Can't unlock if we haven't locked.
 
@@ -60,17 +60,17 @@ void AGPUBuffer::Unlock()
 	VUnlock();
 }
 
-const AGPUBuffer::EUsage AGPUBuffer::GetUsage() const
+const AGpuBuffer::EUsage AGpuBuffer::GetUsage() const
 {
 	return m_usage;
 }
 
-const size_t AGPUBuffer::GetSize() const
+const size_t AGpuBuffer::GetSize() const
 {
 	return m_bufferSize;
 }
 
-const bool AGPUBuffer::IsInSystemMemory() const
+const bool AGpuBuffer::IsInSystemMemory() const
 {
 	return m_isInSystemMemory;
 }
@@ -79,7 +79,7 @@ const bool AGPUBuffer::IsInSystemMemory() const
 /* CGPUBufferLock implementation
 /************************************************************************/
 
-CGPUBufferLock::CGPUBufferLock(const shared_ptr<AGPUBuffer>& pBuffer, size_t offset, size_t size, AGPUBuffer::ELockType lockType) 
+CGPUBufferLock::CGPUBufferLock(const shared_ptr<AGpuBuffer>& pBuffer, size_t offset, size_t size, AGpuBuffer::ELockType lockType) 
 	:m_pBuffer(pBuffer),
 	m_pLockedData(nullptr)
 {

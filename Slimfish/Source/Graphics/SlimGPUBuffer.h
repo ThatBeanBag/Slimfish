@@ -6,7 +6,7 @@
 //
 // (c) 2005 - 2015 Media Design School
 //
-// File Name	: SlimGPUBuffer.h
+// File Name	: SlimGpuBuffer.h
 // Description	: AGPUBuffer declaration file.
 // Author		: Hayden Asplet.
 // Mail			: hayden.asplet@mediadesignschool.com
@@ -37,7 +37,7 @@ namespace Slim {
 		CGPUBufferLock, which enacts an RAII style implementation for locking and unlocking
 		buffers. See CGPUBufferLock for more details.
 	*/
-class AGPUBuffer {
+class AGpuBuffer {
 public:
 	/** List of usage flags that define how the buffer is used.
 		@note
@@ -90,12 +90,12 @@ public:
 			at some point, but can be used for heavily dynamic buffers that will be changed frequently
 			by the CPU.
 		*/
-	AGPUBuffer(EUsage usage, bool isInSystemMemory);
+	AGpuBuffer(EUsage usage, bool isInSystemMemory);
 
 	/** Destructor
 		@author Hayden Asplet
 		*/
-	virtual ~AGPUBuffer();
+	virtual ~AGpuBuffer();
 
 	/** Lock the buffer for potential reading/writing to.
 		@author Hayden Asplet
@@ -183,7 +183,7 @@ public:
 			LOCK_DISCARD (discard the current buffer's contents), LOCK_READ_ONLY and LOCK_NO_OVERWRITE.
 			See AGPUBuffer::ELockType for more detials.
 	*/
-	CGPUBufferLock(const shared_ptr<AGPUBuffer>& pBuffer, size_t offset, size_t size, AGPUBuffer::ELockType lockType);
+	CGPUBufferLock(const shared_ptr<AGpuBuffer>& pBuffer, size_t offset, size_t size, AGpuBuffer::ELockType lockType);
 
 	/** Destructor
 		@remarks
@@ -204,7 +204,7 @@ private:
 public:
 protected:
 private:
-	shared_ptr<AGPUBuffer> m_pBuffer;	// The locked buffer.
+	shared_ptr<AGpuBuffer> m_pBuffer;	// The locked buffer.
 	void* m_pLockedData;	// The contents of the locked buffer.
 };
 

@@ -115,5 +115,11 @@
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Forward.h">
       <Filter>Graphics\D3D10</Filter>
     </ClInclude>
+    <ClInclude Include="..\Graphics\SlimVertexGpuBuffer.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.h">
+      <Filter>Graphics\D3D10</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
