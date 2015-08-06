@@ -47,6 +47,47 @@ struct TColour {
 	static const unsigned char s_ALPHA_TRANSPERANT;
 };
 
+/** Class representing a colour as a amalgamation of four floating-point values a, r, g and b.
+	@remarks
+	
+*/
+/*
+class CColourValue {
+	// Member Functions
+public:
+	CColourValue();
+	CColourValue(float r, float g, float b);
+	CColourValue(float a, float r, float g, float b);
+
+	void SetAlpha(float alpha);
+	const float GetAlpha() const;
+protected:
+private:
+
+	// Static constants
+public:
+	static const CColourValue s_WHITE;
+	static const CColourValue s_BLACK;
+	static const CColourValue s_RED;
+	static const CColourValue s_GREEN;
+	static const CColourValue s_BLUE;
+	static const CColourValue s_YELLOW;
+	static const CColourValue s_CYAN;
+	static const CColourValue s_MAGENTA;
+
+	static const float s_ALPHA_OPAQUE;
+	static const float s_ALPHA_TRANSPERANT;
+
+	// Member Variables
+public:
+	float m_a;
+	float m_r;
+	float m_g;
+	float m_b;
+protected:
+private:
+};*/
+
 /** Basic colour value structure 
 @remarks
 	Channel have the range 0 to 1. This is different from TColour where

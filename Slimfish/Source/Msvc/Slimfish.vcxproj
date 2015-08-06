@@ -27,6 +27,7 @@
   <ItemGroup>
     <ClInclude Include="..\Debug\SlimLogger.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Renderer.h" />
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10Texture.h" />
     <ClInclude Include="..\Graphics\D3D9\SlimD3D9Renderer.h" />
     <ClInclude Include="..\Graphics\D3D9\SlimD3D9Texture.h" />
     <ClInclude Include="..\Graphics\SlimColour.h" />
@@ -40,6 +41,7 @@
     <ClInclude Include="..\Math\SlimMatrix4x4.h" />
     <ClInclude Include="..\Math\SlimQuaternion.h" />
     <ClInclude Include="..\Math\SlimVector.h" />
+    <ClInclude Include="..\Utilities\SlimInline.h" />
     <ClInclude Include="..\Utilities\SlimObjectFactory.h" />
     <ClInclude Include="..\Utilities\SlimSingleton.h" />
     <ClInclude Include="SlimStd.h" />

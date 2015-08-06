@@ -19,6 +19,7 @@
 
 // Library Includes
 #include <d3d10.h>
+#include <d3dx10.h>
 
 // Local Includes
 #include "../SlimRenderer.h"
@@ -52,6 +53,8 @@ public:
 
 protected:
 private:
+	DXGI_SAMPLE_DESC CheckMultiSampleLevels();
+
 	virtual void VSetTexture(size_t layer, const shared_ptr<ATexture>& pTexture, bool disable = false) override;
 	virtual void VSetTextureLayerFiltering(size_t layer, ETextureSamplerType samplerType, ETextureFilterType filterType) override;
 	virtual void VSetTextureLayerBlendState(size_t layer, const TTextureLayerBlendState& blendState) override;
@@ -65,11 +68,16 @@ private:
 	ID3D10Device* m_pD3DDevice;
 	IDXGISwapChain* m_pSwapChain;
 	ID3D10RenderTargetView* m_pRenderTargetView;
+	ID3D10Texture2D* m_pDepthStencilBuffer;
 	ID3D10DepthStencilState* m_pDepthStencilState;
 	ID3D10DepthStencilView* m_pDepthStencilView;
 	ID3D10RasterizerState* m_pRasterizerState;
 	ID3D10SamplerState* m_ppSamplerStates[g_MAX_TEXTURE_LAYERS];
 	ID3D10ShaderResourceView* m_ppTextures[g_MAX_TEXTURE_LAYERS];
+
+	D3DXCOLOR m_backgroundColour;
+	D3DXCOLOR m_ambientColour;
+	D3D10_VIEWPORT m_viewPort;
 	
 	DXGI_SAMPLE_DESC m_sampleDesc;
 	DXGI_SWAP_CHAIN_DESC m_d3dpp;	// Presentation parameters.

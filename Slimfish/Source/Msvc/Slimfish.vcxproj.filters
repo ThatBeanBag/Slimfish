@@ -40,9 +40,11 @@
     <ClCompile Include="..\Graphics\SlimRenderer.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\Graphics\SlimGPUBuffer.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Renderer.cpp">
       <Filter>Graphics\D3D10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimGPUBuffer.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -97,6 +99,12 @@
     </ClInclude>
     <ClInclude Include="..\Graphics\SlimTypes.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\SlimInline.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10Texture.h">
+      <Filter>Graphics\D3D10</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
