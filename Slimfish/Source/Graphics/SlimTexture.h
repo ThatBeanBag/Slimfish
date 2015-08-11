@@ -30,7 +30,13 @@ namespace Slim {
 */
 class ATexture {
 public:
-	enum EUsage {
+	/** List of usage flags that define how the buffer is used.
+		@note
+			This enumeration is weakly typed, as in it can be implicitly
+			converted to and from an int this gives it the functionality to be
+			used as a flag, but the downside is that it lacks type safety.
+	*/
+	enum EUsage : int {
 		// See CGPUBuffer::USAGE_STATIC.
 		USAGE_STATIC = AGpuBuffer::USAGE_STATIC,
 		// See CGPUBuffer::USAGE_DYNAMIC.
@@ -39,12 +45,12 @@ public:
 		USAGE_WRITE_ONLY = AGpuBuffer::USAGE_WRITE_ONLY,
 		// See CGPUBuffer::USAGE_DISCARDABLE.
 		USAGE_DISCARDABLE = AGpuBuffer::USAGE_DISCARDABLE,
-		// See CGPUBuffer::USAGE_DYNAMIC_DISCARDABLE_WRITE_ONLY.
-		USAGE_DYNAMIC_DISARDABLE_WRITE_ONLY = AGpuBuffer::USAGE_DYNAMIC_DISCARDABLE_WRITE_ONLY,
 		// The texture resource will be used as a render target.
 		USAGE_RENDER_TARGET
 	};
 
+	/** List of standard texture types.
+	*/
 	enum EType {
 		// 1 dimensional texture.
 		TYPE_1D,
@@ -64,15 +70,24 @@ public:
 	void Load();
 	void Unload();
 
-	/** Set the texture type e.g. 1D, 2D, 3D or cubic
+	/** Set the texture type e.g. 1D, 2D, 3D or cubic.
 	 	@author Hayden Asplet
-	 	@param EType textureType
-	 	@return void
 	*/
 	void SetType(EType textureType);
+
+	/** Get the texture type e.g. 1D, 2D, 3D or cubic.
+	 	@author Hayden Asplet
+	*/
 	EType GetType() const;
 
+	/** Set how the texture is intended to be used (only useful prior to loading).
+	 	@author Hayden Asplet
+	*/
 	void SetUsage(EUsage usage);
+
+	/** Get how the texture is intended to be used.
+	 	@author Hayden Asplet
+	*/
 	const EUsage GetUsage() const;
 
 	/** Get the width of the texture @author Hayden Asplet */
@@ -90,9 +105,9 @@ private:
 	EType m_textureType;
 	EUsage m_usage;
 
-	int width;
-	int height;
-	int depth;
+	int width;	// Width of the texture.
+	int height;	// Height of the texture.
+	int depth;	// Depth of the texture (only used for 3D textures).
 };
 
 }

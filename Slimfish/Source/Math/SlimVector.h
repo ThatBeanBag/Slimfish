@@ -33,44 +33,47 @@ class CVec3 {
 	// Member Functions
 public:
 	/** Construct a vector with the x, y and z values being set to 0.
-	 	@author
-	 		Hayden Asplet
+		@author Hayden Asplet
 	*/
 	CVec3();
 
 	/** Construct a vector from x, y, and z values.
-	 	@author
-	 		Hayden Asplet 		
+		@author Hayden Asplet
 	*/
 	CVec3(float x, float y, float z);
 
 	/** Destruct a vector
-	 	@author
-	 		Hayden Asplet
+		@author Hayden Asplet
 	*/
 	~CVec3();
 
 	/** Add two vectors together and assign the vector to the result.
-	 	@author
-	 		Hayden Asplet
+		@author Hayden Asplet
 	*/
 	CVec3& operator+=(const CVec3& other);
 
 	/** Subtract a vector from the vector and assign the vector to the result.
-		@author
-			Hayden Asplet
+		@author Hayden Asplet
 	*/
 	CVec3& operator-=(const CVec3& other);
 
 	/** Multiply the vector by a scalar and assign the vector to the result.
-	 	@author
-	 		Hayden Asplet
+		@author Hayden Asplet
 	*/
 	CVec3& operator*=(float scalar);
 
+	/** Add a scalar to a vector and assign the vector to the result.
+		@author Hayden Asplet
+	*/
+	CVec3& operator+=(float scalar);
+
+	/** Subtract a scalar from the vector and assign the vector to the result.
+		@author Hayden Asplet
+	*/
+	CVec3& operator-=(float scalar);
+
 	/** Set the X value of the vector.
-		@author
-			Hayden Asplet
+		@author Hayden Asplet
 	*/
 	void SetX(float x) { m_x = x; }
 
@@ -148,46 +151,38 @@ private:
 };
 
 /** Add two vectors together
- 	@author
- 		Hayden Asplet
+	@author Hayden Asplet
 */
 const CVec3 operator+(const CVec3& vec3A, const CVec3& vec3B);
 
 /** Subtract a vector from another.
- 	@author
- 		Hayden Asplet
+	@author Hayden Asplet
 */
 const CVec3 operator-(const CVec3& vec3A, const CVec3& vec3B);
 
-/** Multiply a vector by a scalar.
- 	@author
- 		Hayden Asplet
-*/
+/** Multiply a vector by a scalar. @author Hayden Asplet */
 const CVec3 operator*(const CVec3& vec3, float scalar);
-
-/** Multiply a vector by a scalar.
- 	@author
- 		Hayden Asplet
-*/
+/** Multiply a vector by a scalar. @author Hayden Asplet */
 const CVec3 operator*(float scalar, const CVec3& vec3);
+/** Add a scalar to a vector. @author Hayden Asplet */
+const CVec3 operator+(const CVec3& vec3, float scalar);
+/** Subtract a scalar from a vector. @author Hayden Asplet */
+const CVec3 operator-(const CVec3& vec3, float scalar);
+/** Negate a vector @author Hayden Asplet */
+const CVec3 operator-(const CVec3& vec3);
 
-/** Normalise a vector3 so that the length of the vector is 1.
- 	@author
- 		Hayden Asplet
-*/
+/** Normalise a vector3 so that the length of the vector is 1. @author Hayden Asplet */
 const CVec3 Normalise(const CVec3& vec3);
 
 /** Get the cross product of two vectors.
 	@remarks
 		This operation is not commutative as in CrossProduct(A,B) != CrossProduct(B,A).
- 	@author
- 		Hayden Asplet
+	@author Hayden Asplet
 */
 const CVec3 CrossProduct(const CVec3& vec3A, const CVec3& vec3B);
 
 /** Retrieve the dot product of two vectors.
- 	@author
- 		Hayden Asplet
+	@author Hayden Asplet
 */
 const float DotProduct(const CVec3& vec3A, const CVec3& vec3B);
 

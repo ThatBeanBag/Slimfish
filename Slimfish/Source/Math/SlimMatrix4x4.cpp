@@ -186,131 +186,133 @@ const CMatrix4x4 CMatrix4x4::GetInverse() const
 {
 	CMatrix4x4 inverse;
 
-	inverse[0] = m_pMatrix[5]	* m_pMatrix[10]	* m_pMatrix[15] - 
-				 m_pMatrix[5]	* m_pMatrix[11]	* m_pMatrix[14] -
-				 m_pMatrix[9]	* m_pMatrix[6]	* m_pMatrix[15] +
-				 m_pMatrix[9]	* m_pMatrix[7]	* m_pMatrix[14] +
-				 m_pMatrix[13]	* m_pMatrix[6]	* m_pMatrix[11] -
-				 m_pMatrix[13]	* m_pMatrix[7]	* m_pMatrix[10];
+	inverse[0][0] = m_pMatrix[1][1]	* m_pMatrix[2][2]	* m_pMatrix[3][3] - 
+					m_pMatrix[1][1]	* m_pMatrix[2][3]	* m_pMatrix[3][2] -
+					m_pMatrix[2][1]	* m_pMatrix[1][2]	* m_pMatrix[3][3] +
+					m_pMatrix[2][1]	* m_pMatrix[1][3]	* m_pMatrix[3][2] +
+					m_pMatrix[3][1]	* m_pMatrix[1][2]	* m_pMatrix[2][3] -
+					m_pMatrix[3][1]	* m_pMatrix[1][3]	* m_pMatrix[2][2];
 
-	inverse[4] = -m_pMatrix[4]	* m_pMatrix[10]	* m_pMatrix[15] +
-				  m_pMatrix[4]	* m_pMatrix[11]	* m_pMatrix[14] +
-				  m_pMatrix[8]	* m_pMatrix[6]	* m_pMatrix[15] -
-				  m_pMatrix[8]	* m_pMatrix[7]	* m_pMatrix[14] -
-				  m_pMatrix[12]	* m_pMatrix[6]	* m_pMatrix[11] +
-				  m_pMatrix[12]	* m_pMatrix[7]	* m_pMatrix[10];
+	inverse[1][0] = -m_pMatrix[1][0]	* m_pMatrix[2][2]	* m_pMatrix[3][3] +
+					 m_pMatrix[1][0]	* m_pMatrix[2][3]	* m_pMatrix[3][2] +
+					 m_pMatrix[2][0]	* m_pMatrix[1][2]	* m_pMatrix[3][3] -
+					 m_pMatrix[2][0]	* m_pMatrix[1][3]	* m_pMatrix[3][2] -
+					 m_pMatrix[3][0]	* m_pMatrix[1][2]	* m_pMatrix[2][3] +
+					 m_pMatrix[3][0]	* m_pMatrix[1][3]	* m_pMatrix[2][2];
 
-	inverse[8] = m_pMatrix[4]	* m_pMatrix[9]	* m_pMatrix[15] -
-				 m_pMatrix[4]	* m_pMatrix[11]	* m_pMatrix[13] -
-				 m_pMatrix[8]	* m_pMatrix[5]	* m_pMatrix[15] +
-				 m_pMatrix[8]	* m_pMatrix[7]	* m_pMatrix[13] +
-				 m_pMatrix[12]	* m_pMatrix[5]	* m_pMatrix[11] -
-				 m_pMatrix[12]	* m_pMatrix[07]	* m_pMatrix[9];
+	inverse[2][0] = m_pMatrix[1][0]	* m_pMatrix[2][1]	* m_pMatrix[3][3] -
+					m_pMatrix[1][0]	* m_pMatrix[2][3]	* m_pMatrix[3][1] -
+					m_pMatrix[2][0]	* m_pMatrix[1][1]	* m_pMatrix[3][3] +
+					m_pMatrix[2][0]	* m_pMatrix[1][3]	* m_pMatrix[3][1] +
+					m_pMatrix[3][0]	* m_pMatrix[1][1]	* m_pMatrix[2][3] -
+					m_pMatrix[3][0]	* m_pMatrix[1][3]	* m_pMatrix[2][1];
 
-	inverse[12] = -m_pMatrix[4]	* m_pMatrix[9]	* m_pMatrix[14] +
-				   m_pMatrix[4]	* m_pMatrix[10]	* m_pMatrix[13] +
-				   m_pMatrix[8]	* m_pMatrix[5]	* m_pMatrix[14] -
-				   m_pMatrix[8]	* m_pMatrix[6]	* m_pMatrix[13] -
-				   m_pMatrix[12]* m_pMatrix[5]	* m_pMatrix[10] +
-				   m_pMatrix[12]* m_pMatrix[6]	* m_pMatrix[9];
+	inverse[3][0] = -m_pMatrix[1][0]	* m_pMatrix[2][1]	* m_pMatrix[3][2] +
+					 m_pMatrix[1][0]	* m_pMatrix[2][2]	* m_pMatrix[3][1] +
+					 m_pMatrix[2][0]	* m_pMatrix[1][1]	* m_pMatrix[3][2] -
+					 m_pMatrix[2][0]	* m_pMatrix[1][2]	* m_pMatrix[3][1] -
+					 m_pMatrix[3][0]	* m_pMatrix[1][1]	* m_pMatrix[2][2] +
+					 m_pMatrix[3][0]	* m_pMatrix[1][2]	* m_pMatrix[2][1];
 
-	inverse[1] = -m_pMatrix[1]	* m_pMatrix[10]	* m_pMatrix[15] +
-			      m_pMatrix[1]	* m_pMatrix[11]	* m_pMatrix[14] +
-			      m_pMatrix[9]	* m_pMatrix[2]	* m_pMatrix[15] -
-			      m_pMatrix[9]	* m_pMatrix[3]	* m_pMatrix[14] -
-			      m_pMatrix[13]	* m_pMatrix[2]	* m_pMatrix[11] +
-			      m_pMatrix[13]	* m_pMatrix[3]	* m_pMatrix[10];
+	inverse[0][1] = -m_pMatrix[0][1]	* m_pMatrix[2][2]	* m_pMatrix[3][3] +
+					 m_pMatrix[0][1]	* m_pMatrix[2][3]	* m_pMatrix[3][2] +
+					 m_pMatrix[2][1]	* m_pMatrix[0][2]	* m_pMatrix[3][3] -
+					 m_pMatrix[2][1]	* m_pMatrix[0][3]	* m_pMatrix[3][2] -
+					 m_pMatrix[3][1]	* m_pMatrix[0][2]	* m_pMatrix[2][3] +
+					 m_pMatrix[3][1]	* m_pMatrix[0][3]	* m_pMatrix[2][2];
 
-	inverse[5] = m_pMatrix[0]	* m_pMatrix[10] * m_pMatrix[15] -
-				 m_pMatrix[0]	* m_pMatrix[11] * m_pMatrix[14] -
-				 m_pMatrix[8]	* m_pMatrix[2]	* m_pMatrix[15] +
-				 m_pMatrix[8]	* m_pMatrix[3]	* m_pMatrix[14] +
-				 m_pMatrix[12]	* m_pMatrix[2]	* m_pMatrix[11] -
-				 m_pMatrix[12]	* m_pMatrix[3]	* m_pMatrix[10];
+	inverse[1][1] = m_pMatrix[0][0]	* m_pMatrix[2][2]	* m_pMatrix[3][3] -
+					m_pMatrix[0][0]	* m_pMatrix[2][3]	* m_pMatrix[3][2] -
+					m_pMatrix[2][0]	* m_pMatrix[0][2]	* m_pMatrix[3][3] +
+					m_pMatrix[2][0]	* m_pMatrix[0][3]	* m_pMatrix[3][2] +
+					m_pMatrix[3][0]	* m_pMatrix[0][2]	* m_pMatrix[2][3] -
+					m_pMatrix[3][0]	* m_pMatrix[0][3]	* m_pMatrix[2][2];
 
-	inverse[9] = -m_pMatrix[0]	* m_pMatrix[9]	* m_pMatrix[15] +
-				  m_pMatrix[0]	* m_pMatrix[11] * m_pMatrix[13] +
-				  m_pMatrix[8]	* m_pMatrix[1]	* m_pMatrix[15] -
-				  m_pMatrix[8]	* m_pMatrix[3]	* m_pMatrix[13] -
-				  m_pMatrix[12] * m_pMatrix[1]	* m_pMatrix[11] +
-				  m_pMatrix[12] * m_pMatrix[3]	* m_pMatrix[9];
+	inverse[2][1] = -m_pMatrix[0][0]	* m_pMatrix[2][1]	* m_pMatrix[3][3] +
+					 m_pMatrix[0][0]	* m_pMatrix[2][3]	* m_pMatrix[3][1] +
+					 m_pMatrix[2][0]	* m_pMatrix[0][1]	* m_pMatrix[3][3] -
+					 m_pMatrix[2][0]	* m_pMatrix[0][3]	* m_pMatrix[3][1] -
+					 m_pMatrix[3][0]	* m_pMatrix[0][1]	* m_pMatrix[2][3] +
+					 m_pMatrix[3][0]	* m_pMatrix[0][3]	* m_pMatrix[2][1];
 
-	inverse[13] = m_pMatrix[0]	* m_pMatrix[9]	* m_pMatrix[14] -
-				  m_pMatrix[0]	* m_pMatrix[10] * m_pMatrix[13] -
-				  m_pMatrix[8]	* m_pMatrix[1]	* m_pMatrix[14] +
-				  m_pMatrix[8]	* m_pMatrix[2]	* m_pMatrix[13] +
-				  m_pMatrix[12] * m_pMatrix[1]	* m_pMatrix[10] -
-				  m_pMatrix[12] * m_pMatrix[2]	* m_pMatrix[9];
+	inverse[3][1] = m_pMatrix[0][0] * m_pMatrix[2][1]	* m_pMatrix[3][2] -
+					m_pMatrix[0][0] * m_pMatrix[2][2]	* m_pMatrix[3][1] -
+				    m_pMatrix[2][0]	* m_pMatrix[0][1]	* m_pMatrix[3][2] +
+				    m_pMatrix[2][0]	* m_pMatrix[0][2]	* m_pMatrix[3][1] +
+				    m_pMatrix[3][0]	* m_pMatrix[0][1]	* m_pMatrix[2][2] -
+				    m_pMatrix[3][0]	* m_pMatrix[0][2]	* m_pMatrix[2][1];
 
-	inverse[2] = m_pMatrix[1]	* m_pMatrix[6]	* m_pMatrix[15] -
-				 m_pMatrix[1]	* m_pMatrix[7]	* m_pMatrix[14] -
-				 m_pMatrix[5]	* m_pMatrix[2]	* m_pMatrix[15] +
-				 m_pMatrix[5]	* m_pMatrix[3]	* m_pMatrix[14] +
-				 m_pMatrix[13]	* m_pMatrix[2]	* m_pMatrix[7]	-
-				 m_pMatrix[13]	* m_pMatrix[3]	* m_pMatrix[6];
+	inverse[0][2] = m_pMatrix[0][1]	* m_pMatrix[1][2]	* m_pMatrix[3][3] -
+					m_pMatrix[0][1]	* m_pMatrix[1][3]	* m_pMatrix[3][2] -
+					m_pMatrix[1][1]	* m_pMatrix[0][2]	* m_pMatrix[3][3] +
+					m_pMatrix[1][1]	* m_pMatrix[0][3]	* m_pMatrix[3][2] +
+					m_pMatrix[3][1]	* m_pMatrix[0][2]	* m_pMatrix[1][3] -
+					m_pMatrix[3][1]	* m_pMatrix[0][3]	* m_pMatrix[1][2];
 
-	inverse[6] = -m_pMatrix[0]	* m_pMatrix[6]	* m_pMatrix[15] +
-				  m_pMatrix[0]	* m_pMatrix[7]	* m_pMatrix[14] +
-				  m_pMatrix[4]	* m_pMatrix[2]	* m_pMatrix[15] -
-				  m_pMatrix[4]	* m_pMatrix[3]	* m_pMatrix[14] -
-				  m_pMatrix[12] * m_pMatrix[2]	* m_pMatrix[7]  +
-				  m_pMatrix[12] * m_pMatrix[3]	* m_pMatrix[6];
+	inverse[1][2] = -m_pMatrix[0][0]	* m_pMatrix[1][2]	* m_pMatrix[3][3] +
+					 m_pMatrix[0][0]	* m_pMatrix[1][3]	* m_pMatrix[3][2] +
+					 m_pMatrix[1][0]	* m_pMatrix[0][2]	* m_pMatrix[3][3] -
+					 m_pMatrix[1][0]	* m_pMatrix[0][3]	* m_pMatrix[3][2] -
+					 m_pMatrix[3][0]	* m_pMatrix[0][2]	* m_pMatrix[1][3] +
+					 m_pMatrix[3][0]	* m_pMatrix[0][3]	* m_pMatrix[1][2];
 
-	inverse[10] = m_pMatrix[0]	* m_pMatrix[5]	* m_pMatrix[15] -
-				  m_pMatrix[0]	* m_pMatrix[7]	* m_pMatrix[13] -
-				  m_pMatrix[4]	* m_pMatrix[1]	* m_pMatrix[15] +
-				  m_pMatrix[4]	* m_pMatrix[3]	* m_pMatrix[13] +
-				  m_pMatrix[12] * m_pMatrix[1]	* m_pMatrix[7]	-
-				  m_pMatrix[12] * m_pMatrix[3]	* m_pMatrix[5];
+	inverse[2][2] = m_pMatrix[0][0]	* m_pMatrix[1][1]	* m_pMatrix[3][3] -
+					m_pMatrix[0][0]	* m_pMatrix[1][3]	* m_pMatrix[3][1] -
+					m_pMatrix[1][0]	* m_pMatrix[0][1]	* m_pMatrix[3][3] +
+					m_pMatrix[1][0]	* m_pMatrix[0][3]	* m_pMatrix[3][1] +
+					m_pMatrix[3][0] * m_pMatrix[0][1]	* m_pMatrix[1][3] -
+					m_pMatrix[3][0] * m_pMatrix[0][3]	* m_pMatrix[1][1];
 
-	inverse[14] = -m_pMatrix[0]	* m_pMatrix[5] * m_pMatrix[14] +
-				   m_pMatrix[0]	* m_pMatrix[6] * m_pMatrix[13] +
-				   m_pMatrix[4]	* m_pMatrix[1] * m_pMatrix[14] -
-				   m_pMatrix[4]	* m_pMatrix[2] * m_pMatrix[13] -
-				   m_pMatrix[12]* m_pMatrix[1] * m_pMatrix[6] +
-				   m_pMatrix[12]* m_pMatrix[2] * m_pMatrix[5];
+	inverse[3][2] = -m_pMatrix[0][0]	* m_pMatrix[1][1] * m_pMatrix[3][2] +
+					 m_pMatrix[0][0]	* m_pMatrix[1][2] * m_pMatrix[3][1] +
+					 m_pMatrix[1][0]	* m_pMatrix[0][1] * m_pMatrix[3][2] -
+					 m_pMatrix[1][0]	* m_pMatrix[0][2] * m_pMatrix[3][1] -
+					 m_pMatrix[3][0]	* m_pMatrix[0][1] * m_pMatrix[1][2] +
+					 m_pMatrix[3][0]	* m_pMatrix[0][2] * m_pMatrix[1][1];
 
-	inverse[3] = -m_pMatrix[1]	* m_pMatrix[6] * m_pMatrix[11] +
-				  m_pMatrix[1]	* m_pMatrix[7] * m_pMatrix[10] +
-				  m_pMatrix[5]	* m_pMatrix[2] * m_pMatrix[11] -
-				  m_pMatrix[5]	* m_pMatrix[3] * m_pMatrix[10] -
-				  m_pMatrix[9]	* m_pMatrix[2] * m_pMatrix[7]  +
-				  m_pMatrix[9]	* m_pMatrix[3] * m_pMatrix[6];
+	inverse[0][3] =-m_pMatrix[0][1]	* m_pMatrix[1][2] * m_pMatrix[2][3] +
+				  m_pMatrix[0][1]	* m_pMatrix[1][3] * m_pMatrix[2][2] +
+				  m_pMatrix[1][1]	* m_pMatrix[0][2]* m_pMatrix[2][3] -
+				  m_pMatrix[1][1]	* m_pMatrix[0][3]* m_pMatrix[2][2] -
+				  m_pMatrix[2][1]	* m_pMatrix[0][2]* m_pMatrix[1][3]  +
+				  m_pMatrix[2][1]	* m_pMatrix[0][3]* m_pMatrix[1][2];
 
-	inverse[7] = m_pMatrix[0]	* m_pMatrix[6] * m_pMatrix[11] -
-				 m_pMatrix[0]	* m_pMatrix[7] * m_pMatrix[10] -
-				 m_pMatrix[4]	* m_pMatrix[2] * m_pMatrix[11] +
-				 m_pMatrix[4]	* m_pMatrix[3] * m_pMatrix[10] +
-				 m_pMatrix[8]	* m_pMatrix[2] * m_pMatrix[7]  -
-				 m_pMatrix[8]	* m_pMatrix[3] * m_pMatrix[6];
+	inverse[1][3] = m_pMatrix[0][0]	* m_pMatrix[1][2]	* m_pMatrix[2][3] -
+					m_pMatrix[0][0]	* m_pMatrix[1][3]	* m_pMatrix[2][2] -
+					m_pMatrix[1][0]	* m_pMatrix[0][2]	* m_pMatrix[2][3] +
+					m_pMatrix[1][0]	* m_pMatrix[0][3]	* m_pMatrix[2][2] +
+					m_pMatrix[2][0]	* m_pMatrix[0][2]	* m_pMatrix[1][3]  -
+					m_pMatrix[2][0]	* m_pMatrix[0][3]	* m_pMatrix[1][2];
 
-	inverse[11] = -m_pMatrix[0] * m_pMatrix[5] * m_pMatrix[11] +
-				   m_pMatrix[0] * m_pMatrix[7] * m_pMatrix[9] +
-				   m_pMatrix[4] * m_pMatrix[1] * m_pMatrix[11] -
-				   m_pMatrix[4] * m_pMatrix[3] * m_pMatrix[9] -
-				   m_pMatrix[8] * m_pMatrix[1] * m_pMatrix[7] +
-				   m_pMatrix[8] * m_pMatrix[3] * m_pMatrix[5];
+	inverse[2][3] = -m_pMatrix[0][0] * m_pMatrix[1][1] * m_pMatrix[2][3] +
+					 m_pMatrix[0][0] * m_pMatrix[1][3] * m_pMatrix[2][1] +
+					 m_pMatrix[1][0] * m_pMatrix[0][1] * m_pMatrix[2][3] -
+					 m_pMatrix[1][0] * m_pMatrix[0][3] * m_pMatrix[2][1] -
+					 m_pMatrix[2][0] * m_pMatrix[0][1] * m_pMatrix[1][3] +
+					 m_pMatrix[2][0] * m_pMatrix[0][3] * m_pMatrix[1][1];
 
-	inverse[15] = m_pMatrix[0]	* m_pMatrix[5] * m_pMatrix[10] -
-				  m_pMatrix[0]	* m_pMatrix[6] * m_pMatrix[9] -
-				  m_pMatrix[4]	* m_pMatrix[1] * m_pMatrix[10] +
-				  m_pMatrix[4]	* m_pMatrix[2] * m_pMatrix[9] +
-				  m_pMatrix[8]	* m_pMatrix[1] * m_pMatrix[6] -
-				  m_pMatrix[8]	* m_pMatrix[2] * m_pMatrix[5];
+	inverse[3][3] = m_pMatrix[0][0]	* m_pMatrix[1][1]	* m_pMatrix[2][2] -
+					m_pMatrix[0][0]	* m_pMatrix[1][2]	* m_pMatrix[2][1] -
+					m_pMatrix[1][0]	* m_pMatrix[0][1]	* m_pMatrix[2][2] +
+					m_pMatrix[1][0]	* m_pMatrix[0][2]	* m_pMatrix[2][1] +
+					m_pMatrix[2][0]	* m_pMatrix[0][1]	* m_pMatrix[1][2] -
+					m_pMatrix[2][0]	* m_pMatrix[0][2]	* m_pMatrix[1][1];
 
 	// Calculate the determinant.
-	float determinant = (m_pMatrix[0] * inverse[0]) + 
-						(m_pMatrix[1] * inverse[4]) + 
-						(m_pMatrix[2] * inverse[8]) + 
-						(m_pMatrix[3] * inverse[12]);
+	float determinant = (m_pMatrix[0][0] * inverse[0][0]) + 
+						(m_pMatrix[0][1] * inverse[1][0]) + 
+						(m_pMatrix[0][2] * inverse[2][0]) + 
+						(m_pMatrix[0][3] * inverse[3][0]);
 
 	if (determinant == 0) {
 	// Is the matrix invertible?
 		return s_IDENTITY;
 	}
 
-	for (int i = 0; i < 16; ++i) {
-		inverse[i] /= determinant;
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			inverse[i][j] /= determinant;
+		}
 	}
 
 	return inverse;
@@ -470,6 +472,25 @@ const CMatrix4x4 BuildRotationZMatrix(float radians)
 	return rotation;
 }
 
+const CMatrix4x4 BuildRotationFromAxisMatrix(const CVec3& right, const CVec3& up, const CVec3& forward)
+{
+	CMatrix4x4 matrix;
+
+	matrix[0][0] = right.GetX();
+	matrix[0][1] = right.GetY();
+	matrix[0][2] = right.GetZ();
+
+	matrix[1][0] = up.GetX();
+	matrix[1][1] = up.GetY();
+	matrix[1][2] = up.GetZ();
+
+	matrix[2][0] = forward.GetX();
+	matrix[2][1] = forward.GetY();
+	matrix[2][2] = forward.GetZ();
+
+	return matrix;
+}
+
 const CMatrix4x4 BuildYawPitchRollMatrix(float radYaw, float radPitch, float radRoll)
 {
 	return BuildRotationYMatrix(radYaw) * BuildRotationXMatrix(radPitch) * BuildRotationZMatrix(radRoll);
@@ -490,9 +511,17 @@ const CMatrix4x4 BuildTranslationMatrix(const CVec3& position)
 
 const CMatrix4x4 BuildLookAtMatrix(const CVec3& eye, const CVec3& at, const CVec3& up)
 {
-	CVec3 zAxis = at - eye;
-	zAxis = zAxis.GetNormalise();
-	CVec3 xAxis = 
+	CVec3 zAxis = Normalise(at - eye);
+	CVec3 xAxis = Normalise(CrossProduct(CVec3::s_UP, zAxis));
+	CVec3 yAxis = CrossProduct(zAxis, xAxis);
+
+	CMatrix4x4 matrix = BuildRotationFromAxisMatrix(xAxis, yAxis, zAxis);
+
+	matrix[3][0] = DotProduct(xAxis, -eye);
+	matrix[3][1] = DotProduct(yAxis, -eye);
+	matrix[3][2] = DotProduct(zAxis, -eye);
+
+	return matrix;
 }
 
 const CMatrix4x4 BuildProjectionMatrix(float radFOV, float aspectRatio, float near, float far)

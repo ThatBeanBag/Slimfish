@@ -159,8 +159,8 @@ namespace Slim {
 		ZeroMemory(&m_viewPort, sizeof(D3D10_VIEWPORT));
 		m_viewPort.TopLeftX = 0;
 		m_viewPort.TopLeftY = 0;
-		m_viewPort.Width = static_cast<float>(m_width);
-		m_viewPort.Height = static_cast<float>(m_height);
+		m_viewPort.Width = m_width;
+		m_viewPort.Height = m_height;
 		m_viewPort.MinDepth = 0.0f;
 		m_viewPort.MaxDepth = 1.0f;
 	}
@@ -181,17 +181,17 @@ namespace Slim {
 		m_pSwapChain->Present(0, 0);
 	}
 
-	shared_ptr<AVertexGPUBuffer> CD3D10Renderer::VCreateVertexBuffer(size_t stride, size_t numVerts, AGpuBuffer::EUsage usage)
+	shared_ptr<AVertexGpuBuffer> CD3D10Renderer::VCreateVertexBuffer(size_t stride, size_t numVerts, AGpuBuffer::EUsage usage)
 	{
 		throw std::logic_error("The method or operation is not implemented.");
 	}
 
-	shared_ptr<AIndexGPUBuffer> CD3D10Renderer::VCreateIndexBuffer(size_t stride, size_t numIndices, AGpuBuffer::EUsage usage)
+	shared_ptr<AIndexGpuBuffer> CD3D10Renderer::VCreateIndexBuffer(size_t stride, size_t numIndices, AGpuBuffer::EUsage usage)
 	{
 		throw std::logic_error("The method or operation is not implemented.");
 	}
 
-	shared_ptr<ATexture> CD3D10Renderer::VLoadTexture(const string& name, ATexture::EType textureType, ATexture::EUsage usage)
+	shared_ptr<ATexture> CD3D10Renderer::VLoadTexture(const std::string& name, ATexture::EType textureType, ATexture::EUsage usage)
 	{
 		throw std::logic_error("The method or operation is not implemented.");
 	}
@@ -237,7 +237,6 @@ namespace Slim {
 
 			if (FAILED(hResult)) {
 				throw CRenderingError();
-				return;
 			}
 
 			if (currentMSAAQuality == 0) {

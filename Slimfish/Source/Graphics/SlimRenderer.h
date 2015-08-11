@@ -28,10 +28,11 @@ namespace Slim {
 	class CMatrix4x4;
 	class CVec3;
 	class ATexture;
+	class AVertexGpuBuffer;
+	class AIndexGpuBuffer;
 	struct TColour;
 
 	class CRenderingError {
-
 	};
 
 	/** Abstract class encapsulating a rendering system.
@@ -78,7 +79,7 @@ namespace Slim {
 				A pointer to the buffer for reading/writing/locking depending on intended 
 				usage of the buffer.
 		*/
-		virtual shared_ptr<AVertexGPUBuffer> VCreateVertexBuffer(size_t stride, size_t numVerts, AGpuBuffer::EUsage usage) = 0;
+		virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t stride, size_t numVerts, AGpuBuffer::EUsage usage) = 0;
 
 		/** Create a index buffer on the GPU.
 			@author Hayden Asplet
@@ -89,9 +90,9 @@ namespace Slim {
 				A pointer to the buffer for reading/writing/locking depending on intended
 				usage of the buffer.
 		*/
-		virtual shared_ptr<AIndexGPUBuffer> VCreateIndexBuffer(size_t stride, size_t numIndices, AGpuBuffer::EUsage usage) = 0;
+		virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t stride, size_t numIndices, AGpuBuffer::EUsage usage) = 0;
 
-		virtual shared_ptr<ATexture> VLoadTexture(const string& name, ATexture::EType textureType, ATexture::EUsage usage) = 0;
+		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ATexture::EType textureType, ATexture::EUsage usage) = 0;
 
 		/** Set the world transform. */
 		virtual void VSetWorldTransform(const CMatrix4x4& worldTransform) = 0;

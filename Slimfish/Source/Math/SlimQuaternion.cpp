@@ -173,14 +173,17 @@ const CMatrix4x4 CQuaternion::ToRotationMatrix() const
 
 	CMatrix4x4 rotation(CMatrix4x4::s_IDENTITY);
 
-	rotation[0] = 1.0f - f2jj - f2kk;
-	rotation[1] = f2ij - f2wk;
-	rotation[2] = f2ik + f2wj;
-	rotation[4] = f2ij + f2wk;
-	rotation[5] = 1.0f - f2ii - f2kk;
-	rotation[6] = f2jk - f2wi;
-	rotation[8] = f2ik - f2wj;
-	rotation[9] = 
+	rotation[0][0] = 1.0f - f2jj - f2kk;
+	rotation[0][1] = f2ij - f2wk;
+	rotation[0][2] = f2ik + f2wj;
+	rotation[1][0] = f2ij + f2wk;
+	rotation[1][1] = 1.0f - f2ii - f2kk;
+	rotation[1][2] = f2jk - f2wi;
+	rotation[2][0] = f2ik - f2wj;
+	rotation[2][1] = f2jk - f2wi;
+	rotation[2][2] = 1.0f - f2ii - f2jj;
+
+	return rotation;
 }
 
 const CQuaternion operator*(float scalar, const CQuaternion& other)

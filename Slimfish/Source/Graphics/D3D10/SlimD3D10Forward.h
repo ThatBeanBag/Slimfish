@@ -22,5 +22,6 @@
 #include <d3dx10.h>
 
 // Local Includes
+#include "SlimD3D10Conversions.h"
 
 #endif // __SLIMD3D10FORWARD_H__

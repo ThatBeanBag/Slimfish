@@ -45,6 +45,7 @@ CVec3::~CVec3()
 
 }
 
+
 CVec3& CVec3::operator+=(const CVec3& other)
 {
 	m_x += other.m_x;
@@ -65,9 +66,27 @@ CVec3& CVec3::operator-=(const CVec3& other)
 
 CVec3& CVec3::operator*=(float scalar)
 {
+	m_x *= scalar;
+	m_y *= scalar;
+	m_z *= scalar;
+
+	return *this;
+}
+
+CVec3& CVec3::operator+=(float scalar)
+{
 	m_x += scalar;
 	m_y += scalar;
 	m_z += scalar;
+
+	return *this;
+}
+
+CVec3& CVec3::operator-=(float scalar)
+{
+	m_x -= scalar;
+	m_y -= scalar;
+	m_z -= scalar;
 
 	return *this;
 }
@@ -80,12 +99,38 @@ const CVec3 operator+(const CVec3& vec3A, const CVec3& vec3B)
 	return addition;
 }
 
+const CVec3 operator+(const CVec3& vec3, float scalar)
+{
+	CVec3 addition = vec3;
+	addition += scalar;
+
+	return addition;
+}
+
 const CVec3 operator-(const CVec3& vec3A, const CVec3& vec3B)
 {
 	CVec3 subtraction = vec3A;
-	subtraction += vec3B;
+	subtraction -= vec3B;
 
 	return subtraction;
+}
+
+const CVec3 operator-(const CVec3& vec3, float scalar)
+{
+	CVec3 subtraction = vec3;
+	subtraction -= scalar;
+
+	return subtraction;
+}
+
+const CVec3 operator-(const CVec3& vec3)
+{
+	CVec3 negated = vec3;
+	negated.SetX(-negated.GetX());
+	negated.SetY(-negated.GetY());
+	negated.SetZ(-negated.GetZ());
+
+	return negated;
 }
 
 const CVec3 operator*(const CVec3& vec3, float scalar)

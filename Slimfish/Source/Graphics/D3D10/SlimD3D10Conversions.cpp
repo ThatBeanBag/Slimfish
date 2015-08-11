@@ -55,4 +55,37 @@ namespace Slim {
 		return CreateColourValueARGB(colour.a, colour.r, colour.g, colour.b);
 	}
 
+	D3D10_USAGE D3D10Conversions::Get(AGpuBuffer::EUsage usage)
+	{
+		if (usage & AGpuBuffer::USAGE_DYNAMIC) {
+			return D3D10_USAGE_DYNAMIC;
+		}
+		else {
+			return D3D10_USAGE_DEFAULT;
+		}
+	}
+
+	D3D10_MAP D3D10Conversions::Get(AGpuBuffer::ELockType lockType)
+	{
+		switch (lockType) {
+			case LOCK_NORMAL: {
+				return D3D10_MAP_READ_WRITE;
+			}
+			case LOCK_DISCARD: {
+				return D3D10_MAP_WRITE_DISCARD;
+			}
+			case LOCK_READ_ONLY: {
+				return D3D10_MAP_READ;
+			}
+			case LOCK_NO_OVERWRITE: {
+				return D3D10_MAP_WRITE_NO_OVERWRITE;
+			}
+			default: {
+				break;
+			}
+		}
+
+		// Only to make the compiler happy.
+		return D3D10_MAP_READ;
+	}
 }

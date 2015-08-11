@@ -20,6 +20,8 @@
 // Library Includes
 
 // Local Includes
+#include "../SlimColour.h"
+#include "../SlimGpuBuffer.h"
 #include "SlimD3D10Forward.h"
 
 namespace Slim {
@@ -33,6 +35,9 @@ namespace D3D10Conversions {
 
 	D3DXCOLOR Get(const TColourValue& colour);
 	TColourValue Get(const D3DXCOLOR& colour);
+
+	D3D10_USAGE Get(AGpuBuffer::EUsage usage);
+	D3D10_MAP Get(AGpuBuffer::ELockType lockType);
 }
 
 }

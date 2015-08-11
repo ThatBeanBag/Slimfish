@@ -56,6 +56,11 @@ namespace Slim {
 			|	[1][0]	[1][1]	[1][2]	[1][3]	|
 			|	[2][0]	[2][1]	[2][2]	[2][3]	|
 			|	[3][0]	[3][1]	[3][2]	[3][3]	|
+
+			|	0		1		2		3		|
+			|	4		5		6		7		|
+			|	8		9		10		11		|
+			|	12		13		14		15		|
 */
 class CMatrix4x4 {
 	// Member Functions
@@ -273,6 +278,7 @@ const CMatrix4x4 BuildScaleMatrix(const CVec3& scale);
 const CMatrix4x4 BuildRotationXMatrix(float radians);
 const CMatrix4x4 BuildRotationYMatrix(float radians);
 const CMatrix4x4 BuildRotationZMatrix(float radians);
+const CMatrix4x4 BuildRotationFromAxisMatrix(const CVec3& right, const CVec3& up, const CVec3& forward);
 const CMatrix4x4 BuildYawPitchRollMatrix(float radYaw, float radPitch, float radRoll);
 const CMatrix4x4 BuildTranslationMatrix(float x, float y, float z);
 const CMatrix4x4 BuildTranslationMatrix(const CVec3& position);

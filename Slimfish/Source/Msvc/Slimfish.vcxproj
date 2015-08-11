@@ -12,9 +12,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Conversions.cpp" />
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Renderer.cpp" />
     <ClCompile Include="..\Graphics\SlimColour.cpp" />
     <ClCompile Include="..\Graphics\SlimGPUBuffer.cpp" />
+    <ClCompile Include="..\Graphics\SlimInputElement.cpp" />
     <ClCompile Include="..\Graphics\SlimRenderer.cpp" />
     <ClCompile Include="..\Graphics\SlimTextureLayer.cpp" />
     <ClCompile Include="..\Math\SlimMatrix4x4.cpp" />
@@ -35,6 +37,9 @@
     <ClInclude Include="..\Graphics\D3D9\SlimD3D9Renderer.h" />
     <ClInclude Include="..\Graphics\D3D9\SlimD3D9Texture.h" />
     <ClInclude Include="..\Graphics\SlimColour.h" />
+    <ClInclude Include="..\Graphics\SlimIndexGpuBuffer.h" />
+    <ClInclude Include="..\Graphics\SlimInputElement.h" />
+    <ClInclude Include="..\Graphics\SlimShaderProgram.h" />
     <ClInclude Include="..\Graphics\SlimTypes.h" />
     <ClInclude Include="..\Graphics\SlimGPUBuffer.h" />
     <ClInclude Include="..\Graphics\SlimMaterial.h" />

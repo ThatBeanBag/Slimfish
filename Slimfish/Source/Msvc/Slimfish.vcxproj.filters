@@ -49,6 +49,12 @@
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Conversions.cpp">
       <Filter>Graphics\D3D10</Filter>
     </ClCompile>
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.cpp">
+      <Filter>Graphics\D3D10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimInputElement.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -120,6 +126,15 @@
     </ClInclude>
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.h">
       <Filter>Graphics\D3D10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimInputElement.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimShaderProgram.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimIndexGpuBuffer.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

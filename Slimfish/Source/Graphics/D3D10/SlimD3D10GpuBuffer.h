@@ -18,9 +18,9 @@
 #define __SLIMD3D10GPUBUFFER_H__
 
 // Library Includes
-#include "SlimD3D10Forward.h"
 
 // Local Includes
+#include "SlimD3D10Forward.h"
 #include "../SlimGpuBuffer.h"
 
 namespace Slim {
@@ -51,7 +51,7 @@ namespace Slim {
 				memory.
 		*/
 		CD3D10GpuBuffer(ID3D10Device* pDevice, 
-						EBufferType bufferType, size_t bufferSize, 
+						EBufferType bufferType, size_t bufferSize, void* pSource,
 						AGpuBuffer::EUsage usage, bool isInSystemMemory);
 		/** Destructor
 		 	@author Hayden Asplet
