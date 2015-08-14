@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Conversions.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.cpp" />
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10InputElement.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Renderer.cpp" />
     <ClCompile Include="..\Graphics\SlimColour.cpp" />
     <ClCompile Include="..\Graphics\SlimGPUBuffer.cpp" />
@@ -32,6 +33,7 @@
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Conversions.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Forward.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.h" />
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10InputElement.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Renderer.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Texture.h" />
     <ClInclude Include="..\Graphics\D3D9\SlimD3D9Renderer.h" />

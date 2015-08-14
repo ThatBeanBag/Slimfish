@@ -55,6 +55,7 @@
     <ClCompile Include="..\Graphics\SlimInputElement.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10InputElement.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -135,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="..\Graphics\SlimIndexGpuBuffer.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10InputElement.h">
+      <Filter>Graphics\D3D10</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -24,48 +24,76 @@
 
 namespace Slim {
 
-	AVertexDeclaration::AVertexDeclaration()
-	{
+CInputElement::CInputElement(const std::string& semanticName, size_t offsetInBuffer, EFormat format)
+{
+	m_SemanticName = semanticName;
+	m_OffsetInBuffer = offsetInBuffer;
+	m_Format = format;
+}
 
-	}
+CInputElement::~CInputElement()
+{
 
-	AVertexDeclaration::~AVertexDeclaration()
-	{
+}
 
-	}
+const std::string& CInputElement::GetSemanticName() const
+{
+	return m_SemanticName;
+}
 
-	void AVertexDeclaration::AddElement(const std::string& semanticName, size_t offsetInBuffer, CInputElement::EFormat format)
-	{
-		AddElement(CInputElement(semanticName, offsetInBuffer, format));
-	}
+const size_t CInputElement::GetOffset() const
+{
+	return m_OffsetInBuffer;
+}
 
-	void AVertexDeclaration::AddElement(const CInputElement& inputElement)
-	{
-		m_ElementList.push_back(inputElement);
-	}
+const CInputElement::EFormat CInputElement::GetFormat() const
+{
+	return m_Format;
+}
 
-	void AVertexDeclaration::RemoveElement(size_t index)
-	{
-		auto iter = m_ElementList.begin();
-		advance(iter, index);
-		m_ElementList.erase(iter);
-	}
+AVertexDeclaration::AVertexDeclaration()
+{
 
-	void AVertexDeclaration::ClearElements()
-	{
-		m_ElementList.clear();
-	}
+}
 
-	const CInputElement& AVertexDeclaration::GetElement(size_t index) const
-	{
-		auto iter = m_ElementList.begin();
-		advance(iter, index);
-		return (*iter);
-	}
+AVertexDeclaration::~AVertexDeclaration()
+{
 
-	int AVertexDeclaration::GetNumElements() const
-	{
-		return m_ElementList.size();
-	}
+}
+
+void AVertexDeclaration::AddElement(const std::string& semanticName, size_t offsetInBuffer, CInputElement::EFormat format)
+{
+	AddElement(CInputElement(semanticName, offsetInBuffer, format));
+}
+
+void AVertexDeclaration::AddElement(const CInputElement& inputElement)
+{
+	m_ElementList.push_back(inputElement);
+}
+
+void AVertexDeclaration::RemoveElement(size_t index)
+{
+	auto iter = m_ElementList.begin();
+	advance(iter, index);
+	m_ElementList.erase(iter);
+}
+
+void AVertexDeclaration::ClearElements()
+{
+	m_ElementList.clear();
+}
+
+const CInputElement& AVertexDeclaration::GetElement(size_t index) const
+{
+	auto iter = m_ElementList.begin();
+	advance(iter, index);
+	return (*iter);
+}
+
+int AVertexDeclaration::GetNumElements() const
+{
+	return m_ElementList.size();
+}
+
 
 }

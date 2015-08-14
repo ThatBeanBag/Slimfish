@@ -88,4 +88,41 @@ namespace Slim {
 		// Only to make the compiler happy.
 		return D3D10_MAP_READ;
 	}
+
+	DXGI_FORMAT D3D10Conversions::Get(CInputElement::EFormat inputElementFormat)
+	{
+		switch (inputElementFormat) {
+			case CInputElement::FORMAT_FLOAT: {
+				return DXGI_FORMAT_R32_FLOAT;
+			}
+			case CInputElement::FORMAT_FLOAT2: {
+				return DXGI_FORMAT_R32G32_FLOAT;
+			}
+			case CInputElement::FORMAT_FLOAT3: {
+				return DXGI_FORMAT_R32G32B32_FLOAT;
+			}
+			case CInputElement::FORMAT_FLOAT4: {
+				return DXGI_FORMAT_R32G32B32A32_FLOAT;
+			}
+			case CInputElement::FORMAT_SHORT: {
+				return DXGI_FORMAT_R32_SINT;
+			}
+			case CInputElement::FORMAT_SHORT2: {
+				return DXGI_FORMAT_R32G32_SINT;
+			}
+			case CInputElement::FORMAT_SHORT3: {
+				return DXGI_FORMAT_R32G32B32_SINT;
+			}
+			case CInputElement::FORMAT_SHORT4: {
+				return DXGI_FORMAT_R32G32B32A32_SINT;
+			}
+			case CInputElement::FORMAT_COLOUR_RGBA: {
+				return DXGI_FORMAT_R32G32B32A32_FLOAT;
+			}
+			default: {
+				break;
+			}
+		}
+	}
 }
+

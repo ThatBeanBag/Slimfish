@@ -68,6 +68,15 @@ public:
 		@author Hayden Asplet
 	*/
 	~CInputElement();
+
+	/** Get the name of the semantic @author Hayden Asplet */
+	const std::string& GetSemanticName() const;
+
+	/** Get the offset in bytes of the element in the buffer. @author Hayden Asplet */
+	const size_t GetOffset() const;
+
+	/** Get the format/type of the input element. @author Hayden Asplet */
+	const EFormat GetFormat() const;
 protected:
 private:
 	// Member Variables

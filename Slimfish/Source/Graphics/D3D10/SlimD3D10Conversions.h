@@ -38,6 +38,8 @@ namespace D3D10Conversions {
 
 	D3D10_USAGE Get(AGpuBuffer::EUsage usage);
 	D3D10_MAP Get(AGpuBuffer::ELockType lockType);
+
+	DXGI_FORMAT Get(CInputElement::EFormat inputElementFormat);
 }
 
 }
