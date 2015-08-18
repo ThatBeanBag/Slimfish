@@ -25,84 +25,77 @@
 namespace Slim {
 
 // Forward Declaration
-class CVec3;
+class CVector3;
 
-/************************************************************************/
-/* CQuaternion
-/*
-/* Implementation of a standard quaternion for rotations in both physics
-/* and 3D graphics.
-/************************************************************************/
+/** Class implementing a standard quaternion for rotations in both physics
+	and 3D graphics.
+*/
 class CQuaternion {
 	// Member Functions
 public:
-	/**
-	* Default constructor
-	*
-	* Initializes to identity rotation (0 degrees).
-	* 
-	* @author: 	Hayden Asplet
+	/** Default Constructor.
+		@remarks Initialize to identity rotation (0 degrees).
+	 	@author Hayden Asplet
 	*/
 	CQuaternion();
 
-	/**
-	* Constructs a quaternion from explicit real, i, j and k values.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	float real
-	* @param:	float i
-	* @param:	float j
-	* @param:	float k
+	/** Construct a quaternion from explicit real, i, j and k values.
+	 	@author Hayden Asplet
 	*/
 	CQuaternion(float real, float i, float j,  float k);
 
-	/**
-	* Constructs a quaternion from an axis/angle.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	axis
-	* @param:	radAngle - angle in radians
+	/** Construct a quaternion from an axis/angle.
+	 	@author Hayden Asplet
 	*/
-	CQuaternion(const CVec3& axis, float radAngle);
+	CQuaternion(const CVector3& axis, float radAngle);
 
-	/**
-	* Constructs a quaternion from 3 perpendicular axis.
-	* 
-	* @author: 	Hayden Asplet
-	* @param:	right 
-	* @param:	up 
-	* @param:	forward
+	/** Construct a quaternion from 3 perpendicular axis.
+	 	@author Hayden Asplet
 	*/
-	CQuaternion(const CVec3& right, const CVec3& up, const CVec3& forward);
+	CQuaternion(const CVector3& right, const CVector3& up, const CVector3& forward);
 
-	/**
-	* Destructs a quaternion
-	* 
-	* @author: 	Hayden Asplet
+	/** Destructor.
+	 	@author Hayden Asplet
 	*/
 	~CQuaternion();
 
-
 	// Assignment Operators
+
+	/** Add two quaternions together and assign the result. @author Hayden Asplet */
 	CQuaternion& operator*=(const CQuaternion& other);
+	/** Subtract a quaternion from this one and assign the result. @author Hayden Asplet */
 	CQuaternion& operator+=(const CQuaternion& other);
+	/** Multiply two quaternions together and assign the result. @author Hayden Asplet */
 	CQuaternion& operator-=(const CQuaternion& other);
+	/** Multiply a quaternion by a scalar and assign the result. @author Hayden Asplet */
 	CQuaternion& operator*=(float scalar);
 
 	// Operators
+
+	/** Equate a quaternion to another. @author Hayden Asplet. */
 	bool operator==(const CQuaternion& other);
+	/** Determine if a quaternion is not equal to another. @author Hayden Asplet */
 	bool operator!=(const CQuaternion& other);
 
+	/** Add two quaternions together. @author Hayden Asplet */
 	const CQuaternion operator+(const CQuaternion& other) const;
+	/** Subtract a quaternion from this one. @author Hayden Asplet */
 	const CQuaternion operator-(const CQuaternion& other) const;
+	/** Multiply two quaternions together. @author Hayden Asplet */
 	const CQuaternion operator*(const CQuaternion& other) const;
+	/** Multiply a quaternion by a scalar @author Hayden Asplet */
 	const CQuaternion operator*(float scalar) const;
 
+	/** Get the normalised version of the quaternion (magnitude 1). @author Hayden Asplet */
 	const CQuaternion GetNormalise() const;
+	/** Get the conjugate of the quaternion. @author Hayden Asplet */
 	const CQuaternion GetConjugate() const;
+	/** Get the inverse of the quaternion. @author Hayden Asplet */
 	const CQuaternion GetInverse() const;
+	/** Get the magnitude of the quaternion. @author Hayden Asplet */
 	const float GetMagnitude() const;
 
+	/** Convert the quaternion to a 4x4 rotation matrix. @author Hayden Asplet */
 	const CMatrix4x4 ToRotationMatrix() const;
 protected:
 private:
@@ -116,6 +109,7 @@ private:
 	float m_k;
 };
 
+/** Multiply a quaternion by a scalar. @author Hayden Asplet */
 const CQuaternion operator*(float scalar, const CQuaternion& other);
 
 }

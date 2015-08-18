@@ -39,7 +39,7 @@ namespace Slim {
 		/** Construct a D3D10 buffer on the gpu (can also be stored in system memory see isInSystemMemory).
 		 	@author Hayden Asplet
 		 	@param 
-				pDevice Pointer to the D3D10 device.
+				pD3DDevice Pointer to the D3D10 device.
 		 	@param 
 				bufferType Type of the buffer e.g. vertex or index.
 		 	@param 
@@ -50,7 +50,7 @@ namespace Slim {
 				isInSystemMemory True if the buffer should be stored in system memory and not in video 
 				memory.
 		*/
-		CD3D10GpuBuffer(ID3D10Device* pDevice, 
+		CD3D10GpuBuffer(ID3D10Device* pD3DDevice, 
 						EBufferType bufferType, size_t bufferSize, void* pSource,
 						AGpuBuffer::EUsage usage, bool isInSystemMemory);
 		/** Destructor
@@ -58,13 +58,18 @@ namespace Slim {
 		*/
 		~CD3D10GpuBuffer();
 
+		/** Get the directX 10 specific buffer.
+			@remarks
+				This is to be used by the directX 10 renderer only.
+		 	@author Hayden Asplet
+		*/
+		ID3D10Buffer* GetD3DBuffer();
 	protected:
 	private:
 		/** @copydoc AGpuBuffer::VLock */
 		virtual void* VLock(size_t offset, size_t size, ELockType lockType) override;
 		/** @copydoc AGpuBuffer::VUnlock */
 		virtual void VUnlock() override;
-
 		// Member Variables
 	public:
 	protected:

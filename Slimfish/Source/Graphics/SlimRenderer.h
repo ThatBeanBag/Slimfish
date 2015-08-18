@@ -22,14 +22,16 @@
 // Local Includes
 #include "SlimTypes.h"
 #include "SlimTextureLayer.h"
+#include "SlimIndexGpuBuffer.h"
 
 namespace Slim {
 	// Forward Declaration
 	class CMatrix4x4;
-	class CVec3;
+	class CVector3;
 	class ATexture;
 	class AVertexGpuBuffer;
-	class AIndexGpuBuffer;
+	class AShaderProgram;
+	class CVertexDeclaration;
 	struct TColour;
 
 	class CRenderingError {
@@ -72,27 +74,54 @@ namespace Slim {
 
 		/** Create a vertex buffer on the GPU.
 		 	@author Hayden Asplet
+		 	@param numVertices The number of vertices to stored in the buffer.
 		 	@param stride Stride or size of a single vertex.
-		 	@param numVerts The number of vertices to stored in the buffer.
 		 	@param usage Indicates how the buffer is going to be used for optimization purposes.
 		 	@return 
-				A pointer to the buffer for reading/writing/locking depending on intended 
+				A pointer to the buffer for reading/writing depending on intended 
 				usage of the buffer.
 		*/
-		virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t stride, size_t numVerts, AGpuBuffer::EUsage usage) = 0;
+		virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) = 0;
 
 		/** Create a index buffer on the GPU.
 			@author Hayden Asplet
-			@param stride Stride or size of a single index.
-			@param numVerts The number of indices to stored in the buffer.
+			@param numIndices The number of indices to stored in the buffer.
+			@param indexSize Stride or size of a single index.
 			@param usage Indicates how the buffer is going to be used for optimization purposes.
 			@return
-				A pointer to the buffer for reading/writing/locking depending on intended
+				A pointer to the buffer for reading/writing depending on intended
 				usage of the buffer.
 		*/
-		virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t stride, size_t numIndices, AGpuBuffer::EUsage usage) = 0;
+		virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) = 0;
 
-		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ATexture::EType textureType, ATexture::EUsage usage) = 0;
+		/** Loads a texture from file.
+		 	@author Hayden Asplet
+		*/
+		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name) = 0;
+
+		/** Perform a render operation, rendering a set of vertices.
+		 	@author Hayden Asplet
+		 	@param 
+				vertexDeclaration Describes the layout of vertices and how they are to be interpreted 
+				by the rendering pipeline.	
+		 	@param 
+				pVertexBuffer Buffer containing the vertex data.
+		 	@param 
+				pIndexBuffer Buffer containing the index data. This is optional vertices do not need to 
+				be indexed however to avoid duplicate vertices it is recommended to use an index buffer.
+		*/
+		virtual void VRender(const CVertexDeclaration& vertexDeclaration, 
+							 shared_ptr<AVertexGpuBuffer> pVertexBuffer, 
+							 shared_ptr<AIndexGpuBuffer> pIndexBuffer = nullptr) = 0;
+
+		/** Bind either a vertex, pixel or geometry shader program to the renderer.
+			@remarks
+				Only one of each type of shader can be bound at a time the rendering pipeline will use
+				the shader to perform operations on vertices that are rendered using VRender().
+		 	@author Hayden Asplet
+		 	@param pShader Pointer to the vertex, pixel or geometry shader to bind.
+		*/
+		virtual void VSetShaderProgram(shared_ptr<AShaderProgram> pShader);
 
 		/** Set the world transform. */
 		virtual void VSetWorldTransform(const CMatrix4x4& worldTransform) = 0;
@@ -197,13 +226,17 @@ namespace Slim {
 		*/
 		virtual void VSetTextureBorderColour(size_t layer, const TColourValue& colour) = 0;
 
+		virtual void VSetVertexDeclaration(const CVertexDeclaration& vertexDeclaration) = 0;
+		virtual void VSetVertexBuffer(shared_ptr<AVertexGpuBuffer> pVertexBuffer) = 0;
+		virtual void VSetIndexBuffer(shared_ptr<AIndexGpuBuffer> pIndexBuffer) = 0;
+
 		// Member Variables
 	public:
 	protected:
-		bool m_isVSyncEnabled;
-		bool m_isWindowed;
-		int m_width;
-		int m_height;
+		bool m_IsVSyncEnabled;
+		bool m_IsWindowed;
+		int m_Width;
+		int m_Height;
 
 	private:
 		size_t m_disableTextureLayerFrom;	// Texture layer from this to g_MAX_TEXTURE_LAYERS are currently disabled.

@@ -6,16 +6,16 @@
 //
 // (c) 2005 - 2015 Media Design School
 //
-// File Name	: SlimInputElement.h
-// Description	: CSlimInputElement declaration file.
+// File Name	: SlimVertexDeclaration.h
+// Description	: AVertexDelcaration and CInputElement declaration file.
 // Author		: Hayden Asplet.
 // Mail			: hayden.asplet@mediadesignschool.com
 //
 
 #pragma once
 
-#ifndef __SLIMINPUTELEMENT_H__
-#define __SLIMINPUTELEMENT_H__
+#ifndef __SLIMVERTEXDECLARATION_H__
+#define __SLIMVERTEXDECLARATION_H__
 
 // Library Includes
 #include <string>
@@ -62,7 +62,7 @@ public:
 		@param offsetInBuffer The offset in bytes of the element in the buffer of the vertex declaration.
 		@param format The format or type of the element.
 	*/
-	CInputElement(const std::string& semanticName, size_t offsetInBuffer, EFormat format);
+	CInputElement(const std::string& semanticName, EFormat format);
 
 	/** Destructor.
 		@author Hayden Asplet
@@ -73,47 +73,73 @@ public:
 	const std::string& GetSemanticName() const;
 
 	/** Get the offset in bytes of the element in the buffer. @author Hayden Asplet */
-	const size_t GetOffset() const;
+	const size_t GetSize() const;
 
 	/** Get the format/type of the input element. @author Hayden Asplet */
 	const EFormat GetFormat() const;
 protected:
 private:
+	static const size_t GetSizeFromFormat(EFormat format);
+
 	// Member Variables
 public:
 protected:
 private:
 	std::string m_SemanticName;	// The literal string of the name of the semantic.
-	size_t m_OffsetInBuffer;	// The offset in bytes of the element in the buffer of the vertex declaration.
+	size_t m_Size;				// The size in bytes of the element.
 	EFormat m_Format;			// The format or type of the element.
 };
 
 /** Abstract class encapsulating a list of vertex input elements.
 @remarks
-		
+	Describes how vertex data in a buffer is to be interpreted by the rendering pipeline.
 */
-class AVertexDeclaration {
-	typedef std::list<CInputElement> TElementList;
+class CVertexDeclaration {
+	typedef std::vector<CInputElement> TElementList;
+public:
+	/** List of primitive types for describing how vertex data gets interpreted by the 
+		rendering system.
+	*/
+	enum EPrimitiveType {
+		// A list of points.
+		PRIMITIVE_TYPE_POINTLIST,
+		// A list of lines, 2 vertices to a line.
+		PRIMITIVE_TYPE_LINELIST,
+		// A strip of connected lines, each new vertex adds a new line (excluding the first).
+		PRIMITIVE_TYPE_LINESTRIP,
+		// A list of triangles, 3 vertices per triangle.
+		PRIMITIVE_TYPE_TRIANGLELIST,
+		// A strip of connected triangles, each new vertex adds a new triangle (excluding the first two).
+		PRIMITIVE_TYPE_TRIANGLESTRIP,
+		// A fan of triangles, similar to PRIMITIVE_TYPE_TRIANGLESTRIP except each triangle shares one 
+		// central vertex (the first vertex).
+		//PRIMITIVE_TYPE_TRIANGLEFAN	// Not used in directX 10.
+	};
 
 	// Member Functions
 public:
 	/** Default constructor.
+		@note Sets the primitive type to PRIMITIVE_TYPE_TRIANGLELIST by default.
 	 	@author Hayden Asplet
 	*/
-	AVertexDeclaration();
+	CVertexDeclaration();
+
+	/** Construct a vertex declaration by specifying the primitive type to use.
+	 	@author Hayden Asplet
+	*/
+	CVertexDeclaration(EPrimitiveType primitiveType);
 
 	/** Destructor.
 	 	@author Hayden Asplet
 	*/
-	virtual ~AVertexDeclaration();
+	~CVertexDeclaration();
 
 	/** Add an element to the list of elements in the declaration.
 	 	@author Hayden Asplet
 		@param semanticName The literal string of the name of the semantic.
-		@param offsetInBuffer The offset in bytes of the element in the buffer of the vertex declaration.
 		@param format The format or type of the element.
 	*/
-	void AddElement(const std::string& semanticName, size_t offsetInBuffer, CInputElement::EFormat format);
+	void AddElement(const std::string& semanticName, CInputElement::EFormat format);
 
 	/** Add an input element to the list of the elements in the vertex declaration.
 	 	@author Hayden Asplet
@@ -137,24 +163,38 @@ public:
 	*/
 	const CInputElement& GetElement(size_t index) const;
 
-	/** Get the number of elements in the list.
-	 	@author Hayden Asplet
-	 	@return Number of elements currently in the declaration.
-	*/
+	/** Get the number of elements in the list. @author Hayden Asplet */
 	int GetNumElements() const;
+
+	/** Set the primitive type of the vertex declaration. @author Hayden Asplet */
+	void SetPrimitiveType(EPrimitiveType primitiveType);
+	/** Get the primitive type described by this vertex declaration. @author Hayden Asplet */
+	EPrimitiveType GetPrimitiveType() const;
 protected:
 private:
-	virtual void VAddElement(const CInputElement& inputElement) = 0;
-	virtual void VRemoveElement(size_t index) = 0;
-	virtual void VClearElements() = 0;
+	/** Internal delegating method for derived classes to implement. See AddElement().
+	 	@author Hayden Asplet
+	*/
+	//virtual void VAddElement(const CInputElement& inputElement) = 0;
+
+	/** Internal delegating method for derived classes to implement. See RemoveElement().
+	 	@author Hayden Asplet
+	*/
+	//virtual void VRemoveElement(size_t index) = 0;
+
+	/** Internal delegating method for derived classes to implement. See ClearElements().
+	 	@author Hayden Asplet
+	*/
+	//virtual void VClearElements() = 0;
 		
 	// Member Variables
 public:
 protected:
-	TElementList m_ElementList;
+	TElementList m_ElementList;	// The list of input elements that make up the vertex declaration.
 private:
+	EPrimitiveType m_PrimitiveType;
 };
 
 }
 
-#endif	// __SLIMINPUTELEMENT_H__
+#endif	// __SLIMVERTEXDECLARATION_H__

@@ -23,8 +23,12 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <map>
 
 namespace Slim {
+
+using std::static_pointer_cast;
+using std::shared_ptr;
 
 // Commonly used constants
 const size_t g_MAX_TEXTURE_LAYERS = 8;
@@ -38,8 +42,8 @@ const size_t g_MAX_ACTIVE_LIGHTS = 8;
 #include "..\Math\SlimMatrix4x4.h"
 #include "..\Math\SlimQuaternion.h"
 #include "..\Math\SlimVector.h"
+#include "..\Graphics\SlimColour.h"
 
-using std::shared_ptr;
 
 
 #endif	// __SLIMSTD_H__

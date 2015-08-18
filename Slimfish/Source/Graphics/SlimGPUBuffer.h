@@ -81,6 +81,8 @@ public:
 	/** Construct a buffer stored in video memory (can also be stored in system memory
 		see isInSystemMemory).
 		@author Hayden Asplet
+		@param 
+			size Size of the buffer in bytes.
 		@param
 			usage How the buffer is intended to be used e.g. statically, dynamically, write only
 			etc. see AGPUBuffer::EUsage.
@@ -90,7 +92,7 @@ public:
 			at some point, but can be used for heavily dynamic buffers that will be changed frequently
 			by the CPU.
 		*/
-	AGpuBuffer(EUsage usage, bool isInSystemMemory);
+	AGpuBuffer(size_t size, EUsage usage, bool isInSystemMemory);
 
 	/** Destructor
 		@author Hayden Asplet

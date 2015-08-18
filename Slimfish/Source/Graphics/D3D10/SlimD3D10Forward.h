@@ -19,9 +19,20 @@
 
 // Library Includes
 #include <d3d10.h>
+#include <dxgi.h>
 #include <d3dx10.h>
+#include <d3dcompiler.h>
 
 // Local Includes
 #include "SlimD3D10Conversions.h"
+
+namespace Slim {
+	class CD3D10Renderer;
+	class CD3D10Texture;
+	class CD3D10GpuBuffer;
+	class CD3D10VertexGpuBuffer;
+	class CD3D10IndexGpuBuffer;
+	class CD3D10ShaderProgram;
+}
 
 #endif // __SLIMD3D10FORWARD_H__

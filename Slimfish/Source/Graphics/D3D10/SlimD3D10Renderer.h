@@ -23,24 +23,38 @@
 
 // Local Includes
 #include "../SlimRenderer.h"
+#include "SlimD3D10Forward.h"
 
 namespace Slim {
 
+/** Specialization of ARenderer for rendering in DirectX 10.
+	@remarks
+*/
 class CD3D10Renderer :public ARenderer {
 	// Member Functions
 public:
 	CD3D10Renderer(int width, int height, bool isWindowed);
 	virtual ~CD3D10Renderer();
 
-	/* @copydoc ARenderer::VInitialize() */
+	/* @copydoc ARenderer::VInitialize */
 	virtual bool VInitialize() override;
+	/* @copydoc ARenderer::VPreRender */
 	virtual void VPreRender() override;
+	/* @copydoc ARenderer::VPostRender */
 	virtual void VPostRender() override;
 
-	virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t stride, size_t numVerts, AGpuBuffer::EUsage usage) override;
-	virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t stride, size_t numIndices, AGpuBuffer::EUsage usage) override;
+	/* @copydoc ARenderer::VCreateVertexBuffer */
+	virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) override;
+	/* @copydoc ARenderer::VCreateVertexBuffer */
+	virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) override;
 
-	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ATexture::EType textureType, ATexture::EUsage usage) override;
+	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name) override;
+
+	virtual void VRender(const CVertexDeclaration& vertexDeclaration, 
+						 shared_ptr<AVertexGpuBuffer> pVertexBuffer,
+						 shared_ptr<AIndexGpuBuffer> pIndexBuffer /* = nullptr */);
+
+	virtual void VSetShaderProgram(shared_ptr<AShaderProgram> pShader);
 
 	virtual void VSetWorldTransform(const CMatrix4x4& worldTransform) override;
 	virtual void VSetViewTransform(const CMatrix4x4& viewTransform) override;
@@ -50,7 +64,6 @@ public:
 	virtual void VSetBackgroundColour(const TColour& colour) override;
 
 	virtual void VSetFog(EFogType fogType, const TColourValue& colour = TColourValue::s_BLACK, float start = 0.0f, float end = 1.0f, float exponentialDensity = 1.0f) override;
-
 protected:
 private:
 	DXGI_SAMPLE_DESC CheckMultiSampleLevels();
@@ -60,6 +73,12 @@ private:
 	virtual void VSetTextureLayerBlendState(size_t layer, const TTextureLayerBlendState& blendState) override;
 	virtual void VSetTextureAddressModes(size_t layer, const TTextureUVWAddressModes& addressModes) override;
 	virtual void VSetTextureBorderColour(size_t layer, const TColourValue& colour) override;
+
+	virtual void VSetVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
+	virtual void VSetVertexBuffer(shared_ptr<AVertexGpuBuffer> pVertexBuffer);
+	virtual void VSetIndexBuffer(shared_ptr<AIndexGpuBuffer> pIndexBuffer);
+
+	std::vector<D3D10_INPUT_ELEMENT_DESC> GetD3DVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
 
 	// Member Variables
 public:
@@ -72,8 +91,8 @@ private:
 	ID3D10DepthStencilState* m_pDepthStencilState;
 	ID3D10DepthStencilView* m_pDepthStencilView;
 	ID3D10RasterizerState* m_pRasterizerState;
-	ID3D10SamplerState* m_ppSamplerStates[g_MAX_TEXTURE_LAYERS];
-	ID3D10ShaderResourceView* m_ppTextures[g_MAX_TEXTURE_LAYERS];
+	std::vector<ID3D10SamplerState*> m_SamplerStates;
+	std::vector<ID3D10ShaderResourceView*> m_Textures;
 
 	D3DXCOLOR m_backgroundColour;
 	D3DXCOLOR m_ambientColour;
@@ -81,6 +100,12 @@ private:
 	
 	DXGI_SAMPLE_DESC m_sampleDesc;
 	DXGI_SWAP_CHAIN_DESC m_d3dpp;	// Presentation parameters.
+
+	shared_ptr<CD3D10ShaderProgram> m_pBoundVertexShader;
+	shared_ptr<CD3D10ShaderProgram> m_pBoundPixelShader;
+	shared_ptr<CD3D10ShaderProgram> m_pBoundGeometryShader;
+
+	CVertexDeclaration::EPrimitiveType m_PrimitiveType;
 };
 
 }

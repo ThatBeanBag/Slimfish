@@ -43,19 +43,46 @@
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Renderer.cpp">
       <Filter>Graphics\D3D10</Filter>
     </ClCompile>
-    <ClCompile Include="..\Graphics\SlimGPUBuffer.cpp">
-      <Filter>Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Conversions.cpp">
       <Filter>Graphics\D3D10</Filter>
     </ClCompile>
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.cpp">
       <Filter>Graphics\D3D10</Filter>
     </ClCompile>
-    <ClCompile Include="..\Graphics\SlimInputElement.cpp">
+    <ClCompile Include="..\Graphics\SlimVertexDeclaration.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\Graphics\D3D10\SlimD3D10InputElement.cpp" />
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10VertexDeclaration.cpp">
+      <Filter>Graphics\D3D10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10VertexGpuBuffer.cpp">
+      <Filter>Graphics\D3D10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimIndexGpuBuffer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimVertexGpuBuffer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10IndexGpuBuffer.cpp">
+      <Filter>Graphics\D3D10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10ShaderProgram.cpp">
+      <Filter>Graphics\D3D10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimShaderParams.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimShaderProgram.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimTexture.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimGpuBuffer.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -92,9 +119,6 @@
     <ClInclude Include="..\Graphics\SlimTextureLayer.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\Graphics\SlimGPUBuffer.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\Graphics\D3D9\SlimD3D9Renderer.h">
       <Filter>Graphics\D3D9</Filter>
     </ClInclude>
@@ -128,17 +152,35 @@
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.h">
       <Filter>Graphics\D3D10</Filter>
     </ClInclude>
-    <ClInclude Include="..\Graphics\SlimInputElement.h">
-      <Filter>Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\Graphics\SlimShaderProgram.h">
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Graphics\SlimIndexGpuBuffer.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\Graphics\D3D10\SlimD3D10InputElement.h">
+    <ClInclude Include="..\Graphics\SlimVertexDeclaration.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10VertexDeclaration.h">
       <Filter>Graphics\D3D10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10VertexGpuBuffer.h">
+      <Filter>Graphics\D3D10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Math\SlimMath.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10IndexGpuBuffer.h">
+      <Filter>Graphics\D3D10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimShaderParams.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10ShaderProgram.h">
+      <Filter>Graphics\D3D10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimGpuBuffer.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

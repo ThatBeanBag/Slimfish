@@ -13,13 +13,22 @@
   <ItemGroup>
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Conversions.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.cpp" />
-    <ClCompile Include="..\Graphics\D3D10\SlimD3D10InputElement.cpp" />
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10IndexGpuBuffer.cpp" />
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10ShaderProgram.cpp" />
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10Texture.cpp" />
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10VertexDeclaration.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Renderer.cpp" />
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10VertexGpuBuffer.cpp" />
     <ClCompile Include="..\Graphics\SlimColour.cpp" />
-    <ClCompile Include="..\Graphics\SlimGPUBuffer.cpp" />
-    <ClCompile Include="..\Graphics\SlimInputElement.cpp" />
+    <ClCompile Include="..\Graphics\SlimGpuBuffer.cpp" />
+    <ClCompile Include="..\Graphics\SlimIndexGpuBuffer.cpp" />
+    <ClCompile Include="..\Graphics\SlimShaderParams.cpp" />
+    <ClCompile Include="..\Graphics\SlimShaderProgram.cpp" />
+    <ClCompile Include="..\Graphics\SlimTexture.cpp" />
+    <ClCompile Include="..\Graphics\SlimVertexDeclaration.cpp" />
     <ClCompile Include="..\Graphics\SlimRenderer.cpp" />
     <ClCompile Include="..\Graphics\SlimTextureLayer.cpp" />
+    <ClCompile Include="..\Graphics\SlimVertexGpuBuffer.cpp" />
     <ClCompile Include="..\Math\SlimMatrix4x4.cpp" />
     <ClCompile Include="..\Math\SlimQuaternion.cpp" />
     <ClCompile Include="..\Math\SlimVector.cpp" />
@@ -33,23 +42,28 @@
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Conversions.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Forward.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.h" />
-    <ClInclude Include="..\Graphics\D3D10\SlimD3D10InputElement.h" />
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10IndexGpuBuffer.h" />
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10ShaderProgram.h" />
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10VertexDeclaration.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Renderer.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Texture.h" />
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10VertexGpuBuffer.h" />
     <ClInclude Include="..\Graphics\D3D9\SlimD3D9Renderer.h" />
     <ClInclude Include="..\Graphics\D3D9\SlimD3D9Texture.h" />
     <ClInclude Include="..\Graphics\SlimColour.h" />
+    <ClInclude Include="..\Graphics\SlimGpuBuffer.h" />
     <ClInclude Include="..\Graphics\SlimIndexGpuBuffer.h" />
-    <ClInclude Include="..\Graphics\SlimInputElement.h" />
+    <ClInclude Include="..\Graphics\SlimShaderParams.h" />
+    <ClInclude Include="..\Graphics\SlimVertexDeclaration.h" />
     <ClInclude Include="..\Graphics\SlimShaderProgram.h" />
     <ClInclude Include="..\Graphics\SlimTypes.h" />
-    <ClInclude Include="..\Graphics\SlimGPUBuffer.h" />
     <ClInclude Include="..\Graphics\SlimMaterial.h" />
     <ClInclude Include="..\Graphics\SlimRenderer.h" />
     <ClInclude Include="..\Graphics\SlimScene.h" />
     <ClInclude Include="..\Graphics\SlimTexture.h" />
     <ClInclude Include="..\Graphics\SlimTextureLayer.h" />
     <ClInclude Include="..\Graphics\SlimVertexGpuBuffer.h" />
+    <ClInclude Include="..\Math\SlimMath.h" />
     <ClInclude Include="..\Math\SlimMatrix4x4.h" />
     <ClInclude Include="..\Math\SlimQuaternion.h" />
     <ClInclude Include="..\Math\SlimVector.h" />
@@ -88,12 +102,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath);$(DXSDK_DIR)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath);$(DXSDK_DIR)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

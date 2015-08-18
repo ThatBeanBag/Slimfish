@@ -111,9 +111,9 @@ CMatrix4x4& CMatrix4x4::operator-=(const CMatrix4x4& other)
 	return *this;
 }
 
-const CVec3 CMatrix4x4::Transform(const CVec3& vector)
+const CVector3 CMatrix4x4::Transform(const CVector3& vector)
 {
-	CVec3 result(0.0f, 0.0f, 0.0f);
+	CVector3 result(0.0f, 0.0f, 0.0f);
 	float w = 0.0f;
 
 	// Loop through row by row to minimize cache misses.
@@ -164,7 +164,7 @@ void CMatrix4x4::SetPosition(float x, float y, float z)
 	m_pMatrix[2][3] = z;
 }
 
-void CMatrix4x4::SetPosition(const CVec3& position)
+void CMatrix4x4::SetPosition(const CVector3& position)
 {
 	SetPosition(position.GetX(), position.GetY(), position.GetZ());
 }
@@ -318,28 +318,28 @@ const CMatrix4x4 CMatrix4x4::GetInverse() const
 	return inverse;
 }
 
-const CVec3 CMatrix4x4::GetPosition() const
+const CVector3 CMatrix4x4::GetPosition() const
 {
 	// Return the forth column of the matrix which is just the translational information.
-	return CVec3(m_pMatrix[0][3], m_pMatrix[1][3], m_pMatrix[2][3]);
+	return CVector3(m_pMatrix[0][3], m_pMatrix[1][3], m_pMatrix[2][3]);
 }
 
-const CVec3 CMatrix4x4::GetDirection() const
+const CVector3 CMatrix4x4::GetDirection() const
 {
 	// Return third column of the rotation component of the matrix.
-	return CVec3(m_pMatrix[0][2], m_pMatrix[1][2], m_pMatrix[2][2]);
+	return CVector3(m_pMatrix[0][2], m_pMatrix[1][2], m_pMatrix[2][2]);
 }
 
-const CVec3 CMatrix4x4::GetRight() const 
+const CVector3 CMatrix4x4::GetRight() const 
 {
 	// Return first column of the rotation component of the matrix.
-	return CVec3(m_pMatrix[0][0], m_pMatrix[1][0], m_pMatrix[2][0]);
+	return CVector3(m_pMatrix[0][0], m_pMatrix[1][0], m_pMatrix[2][0]);
 }
 
-const CVec3 CMatrix4x4::GetUp() const
+const CVector3 CMatrix4x4::GetUp() const
 {
 	// Return second column of the rotation component of the matrix.
-	return CVec3(m_pMatrix[0][1], m_pMatrix[1][1], m_pMatrix[2][1]);
+	return CVector3(m_pMatrix[0][1], m_pMatrix[1][1], m_pMatrix[2][1]);
 }
 
 void CMatrix4x4::Copy(const float pMatrix[4][4])
@@ -405,12 +405,12 @@ const CMatrix4x4 operator-(const CMatrix4x4& matrixA, const CMatrix4x4& matrixB)
 /* Helper Build Functions
 /************************************************************************/
 
-const CMatrix4x4 BuildScaleMatrix(float xScale, float yScale, float zScale)
+const CMatrix4x4 CMatrix4x4::BuildScale(float xScale, float yScale, float zScale)
 {
-	return BuildScaleMatrix(CVec3(xScale, yScale, zScale));
+	return BuildScale(CVector3(xScale, yScale, zScale));
 }
 
-const CMatrix4x4 BuildScaleMatrix(const CVec3& scale)
+const CMatrix4x4 CMatrix4x4::BuildScale(const CVector3& scale)
 {
 	CMatrix4x4 scaleMatrix = CMatrix4x4::s_IDENTITY;
 	scaleMatrix.SetScale(scale);
@@ -418,7 +418,7 @@ const CMatrix4x4 BuildScaleMatrix(const CVec3& scale)
 	return scaleMatrix;
 }
 
-const CMatrix4x4 BuildRotationXMatrix(float radians)
+const CMatrix4x4 CMatrix4x4::BuildRotationX(float radians)
 {
 	float cosTheta = cosf(radians);
 	float sinTheta = sinf(radians);
@@ -436,7 +436,7 @@ const CMatrix4x4 BuildRotationXMatrix(float radians)
 	return rotation;
 }
 
-const CMatrix4x4 BuildRotationYMatrix(float radians)
+const CMatrix4x4 CMatrix4x4::BuildRotationY(float radians)
 {
 	float cosTheta = cosf(radians);
 	float sinTheta = sinf(radians);
@@ -454,7 +454,7 @@ const CMatrix4x4 BuildRotationYMatrix(float radians)
 	return rotation;
 }
 
-const CMatrix4x4 BuildRotationZMatrix(float radians)
+const CMatrix4x4 CMatrix4x4::BuildRotationZ(float radians)
 {
 	float cosTheta = cosf(radians);
 	float sinTheta = sinf(radians);
@@ -472,7 +472,7 @@ const CMatrix4x4 BuildRotationZMatrix(float radians)
 	return rotation;
 }
 
-const CMatrix4x4 BuildRotationFromAxisMatrix(const CVec3& right, const CVec3& up, const CVec3& forward)
+const CMatrix4x4 CMatrix4x4::BuildRotationFromAxis(const CVector3& right, const CVector3& up, const CVector3& forward)
 {
 	CMatrix4x4 matrix;
 
@@ -491,17 +491,17 @@ const CMatrix4x4 BuildRotationFromAxisMatrix(const CVec3& right, const CVec3& up
 	return matrix;
 }
 
-const CMatrix4x4 BuildYawPitchRollMatrix(float radYaw, float radPitch, float radRoll)
+const CMatrix4x4 CMatrix4x4::BuildYawPitchRoll(float radYaw, float radPitch, float radRoll)
 {
-	return BuildRotationYMatrix(radYaw) * BuildRotationXMatrix(radPitch) * BuildRotationZMatrix(radRoll);
+	return BuildRotationY(radYaw) * BuildRotationX(radPitch) * BuildRotationZ(radRoll);
 }
 
-const CMatrix4x4 BuildTranslationMatrix(float x, float y, float z)
+const CMatrix4x4 CMatrix4x4::BuildTranslation(float x, float y, float z)
 {
-	return BuildTranslationMatrix(CVec3(x, y, z));
+	return BuildTranslation(CVector3(x, y, z));
 }
 
-const CMatrix4x4 BuildTranslationMatrix(const CVec3& position)
+const CMatrix4x4 CMatrix4x4::BuildTranslation(const CVector3& position)
 {
 	CMatrix4x4 translation(CMatrix4x4::s_IDENTITY);
 	translation.SetPosition(position);
@@ -509,13 +509,13 @@ const CMatrix4x4 BuildTranslationMatrix(const CVec3& position)
 	return translation;
 }
 
-const CMatrix4x4 BuildLookAtMatrix(const CVec3& eye, const CVec3& at, const CVec3& up)
+const CMatrix4x4 CMatrix4x4::BuildLookAt(const CVector3& eye, const CVector3& at, const CVector3& up)
 {
-	CVec3 zAxis = Normalise(at - eye);
-	CVec3 xAxis = Normalise(CrossProduct(CVec3::s_UP, zAxis));
-	CVec3 yAxis = CrossProduct(zAxis, xAxis);
+	CVector3 zAxis = Normalise(at - eye);
+	CVector3 xAxis = Normalise(CrossProduct(CVector3::s_UP, zAxis));
+	CVector3 yAxis = CrossProduct(zAxis, xAxis);
 
-	CMatrix4x4 matrix = BuildRotationFromAxisMatrix(xAxis, yAxis, zAxis);
+	CMatrix4x4 matrix = BuildRotationFromAxis(xAxis, yAxis, zAxis);
 
 	matrix[3][0] = DotProduct(xAxis, -eye);
 	matrix[3][1] = DotProduct(yAxis, -eye);
@@ -524,7 +524,7 @@ const CMatrix4x4 BuildLookAtMatrix(const CVec3& eye, const CVec3& at, const CVec
 	return matrix;
 }
 
-const CMatrix4x4 BuildProjectionMatrix(float radFOV, float aspectRatio, float near, float far)
+const CMatrix4x4 CMatrix4x4::BuildProjection(float radFOV, float aspectRatio, float near, float far)
 {
 	float yScale = tan(radFOV / 2.0f);
 	if (yScale == 0) {
@@ -544,7 +544,7 @@ const CMatrix4x4 BuildProjectionMatrix(float radFOV, float aspectRatio, float ne
 	return projection;
 }
 
-const CMatrix4x4 BuildOrthographicMatrix(float width, float height, float near, float far)
+const CMatrix4x4 CMatrix4x4::BuildOrthographic(float width, float height, float near, float far)
 {
 	CMatrix4x4 ortho(CMatrix4x4::s_IDENTITY);
 	ortho[0][0] = 2.0f / width;

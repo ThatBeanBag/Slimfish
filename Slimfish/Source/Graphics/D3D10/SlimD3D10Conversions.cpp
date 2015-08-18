@@ -24,38 +24,56 @@
 
 namespace Slim {
 
-	CVec3 D3D10Conversions::Get(const D3DXVECTOR3& vector)
+	CVector3 D3D10Conversions::GetVec3(const D3DXVECTOR3& vector)
 	{
-		return CVec3(vector.x, vector.y, vector.z);
+		return CVector3(vector.x, vector.y, vector.z);
 	}
 
-	D3DXVECTOR3 D3D10Conversions::Get(const CVec3& vector)
+	D3DXVECTOR3 D3D10Conversions::GetVec3(const CVector3& vector)
 	{
 		return D3DXVECTOR3(vector.GetX(), vector.GetY(), vector.GetZ());
 	}
 
-	CMatrix4x4 D3D10Conversions::Get(const D3DXMATRIX& matrix)
+	CMatrix4x4 D3D10Conversions::GetMatrix4x4(const D3DXMATRIX& d3dMatrix)
 	{
+		CMatrix4x4 matrix;
 
+		// Transpose the matrix, D3D uses row-major.
+		for (int i = 0; i < 4; ++i) {
+			for (int j = 0; j < 4; ++j) {
+				matrix[i][j] = d3dMatrix.m[j][i];
+			}
+		}
+
+		return matrix;
 	}
 
-	D3DXMATRIX D3D10Conversions::Get(const CMatrix4x4& matrix)
+	D3DXMATRIX D3D10Conversions::GetMatrix4x4(const CMatrix4x4& matrix)
 	{
+		D3DXMATRIX d3dMatrix;
 
+		// Transpose the matrix, D3D uses row-major.
+		for (int i = 0; i < 4; ++i) {
+			for (int j = 0; j < 4; ++j) {
+				d3dMatrix.m[i][j] = matrix[j][i];
+			}
+		}
+
+		return d3dMatrix;
 	}
 
-	D3DXCOLOR D3D10Conversions::Get(const TColourValue& colour)
+	D3DXCOLOR D3D10Conversions::GetColour(const TColourValue& colour)
 	{
 		return D3DXCOLOR(colour.m_r, colour.m_g, colour.m_b, colour.m_a);
 	}
 
 
-	TColourValue D3D10Conversions::Get(const D3DXCOLOR& colour)
+	TColourValue D3D10Conversions::GetColour(const D3DXCOLOR& colour)
 	{
 		return CreateColourValueARGB(colour.a, colour.r, colour.g, colour.b);
 	}
 
-	D3D10_USAGE D3D10Conversions::Get(AGpuBuffer::EUsage usage)
+	D3D10_USAGE D3D10Conversions::GetUsage(AGpuBuffer::EUsage usage)
 	{
 		if (usage & AGpuBuffer::USAGE_DYNAMIC) {
 			return D3D10_USAGE_DYNAMIC;
@@ -65,19 +83,39 @@ namespace Slim {
 		}
 	}
 
-	D3D10_MAP D3D10Conversions::Get(AGpuBuffer::ELockType lockType)
+	UINT D3D10Conversions::GetCPUAccessFlags(ATexture::EUsage usage)
+	{
+		if (usage & AGpuBuffer::USAGE_DYNAMIC) {
+			return D3D10_CPU_ACCESS_WRITE;
+		}
+		else {
+			return 0;
+		}
+	}
+
+	D3D10_USAGE D3D10Conversions::GetUsage(ATexture::EUsage usage)
+	{
+		if (usage & AGpuBuffer::USAGE_DYNAMIC) {
+			return D3D10_USAGE_DYNAMIC;
+		}
+		else {
+			return D3D10_USAGE_DEFAULT;
+		}
+	}
+
+	D3D10_MAP D3D10Conversions::GetLockType(AGpuBuffer::ELockType lockType)
 	{
 		switch (lockType) {
-			case LOCK_NORMAL: {
+			case AGpuBuffer::LOCK_NORMAL: {
 				return D3D10_MAP_READ_WRITE;
 			}
-			case LOCK_DISCARD: {
+			case AGpuBuffer::LOCK_DISCARD: {
 				return D3D10_MAP_WRITE_DISCARD;
 			}
-			case LOCK_READ_ONLY: {
+			case AGpuBuffer::LOCK_READ_ONLY: {
 				return D3D10_MAP_READ;
 			}
-			case LOCK_NO_OVERWRITE: {
+			case AGpuBuffer::LOCK_NO_OVERWRITE: {
 				return D3D10_MAP_WRITE_NO_OVERWRITE;
 			}
 			default: {
@@ -85,11 +123,10 @@ namespace Slim {
 			}
 		}
 
-		// Only to make the compiler happy.
 		return D3D10_MAP_READ;
 	}
 
-	DXGI_FORMAT D3D10Conversions::Get(CInputElement::EFormat inputElementFormat)
+	DXGI_FORMAT D3D10Conversions::GetFormat(CInputElement::EFormat inputElementFormat)
 	{
 		switch (inputElementFormat) {
 			case CInputElement::FORMAT_FLOAT: {
@@ -123,6 +160,52 @@ namespace Slim {
 				break;
 			}
 		}
+
+		return DXGI_FORMAT_R32_FLOAT;
 	}
+
+	D3D10_PRIMITIVE_TOPOLOGY D3D10Conversions::GetPrimitiveType(CVertexDeclaration::EPrimitiveType primitiveType)
+	{
+		switch (primitiveType) {
+			case CVertexDeclaration::PRIMITIVE_TYPE_POINTLIST: {
+				return D3D10_PRIMITIVE_TOPOLOGY_POINTLIST;
+			}
+			case CVertexDeclaration::PRIMITIVE_TYPE_LINELIST: {
+				return D3D10_PRIMITIVE_TOPOLOGY_LINELIST;
+			}
+			case CVertexDeclaration::PRIMITIVE_TYPE_LINESTRIP: {
+				return D3D10_PRIMITIVE_TOPOLOGY_LINESTRIP;
+			};
+			case CVertexDeclaration::PRIMITIVE_TYPE_TRIANGLELIST: {
+				return D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+			}
+			case CVertexDeclaration::PRIMITIVE_TYPE_TRIANGLESTRIP: {
+				return D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+			}
+			default: {
+				break;
+			}
+		}
+
+		return D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	}
+
+	DXGI_FORMAT D3D10Conversions::GetFormat(AIndexGpuBuffer::EIndexType indexType)
+	{
+		switch (indexType) {
+			case AIndexGpuBuffer::INDEX_TYPE_16: {
+				return DXGI_FORMAT_R16_UINT;
+			}
+			case AIndexGpuBuffer::INDEX_TYPE_32: {
+				return DXGI_FORMAT_R32_UINT;
+			}
+			default: {
+				break;
+			}
+		}
+
+		return DXGI_FORMAT_R16_UINT;
+	}
+
 }
 

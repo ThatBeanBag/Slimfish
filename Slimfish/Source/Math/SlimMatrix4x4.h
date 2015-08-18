@@ -18,7 +18,6 @@
 #define __SLIMMATRIX4X4_H__
 
 // Library Includes
-#include <cstdint>
 
 // Local Includes
 #include "SlimVector.h"
@@ -72,16 +71,14 @@ public:
 	CMatrix4x4();
 
 	/** Construct a 4 by 4 matrix from a 4 by 4 array.
-	 	@author
-	 		Hayden Asplet
+	 	@author Hayden Asplet
 	 	@param
 			pMatrix[4][4] Array of floats that make up the matrix.	
 	*/
 	CMatrix4x4(float pMatrix[4][4]);
 
 	/** Construct a 4 by 4 matrix from 16 floats.
-	 	@author
-	 		Hayden Asplet
+	 	@author Hayden Asplet
 	*/
 	CMatrix4x4(float v11, float v12, float v13, float v14,
 			   float v21, float v22, float v23, float v24,
@@ -89,82 +86,69 @@ public:
 			   float v41, float v42, float v43, float v44);
 
 	/** Construct a 4 by 4 matrix by copying another 4 by 4 matrix.
-	 	@author
-	 		Hayden Asplet	
+	 	@author Hayden Asplet	
 	*/
 	CMatrix4x4(const CMatrix4x4& other);
 
 	/** Destruct a 4 by 4 matrix.
-	 	@author
-	 		Hayden Asplet
+	 	@author Hayden Asplet
 	*/
 	~CMatrix4x4();
 
 	/** Assign a matrix
-	 	@author
-	 		Hayden Asplet
+	 	@author Hayden Asplet
 	*/
 	CMatrix4x4& operator=(const CMatrix4x4& other);
 
 	/** Multiply and assign a matrix
-		@author
-			Hayden Asplet
+		@author Hayden Asplet
 	*/
 	CMatrix4x4& operator*=(const CMatrix4x4& other);
 
 	/** Add and assign a matrix
-		@author
-			Hayden Asplet
+		@author Hayden Asplet
 	*/
 	CMatrix4x4& operator+=(const CMatrix4x4& other);
 
 	/** Subtract and assign a matrix
-		@author
-			Hayden Asplet
+		@author Hayden Asplet
 	*/
 	CMatrix4x4& operator-=(const CMatrix4x4& other);
 
 	/** Transform a vector 3
-		@remarks
-			resultant vector is homogenized prior to returning.
-	 	@author
-	 		Hayden Asplet
+	 	@author Hayden Asplet
+		@return Resultant transformed and homogenized vector.
 	*/
-	const CVec3 Transform(const CVec3& vector);
+	const CVector3 Transform(const CVector3& vector);
 
 	/************************************************************************/
 	/* Accessor Methods
 	/************************************************************************/
 
 	/** Access a row of the matrix, allows use of operator matrix[row][column];
-	 	@author
-	 		Hayden Asplet
+	 	@author Hayden Asplet
 	*/
 	const float* operator[](size_t row) const;
 
 	/** Access a row of the matrix, allows use of operator matrix[row][column];
-	 	@author
-	 		Hayden Asplet
+	 	@author Hayden Asplet
 	*/
 	float* operator[](size_t row);
 
 	/** Set the elements of the matrix from a 4 by 4 array.
-	 	@author
-	 		Hayden Asplet
+		@author Hayden Asplet
 	*/
 	void SetElements(float pMatrix[4][4]);
 
 	/** Set the translational component of the transform.
-	 	@author
-	 		Hayden Asplet
+	 	@author Hayden Asplet
 	*/
 	void SetPosition(float x, float y, float z);
 
 	/** Set the translational component of the transform.
-	 	@author
-	 		Hayden Asplet
+	 	@author Hayden Asplet
 	*/
-	void SetPosition(const CVec3& position);
+	void SetPosition(const CVector3& position);
 
 	/** Set the scale of the transform.
 		@remarks
@@ -192,7 +176,7 @@ public:
 	 	@author
 	 		Hayden Asplet
 	*/
-	void SetScale(const CVec3& scale);
+	void SetScale(const CVector3& scale);
 
 	/** Create a new matrix by transposing the rows and columns of this matrix.
 	 	@author
@@ -221,36 +205,61 @@ public:
 	*/
 	const CMatrix4x4 GetInverse() const;
 
-	/** Get the position of the transform.
-	 	@author
-	 		Hayden Asplet
-	*/
-	const CVec3 GetPosition() const;
+	/** Get the position of the transform. @author Hayden Asplet */
+	const CVector3 GetPosition() const;
+	/** Retrieve the direction (look or forward) of the transform. @author Hayden Asplet */
+	const CVector3 GetDirection() const;
+	/** Retrieve the right vector of the transform. @author Hayden Asplet */
+	const CVector3 GetRight() const;
+	/** Get the up vector of the transform. @author Hayden Asplet */
+	const CVector3 GetUp() const;
 
-	/** Retrieve the rotational direction (look or forward) of the transform.
-	 	@author
-	 		Hayden Asplet
-	*/
-	const CVec3 GetDirection() const;
+	// Convenience Build Functions
 
-	/** Retrieve the right vector of the transform.
-	 	@author
-	 		Hayden Asplet
-	*/
-	const CVec3 GetRight() const;
+	/** Build a scale transform. @author Hayden Asplet */
+	static const CMatrix4x4 BuildScale(float xScale, float yScale, float zScale);
+	/** Build a scale transform. @author Hayden Asplet */
+	static const CMatrix4x4 BuildScale(const CVector3& scale);
+	/** Build a rotation transform to rotate a vector around the X axis. @author Hayden Asplet */
+	static const CMatrix4x4 BuildRotationX(float radians);
+	/** Build a rotation transform to rotate a vector around the Y axis. @author Hayden Asplet */
+	static const CMatrix4x4 BuildRotationY(float radians);
+	/** Build a rotation transform to rotate a vector around the Z axis. @author Hayden Asplet */
+	static const CMatrix4x4 BuildRotationZ(float radians);
+	/** Build a rotation transform from 3 perpendicular axis. @author Hayden Asplet */
+	static const CMatrix4x4 BuildRotationFromAxis(const CVector3& right, const CVector3& up, const CVector3& forward);
+	/** Build a rotation transform from yaw pitch and roll. @author Hayden Asplet */
+	static const CMatrix4x4 BuildYawPitchRoll(float radYaw, float radPitch, float radRoll);
+	/** Build a translation transform. @author Hayden Asplet */
+	static const CMatrix4x4 BuildTranslation(float x, float y, float z);
+	/** Build a translation transform. @author Hayden Asplet */
+	static const CMatrix4x4 BuildTranslation(const CVector3& position);
+	/** Build a view matrix from a camera position, a look at position and an up direction. @author Hayden Asplet */
+	static const CMatrix4x4 BuildLookAt(const CVector3& eye, const CVector3& at, const CVector3& up);
 
-	/** Get the up vector of the transform.
-	 	@author
-	 		Hayden Asplet
+	/** Build a perspective projection matrix.
+	 	@author Hayden Asplet
+		@param radFOV Field of view in radians
+		@param aspectRatio The aspect ratio of the viewport.
+		@param near The near clipping plane.
+		@param far	The far clipping plane.
 	*/
-	const CVec3 GetUp() const;
+	static const CMatrix4x4 BuildProjection(float radFOV, float aspectRatio, float near, float far);
+
+	/** Build an orthographic projection matrix.
+	 	@author Hayden Asplet
+		@param width The width of the viewport.
+		@param height The height of viewport.
+		@param near The near clipping plane.
+		@param far The far clipping plane.
+	*/
+	static const CMatrix4x4 BuildOrthographic(float width, float height, float near, float far);
 protected:
 private:
 	/** Internal helper function to copy a matrix to this matrix.
 		@remarks
 			Assignment operator and copy constructor call this method to avoid code duplication.
-	 	@author
-	 		Hayden Asplet
+	 	@author Hayden Asplet
 	*/
 	void Copy(const float pMatrix[4][4]);
 
@@ -270,21 +279,6 @@ const CMatrix4x4 operator*(const CMatrix4x4& matrixA, const CMatrix4x4& matrixB)
 const CMatrix4x4 operator+(const CMatrix4x4& matrixA, const CMatrix4x4& matrixB);
 const CMatrix4x4 operator-(const CMatrix4x4& matrixA, const CMatrix4x4& matrixB);
 
-/************************************************************************/
-/* Helper Build Functions
-/************************************************************************/
-const CMatrix4x4 BuildScaleMatrix(float xScale, float yScale, float zScale);
-const CMatrix4x4 BuildScaleMatrix(const CVec3& scale);
-const CMatrix4x4 BuildRotationXMatrix(float radians);
-const CMatrix4x4 BuildRotationYMatrix(float radians);
-const CMatrix4x4 BuildRotationZMatrix(float radians);
-const CMatrix4x4 BuildRotationFromAxisMatrix(const CVec3& right, const CVec3& up, const CVec3& forward);
-const CMatrix4x4 BuildYawPitchRollMatrix(float radYaw, float radPitch, float radRoll);
-const CMatrix4x4 BuildTranslationMatrix(float x, float y, float z);
-const CMatrix4x4 BuildTranslationMatrix(const CVec3& position);
-const CMatrix4x4 BuildLookAtMatrix(const CVec3& eye, const CVec3& at, const CVec3& up);
-const CMatrix4x4 BuildProjectionMatrix(float radFOV, float aspectRatio, float near, float far);
-const CMatrix4x4 BuildOrthographicMatrix(float width, float height, float near, float far);
 
 }
 

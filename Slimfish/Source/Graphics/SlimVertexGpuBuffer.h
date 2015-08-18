@@ -21,6 +21,7 @@
 
 // Local Includes
 #include "SlimGpuBuffer.h"
+#include "SlimVertexDeclaration.h"
 
 namespace Slim {
 
@@ -28,22 +29,56 @@ namespace Slim {
 	@remarks
 		
 	*/
-	class CVertexGpuBuffer : public AGpuBuffer {
+	class AVertexGpuBuffer : public AGpuBuffer {
 		// Member Functions
 	public:
-		CVertexGpuBuffer(size_t numVertices, size_t stride, AGpuBuffer::EUsage usage, bool isInSystemMemory);
-		~CVertexGpuBuffer();
+		/** Construct a vertex gpu buffer.
+		 	@author Hayden Asplet
+			@param 
+				numVertices Number of vertices.
+			@param 
+				stride Size in bytes of a single vertex.
+		 	@param 
+				usage Specifies how the buffer is intended to be used. See AGpuBuffer::EUsage.
+		 	@param 
+				isInSystemMemory True if the buffer should be stored in system memory and not
+				video memory.
+		*/
+		AVertexGpuBuffer(size_t numVertices, 
+						 size_t stride,
+						 AGpuBuffer::EUsage usage, 
+						 bool isInSystemMemory);
+		/** Destructor
+			@author Hayden Asplet
+		*/
+		virtual ~AVertexGpuBuffer();
 
-		size_t GetStride() const;
-		size_t GetNumVertices() const;
+		/** Get the vertex stride (size of a single vertex in bytes). @author Hayden Asplet */
+		const size_t GetStride() const;
+		/** Get the number of vertices in the buffer. @author Hayden Asplet */
+		const size_t GetNumVertices() const;
+
+		/** Set the vertex declaration, which describes how the vertices in the buffer are to be 
+			interpreted by the rendering system.
+		 	@author Hayden Asplet
+		*/
+		void SetVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
+
+		/** Get the vertex declaration, which describes how the vertices in the buffer are to be
+			interpreted by the rendering system.
+		 	@author Hayden Asplet
+		*/
+		const CVertexDeclaration& GetVertexDeclaration() const;
 	protected:
 	private:
 		// Member Variables
 	public:
 	protected:
 	private:
-		size_t m_numVertices;
-		size_t m_stride;
+		CVertexDeclaration m_VertexDeclaration;
+
+		size_t m_NumVertices;	// Number of bytes.
+		size_t m_Stride;		// Size in bytes of a single vertex.
 	};
 
 }

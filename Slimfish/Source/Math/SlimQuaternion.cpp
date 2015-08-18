@@ -37,7 +37,7 @@ CQuaternion::CQuaternion(float real, float i, float j, float k)
 
 }
 
-CQuaternion::CQuaternion(const CVec3& axis, float radAngle)
+CQuaternion::CQuaternion(const CVector3& axis, float radAngle)
 {
 	float sinTheta = sinf(radAngle / 2.0f);
 
@@ -47,7 +47,7 @@ CQuaternion::CQuaternion(const CVec3& axis, float radAngle)
 	m_k = sinTheta * axis.GetZ();
 }
 
-CQuaternion::CQuaternion(const CVec3& right, const CVec3& up, const CVec3& forward)
+CQuaternion::CQuaternion(const CVector3& right, const CVector3& up, const CVector3& forward)
 {
 
 }

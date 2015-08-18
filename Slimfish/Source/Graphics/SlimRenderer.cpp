@@ -25,9 +25,9 @@
 namespace Slim {
 
 	ARenderer::ARenderer(int width, int height, bool isWindowed)
-		:m_width(width),
-		m_height(height),
-		m_isWindowed(isWindowed)
+		:m_Width(width),
+		m_Height(height),
+		m_IsWindowed(isWindowed)
 	{
 
 	}

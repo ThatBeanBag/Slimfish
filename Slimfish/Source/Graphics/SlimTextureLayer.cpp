@@ -191,8 +191,8 @@ const CMatrix4x4& CTextureLayer::GetTextureTransform()
 			scale[1][1] = 1 / m_vScale;
 		}
 
-		CMatrix4x4 rotation = BuildRotationZMatrix(m_radAngle);
-		CMatrix4x4 translation = BuildTranslationMatrix(m_uTranslation, m_vTranslation, 0);
+		CMatrix4x4 rotation = CMatrix4x4::BuildRotationZ(m_radAngle);
+		CMatrix4x4 translation = CMatrix4x4::BuildTranslation(m_uTranslation, m_vTranslation, 0);
 
 		m_textureTransform = translation * rotation * scale;
 		m_isTransformDirty = false;

@@ -29,48 +29,48 @@ namespace Slim {
 		Represents a coordinate (x, y, z) in 3D space and implements 
 		various useful vector math operators and arithmetic.
 */
-class CVec3 {
+class CVector3 {
 	// Member Functions
 public:
 	/** Construct a vector with the x, y and z values being set to 0.
 		@author Hayden Asplet
 	*/
-	CVec3();
+	CVector3();
 
 	/** Construct a vector from x, y, and z values.
 		@author Hayden Asplet
 	*/
-	CVec3(float x, float y, float z);
+	CVector3(float x, float y, float z);
 
 	/** Destruct a vector
 		@author Hayden Asplet
 	*/
-	~CVec3();
+	~CVector3();
 
 	/** Add two vectors together and assign the vector to the result.
 		@author Hayden Asplet
 	*/
-	CVec3& operator+=(const CVec3& other);
+	CVector3& operator+=(const CVector3& other);
 
 	/** Subtract a vector from the vector and assign the vector to the result.
 		@author Hayden Asplet
 	*/
-	CVec3& operator-=(const CVec3& other);
+	CVector3& operator-=(const CVector3& other);
 
 	/** Multiply the vector by a scalar and assign the vector to the result.
 		@author Hayden Asplet
 	*/
-	CVec3& operator*=(float scalar);
+	CVector3& operator*=(float scalar);
 
 	/** Add a scalar to a vector and assign the vector to the result.
 		@author Hayden Asplet
 	*/
-	CVec3& operator+=(float scalar);
+	CVector3& operator+=(float scalar);
 
 	/** Subtract a scalar from the vector and assign the vector to the result.
 		@author Hayden Asplet
 	*/
-	CVec3& operator-=(float scalar);
+	CVector3& operator-=(float scalar);
 
 	/** Set the X value of the vector.
 		@author Hayden Asplet
@@ -140,9 +140,9 @@ protected:
 private:
 	// Member Variables
 public:
-	static const CVec3 s_FORWARD;
-	static const CVec3 s_RIGHT;
-	static const CVec3 s_UP;
+	static const CVector3 s_FORWARD;
+	static const CVector3 s_RIGHT;
+	static const CVector3 s_UP;
 protected:
 private:
 	float m_x;
@@ -153,38 +153,38 @@ private:
 /** Add two vectors together
 	@author Hayden Asplet
 */
-const CVec3 operator+(const CVec3& vec3A, const CVec3& vec3B);
+const CVector3 operator+(const CVector3& vec3A, const CVector3& vec3B);
 
 /** Subtract a vector from another.
 	@author Hayden Asplet
 */
-const CVec3 operator-(const CVec3& vec3A, const CVec3& vec3B);
+const CVector3 operator-(const CVector3& vec3A, const CVector3& vec3B);
 
 /** Multiply a vector by a scalar. @author Hayden Asplet */
-const CVec3 operator*(const CVec3& vec3, float scalar);
+const CVector3 operator*(const CVector3& vec3, float scalar);
 /** Multiply a vector by a scalar. @author Hayden Asplet */
-const CVec3 operator*(float scalar, const CVec3& vec3);
+const CVector3 operator*(float scalar, const CVector3& vec3);
 /** Add a scalar to a vector. @author Hayden Asplet */
-const CVec3 operator+(const CVec3& vec3, float scalar);
+const CVector3 operator+(const CVector3& vec3, float scalar);
 /** Subtract a scalar from a vector. @author Hayden Asplet */
-const CVec3 operator-(const CVec3& vec3, float scalar);
+const CVector3 operator-(const CVector3& vec3, float scalar);
 /** Negate a vector @author Hayden Asplet */
-const CVec3 operator-(const CVec3& vec3);
+const CVector3 operator-(const CVector3& vec3);
 
 /** Normalise a vector3 so that the length of the vector is 1. @author Hayden Asplet */
-const CVec3 Normalise(const CVec3& vec3);
+const CVector3 Normalise(const CVector3& vec3);
 
 /** Get the cross product of two vectors.
 	@remarks
 		This operation is not commutative as in CrossProduct(A,B) != CrossProduct(B,A).
 	@author Hayden Asplet
 */
-const CVec3 CrossProduct(const CVec3& vec3A, const CVec3& vec3B);
+const CVector3 CrossProduct(const CVector3& vec3A, const CVector3& vec3B);
 
 /** Retrieve the dot product of two vectors.
 	@author Hayden Asplet
 */
-const float DotProduct(const CVec3& vec3A, const CVec3& vec3B);
+const float DotProduct(const CVector3& vec3A, const CVector3& vec3B);
 
 }
 
