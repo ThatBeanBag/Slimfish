@@ -19,6 +19,9 @@
     <Filter Include="Debug">
       <UniqueIdentifier>{a136c114-24da-4341-886d-d1b8a44b0c18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameBase">
+      <UniqueIdentifier>{9593325f-da3f-4790-a031-2490e706872a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Graphics\SlimColour.cpp">
@@ -82,7 +85,9 @@
     <ClCompile Include="..\Graphics\SlimGpuBuffer.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\Graphics\D3D10\SlimD3D10Texture.cpp" />
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10Texture.cpp">
+      <Filter>Graphics\D3D10</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -181,6 +186,9 @@
     </ClInclude>
     <ClInclude Include="..\Graphics\SlimGpuBuffer.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameBase\SlimGameApp.h">
+      <Filter>GameBase</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

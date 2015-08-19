@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Debug\SlimLogger.h" />
+    <ClInclude Include="..\GameBase\SlimGameApp.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Conversions.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Forward.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.h" />
