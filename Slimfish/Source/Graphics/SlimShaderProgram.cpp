@@ -35,6 +35,26 @@ namespace Slim {
 
 	}
 
+	void AShaderProgram::SetEntryPoint(const std::string& entryPoint)
+	{
+		m_EntryPoint = entryPoint;
+	}
+
+	const std::string& AShaderProgram::GetEntryPoint() const
+	{
+		return m_EntryPoint;
+	}
+
+	void AShaderProgram::SetShaderModel(const std::string& shaderModel)
+	{
+		m_ShaderModel = shaderModel;
+	}
+
+	const std::string& AShaderProgram::GetShaderModel() const
+	{
+		return m_ShaderModel;
+	}
+
 	const AShaderProgram::EShaderType AShaderProgram::GetType()
 	{
 		return m_ShaderType;
@@ -44,6 +64,5 @@ namespace Slim {
 	{
 		return m_Name;
 	}
-
 }
 

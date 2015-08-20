@@ -44,6 +44,14 @@ public:
 
 	virtual bool VLoad() = 0;
 
+	virtual void VUpdateProgramParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams);
+
+	void SetEntryPoint(const std::string& entryPoint);
+	const std::string& GetEntryPoint() const;
+
+	void SetShaderModel(const std::string& shaderModel);
+	const std::string& GetShaderModel() const;
+
 	const EShaderType GetType();
 	const std::string& GetName();
 protected:
@@ -53,6 +61,9 @@ public:
 protected:
 	std::string m_Name;
 	EShaderType m_ShaderType;
+
+	std::string m_ShaderModel;
+	std::string m_EntryPoint;
 
 	shared_ptr<CShaderParams> m_Params;
 private:

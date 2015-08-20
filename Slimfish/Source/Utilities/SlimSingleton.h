@@ -31,23 +31,6 @@ namespace Slim {
 	class ASingleton {
 		// Member Functions
 	public:
-		/** Destructor
-			@note
-				Pure virtual so that ASingleton can't be created.
-		 	@author
-		 		Hayden Asplet
-		*/
-		virtual  ~ASingleton() = 0;
-
-		/** Get a pointer to the singleton
-			@remarks
-				Creates a single instance of the singleton if one is yet to be created.
-		 	@author
-		 		Hayden Asplet
-		*/
-		static ASingleton* GetInstance();
-	protected:
-	private:
 		/** Default constructor
 			@note 
 				This is made private as singletons cannot be instantiated.
@@ -55,6 +38,24 @@ namespace Slim {
 		 		Hayden Asplet
 		*/
 		ASingleton();
+
+		/** Destructor
+			@note
+				Pure virtual so that ASingleton can't be created.
+		 	@author
+		 		Hayden Asplet
+		*/
+		virtual  ~ASingleton() {}
+
+		/** Get a pointer to the singleton
+			@remarks
+				Creates a single instance of the singleton if one is yet to be created.
+		 	@author
+		 		Hayden Asplet
+		*/
+		static T* GetInstance();
+	protected:
+	private:
 
 		/** Deleted copy constructor.
 			@author
@@ -72,7 +73,7 @@ namespace Slim {
 	public:
 	protected:
 	private:
-		static std::unique_ptr<ASingleton> m_pSingleton;
+		static std::unique_ptr<T> m_pSingleton;
 	};
 
 	// Implementation
@@ -87,7 +88,7 @@ namespace Slim {
 	ASingleton<T>* ASingleton<T>::GetInstance()
 	{
 		if (!m_pSingleton) {
-			m_pSingleton.reset(new ASingleton<T>());
+			m_pSingleton.reset(new T());
 		}
 
 		assert(m_pSingleton);

@@ -52,16 +52,6 @@ namespace Slim {
 		}
 	}
 
-	void CD3D10ShaderProgram::SetEntryPoint(const std::string& entryPoint)
-	{
-		m_EntryPoint = entryPoint;
-	}
-
-	void CD3D10ShaderProgram::SetShaderModel(const std::string& shaderModel)
-	{
-		m_ShaderModel = shaderModel;
-	}
-
 	bool CD3D10ShaderProgram::VLoad()
 	{
 		return CompileShader();
@@ -256,15 +246,15 @@ namespace Slim {
 		HRESULT hResult = 0;
 
 		if (m_IsStreamingOutput) {
-			std::unique_ptr<D3D10_SO_DECLARATION_ENTRY[]> pSODeclarations(new D3D10_SO_DECLARATION_ENTRY[m_ShaderDesc.OutputParameters]);
+			std::vector<D3D10_SO_DECLARATION_ENTRY> soDeclarations(m_ShaderDesc.OutputParameters);
 			int totalComponentCount = 0;
 
-			for (size_t i = 0; i < m_ShaderDesc.OutputParameters; ++i) {
+			for (size_t i = 0; i < soDeclarations.size(); ++i) {
 				D3D10_SIGNATURE_PARAMETER_DESC parameterDesc;
 				m_pShaderReflection->GetOutputParameterDesc(i, &parameterDesc);
 
-				pSODeclarations[i].SemanticName = parameterDesc.SemanticName;
-				pSODeclarations[i].SemanticIndex = parameterDesc.SemanticIndex;
+				soDeclarations[i].SemanticName = parameterDesc.SemanticName;
+				soDeclarations[i].SemanticIndex = parameterDesc.SemanticIndex;
 
 				int componentCount = 0;
 				if (parameterDesc.Mask & 1) {
@@ -282,9 +272,9 @@ namespace Slim {
 
 				totalComponentCount += componentCount;
 
-				pSODeclarations[i].StartComponent = 0;
-				pSODeclarations[i].ComponentCount = componentCount;
-				pSODeclarations[i].OutputSlot = 0;
+				soDeclarations[i].StartComponent = 0;
+				soDeclarations[i].ComponentCount = componentCount;
+				soDeclarations[i].OutputSlot = 0;
 			}
 
 			size_t streamStride = totalComponentCount * sizeof(float);
@@ -292,9 +282,9 @@ namespace Slim {
 			hResult = m_pD3DDevice->CreateGeometryShaderWithStreamOutput(
 				&m_ByteCode[0],			// Pointer to the compiled shader.
 				m_ByteCode.size(),		// Shader size in bytes.
-				pSODeclarations.get(),					// Stream output declarations.
-				m_ShaderDesc.OutputParameters,			// Number of output entries.
-				streamStride,							// Output stream stride.
+				&soDeclarations[0],				// Stream output declarations.
+				soDeclarations.size(),			// Number of output entries.
+				streamStride,					// Output stream stride.
 				&m_pGeometryShader);
 		}
 		else {

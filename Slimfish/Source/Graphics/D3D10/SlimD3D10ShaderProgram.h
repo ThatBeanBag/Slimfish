@@ -42,9 +42,6 @@ public:
 	CD3D10ShaderProgram(ID3D10Device* pD3DDevice, const std::string& name, EShaderType type);
 	~CD3D10ShaderProgram();
 
-	void SetEntryPoint(const std::string& entryPoint);
-	void SetShaderModel(const std::string& shaderModel);
-
 	virtual bool VLoad() override;
 
 	virtual void VUpdateProgramParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams);
@@ -69,7 +66,6 @@ private:
 public:
 protected:
 private:
-
 	std::string m_ShaderModel;
 	std::string m_EntryPoint;
 
