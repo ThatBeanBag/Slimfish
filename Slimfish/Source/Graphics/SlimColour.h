@@ -112,11 +112,12 @@ struct TColourValue {
 	static const float s_ALPHA_TRANSPERANT;
 };
 
+/*
 extern const unsigned char g_ALPHA_OPAQUE;
 extern const unsigned char g_ALPHA_TRANSPERANT;
 
 extern const float g_ALPHA_VALUE_OPAQUE;
-extern const float g_ALPHA_VALUE_TRANSPERANT;
+extern const float g_ALPHA_VALUE_TRANSPERANT;*/
 
 /************************************************************************/
 /* Helper creation functions

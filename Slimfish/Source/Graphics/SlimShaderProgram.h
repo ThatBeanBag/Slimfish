@@ -44,7 +44,7 @@ public:
 
 	virtual bool VLoad() = 0;
 
-	virtual void VUpdateProgramParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams);
+	virtual void VUpdateProgramParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams) = 0;
 
 	void SetEntryPoint(const std::string& entryPoint);
 	const std::string& GetEntryPoint() const;

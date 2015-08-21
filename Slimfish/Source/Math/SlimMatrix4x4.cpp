@@ -169,6 +169,18 @@ void CMatrix4x4::SetPosition(const CVector3& position)
 	SetPosition(position.GetX(), position.GetY(), position.GetZ());
 }
 
+void CMatrix4x4::SetScale(const CVector3& scale)
+{
+	SetScale(scale.GetX(), scale.GetY(), scale.GetZ());
+}
+
+void CMatrix4x4::SetScale(float xScale, float yScale, float zScale)
+{
+	m_pMatrix[0][0] = xScale;
+	m_pMatrix[1][1] = yScale;
+	m_pMatrix[2][2] = zScale;
+}
+
 const CMatrix4x4 CMatrix4x4::GetTranspose() const
 {
 	CMatrix4x4 transpose;
@@ -524,7 +536,7 @@ const CMatrix4x4 CMatrix4x4::BuildLookAt(const CVector3& eye, const CVector3& at
 	return matrix;
 }
 
-const CMatrix4x4 CMatrix4x4::BuildProjection(float radFOV, float aspectRatio, float near, float far)
+const CMatrix4x4 CMatrix4x4::BuildProjection(float radFOV, float aspectRatio, float nearPlane, float farPlane)
 {
 	float yScale = tan(radFOV / 2.0f);
 	if (yScale == 0) {
@@ -538,19 +550,19 @@ const CMatrix4x4 CMatrix4x4::BuildProjection(float radFOV, float aspectRatio, fl
 
 	projection[0][0] = xScale;
 	projection[1][1] = yScale;
-	projection[2][2] = far / (far - near);
-	projection[2][3] = -near * far / (far - near);
+	projection[2][2] = farPlane / (farPlane - nearPlane);
+	projection[2][3] = -nearPlane * farPlane / (farPlane - nearPlane);
 
 	return projection;
 }
 
-const CMatrix4x4 CMatrix4x4::BuildOrthographic(float width, float height, float near, float far)
+const CMatrix4x4 CMatrix4x4::BuildOrthographic(float width, float height, float nearPlane, float farPlane)
 {
 	CMatrix4x4 ortho(CMatrix4x4::s_IDENTITY);
 	ortho[0][0] = 2.0f / width;
 	ortho[1][1] = 2.0f / height;
-	ortho[2][2] = 1.0f / (far - near);
-	ortho[2][3] = near / (near - far);
+	ortho[2][2] = 1.0f / (farPlane - nearPlane);
+	ortho[2][3] = nearPlane / (nearPlane - farPlane);
 
 	return ortho;
 }

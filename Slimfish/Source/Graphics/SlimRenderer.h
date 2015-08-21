@@ -121,7 +121,7 @@ namespace Slim {
 		 	@author Hayden Asplet
 		 	@param pShader Pointer to the vertex, pixel or geometry shader to bind.
 		*/
-		virtual void VSetShaderProgram(shared_ptr<AShaderProgram> pShader);
+		virtual void VSetShaderProgram(shared_ptr<AShaderProgram> pShader) = 0;
 
 		/** Set the world transform. */
 		virtual void VSetWorldTransform(const CMatrix4x4& worldTransform) = 0;

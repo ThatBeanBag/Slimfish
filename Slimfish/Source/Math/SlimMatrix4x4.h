@@ -244,7 +244,7 @@ public:
 		@param near The near clipping plane.
 		@param far	The far clipping plane.
 	*/
-	static const CMatrix4x4 BuildProjection(float radFOV, float aspectRatio, float near, float far);
+	static const CMatrix4x4 BuildProjection(float radFOV, float aspectRatio, float near, float farPlane);
 
 	/** Build an orthographic projection matrix.
 	 	@author Hayden Asplet
@@ -253,7 +253,7 @@ public:
 		@param near The near clipping plane.
 		@param far The far clipping plane.
 	*/
-	static const CMatrix4x4 BuildOrthographic(float width, float height, float near, float far);
+	static const CMatrix4x4 BuildOrthographic(float width, float height, float near, float farPlane);
 protected:
 private:
 	/** Internal helper function to copy a matrix to this matrix.

@@ -85,7 +85,7 @@ namespace Slim {
 	}
 
 	template<class T>
-	ASingleton<T>* ASingleton<T>::GetInstance()
+	T* ASingleton<T>::GetInstance()
 	{
 		if (!m_pSingleton) {
 			m_pSingleton.reset(new T());

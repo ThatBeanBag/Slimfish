@@ -43,6 +43,7 @@ const size_t g_MAX_ACTIVE_LIGHTS = 8;
 #include "..\Math\SlimQuaternion.h"
 #include "..\Math\SlimVector.h"
 #include "..\Graphics\SlimColour.h"
+#include "..\GameBase\SlimGameApp.h"
 
 
 

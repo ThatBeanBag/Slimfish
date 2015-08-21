@@ -59,7 +59,7 @@ const float TColourValue::s_ALPHA_TRANSPERANT = 0.0f;
 TColour CreateColourRGB(unsigned char red, unsigned char green, unsigned char blue)
 {
 	TColour colour;
-	colour.m_a = g_ALPHA_OPAQUE;
+	colour.m_a = TColour::s_ALPHA_OPAQUE;
 	colour.m_r = red;
 	colour.m_g = green;
 	colour.m_b = blue;
@@ -78,7 +78,7 @@ TColour CreateColourARGB(unsigned alpha, unsigned char red, unsigned char green,
 TColourValue CreateColourValueRGB(float red, float green, float blue)
 {
 	TColourValue colourValue;
-	colourValue.m_a = g_ALPHA_VALUE_OPAQUE;
+	colourValue.m_a = TColourValue::s_ALPHA_OPAQUE;
 	colourValue.m_r = red;
 	colourValue.m_g = green;
 	colourValue.m_b = blue;

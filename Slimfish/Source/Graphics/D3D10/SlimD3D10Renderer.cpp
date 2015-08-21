@@ -74,7 +74,7 @@ namespace Slim {
 
 		// Get the width and height of the client rectangle.
 		RECT rect;
-		GetClientRect(g_pApp->GetHwnd(), &rect);
+		GetClientRect(g_pApp->GetHWND(), &rect);
 		m_Width = rect.right;
 		m_Height = rect.bottom;
 
@@ -90,7 +90,7 @@ namespace Slim {
 		m_d3dpp.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		m_d3dpp.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		m_d3dpp.Windowed = m_IsWindowed;
-		m_d3dpp.OutputWindow = g_pApp->GetHwnd();
+		m_d3dpp.OutputWindow = g_pApp->GetHWND();
 		m_d3dpp.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 		m_d3dpp.SampleDesc = m_sampleDesc;
 
