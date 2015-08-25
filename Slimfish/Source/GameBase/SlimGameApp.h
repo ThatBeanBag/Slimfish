@@ -49,7 +49,6 @@ public:
 	static LRESULT CALLBACK MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	HWND GetHWND() { return m_hWnd; }
 
-
 	void Update();
 	void Quit();
 	bool OnClose();

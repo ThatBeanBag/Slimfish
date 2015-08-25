@@ -29,10 +29,10 @@ namespace Slim {
 	where TColourValue's channels range from 0 to 1.
 */
 struct TColour {
-	unsigned char m_a;
 	unsigned char m_r;
 	unsigned char m_g;
 	unsigned char m_b;
+	unsigned char m_a;
 
 	static const TColour s_WHITE;
 	static const TColour s_BLACK;
@@ -94,10 +94,10 @@ private:
 	TColour's channels range from 0 to 255.
 */
 struct TColourValue {
-	float m_a;
 	float m_r;
 	float m_g;
 	float m_b;
+	float m_a;
 
 	static const TColourValue s_WHITE;
 	static const TColourValue s_BLACK;

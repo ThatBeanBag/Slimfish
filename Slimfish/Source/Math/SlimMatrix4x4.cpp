@@ -381,7 +381,7 @@ const CMatrix4x4 operator*(const CMatrix4x4& matrixA, const CMatrix4x4& matrixB)
 		for (int j = 0; j < 4; ++j) {
 			for (int k = 0; k < 4; ++k) {
 				// Multiply the row of matrixA by the column of matrixB.
-				matrixC[i][j] += matrixA[j][k] * columnB[k];
+				matrixC[j][i] += matrixA[j][k] * columnB[k];
 			}
 		}
 	}
@@ -486,7 +486,7 @@ const CMatrix4x4 CMatrix4x4::BuildRotationZ(float radians)
 
 const CMatrix4x4 CMatrix4x4::BuildRotationFromAxis(const CVector3& right, const CVector3& up, const CVector3& forward)
 {
-	CMatrix4x4 matrix;
+	CMatrix4x4 matrix = CMatrix4x4::s_IDENTITY;
 
 	matrix[0][0] = right.GetX();
 	matrix[0][1] = right.GetY();
@@ -529,16 +529,16 @@ const CMatrix4x4 CMatrix4x4::BuildLookAt(const CVector3& eye, const CVector3& at
 
 	CMatrix4x4 matrix = BuildRotationFromAxis(xAxis, yAxis, zAxis);
 
-	matrix[3][0] = DotProduct(xAxis, -eye);
-	matrix[3][1] = DotProduct(yAxis, -eye);
-	matrix[3][2] = DotProduct(zAxis, -eye);
+	matrix[0][3] = -DotProduct(xAxis, eye);
+	matrix[1][3] = -DotProduct(yAxis, eye);
+	matrix[2][3] = -DotProduct(zAxis, eye);
 
 	return matrix;
 }
 
 const CMatrix4x4 CMatrix4x4::BuildProjection(float radFOV, float aspectRatio, float nearPlane, float farPlane)
 {
-	float yScale = tan(radFOV / 2.0f);
+	float yScale = tan(radFOV * 0.5f);
 	if (yScale == 0) {
 		return CMatrix4x4::s_IDENTITY;
 	}
@@ -546,12 +546,13 @@ const CMatrix4x4 CMatrix4x4::BuildProjection(float radFOV, float aspectRatio, fl
 	yScale = 1.0f / yScale;
 	float xScale = yScale / aspectRatio;
 
-	CMatrix4x4 projection(CMatrix4x4::s_IDENTITY);
+	CMatrix4x4 projection;
 
 	projection[0][0] = xScale;
 	projection[1][1] = yScale;
 	projection[2][2] = farPlane / (farPlane - nearPlane);
-	projection[2][3] = -nearPlane * farPlane / (farPlane - nearPlane);
+	projection[2][3] = -nearPlane * projection[2][2];
+	projection[3][2] = 1.0f;
 
 	return projection;
 }

@@ -97,6 +97,13 @@
     <ClCompile Include="..\GameBase\SlimGameLogic.cpp">
       <Filter>GameBase</Filter>
     </ClCompile>
+    <ClCompile Include="..\Debug\SlimLogger.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Debug\SlimLog.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -202,5 +209,17 @@
     <ClInclude Include="..\GameBase\SlimGameLogic.h">
       <Filter>GameBase</Filter>
     </ClInclude>
+    <ClInclude Include="..\Debug\SlimExceptions.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Debug\SlimLog.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimLight.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

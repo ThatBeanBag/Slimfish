@@ -25,10 +25,10 @@
 namespace Slim {
 
 CInputElement::CInputElement(const std::string& semanticName, EFormat format)
+	:m_SemanticName(semanticName),
+	m_Size(GetSizeFromFormat(format)),
+	m_Format(format)
 {
-	m_SemanticName = semanticName;
-	m_Size = GetSizeFromFormat(format);
-	m_Format = format;
 }
 
 CInputElement::~CInputElement()
@@ -90,13 +90,15 @@ const size_t CInputElement::GetSizeFromFormat(EFormat format)
 }
 
 CVertexDeclaration::CVertexDeclaration()
-	:m_PrimitiveType(PRIMITIVE_TYPE_TRIANGLELIST)
+	:m_PrimitiveType(PRIMITIVE_TYPE_TRIANGLELIST),
+	m_NeedsRebuilding(true)
 {
 
 }
 
 CVertexDeclaration::CVertexDeclaration(EPrimitiveType primitiveType)
-	:m_PrimitiveType(primitiveType)
+	:m_PrimitiveType(primitiveType),
+	m_NeedsRebuilding(true)
 {
 
 }
@@ -114,6 +116,7 @@ void CVertexDeclaration::AddElement(const std::string& semanticName, CInputEleme
 void CVertexDeclaration::AddElement(const CInputElement& inputElement)
 {
 	m_ElementList.push_back(inputElement);
+	m_NeedsRebuilding = true;
 }
 
 void CVertexDeclaration::RemoveElement(size_t index)
@@ -121,11 +124,14 @@ void CVertexDeclaration::RemoveElement(size_t index)
 	auto iter = m_ElementList.begin();
 	advance(iter, index);
 	m_ElementList.erase(iter);
+
+	m_NeedsRebuilding = true;
 }
 
 void CVertexDeclaration::ClearElements()
 {
 	m_ElementList.clear();
+	m_NeedsRebuilding = true;
 }
 
 const CInputElement& CVertexDeclaration::GetElement(size_t index) const
@@ -147,6 +153,16 @@ void CVertexDeclaration::SetPrimitiveType(EPrimitiveType primitiveType)
 Slim::CVertexDeclaration::EPrimitiveType CVertexDeclaration::GetPrimitiveType() const
 {
 	return m_PrimitiveType;
+}
+
+void CVertexDeclaration::SetRebuilt()
+{
+	m_NeedsRebuilding = false;
+}
+
+const bool CVertexDeclaration::NeedsRebuilding() const
+{
+	return m_NeedsRebuilding;
 }
 
 }

@@ -36,8 +36,10 @@ namespace Slim {
 		m_pDepthStencilState(nullptr),
 		m_pRasterizerState(nullptr),
 		m_SamplerStates(g_MAX_TEXTURE_LAYERS, nullptr),
-		m_Textures(g_MAX_TEXTURE_LAYERS, nullptr)
+		m_Textures(g_MAX_TEXTURE_LAYERS, nullptr),
+		m_SamplerDescs(g_MAX_TEXTURE_LAYERS)
 	{
+		ZeroMemory(&m_SamplerDescs[0], m_SamplerDescs.size() * sizeof(D3D10_SAMPLER_DESC));
 	}
 
 	CD3D10Renderer::~CD3D10Renderer()
@@ -70,7 +72,7 @@ namespace Slim {
 		}
 
 		// Check MSAA count and quality.
-		CheckMultiSampleLevels();
+		DetermineMultiSampleLevels();
 
 		// Get the width and height of the client rectangle.
 		RECT rect;
@@ -92,32 +94,43 @@ namespace Slim {
 		m_d3dpp.Windowed = m_IsWindowed;
 		m_d3dpp.OutputWindow = g_pApp->GetHWND();
 		m_d3dpp.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-		m_d3dpp.SampleDesc = m_sampleDesc;
+		m_d3dpp.SampleDesc = m_SampleDesc;
 
 		// Create the swap chain by obtaining the DXGIFactory that was used to create the device.
 		IDXGIDevice* dxgiDevice = nullptr;
+		IDXGIAdapter* dxgiAdapter = nullptr;
+		IDXGIFactory* dxgiFactory = nullptr;
+
+		auto release = [&]() { 
+			SafeRelease(dxgiDevice);
+			SafeRelease(dxgiAdapter);
+			SafeRelease(dxgiFactory); 
+		};
+
 		if (FAILED(m_pD3DDevice->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice)))) {
+			release();
+
 			throw CRenderingError();
-			return false;
 		}
 
-		IDXGIAdapter* dxgiAdapter = nullptr;
 		if (FAILED(dxgiDevice->GetParent(__uuidof(IDXGIAdapter), reinterpret_cast<void**>(&dxgiAdapter)))) {
+			release();
+
 			throw CRenderingError();
-			return false;
 		}
 
 		// Get the factory finally.
-		IDXGIFactory* dxgiFactory = nullptr;
 		if (FAILED(dxgiAdapter->GetParent(__uuidof(IDXGIFactory), reinterpret_cast<void**>(&dxgiFactory)))) {
+			release();
+
 			throw CRenderingError();
-			return false;
 		}
 
 		// Create the swap chain.
 		if (FAILED(dxgiFactory->CreateSwapChain(m_pD3DDevice, &m_d3dpp, &m_pSwapChain))) {
+			release();
+
 			throw CRenderingError();
-			return false;
 		}
 
 		SafeRelease(dxgiFactory);
@@ -134,7 +147,7 @@ namespace Slim {
 		// Create the depth/stencil buffer and view.
 		D3D10_TEXTURE2D_DESC depthStencilDesc;
 		ZeroMemory(&depthStencilDesc, sizeof(D3D10_TEXTURE2D_DESC));
-		depthStencilDesc.SampleDesc = m_sampleDesc;
+		depthStencilDesc.SampleDesc = m_SampleDesc;
 		depthStencilDesc.Width = m_Width;
 		depthStencilDesc.Height = m_Height;
 		depthStencilDesc.MipLevels = 1;
@@ -160,23 +173,25 @@ namespace Slim {
 		m_pD3DDevice->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 
 		// Set the view port.
-		ZeroMemory(&m_viewPort, sizeof(D3D10_VIEWPORT));
-		m_viewPort.TopLeftX = 0;
-		m_viewPort.TopLeftY = 0;
-		m_viewPort.Width = m_Width;
-		m_viewPort.Height = m_Height;
-		m_viewPort.MinDepth = 0.0f;
-		m_viewPort.MaxDepth = 1.0f;
+		ZeroMemory(&m_ViewPort, sizeof(D3D10_VIEWPORT));
+		m_ViewPort.TopLeftX = 0;
+		m_ViewPort.TopLeftY = 0;
+		m_ViewPort.Width = m_Width;
+		m_ViewPort.Height = m_Height;
+		m_ViewPort.MinDepth = 0.0f;
+		m_ViewPort.MaxDepth = 1.0f;
+
+		return true;
 	}
 
 	void CD3D10Renderer::VPreRender()
 	{
-		m_pD3DDevice->ClearRenderTargetView(m_pRenderTargetView, m_backgroundColour);
+		m_pD3DDevice->ClearRenderTargetView(m_pRenderTargetView, m_BackgroundColour);
 		m_pD3DDevice->ClearDepthStencilView(m_pDepthStencilView, D3D10_CLEAR_DEPTH | D3D10_CLEAR_STENCIL, 1.0f, 0);
 		m_pD3DDevice->OMSetDepthStencilState(0, 0);
 
 		m_pD3DDevice->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
-		m_pD3DDevice->RSSetViewports(1, &m_viewPort);
+		m_pD3DDevice->RSSetViewports(1, &m_ViewPort);
 	}
 
 	void CD3D10Renderer::VPostRender()
@@ -192,6 +207,20 @@ namespace Slim {
 	shared_ptr<AIndexGpuBuffer> CD3D10Renderer::VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory)
 	{
 		return shared_ptr<AIndexGpuBuffer>(new CD3D10IndexGpuBuffer(m_pD3DDevice, numIndices, indexType, pSource, usage, isInSystemMemory));
+	}
+
+	shared_ptr<AShaderProgram> CD3D10Renderer::VCreateShaderProgram(const std::string& name, AShaderProgram::EShaderType type)
+	{
+		shared_ptr<AShaderProgram> pShaderProgram(new CD3D10ShaderProgram(m_pD3DDevice, name, type));
+		return pShaderProgram;	// TODO: We let the user load the shader, but should probably do it ourselves
+								// but we have to set entry point and shader model first.
+
+		if (pShaderProgram->VLoad()) {
+			return pShaderProgram;
+		}
+		else {
+			return nullptr;
+		}
 	}
 
 	shared_ptr<ATexture> CD3D10Renderer::VLoadTexture(const std::string& name)
@@ -228,9 +257,9 @@ namespace Slim {
 		throw std::logic_error("The method or operation is not implemented.");
 	}
 
-	void CD3D10Renderer::VSetBackgroundColour(const TColour& colour)
+	void CD3D10Renderer::VSetBackgroundColour(const TColourValue& colour)
 	{
-		throw std::logic_error("The method or operation is not implemented.");
+		m_BackgroundColour = D3D10Conversions::GetColour(colour);
 	}
 
 	void CD3D10Renderer::VSetFog(EFogType fogType, const TColourValue& colour /*= TColourValue::s_BLACK*/, float start /*= 0.0f*/, float end /*= 1.0f*/, float exponentialDensity /*= 1.0f*/)
@@ -242,22 +271,8 @@ namespace Slim {
 	{
 		assert(m_pBoundVertexShader);
 
-		std::vector<D3D10_INPUT_ELEMENT_DESC> d3dInputElements = GetD3DVertexDeclaration(vertexDeclaration);
-
-		ID3D10InputLayout* pLayout;
-
-		const CD3D10ShaderProgram::TByteCode& byteCode = m_pBoundVertexShader->GetByteCode();
-
-		HRESULT hResult = m_pD3DDevice->CreateInputLayout(
-			&d3dInputElements[0],				// Input element descriptions.
-			d3dInputElements.size(),			// Number of elements.
-			&byteCode[0],						// Byte code.
-			byteCode.size(),					// Length of byte code.
-			&pLayout);							// Output input layout.
-
-		if (FAILED(hResult)) {
-			// TODO: throw exception.
-		}
+		ID3D10InputLayout* pLayout = m_pBoundVertexShader->GetD3DInputLayout(&vertexDeclaration);
+		assert(pLayout);
 
 		// Get the primitive type.
 		D3D10_PRIMITIVE_TOPOLOGY primitiveType = D3D10Conversions::GetPrimitiveType(vertexDeclaration.GetPrimitiveType());
@@ -282,14 +297,19 @@ namespace Slim {
 
 				// Set constant buffers.
 				const CD3D10ShaderProgram::TConstantBufferList& buffers = m_pBoundVertexShader->GetD3DConstantBuffers();
-				m_pD3DDevice->VSSetConstantBuffers(0, buffers.size(), &buffers[0]);
+				if (!buffers.empty()) {
+					m_pD3DDevice->VSSetConstantBuffers(0, buffers.size(), &buffers[0]);
+				}
+				else {
+					m_pD3DDevice->VSSetConstantBuffers(0, 0, NULL);
+				}
 
 				break;
 			}
 			case AShaderProgram::SHADER_TYPE_PIXEL: {
 				m_pBoundPixelShader = static_pointer_cast<CD3D10ShaderProgram>(pShader);
 
-				ID3D10PixelShader* pPixelShader = m_pBoundVertexShader->GetD3DPixelShader();
+				ID3D10PixelShader* pPixelShader = m_pBoundPixelShader->GetD3DPixelShader();
 				assert(pPixelShader);
 
 				// Set the shader.
@@ -297,14 +317,20 @@ namespace Slim {
 
 				// Set the constant buffers.
 				const CD3D10ShaderProgram::TConstantBufferList& buffers = m_pBoundPixelShader->GetD3DConstantBuffers();
-				m_pD3DDevice->PSSetConstantBuffers(0, buffers.size(), &buffers[0]);
+
+				if (!buffers.empty()) {
+					m_pD3DDevice->PSSetConstantBuffers(0, buffers.size(), &buffers[0]);
+				}
+				else {
+					m_pD3DDevice->PSSetConstantBuffers(0, 0, NULL);
+				}
 
 				break;
 			}
 			case AShaderProgram::SHADER_TYPE_GEOMETRY: {
 				m_pBoundGeometryShader = static_pointer_cast<CD3D10ShaderProgram>(pShader);
 
-				ID3D10GeometryShader* pGeometryShader = m_pBoundVertexShader->GetD3DGeometryShader();
+				ID3D10GeometryShader* pGeometryShader = m_pBoundGeometryShader->GetD3DGeometryShader();
 				assert(pGeometryShader);
 
 				// Set the shader.
@@ -312,7 +338,12 @@ namespace Slim {
 
 				// Set the constant buffers.
 				const CD3D10ShaderProgram::TConstantBufferList& buffers = m_pBoundGeometryShader->GetD3DConstantBuffers();
-				m_pD3DDevice->GSSetConstantBuffers(0, buffers.size(), &buffers[0]);
+				if (!buffers.empty()) {
+					m_pD3DDevice->GSSetConstantBuffers(0, buffers.size(), &buffers[0]);
+				}
+				else {
+					m_pD3DDevice->GSSetConstantBuffers(0, 0, NULL);
+				}
 
 				break;
 			}
@@ -344,27 +375,44 @@ namespace Slim {
 		m_pD3DDevice->IASetIndexBuffer(pD3DBuffer, D3D10Conversions::GetFormat(pD3DIndexBuffer->GetIndexType()), 0);
 	}
 
+
 	void CD3D10Renderer::VRender(const CVertexDeclaration& vertexDeclaration, shared_ptr<AVertexGpuBuffer> pVertexBuffer, shared_ptr<AIndexGpuBuffer> pIndexBuffer /* = nullptr */)
 	{
 		m_pD3DDevice->OMSetDepthStencilState(0, 0);
 		m_pD3DDevice->OMSetBlendState(0, 0, 0xffffffff);
 
-		std::vector<ID3D10ShaderResourceView*> shaderResources;
+		// Get number of valid texture stages.
+		int numLayers = 0;
 		for (size_t i = 0; i < m_Textures.size(); ++i) {
-			if (m_Textures[i]) {
-				shaderResources.push_back(m_Textures[i]);
+			if (!m_Textures[i]) {
+				// Can't have holes in our texture layers.
+				break;
 			}
+
+			CreateSamplerState(i);
+
+			numLayers++;
 		}
 
-		if (!shaderResources.empty()) {
-			m_pD3DDevice->PSSetShaderResources(0, shaderResources.size(), &shaderResources[0]);
+		SLIM_ERROR_IF(numLayers == 0);
+
+		if (numLayers != 0) {
+			if (m_pBoundGeometryShader) {
+				m_pD3DDevice->GSSetSamplers(0, numLayers, &m_SamplerStates[0]);
+				m_pD3DDevice->GSSetShaderResources(0, numLayers, &m_Textures[0]);
+			}
+
+			m_pD3DDevice->PSSetSamplers(0, numLayers, &m_SamplerStates[0]);
+			m_pD3DDevice->PSSetShaderResources(0, numLayers, &m_Textures[0]);
 		}
 
-		size_t primitiveCount = 0;
 		bool isUsingIndices = pIndexBuffer != nullptr;
+
+		/*size_t primitiveCount = 0;
 
 		size_t vertexCount = pVertexBuffer->GetNumVertices();
 		if (isUsingIndices) {
+			// If we are using indices, we need to use the index count instead.
 			vertexCount = pIndexBuffer->GetNumIndices();
 		}
 
@@ -403,24 +451,25 @@ namespace Slim {
 		}
 
 		if (primitiveCount == 0) {
-			return;
-		}
+			return;	// No need to draw no primitives.
+		}*/
 
 		VSetVertexDeclaration(vertexDeclaration);
 
 		// Set buffers.
 		VSetVertexBuffer(pVertexBuffer);
+
 		if (isUsingIndices) {
 			VSetIndexBuffer(pIndexBuffer);
 
 			m_pD3DDevice->DrawIndexed(pIndexBuffer->GetNumIndices(), 0, 0);
 		}
 		else {
-			m_pD3DDevice->Draw(vertexCount, 0);
+			m_pD3DDevice->Draw(pVertexBuffer->GetNumVertices(), 0);
 		}
 	}
 
-	DXGI_SAMPLE_DESC CD3D10Renderer::CheckMultiSampleLevels()
+	DXGI_SAMPLE_DESC CD3D10Renderer::DetermineMultiSampleLevels()
 	{
 		unsigned int msaaCount = 4;
 		unsigned int msaaQuality = -1;
@@ -438,18 +487,23 @@ namespace Slim {
 			}
 			else {
 				msaaCount = samples;
-				msaaQuality = currentMSAAQuality;
+				msaaQuality = currentMSAAQuality - 1;
 			}
 		}
 
-		ZeroMemory(&m_sampleDesc, sizeof(DXGI_SAMPLE_DESC));
-		m_sampleDesc.Count = msaaCount;
-		m_sampleDesc.Quality = msaaQuality;
+		ZeroMemory(&m_SampleDesc, sizeof(DXGI_SAMPLE_DESC));
+		m_SampleDesc.Count = msaaCount;
+		m_SampleDesc.Quality = msaaQuality;
 
 		// DirectX 10 should always support at least 4 levels of multi-sampling.
 		assert(msaaQuality != -1);
 
-		return m_sampleDesc;
+		return m_SampleDesc;
+	}
+
+	void CD3D10Renderer::VSetTextureLayerFiltering(size_t layer, ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter)
+	{
+		m_SamplerDescs[layer].Filter = D3D10Conversions::GetFilter(minFilter, magFilter, mipFilter);
 	}
 
 	void CD3D10Renderer::VSetTexture(size_t layer, const shared_ptr<ATexture>& pTexture, bool disable /*= false*/)
@@ -465,24 +519,32 @@ namespace Slim {
 		}
 	}
 
-	void CD3D10Renderer::VSetTextureLayerFiltering(size_t layer, ETextureSamplerType samplerType, ETextureFilterType filterType)
-	{
-		throw std::logic_error("The method or operation is not implemented.");
-	}
-
 	void CD3D10Renderer::VSetTextureLayerBlendState(size_t layer, const TTextureLayerBlendState& blendState)
 	{
-		throw std::logic_error("The method or operation is not implemented.");
+
 	}
 
 	void CD3D10Renderer::VSetTextureAddressModes(size_t layer, const TTextureUVWAddressModes& addressModes)
 	{
-		throw std::logic_error("The method or operation is not implemented.");
+		m_SamplerDescs[layer].AddressU = D3D10Conversions::GetAddressMode(addressModes.m_u);
+		m_SamplerDescs[layer].AddressV = D3D10Conversions::GetAddressMode(addressModes.m_v);
+		m_SamplerDescs[layer].AddressW = D3D10Conversions::GetAddressMode(addressModes.m_w);
 	}
 
 	void CD3D10Renderer::VSetTextureBorderColour(size_t layer, const TColourValue& colour)
 	{
-		throw std::logic_error("The method or operation is not implemented.");
+		m_SamplerDescs[layer].BorderColor[0] = colour.m_r;
+		m_SamplerDescs[layer].BorderColor[1] = colour.m_g;
+		m_SamplerDescs[layer].BorderColor[2] = colour.m_b;
+		m_SamplerDescs[layer].BorderColor[3] = colour.m_a;
+	}
+
+	void CD3D10Renderer::CreateSamplerState(size_t layer)
+	{
+		HRESULT hResult = m_pD3DDevice->CreateSamplerState(&m_SamplerDescs[layer], &m_SamplerStates[layer]);
+		if (FAILED(hResult)) {
+			// TODO: display error.
+		}
 	}
 
 	std::vector<D3D10_INPUT_ELEMENT_DESC> CD3D10Renderer::GetD3DVertexDeclaration(const CVertexDeclaration& vertexDeclaration)
@@ -508,6 +570,83 @@ namespace Slim {
 		}
 
 		return std::move(d3dInputElements);
+	}
+
+	void CD3D10Renderer::VSetWindowed(bool windowed)
+	{
+		m_pSwapChain->SetFullscreenState(!windowed, NULL);
+	}
+
+	void CD3D10Renderer::VOnResize()
+	{
+		RECT rect;
+
+		GetClientRect(g_pApp->GetHWND(), &rect);
+
+		size_t width = rect.right - rect.left;
+		size_t height = rect.bottom - rect.top;
+
+		if (width == m_Width && height == m_Height) {
+			return;
+		}
+
+		m_Width = width;
+		m_Height = height;
+		
+		unsigned int flags = 0;
+		if (m_IsWindowed) {
+			flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+		}
+
+		SafeRelease(m_pRenderTargetView);
+		SafeRelease(m_pDepthStencilBuffer);
+		SafeRelease(m_pDepthStencilView);
+
+		m_pSwapChain->ResizeBuffers(m_d3dpp.BufferCount, width, height, m_d3dpp.BufferDesc.Format, flags);
+
+		// Create the render target view to the back buffer.
+		ID3D10Texture2D* pBackBuffer;
+		m_pSwapChain->GetBuffer(0, __uuidof(ID3D10Texture2D), reinterpret_cast<void**>(&pBackBuffer));
+		m_pD3DDevice->CreateRenderTargetView(pBackBuffer, 0, &m_pRenderTargetView);
+
+		SafeRelease(pBackBuffer);
+
+		// Create the depth/stencil buffer and view.
+		D3D10_TEXTURE2D_DESC depthStencilDesc;
+		ZeroMemory(&depthStencilDesc, sizeof(D3D10_TEXTURE2D_DESC));
+		depthStencilDesc.SampleDesc = m_SampleDesc;
+		depthStencilDesc.Width = m_Width;
+		depthStencilDesc.Height = m_Height;
+		depthStencilDesc.MipLevels = 1;
+		depthStencilDesc.ArraySize = 1;
+		depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+		depthStencilDesc.Usage = D3D10_USAGE_DEFAULT;
+		depthStencilDesc.BindFlags = D3D10_BIND_DEPTH_STENCIL;
+
+		ID3D10Texture2D* pDepthStencilBuffer;
+		HRESULT hResult = m_pD3DDevice->CreateTexture2D(&depthStencilDesc, nullptr, &pDepthStencilBuffer);
+		if (FAILED(hResult)) {
+			throw CRenderingError();
+			return;
+		}
+
+		hResult = m_pD3DDevice->CreateDepthStencilView(pDepthStencilBuffer, nullptr, &m_pDepthStencilView);
+		if (FAILED(hResult)) {
+			throw CRenderingError();
+			return;
+		}
+
+		// Bind the views to the output merger stage.
+		m_pD3DDevice->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
+
+		// Set the view port.
+		ZeroMemory(&m_ViewPort, sizeof(D3D10_VIEWPORT));
+		m_ViewPort.TopLeftX = 0;
+		m_ViewPort.TopLeftY = 0;
+		m_ViewPort.Width = m_Width;
+		m_ViewPort.Height = m_Height;
+		m_ViewPort.MinDepth = 0.0f;
+		m_ViewPort.MaxDepth = 1.0f;
 	}
 
 }

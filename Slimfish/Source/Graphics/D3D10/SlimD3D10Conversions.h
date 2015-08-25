@@ -24,6 +24,8 @@
 #include "../SlimIndexGpuBuffer.h"
 #include "../SlimVertexDeclaration.h"
 #include "../SlimTexture.h"
+#include "../SlimTextureLayer.h"
+#include "../SlimShaderParams.h"
 #include "SlimD3D10Forward.h"
 
 namespace Slim {
@@ -47,6 +49,9 @@ namespace D3D10Conversions {
 	DXGI_FORMAT GetFormat(AIndexGpuBuffer::EIndexType indexType);
 
 	D3D10_PRIMITIVE_TOPOLOGY GetPrimitiveType(CVertexDeclaration::EPrimitiveType primitiveType);
+	D3D10_TEXTURE_ADDRESS_MODE GetAddressMode(ETextureAddressMode addressMode);
+	D3D10_FILTER GetFilter(ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter);
+	CShaderConstant::EConstantType GetShaderConstantType(D3D11_SHADER_TYPE_DESC variableTypeDesc);
 }
 
 }

@@ -256,7 +256,7 @@ namespace Slim {
 		srvDesc.Format = desc.Format;
 		srvDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE1D;
 		srvDesc.Texture1D.MipLevels = desc.MipLevels;
-		srvDesc.Texture1D.MostDetailedMip = desc.MipLevels - 1;
+		srvDesc.Texture1D.MostDetailedMip = 0;
 
 		HRESULT hResult = m_pD3DDevice->CreateShaderResourceView(m_pTexture1D, &srvDesc, &m_pShaderResourceView);
 		if (FAILED(hResult)) {
@@ -281,7 +281,7 @@ namespace Slim {
 		srvDesc.Format = desc.Format;
 		srvDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE2D;
 		srvDesc.Texture2D.MipLevels = desc.MipLevels;
-		srvDesc.Texture2D.MostDetailedMip = desc.MipLevels - 1;
+		srvDesc.Texture2D.MostDetailedMip = 0;
 
 		if (GetTextureType() == TEXTURE_TYPE_CUBIC) {
 			srvDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURECUBE;
@@ -316,7 +316,7 @@ namespace Slim {
 		srvDesc.Format = desc.Format;
 		srvDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE3D;
 		srvDesc.Texture3D.MipLevels = desc.MipLevels;
-		srvDesc.Texture3D.MostDetailedMip = desc.MipLevels - 1;
+		srvDesc.Texture3D.MostDetailedMip = 0;
 
 		HRESULT hResult = m_pD3DDevice->CreateShaderResourceView(m_pTexture3D, &srvDesc, &m_pShaderResourceView);
 		if (FAILED(hResult)) {

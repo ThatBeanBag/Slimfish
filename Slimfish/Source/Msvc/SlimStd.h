@@ -37,11 +37,13 @@ const size_t g_MAX_ACTIVE_LIGHTS = 8;
 }
 
 // Local Includes
+#include "..\Debug\SlimLogger.h"
 #include "..\Utilities\SlimInline.h"
 #include "..\Utilities\SlimSingleton.h"
 #include "..\Math\SlimMatrix4x4.h"
 #include "..\Math\SlimQuaternion.h"
 #include "..\Math\SlimVector.h"
+#include "..\Math\SlimMath.h"
 #include "..\Graphics\SlimColour.h"
 #include "..\GameBase\SlimGameApp.h"
 

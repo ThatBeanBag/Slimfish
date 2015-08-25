@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Debug\SlimLog.cpp" />
+    <ClCompile Include="..\Debug\SlimLogger.cpp" />
     <ClCompile Include="..\GameBase\SlimGameLogic.cpp" />
     <ClCompile Include="..\GameBase\SlimGameApp.cpp" />
     <ClCompile Include="..\GameBase\WinMain.cpp" />
@@ -25,6 +27,7 @@
     <ClCompile Include="..\Graphics\SlimColour.cpp" />
     <ClCompile Include="..\Graphics\SlimGpuBuffer.cpp" />
     <ClCompile Include="..\Graphics\SlimIndexGpuBuffer.cpp" />
+    <ClCompile Include="..\Graphics\SlimLight.cpp" />
     <ClCompile Include="..\Graphics\SlimShaderParams.cpp" />
     <ClCompile Include="..\Graphics\SlimShaderProgram.cpp" />
     <ClCompile Include="..\Graphics\SlimTexture.cpp" />
@@ -41,6 +44,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Debug\SlimExceptions.h" />
+    <ClInclude Include="..\Debug\SlimLog.h" />
     <ClInclude Include="..\Debug\SlimLogger.h" />
     <ClInclude Include="..\GameBase\SlimGameLogic.h" />
     <ClInclude Include="..\GameBase\SlimGameApp.h" />
@@ -58,6 +63,7 @@
     <ClInclude Include="..\Graphics\SlimColour.h" />
     <ClInclude Include="..\Graphics\SlimGpuBuffer.h" />
     <ClInclude Include="..\Graphics\SlimIndexGpuBuffer.h" />
+    <ClInclude Include="..\Graphics\SlimLight.h" />
     <ClInclude Include="..\Graphics\SlimShaderParams.h" />
     <ClInclude Include="..\Graphics\SlimVertexDeclaration.h" />
     <ClInclude Include="..\Graphics\SlimShaderProgram.h" />
@@ -76,6 +82,9 @@
     <ClInclude Include="..\Utilities\SlimObjectFactory.h" />
     <ClInclude Include="..\Utilities\SlimSingleton.h" />
     <ClInclude Include="SlimStd.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7B57F944-4A3C-4BAD-839C-8E28BF1A4F88}</ProjectGuid>
@@ -107,14 +116,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>H:\Semester 2\Slimfish\Slimfish\Source\Msvc;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath);$(DXSDK_DIR)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Visual Leak Detector\include;H:\Semester 2\Slimfish\Slimfish\Source\Msvc;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath);$(DXSDK_DIR)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
     <OutDir>$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\Temp\$(PlatformName)$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>H:\Semester 2\Slimfish\Slimfish\Source\Msvc;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath);$(DXSDK_DIR)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <IncludePath>C:\Program Files %28x86%29\Visual Leak Detector\include;H:\Semester 2\Slimfish\Slimfish\Source\Msvc;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath);$(DXSDK_DIR)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
     <OutDir>$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\Temp\$(PlatformName)$(Configuration)\</IntDir>
   </PropertyGroup>

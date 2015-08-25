@@ -170,6 +170,9 @@ public:
 	void SetPrimitiveType(EPrimitiveType primitiveType);
 	/** Get the primitive type described by this vertex declaration. @author Hayden Asplet */
 	EPrimitiveType GetPrimitiveType() const;
+
+	void SetRebuilt();
+	const bool NeedsRebuilding() const;
 protected:
 private:
 	/** Internal delegating method for derived classes to implement. See AddElement().
@@ -190,9 +193,11 @@ private:
 	// Member Variables
 public:
 protected:
-	TElementList m_ElementList;	// The list of input elements that make up the vertex declaration.
 private:
+	TElementList m_ElementList;	// The list of input elements that make up the vertex declaration.
 	EPrimitiveType m_PrimitiveType;
+
+	bool m_NeedsRebuilding;
 };
 
 }

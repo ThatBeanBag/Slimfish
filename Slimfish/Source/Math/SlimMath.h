@@ -23,7 +23,7 @@
 
 namespace Slim {
 
-	const float g_PI = 3.141592653589793238462643383279;
+	const float g_PI = 3.141592653589793238462643383279f;
 	const float g_DEGREES_TO_RADIANS = g_PI / 180;
 	const float g_RADIANS_TO_DEGREES = 180 / g_PI;
 

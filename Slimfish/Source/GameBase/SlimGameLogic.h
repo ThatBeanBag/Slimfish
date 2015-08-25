@@ -37,8 +37,8 @@ private:
 	// Member Variables
 public:
 protected:
-private:
 	float m_ElapsedTime;
+private:
 };
 
 }

@@ -48,12 +48,18 @@ public:
 	/* @copydoc ARenderer::VCreateVertexBuffer */
 	virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) override;
 
+	/* @copydoc ARenderer::VCreateShaderProgram */
+	virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, AShaderProgram::EShaderType type);
+
+	/* @copydoc ARenderer::VLoadTexture */
 	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name) override;
 
+	/* @copydoc ARenderer::VRender */
 	virtual void VRender(const CVertexDeclaration& vertexDeclaration, 
 						 shared_ptr<AVertexGpuBuffer> pVertexBuffer,
 						 shared_ptr<AIndexGpuBuffer> pIndexBuffer /* = nullptr */);
 
+	/* @copydoc ARenderer::VSetShaderProgram */
 	virtual void VSetShaderProgram(shared_ptr<AShaderProgram> pShader);
 
 	virtual void VSetWorldTransform(const CMatrix4x4& worldTransform) override;
@@ -61,15 +67,22 @@ public:
 	virtual void VSetProjectionTransform(const CMatrix4x4& projectionTransform) override;
 
 	virtual void VSetAmbientColour(const TColour& colour) override;
-	virtual void VSetBackgroundColour(const TColour& colour) override;
+	virtual void VSetBackgroundColour(const TColourValue& colour) override;
 
 	virtual void VSetFog(EFogType fogType, const TColourValue& colour = TColourValue::s_BLACK, float start = 0.0f, float end = 1.0f, float exponentialDensity = 1.0f) override;
 protected:
 private:
-	DXGI_SAMPLE_DESC CheckMultiSampleLevels();
+	// Windows functions that should be in a windows class.
+	virtual void VSetWindowed(bool windowed);
+	virtual void VOnResize();
 
+	/** Internal method for determining maximum multi-sample levels for the graphics device.
+	 	@author Hayden Asplet
+	*/
+	DXGI_SAMPLE_DESC DetermineMultiSampleLevels();
+
+	virtual void VSetTextureLayerFiltering(size_t layer, ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter);
 	virtual void VSetTexture(size_t layer, const shared_ptr<ATexture>& pTexture, bool disable = false) override;
-	virtual void VSetTextureLayerFiltering(size_t layer, ETextureSamplerType samplerType, ETextureFilterType filterType) override;
 	virtual void VSetTextureLayerBlendState(size_t layer, const TTextureLayerBlendState& blendState) override;
 	virtual void VSetTextureAddressModes(size_t layer, const TTextureUVWAddressModes& addressModes) override;
 	virtual void VSetTextureBorderColour(size_t layer, const TColourValue& colour) override;
@@ -78,6 +91,15 @@ private:
 	virtual void VSetVertexBuffer(shared_ptr<AVertexGpuBuffer> pVertexBuffer);
 	virtual void VSetIndexBuffer(shared_ptr<AIndexGpuBuffer> pIndexBuffer);
 
+	/** Internal helper method for creating a sampler state for a texture layer.
+	 	@author Hayden Asplet
+	*/
+	void CreateSamplerState(size_t layer);
+
+	/** Internal helper method for converting a vertex declaration to input element descriptions
+		that directX can use.
+	 	@author Hayden Asplet
+	*/
 	std::vector<D3D10_INPUT_ELEMENT_DESC> GetD3DVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
 
 	// Member Variables
@@ -88,19 +110,22 @@ private:
 	IDXGISwapChain* m_pSwapChain;
 	ID3D10RenderTargetView* m_pRenderTargetView;
 	ID3D10Texture2D* m_pDepthStencilBuffer;
-	ID3D10DepthStencilState* m_pDepthStencilState;
 	ID3D10DepthStencilView* m_pDepthStencilView;
+	ID3D10DepthStencilState* m_pDepthStencilState;
 	ID3D10RasterizerState* m_pRasterizerState;
+
+	// Texture layering
+	std::vector<D3D10_SAMPLER_DESC> m_SamplerDescs;
 	std::vector<ID3D10SamplerState*> m_SamplerStates;
 	std::vector<ID3D10ShaderResourceView*> m_Textures;
 
-	D3DXCOLOR m_backgroundColour;
-	D3DXCOLOR m_ambientColour;
-	D3D10_VIEWPORT m_viewPort;
+	D3DXCOLOR m_BackgroundColour;	// The clear colour.
+	D3D10_VIEWPORT m_ViewPort;		// Current view port.
 	
-	DXGI_SAMPLE_DESC m_sampleDesc;
+	DXGI_SAMPLE_DESC m_SampleDesc;	// The description of the multi-sampling levels currently being used.
 	DXGI_SWAP_CHAIN_DESC m_d3dpp;	// Presentation parameters.
 
+	// Bound shaders.
 	shared_ptr<CD3D10ShaderProgram> m_pBoundVertexShader;
 	shared_ptr<CD3D10ShaderProgram> m_pBoundPixelShader;
 	shared_ptr<CD3D10ShaderProgram> m_pBoundGeometryShader;

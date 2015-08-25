@@ -24,21 +24,50 @@
 
 namespace Slim {
 
-	ARenderer::ARenderer(int width, int height, bool isWindowed)
-		:m_Width(width),
-		m_Height(height),
-		m_IsWindowed(isWindowed)
-	{
+ARenderer::ARenderer(int width, int height, bool isWindowed)
+	:m_Width(width),
+	m_Height(height),
+	m_IsWindowed(isWindowed)
+{
 
-	}
+}
 
-	void ARenderer::SetTextureLayer(size_t layer, CTextureLayer& textureLayer)
+void ARenderer::SetWindowed(bool windowed)
+{
+	m_IsWindowed = true; 
+	VSetWindowed(windowed);
+}
+
+void ARenderer::ToggleWindowed()
+{
+	SetWindowed(!m_IsWindowed);
+}
+
+bool ARenderer::IsWindowed() const
+{
+	return m_IsWindowed;
+}
+
+void ARenderer::GetWindowSize(size_t& width, size_t& height)
+{
+	width = m_Width;
+	height = m_Height;
+}
+
+void ARenderer::Resize(size_t width, size_t height)
+{
+	m_Width = width; 
+	height = m_Height;
+	VOnResize();
+}
+
+void ARenderer::SetTextureLayer(size_t layer, CTextureLayer& textureLayer)
 {
 	// Set the texture to the layer.
 	VSetTexture(layer, textureLayer.GetTexture(), false);
 
 	// Set texture filtering.
-	SetTextureLayerFiltering(layer, 
+	VSetTextureLayerFiltering(layer, 
 							 textureLayer.GetTextureFilter(TSAMP_MIN),
 							 textureLayer.GetTextureFilter(TSAMP_MAG),
 							 textureLayer.GetTextureFilter(TSAMP_MIP));
@@ -63,12 +92,35 @@ void ARenderer::DisableTextureLayer(size_t layer)
 	VSetTexture(layer, nullptr, true);
 }
 
+/*
 void ARenderer::SetTextureLayerFiltering(size_t layer, ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter)
 {
-	VSetTextureLayerFiltering(layer, TSAMP_MIN, minFilter);
-	VSetTextureLayerFiltering(layer, TSAMP_MAG, magFilter);
-	VSetTextureLayerFiltering(layer, TSAMP_MIP, mipFilter);
+	SetTextureLayerFiltering(layer, TSAMP_MIN, minFilter);
+	SetTextureLayerFiltering(layer, TSAMP_MAG, magFilter);
+	SetTextureLayerFiltering(layer, TSAMP_MIP, mipFilter);
 }
+
+void ARenderer::SetTextureLayerFiltering(size_t layer, ETextureSamplerType samplerType, ETextureFilterType filterType)
+{
+	switch (samplerType) {
+		case TSAMP_MIN: {
+			m_MinFilter = filterType;
+			break;
+		}
+		case TSAMP_MAG: {
+			m_MagFilter = filterType;
+			break;
+		}
+		case TSAMP_MIP: {
+			m_MipFilter = filterType;
+			break;
+		}
+		default: {
+			break;
+		}
+	}
+}
+*/
 
 void ARenderer::DisableTextureLayerFrom(size_t layer)
 {

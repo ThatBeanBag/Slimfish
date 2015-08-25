@@ -23,6 +23,7 @@
 #include "SlimTypes.h"
 #include "SlimTextureLayer.h"
 #include "SlimIndexGpuBuffer.h"
+#include "SlimShaderProgram.h"
 
 namespace Slim {
 	// Forward Declaration
@@ -72,6 +73,13 @@ namespace Slim {
 		*/
 		virtual void VPostRender() = 0;
 
+		// Window functions that should be in a window class.
+		void SetWindowed(bool windowed);
+		void ToggleWindowed();
+		bool IsWindowed() const;
+		void GetWindowSize(size_t& width, size_t& height);
+		void Resize(size_t width, size_t height);
+
 		/** Create a vertex buffer on the GPU.
 		 	@author Hayden Asplet
 		 	@param numVertices The number of vertices to stored in the buffer.
@@ -93,6 +101,14 @@ namespace Slim {
 				usage of the buffer.
 		*/
 		virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) = 0;
+
+		/** Create a shader from file.
+		 	@author Hayden Asplet
+		 	@param name Name of the shader file.
+		 	@param type The type of shader e.g. vertex, pixel or geometry shader.
+		 	@return Pointer to the shader programs; not valid if creation failed.
+		*/
+		virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, AShaderProgram::EShaderType type) = 0;
 
 		/** Loads a texture from file.
 		 	@author Hayden Asplet
@@ -132,7 +148,7 @@ namespace Slim {
 		/** Set the ambient colour. */
 		virtual void VSetAmbientColour(const TColour& colour) = 0;
 		/** Set the background the colour. */
-		virtual void VSetBackgroundColour(const TColour& colour) = 0;
+		virtual void VSetBackgroundColour(const TColourValue& colour) = 0;
 		
 		/** Set the fog options for future rendering of geometry.
 		 	@author Hayden Asplet
@@ -178,8 +194,26 @@ namespace Slim {
 		 	@author Hayden Asplet
 		*/
 		void DisableTextureLayerFrom(size_t layer);
+
 	protected:
 	private:
+		// Windows functions that should be in a windows class.
+		virtual void VSetWindowed(bool windowed) = 0;
+		virtual void VOnResize() = 0;
+
+		/** Internal method to set the texture filtering for a specific sampler type on a layer.
+		 	@author Hayden Asplet
+		 	@param	layer The layer/stage to set the texture filtering of.
+		 	@param	samplerType The sampler type to set the filtering of (min, mag or mip).
+		 	@param	filterType The filter type to set.
+		*/
+		//void SetTextureLayerFiltering(size_t layer, ETextureSamplerType samplerType, ETextureFilterType filterType);
+
+		/** Internal convenience method to set the min, mag and mip texture filters for a texture layer.
+		 	@author Hayden Asplet
+		*/
+		virtual void VSetTextureLayerFiltering(size_t layer, ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter) = 0;
+
 		/** Internal delegating method to set the texture of layer.
 			@note
 				Derived classes must implement this. If disable is set to false the implementation should 
@@ -191,19 +225,6 @@ namespace Slim {
 		*/
 		virtual void VSetTexture(size_t layer, const shared_ptr<ATexture>& pTexture, bool disable = false) = 0;
 
-		/** Internal delegating method to set the texture filtering for a specific sampler type on a layer.
-			@note Derived classes must implement this.
-		 	@author Hayden Asplet
-		 	@param	layer The layer or stage to set the texture filtering of.
-		 	@param	samplerType The sampler type to set the filtering of (min, mag or mipmap).
-		 	@param	filterType The filter type to set.
-		*/
-		virtual void VSetTextureLayerFiltering(size_t layer, ETextureSamplerType samplerType, ETextureFilterType filterType) = 0;
-
-		/** Internal convenience method to set the min, mag and mip texture filters for a texture layer.
-		 	@author Hayden Asplet
-		*/
-		void SetTextureLayerFiltering(size_t layer, ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter);
 
 		/** Internal delegating method to set the colour and alpha blending operations and argument of 
 			a texture layer.
@@ -237,7 +258,6 @@ namespace Slim {
 		bool m_IsWindowed;
 		int m_Width;
 		int m_Height;
-
 	private:
 		size_t m_disableTextureLayerFrom;	// Texture layer from this to g_MAX_TEXTURE_LAYERS are currently disabled.
 	};

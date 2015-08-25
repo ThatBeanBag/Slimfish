@@ -75,7 +75,7 @@ namespace Slim {
 
 	D3D10_USAGE D3D10Conversions::GetUsage(AGpuBuffer::EUsage usage)
 	{
-		if (usage & AGpuBuffer::USAGE_DYNAMIC) {
+		if (usage & AGpuBuffer::USAGE_DYNAMIC || usage & AGpuBuffer::USAGE_WRITE_ONLY) {
 			return D3D10_USAGE_DYNAMIC;
 		}
 		else {
@@ -205,6 +205,120 @@ namespace Slim {
 		}
 
 		return DXGI_FORMAT_R16_UINT;
+	}
+
+	D3D10_TEXTURE_ADDRESS_MODE D3D10Conversions::GetAddressMode(ETextureAddressMode addressMode)
+	{
+		switch (addressMode) {
+			case TADDRESS_WRAP: {
+				return D3D10_TEXTURE_ADDRESS_WRAP;
+			}
+			case TADDRESS_MIRROR: {
+				return D3D10_TEXTURE_ADDRESS_MIRROR;
+			}
+			case TADDRESS_BORDER: {
+				return D3D10_TEXTURE_ADDRESS_BORDER;
+			}
+			case TADDRESS_CLAMP: {
+				return D3D10_TEXTURE_ADDRESS_CLAMP;
+			}
+			default: {
+				break;
+			}
+		}
+
+		return D3D10_TEXTURE_ADDRESS_WRAP;
+	}
+
+	D3D10_FILTER D3D10Conversions::GetFilter(ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter)
+	{
+		auto testFilters = [&](ETextureFilterType min, ETextureFilterType mag, ETextureFilterType mip) {
+			return min == minFilter && mag == magFilter && mip == mipFilter;
+		};
+
+		if (testFilters(TFILTER_POINT, TFILTER_POINT, TFILTER_POINT)) {
+			return D3D10_FILTER_MIN_MAG_MIP_POINT;
+		}
+		else if (testFilters(TFILTER_POINT, TFILTER_POINT, TFILTER_LINEAR)) {
+			return D3D10_FILTER_MIN_MAG_POINT_MIP_LINEAR;
+		}
+		else if (testFilters(TFILTER_POINT, TFILTER_LINEAR, TFILTER_POINT)) {
+			return D3D10_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT;
+		}
+		else if (testFilters(TFILTER_POINT, TFILTER_LINEAR, TFILTER_LINEAR)) {
+			return D3D10_FILTER_MIN_POINT_MAG_MIP_LINEAR;
+		}
+		else if (testFilters(TFILTER_LINEAR, TFILTER_POINT, TFILTER_POINT)) {
+			return D3D10_FILTER_MIN_LINEAR_MAG_MIP_POINT;
+		}
+		else if (testFilters(TFILTER_LINEAR, TFILTER_POINT, TFILTER_LINEAR)) {
+			return D3D10_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR;
+		}
+		else if (testFilters(TFILTER_LINEAR, TFILTER_LINEAR, TFILTER_POINT)) {
+			return D3D10_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+		}
+		else if (testFilters(TFILTER_LINEAR, TFILTER_LINEAR, TFILTER_LINEAR)) {
+			return D3D10_FILTER_MIN_MAG_MIP_LINEAR;
+		}
+		else if (testFilters(TFILTER_LINEAR, TFILTER_LINEAR, TFILTER_LINEAR)) {
+			return D3D10_FILTER_MIN_MAG_MIP_LINEAR;
+		}
+		else if (testFilters(TFILTER_ANISOTROPIC, TFILTER_ANISOTROPIC, TFILTER_ANISOTROPIC)) {
+			return D3D10_FILTER_ANISOTROPIC;
+		}
+		
+		return D3D10_FILTER_MIN_MAG_MIP_LINEAR;
+	}
+
+	CShaderConstant::EConstantType D3D10Conversions::GetShaderConstantType(D3D11_SHADER_TYPE_DESC variableTypeDesc)
+	{
+		switch (variableTypeDesc.Type) {
+			case D3D10_SVT_INT: {
+				switch (variableTypeDesc.Columns) {
+					case 1: {
+						return CShaderConstant::TYPE_INT;
+					}
+					case 2: {
+						return CShaderConstant::TYPE_INT2;
+					}
+					case 3: {
+						return CShaderConstant::TYPE_INT3;
+					}
+					case 4: {
+						return CShaderConstant::TYPE_INT4;
+					}
+				}
+
+				break;
+			}
+			case D3D10_SVT_FLOAT: {
+				if (variableTypeDesc.Rows == 1) {
+					switch (variableTypeDesc.Columns) {
+						case 1: {
+							return CShaderConstant::TYPE_FLOAT;
+						}
+						case 2: {
+							return CShaderConstant::TYPE_FLOAT2;
+						}
+						case 3: {
+							return CShaderConstant::TYPE_FLOAT3;
+						}
+						case 4: {
+							return CShaderConstant::TYPE_FLOAT4;
+						}
+					}
+				}
+				else if (variableTypeDesc.Rows == 4 && variableTypeDesc.Columns == 4) {
+					return CShaderConstant::TYPE_MATRIX4X4;
+				}
+			}
+			default: {
+				break;
+			}
+		}
+		
+		SLIM_WARNING() << "Unsupported type of shader constant found in shader";
+		return CShaderConstant::TYPE_INT;
 	}
 
 }

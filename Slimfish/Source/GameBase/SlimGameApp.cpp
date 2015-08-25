@@ -47,6 +47,9 @@ namespace Slim {
 
 	bool CGameApp::VInitialise(HINSTANCE hInstance, LPSTR lpCmdLine, HWND hWnd, size_t screenHeight, size_t screenWidth)
 	{
+		CLogger::GetInstance()->CreateLog("SLIM.log");
+		SLIM_INFO_IF(false) << "TestMessge";
+
 		m_hInstance = hInstance;
 
 		static LPCWSTR windowClassName = L"WINCLASS1";
@@ -99,7 +102,7 @@ namespace Slim {
 		RECT clientRect;
 		GetClientRect(m_hWnd, &clientRect);
 
-		m_pRenderer.reset(new CD3D10Renderer(clientRect.right - clientRect.left, clientRect.bottom - clientRect.top, false));
+		m_pRenderer.reset(new CD3D10Renderer(clientRect.right - clientRect.left, clientRect.bottom - clientRect.top, true));
 		if (!m_pRenderer) {
 		// Failed to create the renderer.
 		// TODO: display error.
@@ -133,12 +136,47 @@ namespace Slim {
 
 	LRESULT CALLBACK CGameApp::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
+		switch (msg) {
+			case WM_SIZE: {
+				g_pApp->GetRenderer()->Resize(0, 0);
+				break;
+			}
+			case WM_CLOSE: {
+				if (g_pApp->OnClose()) {
+					return 0;
+				}
+
+				break;
+			}
+			default: {
+				break;
+			}
+		}
+
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 
 	void CGameApp::Update()
 	{
+		if (m_bIsQuitting) {
+			OnClose();
 
+			return;
+		}
+
+		float startTime = static_cast<float>(timeGetTime());
+
+		if (m_pGame && m_pRenderer) {
+			// Render.
+			m_pRenderer->VPreRender();
+			m_pGame->Render();
+			m_pRenderer->VPostRender();
+
+			// Update.
+			m_pGame->Update(m_DeltaTime);
+		}
+
+		m_DeltaTime = static_cast<float>(timeGetTime() - startTime) / 1000.0f;
 	}
 
 	void CGameApp::Quit()
@@ -148,6 +186,9 @@ namespace Slim {
 
 	bool CGameApp::OnClose()
 	{
+		DestroyWindow(m_hWnd);
+		PostQuitMessage(0);
+
 		return true;
 	}
 
