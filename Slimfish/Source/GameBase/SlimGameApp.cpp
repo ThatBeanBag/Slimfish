@@ -186,6 +186,9 @@ namespace Slim {
 
 	bool CGameApp::OnClose()
 	{
+		m_pGame.reset(nullptr);
+		m_pRenderer.reset(nullptr);
+
 		DestroyWindow(m_hWnd);
 		PostQuitMessage(0);
 

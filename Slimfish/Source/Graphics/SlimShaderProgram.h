@@ -44,7 +44,7 @@ public:
 
 	virtual bool VLoad() = 0;
 	virtual void VUpdateProgramParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams) = 0;
-	//virtual void VBindVertexDeclaration(CVertexDeclaration* pVertexDeclaration) = 0;
+	virtual shared_ptr<CShaderParams> CreateShaderParams(const std::string& constantBufferName) = 0;
 
 	void SetEntryPoint(const std::string& entryPoint);
 	const std::string& GetEntryPoint() const;

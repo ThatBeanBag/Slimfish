@@ -97,13 +97,13 @@
     <ClCompile Include="..\GameBase\SlimGameLogic.cpp">
       <Filter>GameBase</Filter>
     </ClCompile>
-    <ClCompile Include="..\Debug\SlimLogger.cpp">
-      <Filter>Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Debug\SlimLog.cpp">
-      <Filter>Debug</Filter>
-    </ClCompile>
     <ClCompile Include="..\Graphics\SlimLight.cpp" />
+    <ClCompile Include="..\Logging\SlimLog.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Logging\SlimLogger.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -145,9 +145,6 @@
     </ClInclude>
     <ClInclude Include="..\Graphics\D3D9\SlimD3D9Texture.h">
       <Filter>Graphics\D3D9</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Debug\SlimLogger.h">
-      <Filter>Debug</Filter>
     </ClInclude>
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Renderer.h">
       <Filter>Graphics\D3D10</Filter>
@@ -209,14 +206,17 @@
     <ClInclude Include="..\GameBase\SlimGameLogic.h">
       <Filter>GameBase</Filter>
     </ClInclude>
-    <ClInclude Include="..\Debug\SlimExceptions.h">
-      <Filter>Debug</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Debug\SlimLog.h">
-      <Filter>Debug</Filter>
-    </ClInclude>
     <ClInclude Include="..\Graphics\SlimLight.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Logging\SlimLog.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Logging\SlimLogger.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Logging\SlimExceptions.h">
+      <Filter>Debug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

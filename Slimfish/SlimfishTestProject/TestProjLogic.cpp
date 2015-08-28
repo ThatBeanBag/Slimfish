@@ -147,6 +147,7 @@ bool CTestProjLogic::Initialise()
 	m_pVertexShader = g_pApp->GetRenderer()->VCreateShaderProgram("VertexShader.hlsl", AShaderProgram::SHADER_TYPE_VERTEX);
 	m_pPixelShader = g_pApp->GetRenderer()->VCreateShaderProgram("PixelShader.hlsl", AShaderProgram::SHADER_TYPE_PIXEL);
 
+
 	m_pVertexShader->SetEntryPoint("main");
 	m_pVertexShader->SetShaderModel("vs_4_0");
 	if (!m_pVertexShader->VLoad()) {
@@ -159,14 +160,8 @@ bool CTestProjLogic::Initialise()
 		return false;
 	}
 
-	m_pShaderParamsPerObject->AddConstant("gWorldMatrix", CShaderConstant::TYPE_MATRIX4X4);
-	m_pShaderParamsPerObject->AddConstant("gTexMatrix", CShaderConstant::TYPE_MATRIX4X4);
-
-	m_pShaderParamsPerFrame->AddConstant("gViewMatrix", CShaderConstant::TYPE_MATRIX4X4);
-	m_pShaderParamsPerFrame->AddConstant("gProjectionMatrix", CShaderConstant::TYPE_MATRIX4X4);
-
-	m_pShaderParamsPerFrame->SetConstant("gViewMatrix", m_ViewMatrix);
-	m_pShaderParamsPerFrame->SetConstant("gProjectionMatrix", m_ProjectionMatrix);
+	m_pShaderParamsPerObject = m_pVertexShader->CreateShaderParams("cbPerObject");
+	m_pShaderParamsPerFrame = m_pVertexShader->CreateShaderParams("cbPerFrame");
 
 	return true;
 }
@@ -210,6 +205,7 @@ void CTestProjLogic::Render()
 	g_pApp->GetRenderer()->VSetShaderProgram(m_pVertexShader);
 	g_pApp->GetRenderer()->VSetShaderProgram(m_pPixelShader);
 	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, m_pVertexBuffer, m_pIndexBuffer);*/
+
 
 	CTextureLayer textureLayer;
 	textureLayer.SetTextureFilter(TFILTERB_TRILINEAR);

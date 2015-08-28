@@ -99,38 +99,38 @@ namespace Slim {
 		}
 
 		switch (GetTextureType()) {
-		case TEXTURE_TYPE_1D: {
-			loadInfo.Usage = D3D10Conversions::GetUsage(GetUsage());
-			loadInfo.BindFlags = D3D10_BIND_SHADER_RESOURCE;
-			loadInfo.CpuAccessFlags = D3D10Conversions::GetCPUAccessFlags(GetUsage());
-			loadInfo.MiscFlags = D3D10_RESOURCE_MISC_GENERATE_MIPS;
-			//loadInfo.
+			case TEXTURE_TYPE_1D: {
+				loadInfo.Usage = D3D10Conversions::GetUsage(GetUsage());
+				loadInfo.BindFlags = D3D10_BIND_SHADER_RESOURCE;
+				loadInfo.CpuAccessFlags = D3D10Conversions::GetCPUAccessFlags(GetUsage());
+				loadInfo.MiscFlags = D3D10_RESOURCE_MISC_GENERATE_MIPS;
+				//loadInfo.
 
 
-			break;
-		}
-		case TEXTURE_TYPE_2D: {
-			break;
-		}
-		case TEXTURE_TYPE_3D: {
-			break;
-		}
-		case TEXTURE_TYPE_CUBIC: {
-			break;
-		}
-		default: {
-			break;
-		}
+				break;
+			}
+			case TEXTURE_TYPE_2D: {
+				break;
+			}
+			case TEXTURE_TYPE_3D: {
+				break;
+			}
+			case TEXTURE_TYPE_CUBIC: {
+				break;
+			}
+			default: {
+				break;
+			}
 		}
 	}
 
 	void CD3D10Texture::VUnload()
 	{
-		SafeRelease(m_pTexture);
-		SafeRelease(m_pTexture1D);
-		SafeRelease(m_pTexture2D);
-		SafeRelease(m_pTexture3D);
-		SafeRelease(m_pShaderResourceView);
+		SLIM_SAFE_RELEASE(m_pTexture);
+		SLIM_SAFE_RELEASE(m_pTexture1D);
+		SLIM_SAFE_RELEASE(m_pTexture2D);
+		SLIM_SAFE_RELEASE(m_pTexture3D);  
+		SLIM_SAFE_RELEASE(m_pShaderResourceView);
 	}
 
 	ID3D10ShaderResourceView* CD3D10Texture::GetD3DTexture()
@@ -207,7 +207,7 @@ namespace Slim {
 			// TODO: throw exception.
 		}
 
-		CreateShaderResourceView1D();
+		CreateShaderResourceView2D();
 	}
 
 	void CD3D10Texture::CreateRenderTarget3D()
@@ -237,7 +237,7 @@ namespace Slim {
 			// TODO: throw exception.
 		}
 
-		CreateShaderResourceView1D();
+		CreateShaderResourceView3D();
 	}
 
 	void CD3D10Texture::CreateShaderResourceView1D()

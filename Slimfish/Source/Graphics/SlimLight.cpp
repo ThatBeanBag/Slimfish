@@ -31,7 +31,7 @@ namespace Slim {
 
 	Slim::ELightType CLight::GetType() const
 	{
-		m_LightProperties.m_Type;
+		return m_LightProperties.m_Type;
 	}
 
 	void CLight::SetDiffuse(const TColourValue& diffuse)
@@ -41,7 +41,7 @@ namespace Slim {
 
 	const TColourValue& CLight::GetDiffuse() const
 	{
-		m_LightProperties.m_Diffuse;
+		return m_LightProperties.m_Diffuse;
 	}
 
 	void CLight::SetSpecular(const TColourValue& specular)
@@ -51,7 +51,7 @@ namespace Slim {
 
 	const TColourValue& CLight::GetSpecular() const
 	{
-		m_LightProperties.m_Specular;
+		return m_LightProperties.m_Specular;
 	}
 
 	void CLight::SetPosition(const CVector3& position)
@@ -61,7 +61,7 @@ namespace Slim {
 
 	const CVector3& CLight::GetPosition() const
 	{
-		m_LightProperties.m_Position;
+		return m_LightProperties.m_Position;
 	}
 
 	void CLight::SetDirection(const CVector3& direction)
@@ -71,7 +71,7 @@ namespace Slim {
 
 	const CVector3& CLight::GetDirection() const
 	{
-		m_LightProperties.m_Specular;
+		return m_LightProperties.m_Direction;
 	}
 
 	void CLight::SetRange(float range)
@@ -81,7 +81,7 @@ namespace Slim {
 
 	const float CLight::GetRange() const
 	{
-		m_LightProperties.m_Range;
+		return m_LightProperties.m_Range;
 	}
 
 	void CLight::SetFalloff(float falloff)
@@ -91,7 +91,7 @@ namespace Slim {
 
 	const float CLight::GetFalloff() const
 	{
-		m_LightProperties.m_Falloff;
+		return m_LightProperties.m_Falloff;
 	}
 
 	void CLight::SetAttenuationConstant(float attenuationConst)
@@ -101,7 +101,7 @@ namespace Slim {
 
 	const float CLight::GetAttenuationConstant() const
 	{
-		m_LightProperties.m_AttenuationConst;
+		return m_LightProperties.m_AttenuationConst;
 	}
 
 	void CLight::SetAttenuationLinear(float attenuationLinear)
@@ -111,7 +111,7 @@ namespace Slim {
 
 	const float CLight::GetAttenuationLinear() const
 	{
-		m_LightProperties.m_AttenuationLinear;
+		return m_LightProperties.m_AttenuationLinear;
 	}
 
 	void CLight::SetAttenuationQuadratic(float attenuationQuad)
@@ -121,7 +121,7 @@ namespace Slim {
 
 	const float CLight::GetAttenuationQuadratic() const
 	{
-		m_LightProperties.m_AttenuationQuad;
+		return m_LightProperties.m_AttenuationQuad;
 	}
 
 	void CLight::SetSpotTheta(float spotTheta)
@@ -131,7 +131,7 @@ namespace Slim {
 
 	const float CLight::GetSpotTheta() const
 	{
-		m_LightProperties.m_SpotTheta;
+		return m_LightProperties.m_SpotTheta;
 	}
 
 	void CLight::SetSpotPhi(float spotPhi)
@@ -141,7 +141,7 @@ namespace Slim {
 
 	const float CLight::GetSpotPhi() const
 	{
-		m_LightProperties.m_SpotPhi;
+		return m_LightProperties.m_SpotPhi;
 	}
 
 }

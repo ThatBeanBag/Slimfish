@@ -11,8 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Debug\SlimLog.cpp" />
-    <ClCompile Include="..\Debug\SlimLogger.cpp" />
     <ClCompile Include="..\GameBase\SlimGameLogic.cpp" />
     <ClCompile Include="..\GameBase\SlimGameApp.cpp" />
     <ClCompile Include="..\GameBase\WinMain.cpp" />
@@ -35,6 +33,8 @@
     <ClCompile Include="..\Graphics\SlimRenderer.cpp" />
     <ClCompile Include="..\Graphics\SlimTextureLayer.cpp" />
     <ClCompile Include="..\Graphics\SlimVertexGpuBuffer.cpp" />
+    <ClCompile Include="..\Logging\SlimLog.cpp" />
+    <ClCompile Include="..\Logging\SlimLogger.cpp" />
     <ClCompile Include="..\Math\SlimMatrix4x4.cpp" />
     <ClCompile Include="..\Math\SlimQuaternion.cpp" />
     <ClCompile Include="..\Math\SlimVector.cpp" />
@@ -44,9 +44,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Debug\SlimExceptions.h" />
-    <ClInclude Include="..\Debug\SlimLog.h" />
-    <ClInclude Include="..\Debug\SlimLogger.h" />
     <ClInclude Include="..\GameBase\SlimGameLogic.h" />
     <ClInclude Include="..\GameBase\SlimGameApp.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Conversions.h" />
@@ -74,6 +71,9 @@
     <ClInclude Include="..\Graphics\SlimTexture.h" />
     <ClInclude Include="..\Graphics\SlimTextureLayer.h" />
     <ClInclude Include="..\Graphics\SlimVertexGpuBuffer.h" />
+    <ClInclude Include="..\Logging\SlimExceptions.h" />
+    <ClInclude Include="..\Logging\SlimLog.h" />
+    <ClInclude Include="..\Logging\SlimLogger.h" />
     <ClInclude Include="..\Math\SlimMath.h" />
     <ClInclude Include="..\Math\SlimMatrix4x4.h" />
     <ClInclude Include="..\Math\SlimQuaternion.h" />

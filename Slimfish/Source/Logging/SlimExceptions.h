@@ -24,17 +24,27 @@
 
 namespace Slim {
 
+	enum EExceptionType {
+		EXCEPTION_RENDERING,
+		EXCEPTION_UNKNOWN
+	};
+
 	class CException : public std::exception {
 		// Member Functions
 	public:
 		CException();
 		~CException();
 
+		virtual const char* what() const
+		{
+
+		}
 	protected:
 	private:
 		// Member Variables
 	public:
 	protected:
+		EExceptionType m_Type;
 		unsigned int m_Line;
 		std::string m_File;
 		std::string m_FunctionName;

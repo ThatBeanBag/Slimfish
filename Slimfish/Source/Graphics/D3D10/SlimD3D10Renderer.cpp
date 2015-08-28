@@ -16,6 +16,7 @@
 #include "SlimStd.h"
 
 // Library Includes
+#include <D3D11SDKLayers.h>
 
 // This Include
 #include "SlimD3D10Renderer.h"
@@ -44,11 +45,26 @@ namespace Slim {
 
 	CD3D10Renderer::~CD3D10Renderer()
 	{
-		SafeRelease(m_pRenderTargetView);
-		SafeRelease(m_pDepthStencilView);
-		SafeRelease(m_pSwapChain);
-		SafeRelease(m_pDepthStencilBuffer);
-		SafeRelease(m_pD3DDevice);
+		SLIM_SAFE_RELEASE(m_pRenderTargetView);
+		SLIM_SAFE_RELEASE(m_pDepthStencilView);
+		SLIM_SAFE_RELEASE(m_pSwapChain);
+		SLIM_SAFE_RELEASE(m_pDepthStencilBuffer);
+		SLIM_SAFE_RELEASE(m_pRasterizerState);
+
+		for (size_t i = 0; i < m_SamplerStates.size(); ++i) {
+			SLIM_SAFE_RELEASE(m_SamplerStates[0]);
+		}
+
+#ifdef _DEBUG
+		ID3D11Debug* pDebug;
+		m_pD3DDevice->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&pDebug));
+		pDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+		SLIM_SAFE_RELEASE(pDebug);
+
+#endif // _DEBUG
+
+
+		SLIM_SAFE_RELEASE(m_pD3DDevice);
 	}
 
 	bool CD3D10Renderer::VInitialize()
@@ -102,9 +118,9 @@ namespace Slim {
 		IDXGIFactory* dxgiFactory = nullptr;
 
 		auto release = [&]() { 
-			SafeRelease(dxgiDevice);
-			SafeRelease(dxgiAdapter);
-			SafeRelease(dxgiFactory); 
+			SLIM_SAFE_RELEASE(dxgiDevice);
+			SLIM_SAFE_RELEASE(dxgiAdapter);
+			SLIM_SAFE_RELEASE(dxgiFactory);
 		};
 
 		if (FAILED(m_pD3DDevice->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice)))) {
@@ -133,16 +149,14 @@ namespace Slim {
 			throw CRenderingError();
 		}
 
-		SafeRelease(dxgiFactory);
-		SafeRelease(dxgiAdapter);
-		SafeRelease(dxgiDevice);
+		release();
 
 		// Create the render target view to the back buffer.
 		ID3D10Texture2D* pBackBuffer;
 		m_pSwapChain->GetBuffer(0, __uuidof(ID3D10Texture2D), reinterpret_cast<void**>(&pBackBuffer));
 		m_pD3DDevice->CreateRenderTargetView(pBackBuffer, 0, &m_pRenderTargetView);
 
-		SafeRelease(pBackBuffer);
+		SLIM_SAFE_RELEASE(pBackBuffer);
 
 		// Create the depth/stencil buffer and view.
 		D3D10_TEXTURE2D_DESC depthStencilDesc;
@@ -156,14 +170,13 @@ namespace Slim {
 		depthStencilDesc.Usage = D3D10_USAGE_DEFAULT;
 		depthStencilDesc.BindFlags = D3D10_BIND_DEPTH_STENCIL;
 
-		ID3D10Texture2D* pDepthStencilBuffer;
-		hResult = m_pD3DDevice->CreateTexture2D(&depthStencilDesc, nullptr, &pDepthStencilBuffer);
+		hResult = m_pD3DDevice->CreateTexture2D(&depthStencilDesc, nullptr, &m_pDepthStencilBuffer);
 		if (FAILED(hResult)) {
 			throw CRenderingError();
 			return false;
 		}
 
-		hResult = m_pD3DDevice->CreateDepthStencilView(pDepthStencilBuffer, nullptr, &m_pDepthStencilView);
+		hResult = m_pD3DDevice->CreateDepthStencilView(m_pDepthStencilBuffer, nullptr, &m_pDepthStencilView);
 		if (FAILED(hResult)) {
 			throw CRenderingError();
 			return false;
@@ -180,6 +193,17 @@ namespace Slim {
 		m_ViewPort.Height = m_Height;
 		m_ViewPort.MinDepth = 0.0f;
 		m_ViewPort.MaxDepth = 1.0f;
+
+		// Create the rasterizer state.
+		D3D10_RASTERIZER_DESC raterizerDesc;
+		ZeroMemory(&raterizerDesc, sizeof(D3D10_RASTERIZER_DESC));
+
+		raterizerDesc.CullMode = D3D10_CULL_FRONT;	// Clockwise culling for right handed matrices.
+		raterizerDesc.FillMode = D3D10_FILL_SOLID;
+		raterizerDesc.DepthClipEnable = true;
+		
+		m_pD3DDevice->CreateRasterizerState(&raterizerDesc, &m_pRasterizerState);
+		m_pD3DDevice->RSSetState(m_pRasterizerState);
 
 		return true;
 	}
@@ -394,8 +418,6 @@ namespace Slim {
 			numLayers++;
 		}
 
-		SLIM_ERROR_IF(numLayers == 0);
-
 		if (numLayers != 0) {
 			if (m_pBoundGeometryShader) {
 				m_pD3DDevice->GSSetSamplers(0, numLayers, &m_SamplerStates[0]);
@@ -541,6 +563,8 @@ namespace Slim {
 
 	void CD3D10Renderer::CreateSamplerState(size_t layer)
 	{
+		SLIM_SAFE_RELEASE(m_SamplerStates[layer]);
+
 		HRESULT hResult = m_pD3DDevice->CreateSamplerState(&m_SamplerDescs[layer], &m_SamplerStates[layer]);
 		if (FAILED(hResult)) {
 			// TODO: display error.
@@ -590,6 +614,10 @@ namespace Slim {
 			return;
 		}
 
+		if (width == 0 || height == 0) {
+			return;
+		}
+
 		m_Width = width;
 		m_Height = height;
 		
@@ -598,9 +626,9 @@ namespace Slim {
 			flags |= DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
 		}
 
-		SafeRelease(m_pRenderTargetView);
-		SafeRelease(m_pDepthStencilBuffer);
-		SafeRelease(m_pDepthStencilView);
+		SLIM_SAFE_RELEASE(m_pRenderTargetView);
+		SLIM_SAFE_RELEASE(m_pDepthStencilBuffer);
+		SLIM_SAFE_RELEASE(m_pDepthStencilView);
 
 		m_pSwapChain->ResizeBuffers(m_d3dpp.BufferCount, width, height, m_d3dpp.BufferDesc.Format, flags);
 
@@ -609,7 +637,7 @@ namespace Slim {
 		m_pSwapChain->GetBuffer(0, __uuidof(ID3D10Texture2D), reinterpret_cast<void**>(&pBackBuffer));
 		m_pD3DDevice->CreateRenderTargetView(pBackBuffer, 0, &m_pRenderTargetView);
 
-		SafeRelease(pBackBuffer);
+		SLIM_SAFE_RELEASE(pBackBuffer);
 
 		// Create the depth/stencil buffer and view.
 		D3D10_TEXTURE2D_DESC depthStencilDesc;
@@ -623,14 +651,13 @@ namespace Slim {
 		depthStencilDesc.Usage = D3D10_USAGE_DEFAULT;
 		depthStencilDesc.BindFlags = D3D10_BIND_DEPTH_STENCIL;
 
-		ID3D10Texture2D* pDepthStencilBuffer;
-		HRESULT hResult = m_pD3DDevice->CreateTexture2D(&depthStencilDesc, nullptr, &pDepthStencilBuffer);
+		HRESULT hResult = m_pD3DDevice->CreateTexture2D(&depthStencilDesc, nullptr, &m_pDepthStencilBuffer);
 		if (FAILED(hResult)) {
 			throw CRenderingError();
 			return;
 		}
 
-		hResult = m_pD3DDevice->CreateDepthStencilView(pDepthStencilBuffer, nullptr, &m_pDepthStencilView);
+		hResult = m_pD3DDevice->CreateDepthStencilView(m_pDepthStencilBuffer, nullptr, &m_pDepthStencilView);
 		if (FAILED(hResult)) {
 			throw CRenderingError();
 			return;

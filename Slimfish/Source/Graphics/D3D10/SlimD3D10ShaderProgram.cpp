@@ -39,16 +39,20 @@ namespace Slim {
 
 	CD3D10ShaderProgram::~CD3D10ShaderProgram()
 	{
-		SafeRelease(m_pVertexShader);
-		SafeRelease(m_pPixelShader);
-		SafeRelease(m_pGeometryShader);
-		SafeRelease(m_pShaderReflection);
+		SLIM_SAFE_RELEASE(m_pVertexShader);
+		SLIM_SAFE_RELEASE(m_pPixelShader);
+		SLIM_SAFE_RELEASE(m_pGeometryShader);
+		SLIM_SAFE_RELEASE(m_pShaderReflection);
 
 		// Release constant buffers.
 		m_NameToConstantBuffer.clear();
 
 		for (size_t i = 0; i < m_ConstantBuffers.size(); ++i) {
-			SafeRelease(m_ConstantBuffers[i]);
+			SLIM_SAFE_RELEASE(m_ConstantBuffers[i]);
+		}
+
+		for (auto iter = m_BoundVertexDeclarations.begin(); iter != m_BoundVertexDeclarations.end(); ++iter) {
+			SLIM_SAFE_RELEASE(iter->second);
 		}
 	}
 
@@ -107,6 +111,8 @@ namespace Slim {
 
 	shared_ptr<CShaderParams> CD3D10ShaderProgram::CreateShaderParams(const std::string& constantBufferName)
 	{
+		m_pParams.reset(new CShaderParams());
+
 		TConstantBufferMap::iterator findIter = m_NameToConstantBuffer.find(constantBufferName);
 		if (findIter == m_NameToConstantBuffer.end()) {
 			SLIM_WARNING() << "Failed to create shader params, couldn't find constant buffer " << constantBufferName;
@@ -128,7 +134,10 @@ namespace Slim {
 
 			CreateShaderParam("", shaderVariableDesc.Name, i, pVariableReflectionType);
 		}
+
+		return m_pParams;
 	}
+
 
 	/*void CD3D10ShaderProgram::VBindVertexDeclaration(CVertexDeclaration* pVertexDeclaration)
 	{

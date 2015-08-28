@@ -523,7 +523,7 @@ const CMatrix4x4 CMatrix4x4::BuildTranslation(const CVector3& position)
 
 const CMatrix4x4 CMatrix4x4::BuildLookAt(const CVector3& eye, const CVector3& at, const CVector3& up)
 {
-	CVector3 zAxis = Normalise(at - eye);
+	CVector3 zAxis = Normalise(eye - at);
 	CVector3 xAxis = Normalise(CrossProduct(CVector3::s_UP, zAxis));
 	CVector3 yAxis = CrossProduct(zAxis, xAxis);
 
@@ -550,9 +550,9 @@ const CMatrix4x4 CMatrix4x4::BuildProjection(float radFOV, float aspectRatio, fl
 
 	projection[0][0] = xScale;
 	projection[1][1] = yScale;
-	projection[2][2] = farPlane / (farPlane - nearPlane);
-	projection[2][3] = -nearPlane * projection[2][2];
-	projection[3][2] = 1.0f;
+	projection[2][2] = farPlane / (nearPlane - farPlane);
+	projection[2][3] = nearPlane * projection[2][2];
+	projection[3][2] = -1.0f;
 
 	return projection;
 }

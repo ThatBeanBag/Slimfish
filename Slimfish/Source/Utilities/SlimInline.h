@@ -24,7 +24,7 @@
 namespace Slim {
 
 	template<class T>
-	inline void SafeDelete(T* pObject) 
+	inline void SafeDelete(T* pObject)
 	{
 		if (pObject) {
 			delete pObject;
@@ -42,7 +42,7 @@ namespace Slim {
 	}
 
 	template<class T>
-	inline void SafeRelease(T* pObject) 
+	inline void SafeRelease(T* pObject)
 	{
 		if (pObject) {
 			pObject->Release();
@@ -50,6 +50,35 @@ namespace Slim {
 		}
 	}
 
+#define SLIM_SAFE_DELETE(object) \
+	do \
+	{ \
+		if(object) { \
+			delete object; \
+			object = nullptr; \
+		} \
+	} \
+	while (false)
+
+#define SLIM_SAFE_DELETE_ARRAY(object) \
+	do \
+	{ \
+		if(object) { \
+			delete[] object; \
+			object = nullptr; \
+		} \
+	} \
+	while (false)
+
+#define SLIM_SAFE_RELEASE(object) \
+	do \
+	{ \
+		if(object) { \
+			object->Release(); \
+			object = nullptr; \
+		} \
+	} \
+	while (false)
 }
 
 #endif // __SLIMINLINE_H__
