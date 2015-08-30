@@ -1,16 +1,4 @@
 
-struct Light {
-	uint m_Type;
-	float4 m_Diffuse;
-	float4 m_Specular;
-	float3 m_Position;
-	float3 m_Direction;
-	float m_Range;
-	float m_Falloff;
-	float3 m_Attenuation;
-	float m_SpotTheta;
-	float m_SpotPhi;
-};
 
 cbuffer cbPerObject {
 	float4x4 gWorldMatrix;

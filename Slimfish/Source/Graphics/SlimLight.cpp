@@ -24,6 +24,16 @@
 
 namespace Slim {
 
+	CLight::CLight()
+	{
+
+	}
+
+	CLight::~CLight()
+	{
+
+	}
+
 	void CLight::SetType(ELightType type)
 	{
 		m_LightProperties.m_Type = type;
@@ -142,6 +152,11 @@ namespace Slim {
 	const float CLight::GetSpotPhi() const
 	{
 		return m_LightProperties.m_SpotPhi;
+	}
+
+	const TLightProperties& CLight::GetLightProperties() const
+	{
+		return m_LightProperties;
 	}
 
 }

@@ -90,6 +90,8 @@ public:
 
 	void SetSpotPhi(float spotPhi);
 	const float GetSpotPhi() const;
+
+	const TLightProperties& GetLightProperties() const;
 protected:
 private:
 	// Member Variables

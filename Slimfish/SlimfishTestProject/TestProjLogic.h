@@ -46,8 +46,9 @@ private:
 
 	shared_ptr<AShaderProgram> m_pVertexShader;
 	shared_ptr<AShaderProgram> m_pPixelShader;
-	shared_ptr<CShaderParams> m_pShaderParamsPerObject;
-	shared_ptr<CShaderParams> m_pShaderParamsPerFrame;
+	shared_ptr<CShaderParams> m_pVertexParamsPerObject;
+	shared_ptr<CShaderParams> m_pVertexParamsPerFrame;
+	shared_ptr<CShaderParams> m_pPixelParamsPerFrame;
 
 	CVertexDeclaration m_VertexDeclaration;
 

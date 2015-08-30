@@ -83,9 +83,19 @@ namespace Slim {
 
 		assert(pData);
 
-		for (size_t i = 0; i < constantBuffer.m_Variables.size(); ++i) {
-			D3D11_SHADER_VARIABLE_DESC variable = constantBuffer.m_Variables[i];
-			std::string variableName = variable.Name;
+		for (size_t i = 0; i < constantBuffer.m_Names.size(); ++i) {
+			//D3D11_SHADER_VARIABLE_DESC variable = constantBuffer.m_Variables[i];
+			std::string variableName;
+
+			// Use the name from the list of names in the constant buffer, if it exists.
+			// This is for variables that are structures, in which case the variable name alone
+			// will not suffice.
+			if (!constantBuffer.m_Names[i].empty()) {
+				variableName = constantBuffer.m_Names[i];
+			}
+			else {
+				//variableName = variable.Name;
+			}
 
 			CShaderConstant shaderConstant = pShaderParams->GetConstant(variableName);
 
@@ -101,7 +111,7 @@ namespace Slim {
 				pSource = reinterpret_cast<const void*>(&pShaderParams->GetConstantIntList()[shaderConstant.m_Index]);
 			}
 
-			assert(variable.Size == size);
+			//assert(variable.Size == size);
 
 			memcpy(reinterpret_cast<char*>(pData) + variable.StartOffset, pSource, size);
 		}
@@ -119,7 +129,7 @@ namespace Slim {
 			return nullptr;
 		}
 
-		const TConstantBuffer& constantBuffer = findIter->second;
+		TConstantBuffer& constantBuffer = findIter->second;
 
 		ID3D11ShaderReflectionConstantBuffer* pReflectionConstantBuffer = constantBuffer.m_pReflectionConstantBuffer;
 		D3D11_SHADER_BUFFER_DESC shaderBufferDesc = constantBuffer.m_Desc;
@@ -132,7 +142,7 @@ namespace Slim {
 			D3D11_SHADER_VARIABLE_DESC shaderVariableDesc;
 			HRESULT hResult = pVariable->GetDesc(&shaderVariableDesc);
 
-			CreateShaderParam("", shaderVariableDesc.Name, i, pVariableReflectionType);
+			CreateShaderParam("", shaderVariableDesc.Name, i, pVariableReflectionType, constantBuffer);
 		}
 
 		return m_pParams;
@@ -488,7 +498,7 @@ namespace Slim {
 		return pLayout;
 	}
 
-	void CD3D10ShaderProgram::CreateShaderParam(const std::string& prefix, const std::string& name, size_t index, ID3D11ShaderReflectionType* pVariableReflectionType)
+	void CD3D10ShaderProgram::CreateShaderParam(const std::string& prefix, const std::string& name, size_t index, ID3D11ShaderReflectionType* pVariableReflectionType, TConstantBuffer& constantBuffer)
 	{
 		D3D11_SHADER_TYPE_DESC variableTypeDesc;
 		HRESULT hResult = pVariableReflectionType->GetDesc(&variableTypeDesc);
@@ -504,13 +514,18 @@ namespace Slim {
 			paramName.erase(paramName.begin());
 		}
 
-		if (variableTypeDesc.Type == D3D10_SVC_STRUCT) {
-		// Is this a structure.
-			std::string prefix = prefix + paramName + ".";
+		if (variableTypeDesc.Class == D3D10_SVC_STRUCT) {
+		// Is this param a structure?
+			std::string nextPrefix = prefix + paramName + ".";
 
 			for (size_t i = 0; i < variableTypeDesc.Members; ++i) {
 				// Recursively call until we get a to primitive variable.
-				CreateShaderParam(prefix, pVariableReflectionType->GetMemberTypeName(i), i, pVariableReflectionType->GetMemberTypeByIndex(i));
+				CreateShaderParam(
+					nextPrefix, 
+					pVariableReflectionType->GetMemberTypeName(i), 
+					i, 
+					pVariableReflectionType->GetMemberTypeByIndex(i), 
+					constantBuffer);
 			}
 		}
 		else if (variableTypeDesc.Type == D3D10_SVT_FLOAT || 
@@ -519,6 +534,10 @@ namespace Slim {
 			paramName = prefix + paramName;
 
 			m_pParams->AddConstant(paramName, D3D10Conversions::GetShaderConstantType(variableTypeDesc));
+
+			// Save the name out for later. 
+			// Structure variables require this so the shader params can be found when updating them.
+			constantBuffer.m_Names.push_back(paramName);
 		}
 	}
 

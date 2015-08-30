@@ -45,6 +45,10 @@ namespace Slim {
 
 	CD3D10Renderer::~CD3D10Renderer()
 	{
+		m_pBoundGeometryShader = nullptr;
+		m_pBoundPixelShader = nullptr;
+		m_pBoundVertexShader = nullptr;
+
 		SLIM_SAFE_RELEASE(m_pRenderTargetView);
 		SLIM_SAFE_RELEASE(m_pDepthStencilView);
 		SLIM_SAFE_RELEASE(m_pSwapChain);
@@ -125,28 +129,24 @@ namespace Slim {
 
 		if (FAILED(m_pD3DDevice->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice)))) {
 			release();
-
-			throw CRenderingError();
+			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to query device interface" << CEndExcept();
 		}
 
 		if (FAILED(dxgiDevice->GetParent(__uuidof(IDXGIAdapter), reinterpret_cast<void**>(&dxgiAdapter)))) {
 			release();
-
-			throw CRenderingError();
+			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to get the DXGI adapter" << CEndExcept();
 		}
 
 		// Get the factory finally.
 		if (FAILED(dxgiAdapter->GetParent(__uuidof(IDXGIFactory), reinterpret_cast<void**>(&dxgiFactory)))) {
 			release();
-
-			throw CRenderingError();
+			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to get the DXGI factory" << CEndExcept();
 		}
 
 		// Create the swap chain.
 		if (FAILED(dxgiFactory->CreateSwapChain(m_pD3DDevice, &m_d3dpp, &m_pSwapChain))) {
 			release();
-
-			throw CRenderingError();
+			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to create swap chain" << CEndExcept();
 		}
 
 		release();

@@ -19,6 +19,7 @@
 #include <d3dx10.h>	// TODO: Remove.
 #include <Math\SlimVector.h>
 #include <Graphics\SlimRenderer.h>
+#include <Graphics\SlimLight.h>
 
 // This Include
 #include "TestProjLogic.h"
@@ -36,8 +37,8 @@ CTestProjLogic::CTestProjLogic()
 	:m_WorldMatrix(CMatrix4x4::s_IDENTITY),
 	m_ViewMatrix(CMatrix4x4::s_IDENTITY),
 	m_ProjectionMatrix(CMatrix4x4::s_IDENTITY),
-	m_pShaderParamsPerFrame(new CShaderParams()),
-	m_pShaderParamsPerObject(new CShaderParams()),
+	m_pVertexParamsPerFrame(new CShaderParams()),
+	m_pVertexParamsPerObject(new CShaderParams()),
 	m_pTextures(120, nullptr)
 {
 	m_ViewMatrix = CMatrix4x4::BuildLookAt(CVector3(0, 0, 500.0f), CVector3(), CVector3::s_UP);
@@ -160,8 +161,27 @@ bool CTestProjLogic::Initialise()
 		return false;
 	}
 
-	m_pShaderParamsPerObject = m_pVertexShader->CreateShaderParams("cbPerObject");
-	m_pShaderParamsPerFrame = m_pVertexShader->CreateShaderParams("cbPerFrame");
+	m_pVertexParamsPerObject = m_pVertexShader->CreateShaderParams("cbPerObject");
+	m_pVertexParamsPerFrame = m_pVertexShader->CreateShaderParams("cbPerFrame");
+	m_pPixelParamsPerFrame = m_pPixelShader->CreateShaderParams("cbPerFrame");
+
+	CVector3 eyePosition(0.0f, 2.0f, -10.0f);
+	CVector3 lightDirection(0.0f, -1.0f, -1.0f);
+	Normalise(lightDirection);
+
+	CLight light;
+	light.SetType(LIGHT_DIRECTIONAL);
+	light.SetDiffuse(TColourValue::s_WHITE);
+	light.SetSpecular(TColourValue::s_WHITE);
+	light.SetDirection(Normalise(CVector3(0.0f, -1.0f, -1.0f)));
+
+	m_pPixelParamsPerFrame->SetConstant("gLight.m_Type", light.GetType());
+	m_pPixelParamsPerFrame->SetConstant("gLight.m_Diffuse", light.GetDiffuse());
+	m_pPixelParamsPerFrame->SetConstant("gLight.m_Specular", light.GetSpecular());
+	m_pPixelParamsPerFrame->SetConstant("gLight.m_Direction", light.GetDirection());
+	m_pPixelParamsPerFrame->SetConstant("gEyePosition", eyePosition);
+
+	m_pPixelShader->VUpdateProgramParams("cbPerFrame", m_pPixelParamsPerFrame);
 
 	return true;
 }
@@ -206,7 +226,6 @@ void CTestProjLogic::Render()
 	g_pApp->GetRenderer()->VSetShaderProgram(m_pPixelShader);
 	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, m_pVertexBuffer, m_pIndexBuffer);*/
 
-
 	CTextureLayer textureLayer;
 	textureLayer.SetTextureFilter(TFILTERB_TRILINEAR);
 	textureLayer.SetTextureAddressModes(TADDRESS_MIRROR);
@@ -225,13 +244,13 @@ void CTestProjLogic::Render()
 	CMatrix4x4 texMatrix = CMatrix4x4::BuildTranslation(m_TexAnim, 0.0f, 0.0f) * CMatrix4x4::BuildRotationZ(m_TexAnim) * CMatrix4x4::BuildScale(2.0f, 2.0f, 1.0f);
 
 	//CMatrix4x4 wvp = projectionMatrix * viewMatrix * worldMatrix;
-	m_pShaderParamsPerFrame->SetConstant("gProjectionMatrix", projectionMatrix);
-	m_pShaderParamsPerFrame->SetConstant("gViewMatrix", viewMatrix);
-	m_pShaderParamsPerObject->SetConstant("gWorldMatrix", worldMatrix);
-	m_pShaderParamsPerObject->SetConstant("gTexMatrix", texMatrix);
+	m_pVertexParamsPerFrame->SetConstant("gProjectionMatrix", projectionMatrix);
+	m_pVertexParamsPerFrame->SetConstant("gViewMatrix", viewMatrix);
+	m_pVertexParamsPerObject->SetConstant("gWorldMatrix", worldMatrix);
+	m_pVertexParamsPerObject->SetConstant("gTexMatrix", texMatrix);
 
-	m_pVertexShader->VUpdateProgramParams("cbPerObject", m_pShaderParamsPerObject);
-	m_pVertexShader->VUpdateProgramParams("cbPerFrame", m_pShaderParamsPerFrame);
+	m_pVertexShader->VUpdateProgramParams("cbPerObject", m_pVertexParamsPerObject);
+	m_pVertexShader->VUpdateProgramParams("cbPerFrame", m_pVertexParamsPerFrame);
 
 	g_pApp->GetRenderer()->VSetShaderProgram(m_pVertexShader);
 	g_pApp->GetRenderer()->VSetShaderProgram(m_pPixelShader);
@@ -245,9 +264,9 @@ void CTestProjLogic::Render()
 	textureLayer.SetTextureFilter(TFILTER_ANISOTROPIC, TFILTER_ANISOTROPIC, TFILTER_ANISOTROPIC);
 	g_pApp->GetRenderer()->SetTextureLayer(0, textureLayer);
 
-	m_pShaderParamsPerObject->SetConstant("gTexMatrix", texMatrix);
-	m_pShaderParamsPerObject->SetConstant("gWorldMatrix", worldMatrix);
-	m_pVertexShader->VUpdateProgramParams("cbPerObject", m_pShaderParamsPerObject);
+	m_pVertexParamsPerObject->SetConstant("gTexMatrix", texMatrix);
+	m_pVertexParamsPerObject->SetConstant("gWorldMatrix", worldMatrix);
+	m_pVertexShader->VUpdateProgramParams("cbPerObject", m_pVertexParamsPerObject);
 	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, m_pVertexBuffer, m_pIndexBuffer);
 
 }

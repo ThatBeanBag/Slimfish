@@ -104,6 +104,9 @@
     <ClCompile Include="..\Logging\SlimLogger.cpp">
       <Filter>Debug</Filter>
     </ClCompile>
+    <ClCompile Include="..\Logging\SlimExceptions.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -218,8 +221,5 @@
     <ClInclude Include="..\Logging\SlimExceptions.h">
       <Filter>Debug</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

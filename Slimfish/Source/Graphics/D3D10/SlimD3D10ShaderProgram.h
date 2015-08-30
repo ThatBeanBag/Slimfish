@@ -35,6 +35,7 @@ class CD3D10ShaderProgram : public AShaderProgram {
 		D3D11_SHADER_BUFFER_DESC m_Desc;
 		ID3D10Buffer* m_pBuffer;
 		std::vector<D3D11_SHADER_VARIABLE_DESC> m_Variables;
+		std::vector<std::string> m_Names;
 	};
 
 	typedef std::map<std::string, TConstantBuffer> TConstantBufferMap;
@@ -72,7 +73,7 @@ private:
 
 	ID3D10InputLayout* CreateD3DInputLayout(const CVertexDeclaration* pVertexDeclaration);
 
-	void CreateShaderParam(const std::string& prefix, const std::string& name, size_t index, ID3D11ShaderReflectionType* pVariableReflectionType);
+	void CreateShaderParam(const std::string& prefix, const std::string& name, size_t index, ID3D11ShaderReflectionType* pVariableReflectionType, TConstantBuffer& constantBuffer);
 
 	// Member Variables
 public:

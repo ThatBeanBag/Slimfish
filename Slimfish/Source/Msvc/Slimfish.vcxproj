@@ -33,6 +33,7 @@
     <ClCompile Include="..\Graphics\SlimRenderer.cpp" />
     <ClCompile Include="..\Graphics\SlimTextureLayer.cpp" />
     <ClCompile Include="..\Graphics\SlimVertexGpuBuffer.cpp" />
+    <ClCompile Include="..\Logging\SlimExceptions.cpp" />
     <ClCompile Include="..\Logging\SlimLog.cpp" />
     <ClCompile Include="..\Logging\SlimLogger.cpp" />
     <ClCompile Include="..\Math\SlimMatrix4x4.cpp" />
@@ -82,9 +83,6 @@
     <ClInclude Include="..\Utilities\SlimObjectFactory.h" />
     <ClInclude Include="..\Utilities\SlimSingleton.h" />
     <ClInclude Include="SlimStd.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7B57F944-4A3C-4BAD-839C-8E28BF1A4F88}</ProjectGuid>

@@ -40,7 +40,7 @@ const TColour TColour::s_MAGENTA = CreateColourRGB(255, 0, 255);
 const unsigned char TColour::s_ALPHA_OPAQUE = 255;
 const unsigned char TColour::s_ALPHA_TRANSPERANT = 0;
 
-const TColourValue TColourValue::s_WHITE = CreateColourValueRGB(1.0f, 0.0f, 0.0f);
+const TColourValue TColourValue::s_WHITE = CreateColourValueRGB(1.0f, 1.0f, 1.0f);
 const TColourValue TColourValue::s_BLACK = CreateColourValueRGB(0.0f, 0.0f, 0.0f);
 const TColourValue TColourValue::s_RED = CreateColourValueRGB(1.0f, 0.0f, 0.0f);
 const TColourValue TColourValue::s_GREEN = CreateColourValueRGB(0.0f, 1.0f, 0.0f);
