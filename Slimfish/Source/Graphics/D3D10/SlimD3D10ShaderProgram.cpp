@@ -83,19 +83,11 @@ namespace Slim {
 
 		assert(pData);
 
-		for (size_t i = 0; i < constantBuffer.m_Names.size(); ++i) {
-			//D3D11_SHADER_VARIABLE_DESC variable = constantBuffer.m_Variables[i];
-			std::string variableName;
-
+		for (size_t i = 0; i < constantBuffer.m_Variables.size(); ++i) {
 			// Use the name from the list of names in the constant buffer, if it exists.
 			// This is for variables that are structures, in which case the variable name alone
 			// will not suffice.
-			if (!constantBuffer.m_Names[i].empty()) {
-				variableName = constantBuffer.m_Names[i];
-			}
-			else {
-				//variableName = variable.Name;
-			}
+			std::string variableName = constantBuffer.m_Variables[i].m_Name;
 
 			CShaderConstant shaderConstant = pShaderParams->GetConstant(variableName);
 
@@ -111,9 +103,9 @@ namespace Slim {
 				pSource = reinterpret_cast<const void*>(&pShaderParams->GetConstantIntList()[shaderConstant.m_Index]);
 			}
 
-			//assert(variable.Size == size);
+			assert(constantBuffer.m_Variables[i].m_Size == size);
 
-			memcpy(reinterpret_cast<char*>(pData) + variable.StartOffset, pSource, size);
+			memcpy(reinterpret_cast<char*>(pData)+ constantBuffer.m_Variables[i].m_StartOffset, pSource, size);
 		}
 
 		constantBuffer.m_pBuffer->Unmap();
@@ -142,7 +134,8 @@ namespace Slim {
 			D3D11_SHADER_VARIABLE_DESC shaderVariableDesc;
 			HRESULT hResult = pVariable->GetDesc(&shaderVariableDesc);
 
-			CreateShaderParam("", shaderVariableDesc.Name, i, pVariableReflectionType, constantBuffer);
+			// Recursively create the shader parameter as it might be a structure.
+			CreateShaderParam("", shaderVariableDesc.Name, i, shaderVariableDesc.StartOffset, pVariableReflectionType, constantBuffer);
 		}
 
 		return m_pParams;
@@ -425,8 +418,13 @@ namespace Slim {
 			if (pVariable) {
 				D3D11_SHADER_VARIABLE_DESC shaderVariableDesc;
 				hResult = pVariable->GetDesc(&shaderVariableDesc);
+
+				TConstantVariable constantVariable;
+				constantVariable.m_Name = shaderVariableDesc.Name;
+				constantVariable.m_Size = shaderVariableDesc.Size;
+				constantVariable.m_StartOffset = shaderVariableDesc.Size;
 				// Add description to the list.
-				constantBuffer.m_Variables.push_back(shaderVariableDesc);
+				constantBuffer.m_Variables.push_back(constantVariable);
 			}
 		}
 
@@ -498,7 +496,7 @@ namespace Slim {
 		return pLayout;
 	}
 
-	void CD3D10ShaderProgram::CreateShaderParam(const std::string& prefix, const std::string& name, size_t index, ID3D11ShaderReflectionType* pVariableReflectionType, TConstantBuffer& constantBuffer)
+	void CD3D10ShaderProgram::CreateShaderParam(const std::string& prefix, const std::string& name, size_t index, size_t offset, ID3D11ShaderReflectionType* pVariableReflectionType, TConstantBuffer& constantBuffer)
 	{
 		D3D11_SHADER_TYPE_DESC variableTypeDesc;
 		HRESULT hResult = pVariableReflectionType->GetDesc(&variableTypeDesc);
@@ -523,7 +521,8 @@ namespace Slim {
 				CreateShaderParam(
 					nextPrefix, 
 					pVariableReflectionType->GetMemberTypeName(i), 
-					i, 
+					i,
+					variableTypeDesc.Offset + offset,
 					pVariableReflectionType->GetMemberTypeByIndex(i), 
 					constantBuffer);
 			}
@@ -533,11 +532,15 @@ namespace Slim {
 				 variableTypeDesc.Type == D3D10_SVT_BOOL) {
 			paramName = prefix + paramName;
 
-			m_pParams->AddConstant(paramName, D3D10Conversions::GetShaderConstantType(variableTypeDesc));
+			CShaderConstant::EConstantType type = D3D10Conversions::GetShaderConstantType(variableTypeDesc);
+			m_pParams->AddConstant(paramName, type);
 
-			// Save the name out for later. 
-			// Structure variables require this so the shader params can be found when updating them.
-			constantBuffer.m_Names.push_back(paramName);
+			// Save the constant variable detials for when we update shader params in the buffer.
+			TConstantVariable constantVariable;
+			constantVariable.m_Name = paramName;
+			constantVariable.m_StartOffset = variableTypeDesc.Offset + offset;
+			constantVariable.m_Size = CShaderConstant::GetSizeFromType(type);
+			constantBuffer.m_Variables.push_back(constantVariable);
 		}
 	}
 

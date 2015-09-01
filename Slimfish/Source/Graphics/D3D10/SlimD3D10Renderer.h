@@ -114,7 +114,7 @@ private:
 	ID3D10DepthStencilState* m_pDepthStencilState;
 	ID3D10RasterizerState* m_pRasterizerState;
 
-	// Texture layering
+	// Texture layering.
 	std::vector<D3D10_SAMPLER_DESC> m_SamplerDescs;
 	std::vector<ID3D10SamplerState*> m_SamplerStates;
 	std::vector<ID3D10ShaderResourceView*> m_Textures;

@@ -30,12 +30,18 @@ namespace Slim {
 		
 */
 class CD3D10ShaderProgram : public AShaderProgram {
+	struct TConstantVariable {
+		std::string m_Name;
+		size_t m_StartOffset;
+		size_t m_Size;
+	};
+
 	struct TConstantBuffer {
 		ID3D11ShaderReflectionConstantBuffer* m_pReflectionConstantBuffer;
 		D3D11_SHADER_BUFFER_DESC m_Desc;
 		ID3D10Buffer* m_pBuffer;
-		std::vector<D3D11_SHADER_VARIABLE_DESC> m_Variables;
-		std::vector<std::string> m_Names;
+		//std::vector<D3D11_SHADER_VARIABLE_DESC> m_Variables;
+		std::vector<TConstantVariable> m_Variables;
 	};
 
 	typedef std::map<std::string, TConstantBuffer> TConstantBufferMap;
@@ -73,7 +79,7 @@ private:
 
 	ID3D10InputLayout* CreateD3DInputLayout(const CVertexDeclaration* pVertexDeclaration);
 
-	void CreateShaderParam(const std::string& prefix, const std::string& name, size_t index, ID3D11ShaderReflectionType* pVariableReflectionType, TConstantBuffer& constantBuffer);
+	void CreateShaderParam(const std::string& prefix, const std::string& name, size_t index, size_t offset, ID3D11ShaderReflectionType* pVariableReflectionType, TConstantBuffer& constantBuffer);
 
 	// Member Variables
 public:
