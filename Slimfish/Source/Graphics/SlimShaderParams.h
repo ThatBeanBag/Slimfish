@@ -66,6 +66,9 @@ public:
 	/** Return true if this constant is a sampler. @author Hayden Asplet */
 	bool IsSampler() const;
 
+	const size_t GetSizeInBytes() const;
+
+	/** Return true if this constant is an int. @author Hayden Asplet */
 	static const size_t GetSizeFromType(EConstantType type);
 protected:
 private:

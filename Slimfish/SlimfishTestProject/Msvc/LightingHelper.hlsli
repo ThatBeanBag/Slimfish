@@ -24,11 +24,8 @@ float3 ParallelLight(SurfaceInfo v, Light L, float3 eyePos)
 {
 	float3 litColor = float3(0.0f, 0.0f, 0.0f);
 
-		// The light vector aims opposite the direction the light rays travel.
-		float3 lightVec = -L.m_Direction;
-
-		// Add the ambient term.
-		litColor += v.m_Diffuse.xyz;
+	// The light vector aims opposite the direction the light rays travel.
+	float3 lightVec = -L.m_Direction;
 
 	// Add diffuse and specular term, provided the surface is in 
 	// the line of site of the light.

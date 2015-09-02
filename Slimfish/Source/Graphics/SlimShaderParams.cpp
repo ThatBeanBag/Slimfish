@@ -95,6 +95,16 @@ namespace Slim {
 		return false;
 	}
 
+	const size_t CShaderConstant::GetSizeInBytes() const 
+	{
+		if (IsFloat()) {
+			return m_Size * sizeof(float);
+		}
+		else {
+			return m_Size * sizeof(int);
+		}
+	}
+
 	const size_t CShaderConstant::GetSizeFromType(EConstantType type)
 	{
 		switch (type) {
@@ -128,8 +138,6 @@ namespace Slim {
 
 		return 1;
 	}
-
-
 
 	CShaderParams::CShaderParams()
 	{

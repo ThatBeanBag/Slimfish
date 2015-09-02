@@ -123,6 +123,9 @@ namespace Slim {
 
 		TConstantBuffer& constantBuffer = findIter->second;
 
+		// Clear current variables so we can overwrite them.
+		constantBuffer.m_Variables.clear();
+
 		ID3D11ShaderReflectionConstantBuffer* pReflectionConstantBuffer = constantBuffer.m_pReflectionConstantBuffer;
 		D3D11_SHADER_BUFFER_DESC shaderBufferDesc = constantBuffer.m_Desc;
 
@@ -535,11 +538,11 @@ namespace Slim {
 			CShaderConstant::EConstantType type = D3D10Conversions::GetShaderConstantType(variableTypeDesc);
 			m_pParams->AddConstant(paramName, type);
 
-			// Save the constant variable detials for when we update shader params in the buffer.
+			// Save the constant variable details for when we update shader params in the buffer.
 			TConstantVariable constantVariable;
 			constantVariable.m_Name = paramName;
 			constantVariable.m_StartOffset = variableTypeDesc.Offset + offset;
-			constantVariable.m_Size = CShaderConstant::GetSizeFromType(type);
+			constantVariable.m_Size = CShaderConstant(type).GetSizeInBytes();
 			constantBuffer.m_Variables.push_back(constantVariable);
 		}
 	}

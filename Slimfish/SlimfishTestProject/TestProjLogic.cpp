@@ -173,13 +173,14 @@ bool CTestProjLogic::Initialise()
 	light.SetType(LIGHT_DIRECTIONAL);
 	light.SetDiffuse(TColourValue::s_WHITE);
 	light.SetSpecular(TColourValue::s_WHITE);
-	light.SetDirection(Normalise(CVector3(0.0f, -1.0f, -1.0f)));
+	light.SetDirection(Normalise(CVector3(0.0f, -1.0f, 1.0f)));
 
 	m_pPixelParamsPerFrame->SetConstant("gLight.m_Type", light.GetType());
 	m_pPixelParamsPerFrame->SetConstant("gLight.m_Diffuse", light.GetDiffuse());
 	m_pPixelParamsPerFrame->SetConstant("gLight.m_Specular", light.GetSpecular());
 	m_pPixelParamsPerFrame->SetConstant("gLight.m_Direction", light.GetDirection());
 	m_pPixelParamsPerFrame->SetConstant("gEyePosition", eyePosition);
+	m_pPixelParamsPerFrame->SetConstant("gAmbientLight", CreateColourValueRGB(0.2f, 0.2f, 0.2f));
 
 	m_pPixelShader->VUpdateProgramParams("cbPerFrame", m_pPixelParamsPerFrame);
 

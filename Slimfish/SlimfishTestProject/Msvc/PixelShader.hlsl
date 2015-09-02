@@ -4,6 +4,7 @@
 cbuffer cbPerFrame {
 	Light gLight;
 	float3 gEyePosition;
+	float4 gAmbientLight;
 };
 
 Texture2D gDiffuseTexture;
@@ -38,6 +39,8 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 	else {
 		lightColour = SpotLight(v, gLight, gEyePosition);
 	}
+
+	lightColour += diffuse * gAmbientLight;
 
 	return float4(lightColour, diffuse.a);
 }
