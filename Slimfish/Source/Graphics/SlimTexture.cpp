@@ -128,14 +128,29 @@ namespace Slim {
 		m_SourceWidth = srcWidth;
 	}
 
+	size_t ATexture::GetSourceWidth() const
+	{
+		return m_Width;
+	}
+
 	void ATexture::SetSourceHeight(size_t srcHeight)
 	{
 		m_SourceHeight = srcHeight;
 	}
 
+	size_t ATexture::GetSourceHeight() const
+	{
+		return m_Height;
+	}
+
 	void ATexture::SetSourceDepth(size_t srcDepth)
 	{
 		m_SourceDepth = srcDepth;
+	}
+
+	size_t ATexture::GetSourceDepth() const
+	{
+		return m_Depth;
 	}
 
 }

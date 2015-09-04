@@ -21,6 +21,7 @@
 
 // Local Includes
 #include "SlimGpuBuffer.h"
+#include "SlimImage.h"
 
 namespace Slim {
 
@@ -53,10 +54,12 @@ public:
 		USAGE_DYNAMIC = AGpuBuffer::USAGE_DYNAMIC,
 		// See CGPUBuffer::USAGE_WRITE_ONLY.
 		USAGE_WRITE_ONLY = AGpuBuffer::USAGE_WRITE_ONLY,
+		// See CGpuBuffer::USAGE_READ_ONLY.
+		USAGE_READ_ONLY = AGpuBuffer::USAGE_READ_ONLY,
 		// See CGPUBuffer::USAGE_DISCARDABLE.
 		USAGE_DISCARDABLE = AGpuBuffer::USAGE_DISCARDABLE,
 		// The texture resource will be used as a render target.
-		USAGE_RENDER_TARGET = 16
+		USAGE_RENDER_TARGET = USAGE_DISCARDABLE * 2
 	};
 
 	/** List of standard texture types.
@@ -111,6 +114,13 @@ public:
 	*/
 	virtual void VUnload() = 0;
 
+	/** Get a readable/writable image from the texture resource.
+		@remarks
+			Only applicable for 2D textures (TEXTURE_TYPE_2D).
+	 	@author Hayden Asplet
+	*/
+	virtual const CImage VGetImage() const = 0;
+
 	/** Get the name of the texture. @author Hayden Asplet */
 	const std::string& GetName() const;
 
@@ -138,6 +148,7 @@ public:
 	 	@author Hayden Asplet
 	*/
 	const bool IsLoaded() const;
+
 
 	/** Get the width of the texture. @author Hayden Asplet */
 	const size_t GetWidth() const;
@@ -219,17 +230,26 @@ protected:
 	*/
 	void SetSourceWidth(size_t srcWidth);
 
+	/** Get the source width of the texture. @author Hayden Asplet */
+	size_t GetSourceWidth() const;
+
 	/** Set the source height of the texture.
 		@note This should only be set internally by derived classes once the texture has been loaded.
 		@author Hayden Asplet
 	*/
 	void SetSourceHeight(size_t srcHeight);
 
+	/** Get the source height of the texture. @author Hayden Asplet */
+	size_t GetSourceHeight() const;
+
 	/** Set the source depth of the texture.
 		@note This should only be set internally by derived classes once the texture has been loaded.
 		@author Hayden Asplet
 	*/
 	void SetSourceDepth(size_t srcDepth);
+
+	/** Get the source depth of the texture. @author Hayden Asplet */
+	size_t GetSourceDepth() const;
 
 private:
 	// Member Variables

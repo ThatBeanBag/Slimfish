@@ -65,6 +65,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		MessageBoxA(nullptr, strMessage.c_str(), "Error", MB_OK | MB_ICONERROR);
 		abort();
 	}
+	catch (CException& slimException) {
+		std::string strMessage = slimException.GetDescription();
+		MessageBoxA(nullptr, strMessage.c_str(), "Error", MB_OK | MB_ICONERROR);
+	}
 	catch (...) {
 		MessageBoxA(nullptr, "Unknown error occurred.", "Error", MB_OK | MB_ICONERROR);
 	}

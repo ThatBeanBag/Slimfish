@@ -62,15 +62,15 @@ namespace Slim {
 		return d3dMatrix;
 	}
 
-	D3DXCOLOR D3D10Conversions::GetColour(const TColourValue& colour)
+	D3DXCOLOR D3D10Conversions::GetColour(const CColourValue& colour)
 	{
 		return D3DXCOLOR(colour.m_r, colour.m_g, colour.m_b, colour.m_a);
 	}
 
 
-	TColourValue D3D10Conversions::GetColour(const D3DXCOLOR& colour)
+	CColourValue D3D10Conversions::GetColour(const D3DXCOLOR& colour)
 	{
-		return CreateColourValueARGB(colour.a, colour.r, colour.g, colour.b);
+		return CColourValue(colour.a, colour.r, colour.g, colour.b);
 	}
 
 	D3D10_USAGE D3D10Conversions::GetUsage(AGpuBuffer::EUsage usage)
@@ -85,18 +85,33 @@ namespace Slim {
 
 	UINT D3D10Conversions::GetCPUAccessFlags(ATexture::EUsage usage)
 	{
+		UINT d3dCpuAccess = 0;
+		//Access
+
 		if (usage & AGpuBuffer::USAGE_DYNAMIC) {
-			return D3D10_CPU_ACCESS_WRITE;
+			d3dCpuAccess |= D3D10_CPU_ACCESS_WRITE;
 		}
-		else {
-			return 0;
+
+		if (usage & AGpuBuffer::USAGE_WRITE_ONLY) {
+			d3dCpuAccess |= D3D10_CPU_ACCESS_WRITE;
 		}
+		
+		if (usage & AGpuBuffer::USAGE_READ_ONLY) {
+			d3dCpuAccess |= D3D10_CPU_ACCESS_READ;
+		}
+
+		return d3dCpuAccess;
 	}
 
 	D3D10_USAGE D3D10Conversions::GetUsage(ATexture::EUsage usage)
 	{
-		if (usage & AGpuBuffer::USAGE_DYNAMIC) {
+		if (usage & AGpuBuffer::USAGE_DYNAMIC ||
+			usage & AGpuBuffer::USAGE_WRITE_ONLY ||
+			usage & AGpuBuffer::USAGE_DISCARDABLE) {
 			return D3D10_USAGE_DYNAMIC;
+		}
+		else if (usage & AGpuBuffer::USAGE_READ_ONLY) {
+			return D3D10_USAGE_STAGING;
 		}
 		else {
 			return D3D10_USAGE_DEFAULT;

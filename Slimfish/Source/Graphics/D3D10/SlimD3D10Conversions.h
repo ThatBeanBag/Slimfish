@@ -37,8 +37,8 @@ namespace D3D10Conversions {
 	D3DXMATRIX GetMatrix4x4(const CMatrix4x4& matrix);
 	CMatrix4x4 GetMatrix4x4(const D3DXMATRIX& matrix);
 
-	D3DXCOLOR GetColour(const TColourValue& colour);
-	TColourValue GetColour(const D3DXCOLOR& colour);
+	D3DXCOLOR GetColour(const CColourValue& colour);
+	CColourValue GetColour(const D3DXCOLOR& colour);
 
 	D3D10_USAGE GetUsage(AGpuBuffer::EUsage usage);
 	D3D10_USAGE GetUsage(ATexture::EUsage usage);

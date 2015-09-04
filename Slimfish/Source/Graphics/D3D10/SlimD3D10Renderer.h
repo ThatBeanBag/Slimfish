@@ -52,7 +52,7 @@ public:
 	virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, AShaderProgram::EShaderType type);
 
 	/* @copydoc ARenderer::VLoadTexture */
-	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name) override;
+	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ATexture::EUsage usage) override;
 
 	/* @copydoc ARenderer::VRender */
 	virtual void VRender(const CVertexDeclaration& vertexDeclaration, 
@@ -66,10 +66,10 @@ public:
 	virtual void VSetViewTransform(const CMatrix4x4& viewTransform) override;
 	virtual void VSetProjectionTransform(const CMatrix4x4& projectionTransform) override;
 
-	virtual void VSetAmbientColour(const TColour& colour) override;
-	virtual void VSetBackgroundColour(const TColourValue& colour) override;
+	virtual void VSetAmbientColour(const CColour& colour) override;
+	virtual void VSetBackgroundColour(const CColourValue& colour) override;
 
-	virtual void VSetFog(EFogType fogType, const TColourValue& colour = TColourValue::s_BLACK, float start = 0.0f, float end = 1.0f, float exponentialDensity = 1.0f) override;
+	virtual void VSetFog(EFogType fogType, const CColourValue& colour = CColourValue::s_BLACK, float start = 0.0f, float end = 1.0f, float exponentialDensity = 1.0f) override;
 protected:
 private:
 	// Windows functions that should be in a windows class.
@@ -85,7 +85,7 @@ private:
 	virtual void VSetTexture(size_t layer, const shared_ptr<ATexture>& pTexture, bool disable = false) override;
 	virtual void VSetTextureLayerBlendState(size_t layer, const TTextureLayerBlendState& blendState) override;
 	virtual void VSetTextureAddressModes(size_t layer, const TTextureUVWAddressModes& addressModes) override;
-	virtual void VSetTextureBorderColour(size_t layer, const TColourValue& colour) override;
+	virtual void VSetTextureBorderColour(size_t layer, const CColourValue& colour) override;
 
 	virtual void VSetVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
 	virtual void VSetVertexBuffer(shared_ptr<AVertexGpuBuffer> pVertexBuffer);

@@ -155,7 +155,7 @@ public:
 			constant type must be specified.
 		@author Hayden Asplet
 	*/
-	void SetConstant(const std::string& name, const TColourValue& value);
+	void SetConstant(const std::string& name, const CColourValue& value);
 
 	/** Set a constant definition as an array of floats.
 		@remarks

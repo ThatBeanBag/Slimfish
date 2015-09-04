@@ -44,22 +44,22 @@ namespace Slim {
 		return m_LightProperties.m_Type;
 	}
 
-	void CLight::SetDiffuse(const TColourValue& diffuse)
+	void CLight::SetDiffuse(const CColourValue& diffuse)
 	{
 		m_LightProperties.m_Diffuse = diffuse;
 	}
 
-	const TColourValue& CLight::GetDiffuse() const
+	const CColourValue& CLight::GetDiffuse() const
 	{
 		return m_LightProperties.m_Diffuse;
 	}
 
-	void CLight::SetSpecular(const TColourValue& specular)
+	void CLight::SetSpecular(const CColourValue& specular)
 	{
 		m_LightProperties.m_Specular = specular;
 	}
 
-	const TColourValue& CLight::GetSpecular() const
+	const CColourValue& CLight::GetSpecular() const
 	{
 		return m_LightProperties.m_Specular;
 	}

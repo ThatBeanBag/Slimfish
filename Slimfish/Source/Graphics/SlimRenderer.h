@@ -33,7 +33,7 @@ namespace Slim {
 	class AVertexGpuBuffer;
 	class AShaderProgram;
 	class CVertexDeclaration;
-	struct TColour;
+	class CColour;
 
 	class CRenderingError {
 	};
@@ -113,7 +113,7 @@ namespace Slim {
 		/** Loads a texture from file.
 		 	@author Hayden Asplet
 		*/
-		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name) = 0;
+		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ATexture::EUsage usage) = 0;
 
 		/** Perform a render operation, rendering a set of vertices.
 		 	@author Hayden Asplet
@@ -146,9 +146,9 @@ namespace Slim {
 		/** Set the projection transform. */
 		virtual void VSetProjectionTransform(const CMatrix4x4& projectionTransform) = 0;
 		/** Set the ambient colour. */
-		virtual void VSetAmbientColour(const TColour& colour) = 0;
+		virtual void VSetAmbientColour(const CColour& colour) = 0;
 		/** Set the background the colour. */
-		virtual void VSetBackgroundColour(const TColourValue& colour) = 0;
+		virtual void VSetBackgroundColour(const CColourValue& colour) = 0;
 		
 		/** Set the fog options for future rendering of geometry.
 		 	@author Hayden Asplet
@@ -173,7 +173,7 @@ namespace Slim {
 				may never. Not used when fog type is linear or disabled.
 		*/
 		virtual void VSetFog(EFogType fogType, 
-							 const TColourValue& colour = TColourValue::s_BLACK,
+							 const CColourValue& colour = CColourValue::s_BLACK,
 							 float start = 0.0f,
 							 float end = 1.0f,
 							 float exponentialDensity = 1.0f) = 0;
@@ -245,7 +245,7 @@ namespace Slim {
 			@note Derived classes must implement this.
 		 	@author Hayden Asplet
 		*/
-		virtual void VSetTextureBorderColour(size_t layer, const TColourValue& colour) = 0;
+		virtual void VSetTextureBorderColour(size_t layer, const CColourValue& colour) = 0;
 
 		virtual void VSetVertexDeclaration(const CVertexDeclaration& vertexDeclaration) = 0;
 		virtual void VSetVertexBuffer(shared_ptr<AVertexGpuBuffer> pVertexBuffer) = 0;

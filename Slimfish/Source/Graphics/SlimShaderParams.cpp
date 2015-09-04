@@ -212,7 +212,7 @@ namespace Slim {
 		//memcpy(&m_ConstantFloats[shaderConstant.m_Index], pValue, sizeof(float) * shaderConstant.m_Size);
 	}
 
-	void CShaderParams::SetConstant(const std::string& name, const TColourValue& value)
+	void CShaderParams::SetConstant(const std::string& name, const CColourValue& value)
 	{
 		float pValue[4];
 		pValue[0] = value.m_r;

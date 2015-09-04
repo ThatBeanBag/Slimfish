@@ -42,10 +42,10 @@ private:
 public:
 protected:
 private:
-	TColourValue m_diffuse;
-	TColourValue m_ambient;
-	TColourValue m_specular;
-	TColourValue m_emissive;
+	CColourValue m_diffuse;
+	CColourValue m_ambient;
+	CColourValue m_specular;
+	CColourValue m_emissive;
 	float m_power;
 
 };

@@ -25,7 +25,7 @@
 
 namespace Slim {
 
-/** Specialization of AShaderProgram for directX 10.
+/** Specialization of AShaderProgram for DirectX 10.
 @remarks
 		
 */
@@ -40,7 +40,6 @@ class CD3D10ShaderProgram : public AShaderProgram {
 		ID3D11ShaderReflectionConstantBuffer* m_pReflectionConstantBuffer;
 		D3D11_SHADER_BUFFER_DESC m_Desc;
 		ID3D10Buffer* m_pBuffer;
-		//std::vector<D3D11_SHADER_VARIABLE_DESC> m_Variables;
 		std::vector<TConstantVariable> m_Variables;
 	};
 

@@ -23,6 +23,7 @@
 #include <Graphics/SlimIndexGpuBuffer.h>
 #include <Graphics/SlimShaderProgram.h>
 #include <Graphics/SlimTexture.h>
+#include <Graphics/SlimTextureLayer.h>
 
 // Local Includes
 
@@ -57,6 +58,7 @@ private:
 	CMatrix4x4 m_WorldMatrix;
 	shared_ptr<ATexture> m_pTexture;
 	std::vector<shared_ptr<ATexture>> m_pTextures;
+	CTextureLayer m_specularLayer;
 	size_t m_Frame;
 
 	float m_TexAnim;

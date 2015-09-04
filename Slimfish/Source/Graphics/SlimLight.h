@@ -36,8 +36,8 @@ enum ELightType {
 
 struct TLightProperties {
 	ELightType m_Type;
-	TColourValue m_Diffuse;
-	TColourValue m_Specular;
+	CColourValue m_Diffuse;
+	CColourValue m_Specular;
 	CVector3 m_Position;
 	CVector3 m_Direction;
 	float m_Range;
@@ -58,11 +58,11 @@ public:
 	void SetType(ELightType type);
 	ELightType GetType() const;
 
-	void SetDiffuse(const TColourValue& diffuse);
-	const TColourValue& GetDiffuse() const;
+	void SetDiffuse(const CColourValue& diffuse);
+	const CColourValue& GetDiffuse() const;
 
-	void SetSpecular(const TColourValue& specular);
-	const TColourValue& GetSpecular() const;
+	void SetSpecular(const CColourValue& specular);
+	const CColourValue& GetSpecular() const;
 
 	void SetPosition(const CVector3& position);
 	const CVector3& GetPosition() const;

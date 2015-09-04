@@ -105,7 +105,7 @@ bool CTestProjLogic::Initialise()
 		20, 22, 23,
 	};
 
-	g_pApp->GetRenderer()->VSetBackgroundColour(TColourValue::s_GREEN);
+	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue::s_GREEN);
 
 	m_pVertexBuffer = g_pApp->GetRenderer()->VCreateVertexBuffer(
 		24, 
@@ -145,9 +145,10 @@ bool CTestProjLogic::Initialise()
 		m_pTextures[i] = g_pApp->GetRenderer()->VLoadTexture(filePath);
 	}
 
+	m_specularLayer.SetTexture(g_pApp->GetRenderer()->VLoadTexture("defaultspec.dds"));
+
 	m_pVertexShader = g_pApp->GetRenderer()->VCreateShaderProgram("VertexShader.hlsl", AShaderProgram::SHADER_TYPE_VERTEX);
 	m_pPixelShader = g_pApp->GetRenderer()->VCreateShaderProgram("PixelShader.hlsl", AShaderProgram::SHADER_TYPE_PIXEL);
-
 
 	m_pVertexShader->SetEntryPoint("main");
 	m_pVertexShader->SetShaderModel("vs_4_0");
@@ -165,14 +166,16 @@ bool CTestProjLogic::Initialise()
 	m_pVertexParamsPerFrame = m_pVertexShader->CreateShaderParams("cbPerFrame");
 	m_pPixelParamsPerFrame = m_pPixelShader->CreateShaderParams("cbPerFrame");
 
+	CImage image = m_pTextures[0]->VGetImage();
+
 	CVector3 eyePosition(0.0f, 2.0f, -10.0f);
 	CVector3 lightDirection(0.0f, -1.0f, -1.0f);
 	Normalise(lightDirection);
 
 	CLight light;
 	light.SetType(LIGHT_DIRECTIONAL);
-	light.SetDiffuse(TColourValue::s_WHITE);
-	light.SetSpecular(TColourValue::s_WHITE);
+	light.SetDiffuse(CColourValue::s_WHITE);
+	light.SetSpecular(CColourValue::s_WHITE);
 	light.SetDirection(Normalise(CVector3(0.0f, -1.0f, 1.0f)));
 
 	m_pPixelParamsPerFrame->SetConstant("gLight.m_Type", light.GetType());
@@ -180,7 +183,7 @@ bool CTestProjLogic::Initialise()
 	m_pPixelParamsPerFrame->SetConstant("gLight.m_Specular", light.GetSpecular());
 	m_pPixelParamsPerFrame->SetConstant("gLight.m_Direction", light.GetDirection());
 	m_pPixelParamsPerFrame->SetConstant("gEyePosition", eyePosition);
-	m_pPixelParamsPerFrame->SetConstant("gAmbientLight", CreateColourValueRGB(0.2f, 0.2f, 0.2f));
+	m_pPixelParamsPerFrame->SetConstant("gAmbientLight", CColourValue(0.2f, 0.2f, 0.2f));
 
 	m_pPixelShader->VUpdateProgramParams("cbPerFrame", m_pPixelParamsPerFrame);
 
@@ -204,35 +207,13 @@ void CTestProjLogic::Update(float deltaTime)
 
 void CTestProjLogic::Render()
 {
-	/*D3DXMATRIX projectionMatrix;
-	D3DXMatrixPerspectiveFovLH(&projectionMatrix, 0.25f * g_PI, 1.3f, 0.1f, 1000.0f);
-
-	D3DXMATRIX viewMatrix;
-	D3DXVECTOR3 at(0.0f, 0.0f, 0.0f);
-	D3DXVECTOR3 eye(0, 0, -10.0f);
-	D3DXVECTOR3 up(0, 1, 0);
-	D3DXMatrixLookAtLH(&viewMatrix, &eye, &at, &up);
-
-	D3DXMATRIX worldMatrix;
-	D3DXMatrixTranslation(&worldMatrix, 2.0f, 0.0f, 0.0f);
-
-	D3DXMATRIX wvp = worldMatrix * viewMatrix * projectionMatrix;
-	D3DXMatrixTranspose(&wvp, &wvp);
-
-	m_pShaderParamsPerObject->SetConstant("gWorldMatrix", (float*)&wvp, 16);
-	m_pVertexShader->VUpdateProgramParams("cbPerObject", m_pShaderParamsPerObject);
-	m_pVertexShader->VUpdateProgramParams("cbPerFrame", m_pShaderParamsPerFrame);
-
-	g_pApp->GetRenderer()->VSetShaderProgram(m_pVertexShader);
-	g_pApp->GetRenderer()->VSetShaderProgram(m_pPixelShader);
-	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, m_pVertexBuffer, m_pIndexBuffer);*/
-
 	CTextureLayer textureLayer;
 	textureLayer.SetTextureFilter(TFILTERB_TRILINEAR);
 	textureLayer.SetTextureAddressModes(TADDRESS_MIRROR);
-	textureLayer.SetTextureBorderColour(TColourValue::s_BLUE);
+	textureLayer.SetTextureBorderColour(CColourValue::s_BLUE);
 	textureLayer.SetTexture(m_pTextures[m_Frame]);
 	g_pApp->GetRenderer()->SetTextureLayer(0, textureLayer);
+	g_pApp->GetRenderer()->SetTextureLayer(1, m_specularLayer);
 
 	size_t width, height;
 	g_pApp->GetRenderer()->GetWindowSize(width, height);

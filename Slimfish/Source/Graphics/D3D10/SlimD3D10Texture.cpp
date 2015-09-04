@@ -61,14 +61,38 @@ namespace Slim {
 			return;
 		}
 
-		D3DX10_IMAGE_LOAD_INFO loadInfo;
-		ZeroMemory(&loadInfo, sizeof(D3DX10_IMAGE_LOAD_INFO));
+		D3DX10_IMAGE_INFO imageInfo;
+		HRESULT hResult = D3DX10GetImageInfoFromFileA(GetName().c_str(), NULL, &imageInfo, NULL);
+		if (FAILED(hResult)) {
+			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to create texture from file " << GetName() << CEndExcept();
+		}
 
-		HRESULT hResult = D3DX10CreateTextureFromFileA(m_pD3DDevice, GetName().c_str(), NULL, NULL, &m_pTexture, NULL);
+		D3DX10_IMAGE_LOAD_INFO loadInfo;
+		loadInfo.Usage = D3D10Conversions::GetUsage(GetUsage());
+		loadInfo.CpuAccessFlags = D3D10Conversions::GetCPUAccessFlags(GetUsage());
+		loadInfo.Width = D3DX10_DEFAULT;
+		loadInfo.Height = D3DX10_DEFAULT;
+		loadInfo.Depth = D3DX10_DEFAULT;
+		loadInfo.FirstMipLevel = D3DX10_DEFAULT;
+		loadInfo.MipLevels = D3DX10_DEFAULT;
+		loadInfo.BindFlags = D3DX10_DEFAULT;
+		loadInfo.MiscFlags = D3DX10_DEFAULT;
+		loadInfo.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		loadInfo.Filter = D3DX10_DEFAULT;
+		loadInfo.MipFilter = D3DX10_DEFAULT;
+		loadInfo.pSrcInfo = &imageInfo;
+
+		if (loadInfo.Usage == D3D10_USAGE_DYNAMIC) {
+			loadInfo.MipLevels = 1;
+		}
+		else if (loadInfo.Usage == D3D10_USAGE_STAGING) {
+			loadInfo.BindFlags = 0;
+		}
+
+		hResult = D3DX10CreateTextureFromFileA(m_pD3DDevice, GetName().c_str(), &loadInfo, NULL, &m_pTexture, NULL);
 
 		if (FAILED(hResult)) {
-			// TODO: throw error.
-			return;
+			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to create texture from file " << GetName() << CEndExcept();
 		}
 
 		D3D10_RESOURCE_DIMENSION resourceType;
@@ -97,31 +121,6 @@ namespace Slim {
 				break;
 			}
 		}
-
-		switch (GetTextureType()) {
-			case TEXTURE_TYPE_1D: {
-				loadInfo.Usage = D3D10Conversions::GetUsage(GetUsage());
-				loadInfo.BindFlags = D3D10_BIND_SHADER_RESOURCE;
-				loadInfo.CpuAccessFlags = D3D10Conversions::GetCPUAccessFlags(GetUsage());
-				loadInfo.MiscFlags = D3D10_RESOURCE_MISC_GENERATE_MIPS;
-				//loadInfo.
-
-
-				break;
-			}
-			case TEXTURE_TYPE_2D: {
-				break;
-			}
-			case TEXTURE_TYPE_3D: {
-				break;
-			}
-			case TEXTURE_TYPE_CUBIC: {
-				break;
-			}
-			default: {
-				break;
-			}
-		}
 	}
 
 	void CD3D10Texture::VUnload()
@@ -131,6 +130,46 @@ namespace Slim {
 		SLIM_SAFE_RELEASE(m_pTexture2D);
 		SLIM_SAFE_RELEASE(m_pTexture3D);  
 		SLIM_SAFE_RELEASE(m_pShaderResourceView);
+	}
+
+	const CImage CD3D10Texture::VGetImage() const
+	{
+		// Images must be 2D.
+		assert(GetTextureType() == ATexture::TEXTURE_TYPE_2D);
+		assert(m_pTexture2D);
+
+		size_t width = GetSourceWidth();
+		size_t height = GetSourceHeight();
+
+		CImage image(width, height);
+
+		D3D10_MAPPED_TEXTURE2D mappedTexture;
+		HRESULT hResult = m_pTexture2D->Map(0, D3D10_MAP_READ, 0, &mappedTexture);	
+		if (FAILED(hResult)) {
+		// Failed mapping.
+			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to read DirectX 10 2D texture resource " << GetName() << CEndExcept();
+		}
+
+		// Read the texture and store into the map.
+		float* pTexels = reinterpret_cast<float*>(mappedTexture.pData);
+
+		for (size_t y = 0; y < height; ++y) {
+			size_t yStartOffset = y * mappedTexture.RowPitch / 4;
+
+			for (size_t x = 0; x < width; ++x) {
+				size_t xStartOffset = x * 4;
+
+				float r = pTexels[yStartOffset + xStartOffset + 0];	// Red.
+				float g = pTexels[yStartOffset + xStartOffset + 1];	// Green.
+				float b = pTexels[yStartOffset + xStartOffset + 2];	// Blue.
+				float a = pTexels[yStartOffset + xStartOffset + 3];	// Alpha.
+
+				// Write the texel to the image.
+				image[y][x] = ToColour(CColourValue(r, g, b, a));
+			}
+		}
+
+		return image;
 	}
 
 	ID3D10ShaderResourceView* CD3D10Texture::GetD3DTexture()

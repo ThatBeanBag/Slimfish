@@ -118,8 +118,8 @@ ETextureFilterType CTextureLayer::GetTextureFilter(ETextureSamplerType samplerTy
 void CTextureLayer::SetColourOperation(ETextureLayerBlendOperation operation, 
 									   ETextureLayerBlendSource source1 /*= TLAYERSRC_TEXTURE*/, 
 									   ETextureLayerBlendSource source2 /*= TLAYERSRC_CURRENT*/, 
-									   const TColourValue& argument1 /*= TColourValue::s_WHITE*/, 
-									   const TColourValue& argument2 /*= TColourValue::s_WHITE*/, 
+									   const CColourValue& argument1 /*= TColourValue::s_WHITE*/, 
+									   const CColourValue& argument2 /*= TColourValue::s_WHITE*/, 
 									   float manualBlend /*= 0.0f*/)
 {
 	m_blendState.m_colourBlendOperation = operation;
@@ -225,12 +225,12 @@ const TTextureUVWAddressModes& CTextureLayer::GetTextureAddressModes() const
 	return m_textureAddressingModes;
 }
 
-void CTextureLayer::SetTextureBorderColour(const TColourValue& colour)
+void CTextureLayer::SetTextureBorderColour(const CColourValue& colour)
 {
 	m_borderColour = colour;
 }
 
-const TColourValue& CTextureLayer::GetTextureBorderColour() const
+const CColourValue& CTextureLayer::GetTextureBorderColour() const
 {
 	return m_borderColour;
 }

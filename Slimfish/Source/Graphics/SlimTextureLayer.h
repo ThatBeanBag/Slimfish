@@ -106,8 +106,8 @@ namespace Slim {
 		ETextureLayerBlendSource m_alphaSource2;
 
 		// Manual arguments (used only if blend sources are set to TLAYERSRC_MANUAL)
-		TColourValue m_colourArg1;	// First colour source.
-		TColourValue m_colourArg2;	// Second colour source.
+		CColourValue m_colourArg1;	// First colour source.
+		CColourValue m_colourArg2;	// Second colour source.
 		float m_alphaArg1;			// First alpha source.
 		float m_alphaArg2;			// Second alpha source.
 		float m_alphaManualBlend;	// Manual blending value for alpha blending (used only when blend operation is TLAYEROP_BLEND_MANUAL).
@@ -266,8 +266,8 @@ namespace Slim {
 		void SetColourOperation(ETextureLayerBlendOperation operation,
 								ETextureLayerBlendSource source1 = TLAYERSRC_TEXTURE,
 								ETextureLayerBlendSource source2 = TLAYERSRC_CURRENT,
-								const TColourValue& argument1 = TColourValue::s_WHITE,
-								const TColourValue& argument2 = TColourValue::s_WHITE,
+								const CColourValue& argument1 = CColourValue::s_WHITE,
+								const CColourValue& argument2 = CColourValue::s_WHITE,
 								float manualBlend = 0.0f);
 
 		/** Set the alpha operation and arguments of the texture layer.
@@ -296,8 +296,8 @@ namespace Slim {
 		void SetAlphaOperation(ETextureLayerBlendOperation operation,
 							   ETextureLayerBlendSource source1 = TLAYERSRC_TEXTURE,
 							   ETextureLayerBlendSource source2 = TLAYERSRC_CURRENT,
-							   float argument1 = TColourValue::s_ALPHA_OPAQUE,
-							   float argument2 = TColourValue::s_ALPHA_OPAQUE,
+							   float argument1 = CColourValue::s_ALPHA_OPAQUE,
+							   float argument2 = CColourValue::s_ALPHA_OPAQUE,
 							   float manualBlend = 0.0f);
 
 		/** Get the entire blending state (both the alpha and colour blending operations and arguments).
@@ -389,14 +389,14 @@ namespace Slim {
 		 	@author
 		 		Hayden Asplet
 		*/
-		void SetTextureBorderColour(const TColourValue& colour);
+		void SetTextureBorderColour(const CColourValue& colour);
 
 		/** Get the texture border colour to use when using TADDRESS_BORDER as an addressing mode for
 			texture coordinates.
 		 	@author
 		 		Hayden Asplet
 		*/
-		const TColourValue& GetTextureBorderColour() const;
+		const CColourValue& GetTextureBorderColour() const;
 	protected:
 	private:
 		// Member Variables
@@ -421,7 +421,7 @@ namespace Slim {
 
 		TTextureUVWAddressModes m_textureAddressingModes;	// Addressing modes of and u, v and w texture coordinates.
 
-		TColourValue m_borderColour;	// The border colour to use when using TADDRESS_BORDER.
+		CColourValue m_borderColour;	// The border colour to use when using TADDRESS_BORDER.
 	};
 }
 

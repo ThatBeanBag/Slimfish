@@ -97,7 +97,6 @@
     <ClCompile Include="..\GameBase\SlimGameLogic.cpp">
       <Filter>GameBase</Filter>
     </ClCompile>
-    <ClCompile Include="..\Graphics\SlimLight.cpp" />
     <ClCompile Include="..\Logging\SlimLog.cpp">
       <Filter>Debug</Filter>
     </ClCompile>
@@ -106,6 +105,12 @@
     </ClCompile>
     <ClCompile Include="..\Logging\SlimExceptions.cpp">
       <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimImage.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimLight.cpp">
+      <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +225,9 @@
     </ClInclude>
     <ClInclude Include="..\Logging\SlimExceptions.h">
       <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimImage.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

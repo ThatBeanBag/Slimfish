@@ -41,9 +41,9 @@ class AGpuBuffer {
 public:
 	/** List of usage flags that define how the buffer is used.
 		@note
-		This enumeration is weakly typed, as in it can be implicitly
-		converted to and from an int this gives it the functionality to be
-		used as a flag, but the downside is that it lacks type safety.
+			This enumeration is weakly typed, as in it can be implicitly
+			converted to and from an int this gives it the functionality to be
+			used as a flag, but the downside is that it lacks type safety.
 		*/
 	enum EUsage : int {
 		// Indicates that the buffer will rarely be modified.
@@ -55,8 +55,11 @@ public:
 		// Indicates the buffer will only be written. Using LOCK_READ_ONLY with a buffer
 		// created with this usage is not allowed.
 		USAGE_WRITE_ONLY = 4,
+		// Indicates that the buffer will only be read from. Use LOCK_READ_ONLY with a
+		// buffer created with this usage.
+		USAGE_READ_ONLY = 8,
 		// Indicates that the application will be refilling the entire contents frequently.
-		USAGE_DISCARDABLE = 8,
+		USAGE_DISCARDABLE = 16,
 	};
 
 	/** List of locking options that describe a type of lock to perform when locking a buffer.

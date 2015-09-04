@@ -28,38 +28,111 @@ namespace Slim {
 	Colour channels have the range 0 to 255. This is different from TColourValue
 	where TColourValue's channels range from 0 to 1.
 */
-struct TColour {
+class CColour {
+	// Member Functions
+public:
+	/** Default constructor.
+		@note defaults to black.
+	 	@author Hayden Asplet
+	*/
+	CColour();
+
+	/** Create a colour value from red, green, blue and alpha colour channels.
+	 	@author Hayden Asplet
+	*/
+	CColour(unsigned char r, unsigned char g, unsigned char b, unsigned char a = s_ALPHA_OPAQUE);
+
+	/** Destructor.
+	 	@author Hayden Asplet
+	*/
+	~CColour();
+
+	/** Set the red channel. @author Hayden Asplet */
+	void SetRed(unsigned char  red);
+	/** Get the red channel. @author Hayden Asplet */
+	const unsigned char GetRed() const;
+
+	/** Set the green channel. @author Hayden Asplet */
+	void SetGreen(unsigned char  green);
+	/** Get the green channel. @author Hayden Asplet */
+	const unsigned char GetGreen() const;
+
+	/** Set the blue channel. @author Hayden Asplet */
+	void SetBlue(unsigned char blue);
+	/** Get the blue channel. @author Hayden Asplet */
+	const unsigned char GetBlue() const;
+
+	/** Set the alpha channel. @author Hayden Asplet */
+	void SetAlpha(unsigned char alpha);
+	/** Get the alpha channel. @author Hayden Asplet */
+	const unsigned char GetAlpha() const;
+protected:
+private:
+	// Static constants
+public:
+	static const CColour s_WHITE;
+	static const CColour s_BLACK;
+	static const CColour s_RED;
+	static const CColour s_GREEN;
+	static const CColour s_BLUE;
+	static const CColour s_YELLOW;
+	static const CColour s_CYAN;
+	static const CColour s_MAGENTA;
+
+	static const unsigned char s_ALPHA_OPAQUE;
+	static const unsigned char s_ALPHA_TRANSPERANT;
+	// Member Variables
+public:
+
 	unsigned char m_r;
 	unsigned char m_g;
 	unsigned char m_b;
 	unsigned char m_a;
-
-	static const TColour s_WHITE;
-	static const TColour s_BLACK;
-	static const TColour s_RED;
-	static const TColour s_GREEN;
-	static const TColour s_BLUE;
-	static const TColour s_YELLOW;
-	static const TColour s_CYAN;
-	static const TColour s_MAGENTA;
-
-	static const unsigned char s_ALPHA_OPAQUE;
-	static const unsigned char s_ALPHA_TRANSPERANT;
+protected:
+private:
 };
 
 /** Class representing a colour as a amalgamation of four floating-point values a, r, g and b.
 	@remarks
-	
+		Channel have the range 0 to 1. This is different from TColour where
+		TColour's channels range from 0 to 255.
 */
-/*
 class CColourValue {
 	// Member Functions
 public:
+	/** Default constructor.
+	 	@author Hayden Asplet
+	*/
 	CColourValue();
-	CColourValue(float r, float g, float b);
-	CColourValue(float a, float r, float g, float b);
 
+	/** Create a colour value from red, green, blue and alpha colour channels.
+	 	@author Hayden Asplet
+	*/
+	CColourValue(float r, float g, float b, float a = s_ALPHA_OPAQUE);
+
+	/** Destructor.
+	 	@author Hayden Asplet
+	*/
+	~CColourValue();
+
+	/** Set the red channel. @author Hayden Asplet */
+	void SetRed(float red);
+	/** Get the red channel. @author Hayden Asplet */
+	const float GetRed() const;
+
+	/** Set the green channel. @author Hayden Asplet */
+	void SetGreen(float green);
+	/** Get the green channel. @author Hayden Asplet */
+	const float GetGreen() const;
+
+	/** Set the blue channel. @author Hayden Asplet */
+	void SetBlue(float blue);
+	/** Get the blue channel. @author Hayden Asplet */
+	const float GetBlue() const;
+
+	/** Set the alpha channel. @author Hayden Asplet */
 	void SetAlpha(float alpha);
+	/** Get the alpha channel. @author Hayden Asplet */
 	const float GetAlpha() const;
 protected:
 private:
@@ -86,66 +159,7 @@ public:
 	float m_b;
 protected:
 private:
-};*/
-
-/** Basic colour value structure 
-@remarks
-	Channel have the range 0 to 1. This is different from TColour where
-	TColour's channels range from 0 to 255.
-*/
-struct TColourValue {
-	float m_r;
-	float m_g;
-	float m_b;
-	float m_a;
-
-	static const TColourValue s_WHITE;
-	static const TColourValue s_BLACK;
-	static const TColourValue s_RED;
-	static const TColourValue s_GREEN;
-	static const TColourValue s_BLUE;
-	static const TColourValue s_YELLOW;
-	static const TColourValue s_CYAN;
-	static const TColourValue s_MAGENTA;
-
-	static const float s_ALPHA_OPAQUE;
-	static const float s_ALPHA_TRANSPERANT;
 };
-
-/*
-extern const unsigned char g_ALPHA_OPAQUE;
-extern const unsigned char g_ALPHA_TRANSPERANT;
-
-extern const float g_ALPHA_VALUE_OPAQUE;
-extern const float g_ALPHA_VALUE_TRANSPERANT;*/
-
-/************************************************************************/
-/* Helper creation functions
-/************************************************************************/
-
-/** Create a colour from red, green and blue colour channels.
- 	@author
- 		Hayden Asplet
-*/
-TColour CreateColourRGB(unsigned char red, unsigned char green, unsigned char blue);
-
-/** Create a colour from alpha, red, green and blue colour channels.
- 	@author
- 		Hayden Asplet
-*/
-TColour CreateColourARGB(unsigned alpha, unsigned char red, unsigned char green, unsigned char blue);
-
-/** Create a colour value from red, green and blue colour values.
- 	@author
- 		Hayden Asplet
-*/
-TColourValue CreateColourValueRGB(float red, float green, float blue);
-
-/** Create a colour value from alpha, red, green and blue colour values.
- 	@author
- 		Hayden Asplet
-*/
-TColourValue CreateColourValueARGB(float alpha, float red, float green, float blue);
 
 /************************************************************************/
 /* Conversions
@@ -155,25 +169,25 @@ TColourValue CreateColourValueARGB(float alpha, float red, float green, float bl
  	@author
  		Hayden Asplet
 */
-TColour ValueToColour(const TColourValue& colourValue);
+CColour ToColour(const CColourValue& colourValue);
 
 /** Convert from a TColour to a TColourValue.
  	@author
  		Hayden Asplet
 */
-TColourValue ColourToValue(const TColour& colour);
+CColourValue ToColourValue(const CColour& colour);
 
 /** Convert from a TColour to a DWORD
  	@author
  		Hayden Asplet
 */
-unsigned long  ColourToDWORD(TColour colour);
+unsigned long  ColourToDWORD(CColour colour);
 
 /** Convert from a DWORD to a TColour
 	@author
 		Hayden Asplet
 */
-TColour DWORDToColour(unsigned long  dwColour);
+CColour DWORDToColour(unsigned long  dwColour);
 
 }
 

@@ -34,6 +34,8 @@ public:
 	virtual void VLoad() override;
 	virtual void VUnload() override;
 
+	virtual const CImage VGetImage() const;
+
 	ID3D10ShaderResourceView* GetD3DTexture();
 protected:
 private:

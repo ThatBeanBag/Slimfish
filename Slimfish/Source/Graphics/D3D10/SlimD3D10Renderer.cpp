@@ -249,7 +249,7 @@ namespace Slim {
 
 	shared_ptr<ATexture> CD3D10Renderer::VLoadTexture(const std::string& name)
 	{
-		shared_ptr<CD3D10Texture> pTexture(new CD3D10Texture(m_pD3DDevice, name, ATexture::TEXTURE_TYPE_2D, ATexture::USAGE_STATIC));
+		shared_ptr<CD3D10Texture> pTexture(new CD3D10Texture(m_pD3DDevice, name, ATexture::TEXTURE_TYPE_2D, ATexture::USAGE_READ_ONLY));
 
 		if (pTexture) {
 			pTexture->VLoad();
@@ -276,17 +276,17 @@ namespace Slim {
 		throw std::logic_error("The method or operation is not implemented.");
 	}
 
-	void CD3D10Renderer::VSetAmbientColour(const TColour& colour)
+	void CD3D10Renderer::VSetAmbientColour(const CColour& colour)
 	{
 		throw std::logic_error("The method or operation is not implemented.");
 	}
 
-	void CD3D10Renderer::VSetBackgroundColour(const TColourValue& colour)
+	void CD3D10Renderer::VSetBackgroundColour(const CColourValue& colour)
 	{
 		m_BackgroundColour = D3D10Conversions::GetColour(colour);
 	}
 
-	void CD3D10Renderer::VSetFog(EFogType fogType, const TColourValue& colour /*= TColourValue::s_BLACK*/, float start /*= 0.0f*/, float end /*= 1.0f*/, float exponentialDensity /*= 1.0f*/)
+	void CD3D10Renderer::VSetFog(EFogType fogType, const CColourValue& colour /*= TColourValue::s_BLACK*/, float start /*= 0.0f*/, float end /*= 1.0f*/, float exponentialDensity /*= 1.0f*/)
 	{
 		throw std::logic_error("The method or operation is not implemented.");
 	}
@@ -553,7 +553,7 @@ namespace Slim {
 		m_SamplerDescs[layer].AddressW = D3D10Conversions::GetAddressMode(addressModes.m_w);
 	}
 
-	void CD3D10Renderer::VSetTextureBorderColour(size_t layer, const TColourValue& colour)
+	void CD3D10Renderer::VSetTextureBorderColour(size_t layer, const CColourValue& colour)
 	{
 		m_SamplerDescs[layer].BorderColor[0] = colour.m_r;
 		m_SamplerDescs[layer].BorderColor[1] = colour.m_g;
