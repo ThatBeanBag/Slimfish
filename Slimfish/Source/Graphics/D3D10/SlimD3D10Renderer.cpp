@@ -45,6 +45,7 @@ namespace Slim {
 
 	CD3D10Renderer::~CD3D10Renderer()
 	{
+		// We don't own the bound shaders, just invalidate our reference to them.
 		m_pBoundGeometryShader = nullptr;
 		m_pBoundPixelShader = nullptr;
 		m_pBoundVertexShader = nullptr;
@@ -56,7 +57,7 @@ namespace Slim {
 		SLIM_SAFE_RELEASE(m_pRasterizerState);
 
 		for (size_t i = 0; i < m_SamplerStates.size(); ++i) {
-			SLIM_SAFE_RELEASE(m_SamplerStates[0]);
+			SLIM_SAFE_RELEASE(m_SamplerStates[i]);
 		}
 
 #ifdef _DEBUG
@@ -87,7 +88,7 @@ namespace Slim {
 											D3D10_SDK_VERSION, 
 											&m_pD3DDevice);
 		if (FAILED(hResult)) {
-			throw CRenderingError();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create DirectX 10 device with error:" << GetErrorMessage(hResult);
 			return false;
 		}
 
@@ -129,24 +130,28 @@ namespace Slim {
 
 		if (FAILED(m_pD3DDevice->QueryInterface(__uuidof(IDXGIDevice), reinterpret_cast<void**>(&dxgiDevice)))) {
 			release();
-			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to query device interface" << CEndExcept();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to query device interface with error: " << GetErrorMessage(hResult);
+			return false;
 		}
 
 		if (FAILED(dxgiDevice->GetParent(__uuidof(IDXGIAdapter), reinterpret_cast<void**>(&dxgiAdapter)))) {
 			release();
-			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to get the DXGI adapter" << CEndExcept();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to get the DXGI adapter with error: " << GetErrorMessage(hResult);
+			return false;
 		}
 
 		// Get the factory finally.
 		if (FAILED(dxgiAdapter->GetParent(__uuidof(IDXGIFactory), reinterpret_cast<void**>(&dxgiFactory)))) {
 			release();
-			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to get the DXGI factory" << CEndExcept();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to get the DXGI factory with error: " << GetErrorMessage(hResult);
+			return false;
 		}
 
 		// Create the swap chain.
 		if (FAILED(dxgiFactory->CreateSwapChain(m_pD3DDevice, &m_d3dpp, &m_pSwapChain))) {
 			release();
-			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to create swap chain" << CEndExcept();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create swap chain with error: " << GetErrorMessage(hResult);
+			return false;
 		}
 
 		release();
@@ -172,13 +177,13 @@ namespace Slim {
 
 		hResult = m_pD3DDevice->CreateTexture2D(&depthStencilDesc, nullptr, &m_pDepthStencilBuffer);
 		if (FAILED(hResult)) {
-			throw CRenderingError();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create depth stencil buffer with error: " << GetErrorMessage(hResult);
 			return false;
 		}
 
 		hResult = m_pD3DDevice->CreateDepthStencilView(m_pDepthStencilBuffer, nullptr, &m_pDepthStencilView);
 		if (FAILED(hResult)) {
-			throw CRenderingError();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create depth stencil view with error: "  << GetErrorMessage(hResult);
 			return false;
 		}
 
@@ -247,9 +252,9 @@ namespace Slim {
 		}
 	}
 
-	shared_ptr<ATexture> CD3D10Renderer::VLoadTexture(const std::string& name)
+	shared_ptr<ATexture> CD3D10Renderer::VLoadTexture(const std::string& name, ATexture::EUsage usage)
 	{
-		shared_ptr<CD3D10Texture> pTexture(new CD3D10Texture(m_pD3DDevice, name, ATexture::TEXTURE_TYPE_2D, ATexture::USAGE_READ_ONLY));
+		shared_ptr<CD3D10Texture> pTexture(new CD3D10Texture(m_pD3DDevice, name, ATexture::TEXTURE_TYPE_2D, usage));
 
 		if (pTexture) {
 			pTexture->VLoad();
@@ -501,7 +506,7 @@ namespace Slim {
 			HRESULT hResult = m_pD3DDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, samples, &currentMSAAQuality);
 
 			if (FAILED(hResult)) {
-				throw CRenderingError();
+				SLIM_THROW(EExceptionType::RENDERING) << "Failed to determine multi-sampling levels with error: " << GetErrorMessage(hResult);
 			}
 
 			if (currentMSAAQuality == 0) {
@@ -653,13 +658,13 @@ namespace Slim {
 
 		HRESULT hResult = m_pD3DDevice->CreateTexture2D(&depthStencilDesc, nullptr, &m_pDepthStencilBuffer);
 		if (FAILED(hResult)) {
-			throw CRenderingError();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create depth stencil buffer " << GetErrorMessage(hResult);
 			return;
 		}
 
 		hResult = m_pD3DDevice->CreateDepthStencilView(m_pDepthStencilBuffer, nullptr, &m_pDepthStencilView);
 		if (FAILED(hResult)) {
-			throw CRenderingError();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create depth stencil view " << GetErrorMessage(hResult);
 			return;
 		}
 

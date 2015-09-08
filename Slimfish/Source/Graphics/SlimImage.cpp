@@ -25,15 +25,22 @@
 namespace Slim {
 
 	CImage::CImage(size_t width, size_t height)
-		:m_Pixels(height, std::vector<CColour>(width, CColour::s_BLACK))
+		:m_Width(width),
+		m_Height(height),
+		m_Pixels(height, std::vector<CColour>(width, CColour::s_BLACK))
 	{
 
 	}
 
 	CImage::CImage(const TPixels& pixels)
-		:m_Pixels(pixels)
+		:m_Width(0),
+		m_Height(0),
+		m_Pixels(pixels)
 	{
-
+		if (!pixels.empty()) {
+			m_Height = pixels.size();
+			m_Width = pixels[0].size();
+		}
 	}
 
 	CImage::~CImage()
@@ -51,7 +58,8 @@ namespace Slim {
 	{
 		// Call the const version of this function then cast off the constness to avoid
 		// code duplication.
-		return const_cast<std::vector<CColour>&>(static_cast<const CImage>(*this)[y]);
+		//return const_cast<std::vector<CColour>&>(static_cast<const CImage>(*this)[y]);
+		return m_Pixels[y];
 	}
 
 	const CColour& CImage::GetPixel(size_t x, size_t y)

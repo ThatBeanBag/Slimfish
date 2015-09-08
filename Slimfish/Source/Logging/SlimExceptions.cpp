@@ -82,7 +82,8 @@ namespace Slim {
 		:m_Type(type),
 		m_LineNumber(lineno),
 		m_File(file),
-		m_FunctionName(function)
+		m_FunctionName(function),
+		m_bThrowOnDestruction(true)
 	{
 
 	}
@@ -92,19 +93,31 @@ namespace Slim {
 		m_LineNumber(other.m_LineNumber),
 		m_File(std::move(other.m_File)),
 		m_FunctionName(std::move(other.m_FunctionName)),
-		m_DescriptionStream(std::move(other.m_DescriptionStream))
+		m_DescriptionStream(std::move(other.m_DescriptionStream)),
+		m_bThrowOnDestruction(true)
 	{
-
+		// Don't let the other stream throw.
+		other.m_bThrowOnDestruction = false;
 	}
 
 	CExceptionStream::~CExceptionStream()
 	{
-		//throw CException(m_Type, m_LineNumber, m_File, m_FunctionName, m_DescriptionStream.str());
+		if (m_bThrowOnDestruction) {
+			throw CException(m_Type, m_LineNumber, m_File, m_FunctionName, m_DescriptionStream.str());
+		}
 	}
 
-	CExceptionStream& CExceptionStream::operator<<(const CEndExcept& val)
+	CExceptionStream& CExceptionStream::operator<<(const CEndThrow& val)
 	{
+		// Already thrown don't do it twice.
+		m_bThrowOnDestruction = false;
+
 		throw CException(m_Type, m_LineNumber, m_File, m_FunctionName, m_DescriptionStream.str());
+	}
+
+	CExceptionStream CreateExceptionStream(EExceptionType type, unsigned int lineno, const std::string& file, const std::string& function)
+	{
+		return std::move(CExceptionStream(type, lineno, file, function));
 	}
 
 }

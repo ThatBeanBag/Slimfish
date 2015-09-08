@@ -31,19 +31,19 @@ namespace Slim {
 		to return codes in that they help to identify the type of error that occurred.
 		However the more verbose details are left up to the exception description.
 	*/
-	enum EExceptionType {
+	enum class EExceptionType {
 		// A general rendering error, such as the device failing to create.
-		EXCEPTION_RENDERING,
+		RENDERING,
 		// An error typically related to the failure to open a file, because it does not exist.
-		EXCEPTION_MISSING_FILE,
+		MISSING_FILE,
 		// An error where an entry in a container is not found.
-		EXCEPTION_ENTRY_NOT_FOUND,
+		ENTRY_NOT_FOUND,
 		// Error regarding a duplicate entry found in a container of unique entry.
-		EXCEPTION_DUPLICATE_ENTRY,
+		DUPLICATE_ENTRY,
 		// Standard out of range error, where an indexing exceeds the range of the container.
-		EXCEPTION_OUT_OF_RANGE,
+		OUT_OF_RANGE,
 		// An unknown error, it is ill-advised to use this at all.
-		EXCEPTION_UNKNOWN
+		UNKNOWN
 	};
 
 	/** Generic exception class for broad and common errors.
@@ -125,7 +125,14 @@ namespace Slim {
 	private:
 	};
 
-	class CEndExcept {};
+	/** Empty class to signal the end of an exception throw message stream.
+	@remarks
+		Adding this to a stream output of an exception stream will manually cause the application
+		to throw a CException. It is not necessary to do this when using SLIM_THROW() as that macro
+		automatically ensures the stream will throw as it's destructor will be called immediately
+		after the line executes.
+	*/
+	class CEndThrow {};
 
 	/** 
 	@remarks
@@ -170,7 +177,7 @@ namespace Slim {
 				operator <<.
 		 	@author Hayden Asplet
 		*/
-		CExceptionStream& operator<<(const CEndExcept& val);
+		CExceptionStream& operator<<(const CEndThrow& val);
 	protected:
 	private:
 		
@@ -183,6 +190,7 @@ namespace Slim {
 		std::string m_File;
 		std::string m_FunctionName;
 		std::ostringstream m_DescriptionStream;
+		bool m_bThrowOnDestruction;
 	};
 
 	template<typename T>
@@ -192,9 +200,21 @@ namespace Slim {
 		return *this;
 	}
 
+	/** Create an exception stream to stream exception messages to.
+		@remarks
+			This function is used entirely so that an exception stream can be created and used in a single 
+			line. This function is to be used only by SLIM_THROW to ensure that the exception stream is
+			created and destroyed automatically using an if statement to create a block without the need 
+			for a closing bracket.
+		@note
+			Do NOT call this, use SLIM_THROW instead.
+	 	@author Hayden Asplet
+	*/
+	CExceptionStream CreateExceptionStream(EExceptionType type, unsigned int lineno, const std::string& file, const std::string& function);
+
 #define SLIM_THROW(type) \
-	CExceptionStream stream(type, __LINE__, __FILE__, __FUNCTION__); \
-	stream
+	if(true) \
+		CreateExceptionStream(type, __LINE__, __FILE__, __FUNCTION__)
 }
 
 

@@ -41,13 +41,6 @@ namespace Slim {
 		m_messageCache = std::move(other.m_messageCache);
 	}
 
-	/*CLogMessageStream::CLogMessageStream(CLogMessageStream& other)
-		:m_pOutputLog(other.m_pOutputLog),
-		m_LoggingLevel(other.m_LoggingLevel)
-	{
-		m_messageCache.str(other.m_messageCache.str());
-	}*/
-
 	CLogMessageStream::~CLogMessageStream()
 	{
 		if (m_messageCache.tellp() > 0) {

@@ -166,8 +166,6 @@ bool CTestProjLogic::Initialise()
 	m_pVertexParamsPerFrame = m_pVertexShader->CreateShaderParams("cbPerFrame");
 	m_pPixelParamsPerFrame = m_pPixelShader->CreateShaderParams("cbPerFrame");
 
-	CImage image = m_pTextures[0]->VGetImage();
-
 	CVector3 eyePosition(0.0f, 2.0f, -10.0f);
 	CVector3 lightDirection(0.0f, -1.0f, -1.0f);
 	Normalise(lightDirection);

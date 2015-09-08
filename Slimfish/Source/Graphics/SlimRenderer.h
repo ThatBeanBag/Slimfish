@@ -35,9 +35,6 @@ namespace Slim {
 	class CVertexDeclaration;
 	class CColour;
 
-	class CRenderingError {
-	};
-
 	/** Abstract class encapsulating a rendering system.
 	@remarks
 		
@@ -113,7 +110,7 @@ namespace Slim {
 		/** Loads a texture from file.
 		 	@author Hayden Asplet
 		*/
-		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ATexture::EUsage usage) = 0;
+		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ATexture::EUsage usage = ATexture::USAGE_STATIC) = 0;
 
 		/** Perform a render operation, rendering a set of vertices.
 		 	@author Hayden Asplet

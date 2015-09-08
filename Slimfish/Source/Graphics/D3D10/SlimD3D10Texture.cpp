@@ -64,7 +64,7 @@ namespace Slim {
 		D3DX10_IMAGE_INFO imageInfo;
 		HRESULT hResult = D3DX10GetImageInfoFromFileA(GetName().c_str(), NULL, &imageInfo, NULL);
 		if (FAILED(hResult)) {
-			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to create texture from file " << GetName() << CEndExcept();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create texture from file " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 
 		D3DX10_IMAGE_LOAD_INFO loadInfo;
@@ -92,7 +92,7 @@ namespace Slim {
 		hResult = D3DX10CreateTextureFromFileA(m_pD3DDevice, GetName().c_str(), &loadInfo, NULL, &m_pTexture, NULL);
 
 		if (FAILED(hResult)) {
-			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to create texture from file " << GetName() << CEndExcept();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create texture from file " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 
 		D3D10_RESOURCE_DIMENSION resourceType;
@@ -104,17 +104,50 @@ namespace Slim {
 			}
 			case D3D10_RESOURCE_DIMENSION_TEXTURE1D: {
 				m_pTexture1D = static_cast<ID3D10Texture1D*>(m_pTexture);
-				CreateShaderResourceView1D();
+
+				// Get the texture description.
+				D3D10_TEXTURE1D_DESC desc;
+				m_pTexture1D->GetDesc(&desc);
+
+				SetSourceWidth(desc.Width);
+
+				if (GetUsage() & ATexture::USAGE_STATIC) {
+					CreateShaderResourceView1D(desc);
+				}
+
 				break;
 			}
 			case D3D10_RESOURCE_DIMENSION_TEXTURE2D: {
 				m_pTexture2D = static_cast<ID3D10Texture2D*>(m_pTexture);
-				CreateShaderResourceView2D();
+
+				// Get the texture description.
+				D3D10_TEXTURE2D_DESC desc;
+				m_pTexture2D->GetDesc(&desc);
+
+				SetSourceWidth(desc.Width);
+				SetSourceHeight(desc.Height);
+
+				if (GetUsage() & ATexture::USAGE_STATIC) {
+					CreateShaderResourceView2D(desc);
+				}
+
 				break;
 			}
 			case D3D10_RESOURCE_DIMENSION_TEXTURE3D: {
 				m_pTexture3D = static_cast<ID3D10Texture3D*>(m_pTexture);
-				CreateShaderResourceView3D();
+
+				// Get the texture description.
+				D3D10_TEXTURE3D_DESC desc;
+				m_pTexture3D->GetDesc(&desc);
+
+				SetSourceWidth(desc.Width);
+				SetSourceHeight(desc.Height);
+				SetSourceDepth(desc.Depth);
+
+				if (GetUsage() & ATexture::USAGE_STATIC) {
+					CreateShaderResourceView3D(desc);
+				}
+
 				break;
 			}
 			default: {
@@ -147,25 +180,18 @@ namespace Slim {
 		HRESULT hResult = m_pTexture2D->Map(0, D3D10_MAP_READ, 0, &mappedTexture);	
 		if (FAILED(hResult)) {
 		// Failed mapping.
-			SLIM_THROW(EXCEPTION_RENDERING) << "Failed to read DirectX 10 2D texture resource " << GetName() << CEndExcept();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to read DirectX 10 2D texture resource for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 
-		// Read the texture and store into the map.
-		float* pTexels = reinterpret_cast<float*>(mappedTexture.pData);
+		// Read the texture and store into the image.
+		CColour* pTexels = reinterpret_cast<CColour*>(mappedTexture.pData);
 
 		for (size_t y = 0; y < height; ++y) {
 			size_t yStartOffset = y * mappedTexture.RowPitch / 4;
 
 			for (size_t x = 0; x < width; ++x) {
-				size_t xStartOffset = x * 4;
-
-				float r = pTexels[yStartOffset + xStartOffset + 0];	// Red.
-				float g = pTexels[yStartOffset + xStartOffset + 1];	// Green.
-				float b = pTexels[yStartOffset + xStartOffset + 2];	// Blue.
-				float a = pTexels[yStartOffset + xStartOffset + 3];	// Alpha.
-
-				// Write the texel to the image.
-				image[y][x] = ToColour(CColourValue(r, g, b, a));
+				CColour colour = pTexels[yStartOffset + x];
+				image[y][x] = colour;
 			}
 		}
 
@@ -192,20 +218,22 @@ namespace Slim {
 		desc.CPUAccessFlags = D3D10Conversions::GetCPUAccessFlags(GetUsage());
 		desc.MiscFlags = D3D10_RESOURCE_MISC_GENERATE_MIPS;
 
+		SetSourceWidth(desc.Width);
+
 		HRESULT hResult = m_pD3DDevice->CreateTexture1D(&desc, NULL, &m_pTexture1D);
 		if (FAILED(hResult)) {
 			VUnload();
-			// TODO: throw exception.
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create 1D render target for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 
 		// Grab the base resource.
 		hResult = m_pTexture1D->QueryInterface(__uuidof(ID3D10Resource), reinterpret_cast<void**>(&m_pTexture));
 		if (FAILED(hResult)) {
 			VUnload();
-			// TODO: throw exception.
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to grab base resource for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 
-		CreateShaderResourceView1D();
+		CreateShaderResourceView1D(desc);
 	}
 
 	void CD3D10Texture::CreateRenderTarget2D()
@@ -224,6 +252,9 @@ namespace Slim {
 		desc.CPUAccessFlags = D3D10Conversions::GetCPUAccessFlags(GetUsage());
 		desc.MiscFlags = D3D10_RESOURCE_MISC_GENERATE_MIPS;
 
+		SetSourceWidth(desc.Width);
+		SetSourceHeight(desc.Height);
+
 		// Set multi-sample levels for the render target.
 		desc.SampleDesc.Count = GetMultiSampleCount();
 		desc.SampleDesc.Quality = GetMultiSampleQuality();
@@ -236,17 +267,17 @@ namespace Slim {
 		HRESULT hResult = m_pD3DDevice->CreateTexture2D(&desc, NULL, &m_pTexture2D);
 		if (FAILED(hResult)) {
 			VUnload();
-			// TODO: throw exception.
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create 2D render target for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 
 		// Grab the base resource.
-		hResult = m_pTexture1D->QueryInterface(__uuidof(ID3D10Resource), reinterpret_cast<void**>(&m_pTexture));
+		hResult = m_pTexture2D->QueryInterface(__uuidof(ID3D10Resource), reinterpret_cast<void**>(&m_pTexture));
 		if (FAILED(hResult)) {
 			VUnload();
-			// TODO: throw exception.
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to grab base resource for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 
-		CreateShaderResourceView2D();
+		CreateShaderResourceView2D(desc);
 	}
 
 	void CD3D10Texture::CreateRenderTarget3D()
@@ -263,34 +294,32 @@ namespace Slim {
 		desc.CPUAccessFlags = D3D10Conversions::GetCPUAccessFlags(GetUsage());
 		desc.MiscFlags = D3D10_RESOURCE_MISC_GENERATE_MIPS;
 
+		SetSourceWidth(desc.Width);
+		SetSourceHeight(desc.Height);
+		SetSourceDepth(desc.Depth);
+
 		HRESULT hResult = m_pD3DDevice->CreateTexture3D(&desc, NULL, &m_pTexture3D);
 		if (FAILED(hResult)) {
 			VUnload();
-			// TODO: throw exception.
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create 3D  render target for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 
 		// Grab the base resource.
-		hResult = m_pTexture1D->QueryInterface(__uuidof(ID3D10Resource), reinterpret_cast<void**>(&m_pTexture));
+		hResult = m_pTexture3D->QueryInterface(__uuidof(ID3D10Resource), reinterpret_cast<void**>(&m_pTexture));
 		if (FAILED(hResult)) {
 			VUnload();
-			// TODO: throw exception.
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to grab base resource for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 
-		CreateShaderResourceView3D();
+		CreateShaderResourceView3D(desc);
 	}
 
-	void CD3D10Texture::CreateShaderResourceView1D()
+	void CD3D10Texture::CreateShaderResourceView1D(D3D10_TEXTURE1D_DESC desc)
 	{
 		assert(m_pTexture1D); // Must have a 1D texture to create a shader resource view for.
 
 		D3D10_SHADER_RESOURCE_VIEW_DESC srvDesc;
 		ZeroMemory(&srvDesc, sizeof(D3D10_SHADER_RESOURCE_VIEW_DESC));
-
-		// Get the texture description.
-		D3D10_TEXTURE1D_DESC desc;
-		m_pTexture1D->GetDesc(&desc);
-
-		SetSourceWidth(desc.Width);
 
 		srvDesc.Format = desc.Format;
 		srvDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE1D;
@@ -299,23 +328,16 @@ namespace Slim {
 
 		HRESULT hResult = m_pD3DDevice->CreateShaderResourceView(m_pTexture1D, &srvDesc, &m_pShaderResourceView);
 		if (FAILED(hResult)) {
-			// TODO: throw error.
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create shader resource view for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 	}
 
-	void CD3D10Texture::CreateShaderResourceView2D()
+	void CD3D10Texture::CreateShaderResourceView2D(D3D10_TEXTURE2D_DESC desc)
 	{
 		assert(m_pTexture2D); // Must have a 2D texture to create a shader resource view for.
 
 		D3D10_SHADER_RESOURCE_VIEW_DESC srvDesc;
 		ZeroMemory(&srvDesc, sizeof(D3D10_SHADER_RESOURCE_VIEW_DESC));
-
-		// Get the texture description.
-		D3D10_TEXTURE2D_DESC desc;
-		m_pTexture2D->GetDesc(&desc);
-
-		SetSourceWidth(desc.Width);
-		SetSourceHeight(desc.Height);
 
 		srvDesc.Format = desc.Format;
 		srvDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE2D;
@@ -333,24 +355,16 @@ namespace Slim {
 
 		HRESULT hResult = m_pD3DDevice->CreateShaderResourceView(m_pTexture2D, &srvDesc, &m_pShaderResourceView);
 		if (FAILED(hResult)) {
-			// TODO: throw error.
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create shader resource view for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 	}
 
-	void CD3D10Texture::CreateShaderResourceView3D()
+	void CD3D10Texture::CreateShaderResourceView3D(D3D10_TEXTURE3D_DESC desc)
 	{
 		assert(m_pTexture3D); // Must have a 3D texture to create a shader resource view for.
 
 		D3D10_SHADER_RESOURCE_VIEW_DESC srvDesc;
 		ZeroMemory(&srvDesc, sizeof(D3D10_SHADER_RESOURCE_VIEW_DESC));
-
-		// Get the texture description.
-		D3D10_TEXTURE3D_DESC desc;
-		m_pTexture3D->GetDesc(&desc);
-
-		SetSourceWidth(desc.Width);
-		SetSourceHeight(desc.Height);
-		SetSourceDepth(desc.Depth);
 
 		srvDesc.Format = desc.Format;
 		srvDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE3D;
@@ -359,7 +373,7 @@ namespace Slim {
 
 		HRESULT hResult = m_pD3DDevice->CreateShaderResourceView(m_pTexture3D, &srvDesc, &m_pShaderResourceView);
 		if (FAILED(hResult)) {
-			// TODO: throw error.
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create shader resource view for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 	}
 

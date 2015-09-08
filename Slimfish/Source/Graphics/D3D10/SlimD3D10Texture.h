@@ -43,9 +43,9 @@ private:
 	void CreateRenderTarget2D();
 	void CreateRenderTarget3D();
 
-	void CreateShaderResourceView1D();
-	void CreateShaderResourceView2D();
-	void CreateShaderResourceView3D();
+	void CreateShaderResourceView1D(D3D10_TEXTURE1D_DESC desc);
+	void CreateShaderResourceView2D(D3D10_TEXTURE2D_DESC desc);
+	void CreateShaderResourceView3D(D3D10_TEXTURE3D_DESC desc);
 
 	// Member Variables
 public:

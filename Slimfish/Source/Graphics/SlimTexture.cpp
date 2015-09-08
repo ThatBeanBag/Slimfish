@@ -130,7 +130,7 @@ namespace Slim {
 
 	size_t ATexture::GetSourceWidth() const
 	{
-		return m_Width;
+		return m_SourceWidth;
 	}
 
 	void ATexture::SetSourceHeight(size_t srcHeight)
@@ -140,7 +140,7 @@ namespace Slim {
 
 	size_t ATexture::GetSourceHeight() const
 	{
-		return m_Height;
+		return m_SourceHeight;
 	}
 
 	void ATexture::SetSourceDepth(size_t srcDepth)
@@ -150,7 +150,7 @@ namespace Slim {
 
 	size_t ATexture::GetSourceDepth() const
 	{
-		return m_Depth;
+		return m_SourceDepth;
 	}
 
 }
