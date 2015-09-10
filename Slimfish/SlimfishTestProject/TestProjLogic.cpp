@@ -127,7 +127,6 @@ bool CTestProjLogic::Initialise()
 	m_VertexDeclaration.AddElement("TEXCOORD", CInputElement::FORMAT_FLOAT2);
 	m_VertexDeclaration.SetPrimitiveType(CVertexDeclaration::PRIMITIVE_TYPE_TRIANGLELIST);
 
-	// Load the shader programs.
 	m_pTexture = g_pApp->GetRenderer()->VLoadTexture("WoodCrate02.dds");
 
 	for (size_t i = 0; i < m_pTextures.size(); ++i) {
@@ -147,6 +146,7 @@ bool CTestProjLogic::Initialise()
 
 	m_specularLayer.SetTexture(g_pApp->GetRenderer()->VLoadTexture("defaultspec.dds"));
 
+	// Load the shader programs.
 	m_pVertexShader = g_pApp->GetRenderer()->VCreateShaderProgram("VertexShader.hlsl", AShaderProgram::SHADER_TYPE_VERTEX);
 	m_pPixelShader = g_pApp->GetRenderer()->VCreateShaderProgram("PixelShader.hlsl", AShaderProgram::SHADER_TYPE_PIXEL);
 

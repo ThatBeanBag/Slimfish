@@ -158,7 +158,7 @@ namespace Slim {
 
 	void CD3D10Texture::VUnload()
 	{
-		SLIM_SAFE_RELEASE(m_pTexture);
+		//SLIM_SAFE_RELEASE(m_pTexture);
 		SLIM_SAFE_RELEASE(m_pTexture1D);
 		SLIM_SAFE_RELEASE(m_pTexture2D);
 		SLIM_SAFE_RELEASE(m_pTexture3D);  
