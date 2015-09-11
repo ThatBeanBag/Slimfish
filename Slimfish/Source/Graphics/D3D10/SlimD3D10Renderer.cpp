@@ -228,12 +228,12 @@ namespace Slim {
 		m_pSwapChain->Present(0, 0);
 	}
 
-	shared_ptr<AVertexGpuBuffer> CD3D10Renderer::VCreateVertexBuffer(size_t numVertices, size_t stride, void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory)
+	shared_ptr<AVertexGpuBuffer> CD3D10Renderer::VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory)
 	{
 		return shared_ptr<AVertexGpuBuffer>(new CD3D10VertexGpuBuffer(m_pD3DDevice, numVertices, stride, pSource, usage, isInSystemMemory));
 	}
 
-	shared_ptr<AIndexGpuBuffer> CD3D10Renderer::VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory)
+	shared_ptr<AIndexGpuBuffer> CD3D10Renderer::VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory)
 	{
 		return shared_ptr<AIndexGpuBuffer>(new CD3D10IndexGpuBuffer(m_pD3DDevice, numIndices, indexType, pSource, usage, isInSystemMemory));
 	}

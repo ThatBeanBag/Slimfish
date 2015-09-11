@@ -51,7 +51,7 @@ namespace Slim {
 				memory.
 		*/
 		CD3D10GpuBuffer(ID3D10Device* pD3DDevice, 
-						EBufferType bufferType, size_t bufferSize, void* pSource,
+						EBufferType bufferType, size_t bufferSize, const void* pSource,
 						AGpuBuffer::EUsage usage, bool isInSystemMemory);
 		/** Destructor
 		 	@author Hayden Asplet

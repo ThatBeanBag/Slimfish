@@ -31,6 +31,7 @@ namespace Slim {
 	class CVector3;
 	class ATexture;
 	class AVertexGpuBuffer;
+	class AIndexGpuBuffer;
 	class AShaderProgram;
 	class CVertexDeclaration;
 	class CColour;
@@ -78,6 +79,37 @@ namespace Slim {
 		void Resize(size_t width, size_t height);
 
 		/** Create a vertex buffer on the GPU.
+		@author Hayden Asplet
+		@param usage Indicates how the buffer is going to be used for optimization purposes.
+		@param isInSystemMemory True if the buffer should be stored in system memory for reading/writing to.
+		@return
+			A pointer to the buffer for reading/writing depending on intended
+			usage of the buffer.
+		*/
+		template<typename TVertexType>
+		shared_ptr<AVertexGpuBuffer> CreateVertexBuffer(const std::vector<TVertexType>& verts, AGpuBuffer::EUsage usage = AGpuBuffer::USAGE_STATIC, bool isInSystemMemory = false);
+
+		/** Create a index buffer on the GPU.
+		@author Hayden Asplet
+		@param usage Indicates how the buffer is going to be used for optimization purposes.
+		@param isInSystemMemory True if the buffer should be stored in system memory for reading/writing to.
+		@return
+			A pointer to the buffer for reading/writing depending on intended
+			usage of the buffer.
+		*/
+		shared_ptr<AIndexGpuBuffer> CreateIndexBuffer(const std::vector<int>& indices, AGpuBuffer::EUsage usage = AGpuBuffer::USAGE_STATIC, bool isInSystemMemory = false);
+
+		/** Create a index buffer on the GPU.
+		@author Hayden Asplet
+		@param usage Indicates how the buffer is going to be used for optimization purposes.
+		@param isInSystemMemory True if the buffer should be stored in system memory for reading/writing to.
+		@return
+			A pointer to the buffer for reading/writing depending on intended
+			usage of the buffer.
+		*/
+		shared_ptr<AIndexGpuBuffer> CreateIndexBuffer(const std::vector<short>& indices, AGpuBuffer::EUsage usage = AGpuBuffer::USAGE_STATIC, bool isInSystemMemory = false);
+
+		/** Create a vertex buffer on the GPU.
 		 	@author Hayden Asplet
 		 	@param numVertices The number of vertices to stored in the buffer.
 		 	@param stride Stride or size of a single vertex.
@@ -86,7 +118,7 @@ namespace Slim {
 				A pointer to the buffer for reading/writing depending on intended 
 				usage of the buffer.
 		*/
-		virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) = 0;
+		virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) = 0;
 
 		/** Create a index buffer on the GPU.
 			@author Hayden Asplet
@@ -97,7 +129,7 @@ namespace Slim {
 				A pointer to the buffer for reading/writing depending on intended
 				usage of the buffer.
 		*/
-		virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) = 0;
+		virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) = 0;
 
 		/** Create a shader from file.
 		 	@author Hayden Asplet
@@ -259,5 +291,10 @@ namespace Slim {
 		size_t m_disableTextureLayerFrom;	// Texture layer from this to g_MAX_TEXTURE_LAYERS are currently disabled.
 	};
 
+	template<typename TVertexType>
+	shared_ptr<AVertexGpuBuffer> ARenderer::CreateVertexBuffer(const std::vector<TVertexType>& verts, AGpuBuffer::EUsage usage, bool isInSystemMemory)
+	{
+		return VCreateVertexBuffer(verts.size(), sizeof(TVertexType), reinterpret_cast<const void*>(&verts[0]), usage, isInSystemMemory);
+	}
 }
 #endif	// __SLIMRENDERER_H__

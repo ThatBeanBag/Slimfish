@@ -26,7 +26,7 @@
 namespace Slim {
 
 	CD3D10VertexGpuBuffer::CD3D10VertexGpuBuffer(ID3D10Device* pD3DDevice, 
-												 size_t numVertices, size_t stride, void* pSource, 
+												 size_t numVertices, size_t stride, const void* pSource, 
 												 AGpuBuffer::EUsage usage, bool isInSystemMemory)
 		:AVertexGpuBuffer(numVertices, stride, usage, isInSystemMemory)
 	{

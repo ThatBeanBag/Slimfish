@@ -105,7 +105,7 @@ bool CTestProjLogic::Initialise()
 		20, 22, 23,
 	};
 
-	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue::s_GREEN);
+	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue(0.52f, 0.8f , 0.92f));
 
 	m_pVertexBuffer = g_pApp->GetRenderer()->VCreateVertexBuffer(
 		24, 
@@ -145,6 +145,8 @@ bool CTestProjLogic::Initialise()
 	}
 
 	m_specularLayer.SetTexture(g_pApp->GetRenderer()->VLoadTexture("defaultspec.dds"));
+	m_TerrainTextureLayer.SetTexture(g_pApp->GetRenderer()->VLoadTexture("dirttexture.jpg"));
+	m_TerrainTextureLayer.SetTextureAddressModes(TADDRESS_WRAP);
 
 	// Load the shader programs.
 	m_pVertexShader = g_pApp->GetRenderer()->VCreateShaderProgram("VertexShader.hlsl", AShaderProgram::SHADER_TYPE_VERTEX);
@@ -167,7 +169,7 @@ bool CTestProjLogic::Initialise()
 	m_pPixelParamsPerFrame = m_pPixelShader->CreateShaderParams("cbPerFrame");
 
 	CVector3 eyePosition(0.0f, 2.0f, -10.0f);
-	CVector3 lightDirection(0.0f, -1.0f, -1.0f);
+	CVector3 lightDirection(0.0f, -1.0f, 1.0f);
 	Normalise(lightDirection);
 
 	CLight light;
@@ -184,6 +186,8 @@ bool CTestProjLogic::Initialise()
 	m_pPixelParamsPerFrame->SetConstant("gAmbientLight", CColourValue(0.2f, 0.2f, 0.2f));
 
 	m_pPixelShader->VUpdateProgramParams("cbPerFrame", m_pPixelParamsPerFrame);
+
+	LoadTerrain();
 
 	return true;
 }
@@ -234,19 +238,148 @@ void CTestProjLogic::Render()
 
 	g_pApp->GetRenderer()->VSetShaderProgram(m_pVertexShader);
 	g_pApp->GetRenderer()->VSetShaderProgram(m_pPixelShader);
+	m_VertexDeclaration.SetPrimitiveType(CVertexDeclaration::PRIMITIVE_TYPE_TRIANGLELIST);
 	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, m_pVertexBuffer, m_pIndexBuffer);
 
-	worldMatrix = CMatrix4x4::BuildTranslation(-2.0f, 0.0f, 0.0f);
-	texMatrix = CMatrix4x4::BuildTranslation(m_TexAnim, 0.0f, 0.0f);
+	worldMatrix = CMatrix4x4::BuildTranslation(0.0f, -1.0f, 0.0f) * CMatrix4x4::BuildScale(15.0f, 2.0f, 15.0f);
+	texMatrix = CMatrix4x4::BuildScale(1.0f, 1.0f, 1.0f);
 	//wvp = projectionMatrix * viewMatrix * worldMatrix;
 
-	textureLayer.SetTextureAddressModes(TADDRESS_MIRROR);
+	textureLayer.SetTextureAddressModes(TADDRESS_WRAP);
 	textureLayer.SetTextureFilter(TFILTER_ANISOTROPIC, TFILTER_ANISOTROPIC, TFILTER_ANISOTROPIC);
-	g_pApp->GetRenderer()->SetTextureLayer(0, textureLayer);
+	g_pApp->GetRenderer()->SetTextureLayer(0, m_TerrainTextureLayer);
 
 	m_pVertexParamsPerObject->SetConstant("gTexMatrix", texMatrix);
 	m_pVertexParamsPerObject->SetConstant("gWorldMatrix", worldMatrix);
 	m_pVertexShader->VUpdateProgramParams("cbPerObject", m_pVertexParamsPerObject);
-	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, m_pVertexBuffer, m_pIndexBuffer);
+	m_VertexDeclaration.SetPrimitiveType(CVertexDeclaration::PRIMITIVE_TYPE_TRIANGLESTRIP);
+	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, m_pTerrainVertices, m_pTerrainIndices);
 
+}
+
+void CTestProjLogic::LoadTerrain()
+{
+	shared_ptr<ATexture> pHeightMap = g_pApp->GetRenderer()->VLoadTexture("terrain.png", ATexture::USAGE_READ_ONLY);
+
+	if (pHeightMap) {
+		CImage image = pHeightMap->VGetImage();
+
+
+		int numPixels = image.GetSize();
+		std::vector<TVertex> vertices(numPixels);
+
+		for (int z = 0; z < image.GetHeight(); ++z) {
+			for (int x = 0; x < image.GetWidth(); ++x) {
+				CColour colour = image[z][x];
+				TVertex vert;
+
+				vert.m_Position.SetX(static_cast<float>(x) / static_cast<float>(image.GetWidth()) - 0.5f);
+				vert.m_Position.SetY(static_cast<float>(colour.m_r) / 255.0f - 0.5f);
+				vert.m_Position.SetZ(static_cast<float>(z) / static_cast<float>(image.GetHeight()) - 0.5f);
+				vert.m_U = (static_cast<float>(x) / static_cast<float>(image.GetWidth() - 1));
+				vert.m_V = (static_cast<float>(z) / static_cast<float>(image.GetWidth() - 1));
+
+				vertices[x + z * image.GetWidth()] = vert;
+			}
+		}
+
+		for (int z = 0; z < image.GetHeight(); ++z) {
+			for (int x = 0; x < image.GetWidth(); ++x) {
+				TVertex currentVert = vertices[x + z * image.GetWidth()];
+				CVector3 averagedNormal(0, 0, 0);
+				CVector3 lastLine(0, 0, 0);
+
+				// Start at the top right neighbour.
+				int neighbourX = x + 1;
+				int neighbourZ = z - 1;
+
+				auto increment = [&](int _i) {
+					// Increment to next neighbour, so that we search 
+					// neighbour vertices int counter-clockwise order.
+					if (_i < 2) {
+						--neighbourX;
+					}
+					else if (_i < 4) {
+						++neighbourZ;
+					}
+					else if (_i < 6) {
+						++neighbourX;
+					}
+					else {
+						--neighbourZ;
+					}
+				};
+
+				for (int i = 0; i < 8; ++i) {
+					if (neighbourX < 0 || neighbourZ < 0 ||
+						neighbourX >= image.GetWidth() || neighbourZ >= image.GetHeight()) {
+						// Is this neighbour outside the image?
+						// Don't evaluate it.
+						increment(i);
+
+						continue;
+					}
+
+					TVertex neighbourVert = vertices[neighbourX + neighbourZ * image.GetWidth()];
+					CVector3 currentNormal(0, 0, 0);
+					CVector3 currentLine = currentVert.m_Position - neighbourVert.m_Position;
+
+					currentNormal = CrossProduct(lastLine, currentLine);
+					averagedNormal += currentNormal;
+					lastLine = currentLine;
+
+					increment(i);
+				}
+
+				currentVert.m_Normal = Normalise(averagedNormal);
+				vertices[x + z * image.GetWidth()] = currentVert;
+			}
+		}
+
+		m_pTerrainVertices = g_pApp->GetRenderer()->CreateVertexBuffer(vertices);
+
+		int numIndices = ((image.GetWidth() * 2) * (image.GetHeight() - 1) + (image.GetHeight() - 2));
+
+		// Generate indices
+		std::vector<int> indices(numIndices);
+		int index = 0;
+
+		for (int z = 0; z < image.GetHeight() - 1; ++z) {
+			// Even rows move left to right, odd rows move right to left.
+			if (z % 2 == 0) {
+				// Is this an even row?
+				for (int x = 0; x < image.GetWidth(); ++x) {
+					indices[index] = x + z * image.GetWidth();
+					++index;
+					indices[index] = x + z * image.GetWidth() + image.GetWidth();	// Next row.
+					++index;
+				}
+
+				// Insert degenerate vertex, if this isn't the last row.
+				if (z != image.GetHeight() - 2) {
+					// Is this the last row?
+					indices[index] = image.GetWidth() - 1 + (z * image.GetWidth());
+					++index;
+				}
+			}
+			else {
+				// This is an odd row.
+				for (int x = image.GetWidth() - 1; x >= 0; --x) {
+					indices[index] = x + z * image.GetWidth();
+					++index;
+					indices[index] = x + z * image.GetWidth() + image.GetWidth();	// Next row.
+					++index;
+				}
+
+				// Insert degenerate vertex, if this isn't the last row.
+				if (z != image.GetHeight() - 2) {
+					// Is this the last row?
+					indices[index] = z * image.GetWidth();
+					++index;
+				}
+			}
+		}
+
+		m_pTerrainIndices = g_pApp->GetRenderer()->CreateIndexBuffer(indices);
+	}
 }

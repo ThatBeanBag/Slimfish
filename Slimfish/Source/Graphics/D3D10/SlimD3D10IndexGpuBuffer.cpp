@@ -29,7 +29,7 @@ namespace Slim {
 		ID3D10Device* pD3DDevice, 
 		size_t numIndices, 
 		EIndexType type, 
-		void* pSource,
+		const void* pSource,
 		AGpuBuffer::EUsage usage, 
 		bool isInSystemMemory)
 		:AIndexGpuBuffer(numIndices, type, usage, isInSystemMemory)

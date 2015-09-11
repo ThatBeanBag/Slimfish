@@ -112,6 +112,7 @@
     <ClCompile Include="..\Graphics\SlimLight.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\GameBase\SlimInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -228,6 +229,9 @@
     </ClInclude>
     <ClInclude Include="..\Graphics\SlimImage.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\GameBase\SlimInput.h">
+      <Filter>GameBase</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

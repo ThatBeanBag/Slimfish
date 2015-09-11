@@ -51,7 +51,7 @@ public:
 		and not in video memory.
 	*/
 	CD3D10IndexGpuBuffer(ID3D10Device* pD3DDevice,
-						 size_t numIndices, EIndexType type, void* pSource,
+						 size_t numIndices, EIndexType type, const void* pSource,
 						 AGpuBuffer::EUsage usage, bool isInSystemMemory);
 	/** Destructor
 		@author Hayden Asplet

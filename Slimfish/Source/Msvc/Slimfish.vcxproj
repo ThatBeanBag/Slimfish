@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="..\GameBase\SlimGameLogic.cpp" />
     <ClCompile Include="..\GameBase\SlimGameApp.cpp" />
+    <ClCompile Include="..\GameBase\SlimInput.cpp" />
     <ClCompile Include="..\GameBase\WinMain.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Conversions.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.cpp" />
@@ -48,6 +49,7 @@
   <ItemGroup>
     <ClInclude Include="..\GameBase\SlimGameLogic.h" />
     <ClInclude Include="..\GameBase\SlimGameApp.h" />
+    <ClInclude Include="..\GameBase\SlimInput.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Conversions.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Forward.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.h" />

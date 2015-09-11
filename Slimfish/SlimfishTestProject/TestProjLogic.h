@@ -36,12 +36,18 @@ public:
 	virtual bool Initialise();
 	virtual void Update(float deltaTime);
 	virtual void Render();
+
+	void LoadTerrain();
 protected:
 private:
 	// Member Variables
 public:
 protected:
 private:
+	shared_ptr<AVertexGpuBuffer> m_pTerrainVertices;
+	shared_ptr<AIndexGpuBuffer> m_pTerrainIndices;
+	CTextureLayer m_TerrainTextureLayer;
+
 	shared_ptr<AVertexGpuBuffer> m_pVertexBuffer;
 	shared_ptr<AIndexGpuBuffer> m_pIndexBuffer;
 

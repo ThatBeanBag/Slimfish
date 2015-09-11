@@ -61,6 +61,16 @@ void ARenderer::Resize(size_t width, size_t height)
 	VOnResize();
 }
 
+shared_ptr<AIndexGpuBuffer> ARenderer::CreateIndexBuffer(const std::vector<int>& indices, AGpuBuffer::EUsage usage /*= AGpuBuffer::USAGE_STATIC*/, bool isInSystemMemory /*= false*/)
+{
+	return VCreateIndexBuffer(indices.size(), AIndexGpuBuffer::INDEX_TYPE_32, reinterpret_cast<const void*>(&indices[0]), usage, isInSystemMemory);
+}
+
+shared_ptr<AIndexGpuBuffer> ARenderer::CreateIndexBuffer(const std::vector<short>& indices, AGpuBuffer::EUsage usage /*= AGpuBuffer::USAGE_STATIC*/, bool isInSystemMemory /*= false*/)
+{
+	return VCreateIndexBuffer(indices.size(), AIndexGpuBuffer::INDEX_TYPE_16, reinterpret_cast<const void*>(&indices[0]), usage, isInSystemMemory);
+}
+
 void ARenderer::SetTextureLayer(size_t layer, CTextureLayer& textureLayer)
 {
 	// Set the texture to the layer.
