@@ -27,7 +27,7 @@ namespace Slim {
 
 	CD3D10VertexGpuBuffer::CD3D10VertexGpuBuffer(ID3D10Device* pD3DDevice, 
 												 size_t numVertices, size_t stride, const void* pSource, 
-												 AGpuBuffer::EUsage usage, bool isInSystemMemory)
+												 EGpuBufferUsage usage, bool isInSystemMemory)
 		:AVertexGpuBuffer(numVertices, stride, usage, isInSystemMemory)
 	{
 		m_pImpl = new CD3D10GpuBuffer(pD3DDevice, 
@@ -47,7 +47,7 @@ namespace Slim {
 		return m_pImpl->GetD3DBuffer();
 	}
 
-	void* CD3D10VertexGpuBuffer::VLock(size_t offset, size_t size, ELockType lockType)
+	void* CD3D10VertexGpuBuffer::VLock(size_t offset, size_t size, EGpuBufferLockType lockType)
 	{
 		if (m_pImpl) {
 			return m_pImpl->Lock(offset, size, lockType);

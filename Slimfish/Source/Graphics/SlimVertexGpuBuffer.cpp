@@ -26,7 +26,7 @@
 
 namespace Slim {
 
-	AVertexGpuBuffer::AVertexGpuBuffer(size_t numVertices, size_t stride, AGpuBuffer::EUsage usage, bool isInSystemMemory)
+	AVertexGpuBuffer::AVertexGpuBuffer(size_t numVertices, size_t stride, EGpuBufferUsage usage, bool isInSystemMemory)
 		:AGpuBuffer(numVertices * stride, usage, isInSystemMemory),
 		m_NumVertices(numVertices),
 		m_Stride(stride)

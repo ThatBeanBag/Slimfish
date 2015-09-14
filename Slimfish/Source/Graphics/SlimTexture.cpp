@@ -24,7 +24,7 @@
 
 namespace Slim {
 
-	ATexture::ATexture(const std::string& name, EType textureType, EUsage usage)
+	ATexture::ATexture(const std::string& name, ETextureType textureType, ETextureUsage usage)
 		:m_Name(name),
 		m_TextureType(textureType),
 		m_Usage(usage),
@@ -48,22 +48,22 @@ namespace Slim {
 		return m_Name;
 	}
 
-	void ATexture::SetType(EType textureType)
+	void ATexture::SetType(ETextureType textureType)
 	{
 		m_TextureType = textureType;
 	}
 
-	ATexture::EType ATexture::GetTextureType() const
+	ETextureType ATexture::GetTextureType() const
 	{
 		return m_TextureType;
 	}
 
-	void ATexture::SetUsage(EUsage usage)
+	void ATexture::SetUsage(ETextureUsage usage)
 	{
 		m_Usage = usage;
 	}
 
-	const ATexture::EUsage ATexture::GetUsage() const
+	const ETextureUsage ATexture::GetUsage() const
 	{
 		return m_Usage;
 	}

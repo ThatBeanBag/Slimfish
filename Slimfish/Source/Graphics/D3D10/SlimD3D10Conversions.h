@@ -26,6 +26,7 @@
 #include "../SlimTexture.h"
 #include "../SlimTextureLayer.h"
 #include "../SlimShaderParams.h"
+#include "../SlimTypes.h"
 #include "SlimD3D10Forward.h"
 
 namespace Slim {
@@ -40,10 +41,10 @@ namespace D3D10Conversions {
 	D3DXCOLOR GetColour(const CColourValue& colour);
 	CColourValue GetColour(const D3DXCOLOR& colour);
 
-	D3D10_USAGE GetUsage(AGpuBuffer::EUsage usage);
-	D3D10_USAGE GetUsage(ATexture::EUsage usage);
-	UINT GetCPUAccessFlags(ATexture::EUsage usage);
-	D3D10_MAP GetLockType(AGpuBuffer::ELockType lockType);
+	D3D10_USAGE GetUsage(EGpuBufferUsage usage);
+	D3D10_USAGE GetUsage(ETextureUsage usage);
+	UINT GetCPUAccessFlags(ETextureUsage usage);
+	D3D10_MAP GetLockType(EGpuBufferLockType lockType);
 
 	DXGI_FORMAT GetFormat(CInputElement::EFormat inputElementFormat);
 	DXGI_FORMAT GetFormat(AIndexGpuBuffer::EIndexType indexType);
@@ -51,7 +52,15 @@ namespace D3D10Conversions {
 	D3D10_PRIMITIVE_TOPOLOGY GetPrimitiveType(CVertexDeclaration::EPrimitiveType primitiveType);
 	D3D10_TEXTURE_ADDRESS_MODE GetAddressMode(ETextureAddressMode addressMode);
 	D3D10_FILTER GetFilter(ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter);
-	CShaderConstant::EConstantType GetShaderConstantType(D3D11_SHADER_TYPE_DESC variableTypeDesc);
+
+	EShaderConstantType GetShaderConstantType(D3D11_SHADER_TYPE_DESC variableTypeDesc);
+
+	D3D10_BLEND_OP GetBlendOperation(EBlendOperation blendOperation);
+	D3D10_BLEND GetBlendFactor(EBlendFactor blendFactor);
+
+
+	D3D10_CULL_MODE GetCullMode(ECullingMode cullingMode);
+	D3D10_FILL_MODE GetFillMode(EFillMode fillMode);
 }
 
 }

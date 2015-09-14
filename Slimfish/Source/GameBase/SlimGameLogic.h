@@ -32,6 +32,7 @@ public:
 	virtual bool Initialise() = 0;
 	virtual void Update(float deltaTime) = 0;
 	virtual void Render() = 0;
+	virtual void HandleInput(const CInput& input, float deltaTime) = 0;
 protected:
 private:
 	// Member Variables

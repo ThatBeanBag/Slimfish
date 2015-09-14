@@ -87,7 +87,7 @@ namespace Slim {
 			usage of the buffer.
 		*/
 		template<typename TVertexType>
-		shared_ptr<AVertexGpuBuffer> CreateVertexBuffer(const std::vector<TVertexType>& verts, AGpuBuffer::EUsage usage = AGpuBuffer::USAGE_STATIC, bool isInSystemMemory = false);
+		shared_ptr<AVertexGpuBuffer> CreateVertexBuffer(const std::vector<TVertexType>& verts, EGpuBufferUsage usage = EGpuBufferUsage::STATIC, bool isInSystemMemory = false);
 
 		/** Create a index buffer on the GPU.
 		@author Hayden Asplet
@@ -97,7 +97,7 @@ namespace Slim {
 			A pointer to the buffer for reading/writing depending on intended
 			usage of the buffer.
 		*/
-		shared_ptr<AIndexGpuBuffer> CreateIndexBuffer(const std::vector<int>& indices, AGpuBuffer::EUsage usage = AGpuBuffer::USAGE_STATIC, bool isInSystemMemory = false);
+		shared_ptr<AIndexGpuBuffer> CreateIndexBuffer(const std::vector<int>& indices, EGpuBufferUsage usage = EGpuBufferUsage::STATIC, bool isInSystemMemory = false);
 
 		/** Create a index buffer on the GPU.
 		@author Hayden Asplet
@@ -107,7 +107,7 @@ namespace Slim {
 			A pointer to the buffer for reading/writing depending on intended
 			usage of the buffer.
 		*/
-		shared_ptr<AIndexGpuBuffer> CreateIndexBuffer(const std::vector<short>& indices, AGpuBuffer::EUsage usage = AGpuBuffer::USAGE_STATIC, bool isInSystemMemory = false);
+		shared_ptr<AIndexGpuBuffer> CreateIndexBuffer(const std::vector<short>& indices, EGpuBufferUsage usage = EGpuBufferUsage::STATIC, bool isInSystemMemory = false);
 
 		/** Create a vertex buffer on the GPU.
 		 	@author Hayden Asplet
@@ -118,7 +118,7 @@ namespace Slim {
 				A pointer to the buffer for reading/writing depending on intended 
 				usage of the buffer.
 		*/
-		virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) = 0;
+		virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory) = 0;
 
 		/** Create a index buffer on the GPU.
 			@author Hayden Asplet
@@ -129,7 +129,7 @@ namespace Slim {
 				A pointer to the buffer for reading/writing depending on intended
 				usage of the buffer.
 		*/
-		virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) = 0;
+		virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory) = 0;
 
 		/** Create a shader from file.
 		 	@author Hayden Asplet
@@ -142,7 +142,7 @@ namespace Slim {
 		/** Loads a texture from file.
 		 	@author Hayden Asplet
 		*/
-		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ATexture::EUsage usage = ATexture::USAGE_STATIC) = 0;
+		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ETextureUsage usage = ETextureUsage::STATIC) = 0;
 
 		/** Perform a render operation, rendering a set of vertices.
 		 	@author Hayden Asplet
@@ -292,7 +292,7 @@ namespace Slim {
 	};
 
 	template<typename TVertexType>
-	shared_ptr<AVertexGpuBuffer> ARenderer::CreateVertexBuffer(const std::vector<TVertexType>& verts, AGpuBuffer::EUsage usage, bool isInSystemMemory)
+	shared_ptr<AVertexGpuBuffer> ARenderer::CreateVertexBuffer(const std::vector<TVertexType>& verts, EGpuBufferUsage usage, bool isInSystemMemory)
 	{
 		return VCreateVertexBuffer(verts.size(), sizeof(TVertexType), reinterpret_cast<const void*>(&verts[0]), usage, isInSystemMemory);
 	}

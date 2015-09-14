@@ -24,7 +24,7 @@
 
 namespace Slim {
 
-	CD3D10Texture::CD3D10Texture(ID3D10Device* pD3DDevice, const std::string& name, EType textureType, EUsage usage)
+	CD3D10Texture::CD3D10Texture(ID3D10Device* pD3DDevice, const std::string& name, ETextureType textureType, ETextureUsage usage)
 		:ATexture(name, textureType, usage),
 		m_pD3DDevice(pD3DDevice)
 	{
@@ -38,18 +38,18 @@ namespace Slim {
 
 	void CD3D10Texture::VLoad()
 	{
-		if (GetUsage() & USAGE_RENDER_TARGET) {
+		if (GetUsage() == ETextureUsage::RENDER_TARGET) {
 			switch (GetTextureType()) {
-				case TEXTURE_TYPE_1D: {
+				case ETextureType::TYPE_1D: {
 					CreateRenderTarget1D();
 					break;
 				}
-				case TEXTURE_TYPE_CUBIC:	// Fall through.
-				case TEXTURE_TYPE_2D: {
+				case ETextureType::TYPE_CUBIC:	// Fall through.
+				case ETextureType::TYPE_2D: {
 					CreateRenderTarget2D();
 					break;
 				}
-				case TEXTURE_TYPE_3D: {
+				case ETextureType::TYPE_3D: {
 					CreateRenderTarget3D();
 					break;
 				}
@@ -111,7 +111,7 @@ namespace Slim {
 
 				SetSourceWidth(desc.Width);
 
-				if (GetUsage() & ATexture::USAGE_STATIC) {
+				if (GetUsage() == ETextureUsage::STATIC) {
 					CreateShaderResourceView1D(desc);
 				}
 
@@ -127,7 +127,7 @@ namespace Slim {
 				SetSourceWidth(desc.Width);
 				SetSourceHeight(desc.Height);
 
-				if (GetUsage() & ATexture::USAGE_STATIC) {
+				if (GetUsage() == ETextureUsage::STATIC) {
 					CreateShaderResourceView2D(desc);
 				}
 
@@ -144,7 +144,7 @@ namespace Slim {
 				SetSourceHeight(desc.Height);
 				SetSourceDepth(desc.Depth);
 
-				if (GetUsage() & ATexture::USAGE_STATIC) {
+				if (GetUsage() == ETextureUsage::STATIC) {
 					CreateShaderResourceView3D(desc);
 				}
 
@@ -168,7 +168,7 @@ namespace Slim {
 	const CImage CD3D10Texture::VGetImage() const
 	{
 		// Images must be 2D.
-		assert(GetTextureType() == ATexture::TEXTURE_TYPE_2D);
+		assert(GetTextureType() == ETextureType::TYPE_2D);
 		assert(m_pTexture2D);
 
 		size_t width = GetSourceWidth();
@@ -259,7 +259,7 @@ namespace Slim {
 		desc.SampleDesc.Count = GetMultiSampleCount();
 		desc.SampleDesc.Quality = GetMultiSampleQuality();
 
-		if (GetTextureType() == TEXTURE_TYPE_CUBIC) {
+		if (GetTextureType() == ETextureType::TYPE_CUBIC) {
 			desc.MiscFlags |= D3D10_RESOURCE_MISC_TEXTURECUBE;
 			desc.ArraySize = 6;
 		}
@@ -344,12 +344,12 @@ namespace Slim {
 		srvDesc.Texture2D.MipLevels = desc.MipLevels;
 		srvDesc.Texture2D.MostDetailedMip = 0;
 
-		if (GetTextureType() == TEXTURE_TYPE_CUBIC) {
+		if (GetTextureType() == ETextureType::TYPE_CUBIC) {
 			srvDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURECUBE;
 		}
 
 		// Handle multi-sampled render target.
-		if (GetUsage() & USAGE_RENDER_TARGET && GetMultiSampleCount() > 1 || GetMultiSampleQuality() > 0) {
+		if (GetUsage() == ETextureUsage::RENDER_TARGET && GetMultiSampleCount() > 1 || GetMultiSampleQuality() > 0) {
 			srvDesc.ViewDimension = D3D10_SRV_DIMENSION_TEXTURE2DMS;
 		}
 

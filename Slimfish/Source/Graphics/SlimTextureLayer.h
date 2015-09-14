@@ -30,44 +30,44 @@ namespace Slim {
 		List of all operations for blending between texture layers these operations
 		are only available when multi-texturing is supported.
 	*/
-	enum ETextureLayerBlendOperation {
+	enum class ETextureLayerBlendOperation {
 		// Use arg1 without additional modifications.
-		TLAYEROP_SELECT1,
+		SELECT1,
 		// Use arg2 without additional modifications.
-		TLAYEROP_SELECT2,
+		SELECT2,
 		// Multiple arg1 and arg2 together.
 		// arg1 * arg2
-		TLAYEROP_MODULATE,
+		MODULATE,
 		// As TLAYEROP_MODULATE but multiply result by two for brightening.
-		TLAYEROP_MODULATE_2X,
+		MODULATE_2X,
 		// As TLAYEROP_MODULATE4X but multiply result by four for brightening.
-		TLAYEROP_MODULATE_4X,
+		MODULATE_4X,
 		// Add arg1 and arg2 together. 
 		// arg1 + arg2
-		TLAYEROP_ADD,
+		ADD,
 		// As TLAYEROP_ADD but subtract 0.5 from the result so the values range from -0.5 to 0.5. 
 		// arg1 + arg2 - 0.5
-		TLAYEROP_ADD_SIGNED,
+		ADD_SIGNED,
 		// As TLAYEROP_ADD_SIGNED but multiply result by two.
-		TLAYEROP_ADD_SIGNED_2X,
+		ADD_SIGNED_2X,
 		// As TLAYEROP_ADD but subtract the product from the sum
 		// arg1 + arg2 - arg1 * arg2
-		TLAYEROP_ADD_SMOOTH,
+		ADD_SMOOTH,
 		// Subtract arg1 from arg2.
 		// arg1 - arg2
-		TLAYEROP_SUBTRACT,
+		SUBTRACT,
 		// Use linearly blended alpha value from vertices to scale arg1, then add arg2 scaled by 1 - alpha of vertices.
-		TLAYEROP_BLEND_DIFFUSE_ALPHA,
+		BLEND_DIFFUSE_ALPHA,
 		// As TLAYEROP_BLEND_DIFFUSE_ALPHA but use alpha from texture instead.
-		TLAYEROP_BLEND_TEXTURE_ALPHA,
+		BLEND_TEXTURE_ALPHA,
 		// As TLAYEROP_BLEND_DIFFUSE_ALPHA but use alpha from previous layer instead.
-		TLAYEROP_BLEND_CURRENT_ALPHA,
+		BLEND_CURRENT_ALPHA,
 		// As TLAYEROP_BLEND_DIFFUSE_ALPHA but use alpha from manual value instead.
-		TLAYEROP_BLEND_MANUAL,
+		BLEND_MANUAL,
 		// Use dot product of arg1 and arg2.
-		TLAYEROP_DOTPRODUCT,
+		DOTPRODUCT,
 		// Use linearly blended colour value from vertices to scale arg1, then add arg2 scaled by 1 - colour of vertices.
-		TLAYEROP_BLEND_DIFFUSE_COLOUR
+		BLEND_DIFFUSE_COLOUR
 	};
 
 	/** List of all texture layer blending sources to perform blending operations on.
@@ -78,15 +78,15 @@ namespace Slim {
 	*/
 	enum ETextureLayerBlendSource {
 		// The colour/alpha built up from previous layers.
-		TLAYERSRC_CURRENT,
+		CURRENT,
 		// The colour/alpha from the texture of the layer.
-		TLAYERSRC_TEXTURE,
+		TEXTURE,
 		// The colour/alpha of the diffuse colour of the vertices.
-		TLAYERSRC_DIFFUSE,
+		DIFFUSE,
 		// The colour/alpha of the specular colour of the vertices.
-		TLAYERSRC_SPECULAR,
+		SPECULAR,
 		// The colour/alpha supplied manually.
-		TLAYERSRC_MANUAL
+		MANUAL
 	};
 
 	/** Structure representing the blending of colour and alpha for texture layers.
@@ -116,39 +116,39 @@ namespace Slim {
 
 	/** List of sampler types.
 	*/
-	enum ETextureSamplerType {
+	enum class ETextureSamplerType {
 		// Sampler used when shrinking texture.
-		TSAMP_MIN,
+		MIN,
 		// Sampler used when magnifying texture.
-		TSAMP_MAG,
+		MAG,
 		// Sampler used when determining mipmap.
-		TSAMP_MIP
+		MIP
 	};
 
 	/** List of low-level filtering types.
 	*/
-	enum ETextureFilterType {
+	enum class ETextureFilterType {
 		// No filtering.
-		TFILTER_NONE,
+		NONE,
 		// Closest pixel filtering.
-		TFILTER_POINT,
+		POINT,
 		// Average of a 2x2 area.
-		TFILTER_LINEAR,
+		LINEAR,
 		// As TFILTER_LINEAR but takes into account the angle of the texture plane.
-		TFILTER_ANISOTROPIC
+		ANISOTROPIC
 	};
 
 	/** Broad filtering types providing shortcuts to commonly used filtering combinations.
 	*/
-	enum ETextureFilterTypeBroad {
+	enum class ETextureFilterTypeBroad {
 		// Equivalent to min = TFILTER_POINT, mag = TFILTER_POINT, mip = TFILTER_NONE
-		TFILTERB_NONE,
+		NONE,
 		// Equivalent to min = TFILTER_LINEAR, mag = TFILTER_LINEAR, mip = TFILTER_POINT
-		TFILTERB_BILINEAR,
+		BILINEAR,
 		// Equivalent to min = TFILTER_LINEAR, mag = TFILTER_LINEAR, mip = TFILTER_LINEAR
-		TFILTERB_TRILINEAR,
+		TRILINEAR,
 		// Equivalent to min = TFILTER_ANISOTROPIC, mag = TFILTER_ANISOTROPIC, mip = TFILTER_LINEAR
-		TFILTERB_ANISOTROPIC
+		ANISOTROPIC
 	};
 
 	/** List of texture-addressing modes e.g. wrap, mirror, border and clamp.
@@ -157,17 +157,17 @@ namespace Slim {
 		range [0, 1.0] do. For example TADDRESS_WRAP will repeat the texture if 
 		coordinates exceed the [0, 1.0] range.
 	*/
-	enum ETextureAddressMode {
+	enum class ETextureAddressMode {
 		// Tile the texture at each junction.
-		TADDRESS_WRAP,
+		WRAP,
 		// As TADDRESS_WRAP but flip (mirror) texture at every junction. For u values between 0 and 1
 		// the texture is address same as TADDRESS_WRAP, but between 1 and 2 the texture is mirrored.
-		TADDRESS_MIRROR,
+		MIRROR,
 		// Texture coordinates outside of the [0, 1.0] range are set to the border colour.
-		TADDRESS_BORDER,
+		BORDER,
 		// Texture coordinates outside of the [0, 1.0] range are set to the texture colour at 0 or 
 		// 1.0 respectively.
-		TADDRESS_CLAMP
+		CLAMP
 	};
 
 	/** Structure representing address modes for u, v and w texture coordinates.
@@ -264,8 +264,8 @@ namespace Slim {
 				@see ETextureLayerBlendOperation
 		*/
 		void SetColourOperation(ETextureLayerBlendOperation operation,
-								ETextureLayerBlendSource source1 = TLAYERSRC_TEXTURE,
-								ETextureLayerBlendSource source2 = TLAYERSRC_CURRENT,
+								ETextureLayerBlendSource source1 = ETextureLayerBlendSource::CURRENT,
+								ETextureLayerBlendSource source2 = ETextureLayerBlendSource::CURRENT,
 								const CColourValue& argument1 = CColourValue::s_WHITE,
 								const CColourValue& argument2 = CColourValue::s_WHITE,
 								float manualBlend = 0.0f);
@@ -294,8 +294,8 @@ namespace Slim {
 				@see ETextureLayerBlendOperation
 		*/
 		void SetAlphaOperation(ETextureLayerBlendOperation operation,
-							   ETextureLayerBlendSource source1 = TLAYERSRC_TEXTURE,
-							   ETextureLayerBlendSource source2 = TLAYERSRC_CURRENT,
+							   ETextureLayerBlendSource source1 = ETextureLayerBlendSource::CURRENT,
+							   ETextureLayerBlendSource source2 = ETextureLayerBlendSource::CURRENT,
 							   float argument1 = CColourValue::s_ALPHA_OPAQUE,
 							   float argument2 = CColourValue::s_ALPHA_OPAQUE,
 							   float manualBlend = 0.0f);

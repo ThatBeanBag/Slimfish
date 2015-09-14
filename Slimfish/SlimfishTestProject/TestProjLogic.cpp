@@ -36,10 +36,7 @@ struct TVertex {
 CTestProjLogic::CTestProjLogic()
 	:m_WorldMatrix(CMatrix4x4::s_IDENTITY),
 	m_ViewMatrix(CMatrix4x4::s_IDENTITY),
-	m_ProjectionMatrix(CMatrix4x4::s_IDENTITY),
-	m_pVertexParamsPerFrame(new CShaderParams()),
-	m_pVertexParamsPerObject(new CShaderParams()),
-	m_pTextures(120, nullptr)
+	m_ProjectionMatrix(CMatrix4x4::s_IDENTITY)
 {
 	m_ViewMatrix = CMatrix4x4::BuildLookAt(CVector3(0, 0, 500.0f), CVector3(), CVector3::s_UP);
 	m_ProjectionMatrix = CMatrix4x4::BuildProjection(DegreesToRadians(90), 1.0f, 0.1f, 1000.0f);
@@ -52,7 +49,7 @@ CTestProjLogic::~CTestProjLogic()
 
 bool CTestProjLogic::Initialise()
 {
-	TVertex pCubeVerts[] = {
+	/*TVertex pCubeVerts[] = {
 		{ CVector3(-1.0f, -1.0f, -1.0f	), CVector3(0.0f, 0.0f, -1.0f ), 0.0f, 1.0f },
 		{ CVector3(-1.0f, 1.0f, -1.0f	), CVector3(0.0f, 0.0f, -1.0f ), 0.0f, 0.0f },
 		{ CVector3(1.0f, 1.0f, -1.0f	), CVector3(0.0f, 0.0f, -1.0f ), 1.0f, 0.0f },
@@ -111,20 +108,21 @@ bool CTestProjLogic::Initialise()
 		24, 
 		sizeof(TVertex), 
 		pCubeVerts, 
-		AGpuBuffer::USAGE_STATIC,
+		EGpuBufferUsage::STATIC,
 		false);
 
 	m_pIndexBuffer = g_pApp->GetRenderer()->VCreateIndexBuffer(
 		36,
 		AIndexGpuBuffer::INDEX_TYPE_16,
 		pIndices,
-		AGpuBuffer::USAGE_STATIC,
-		false);
+		EGpuBufferUsage::STATIC,
+		false);*/
 
 	// Create the input layout.
 	m_VertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT3);
 	m_VertexDeclaration.AddElement("NORMAL", CInputElement::FORMAT_FLOAT3);
 	m_VertexDeclaration.AddElement("TEXCOORD", CInputElement::FORMAT_FLOAT2);
+	m_VertexDeclaration.AddElement("TANGENT", CInputElement::FORMAT_FLOAT3);
 	m_VertexDeclaration.SetPrimitiveType(CVertexDeclaration::PRIMITIVE_TYPE_TRIANGLELIST);
 
 	m_pTexture = g_pApp->GetRenderer()->VLoadTexture("WoodCrate02.dds");
@@ -146,7 +144,7 @@ bool CTestProjLogic::Initialise()
 
 	m_specularLayer.SetTexture(g_pApp->GetRenderer()->VLoadTexture("defaultspec.dds"));
 	m_TerrainTextureLayer.SetTexture(g_pApp->GetRenderer()->VLoadTexture("dirttexture.jpg"));
-	m_TerrainTextureLayer.SetTextureAddressModes(TADDRESS_WRAP);
+	m_TerrainTextureLayer.SetTextureAddressModes(ETextureAddressMode::WRAP);
 
 	// Load the shader programs.
 	m_pVertexShader = g_pApp->GetRenderer()->VCreateShaderProgram("VertexShader.hlsl", AShaderProgram::SHADER_TYPE_VERTEX);
@@ -210,8 +208,8 @@ void CTestProjLogic::Update(float deltaTime)
 void CTestProjLogic::Render()
 {
 	CTextureLayer textureLayer;
-	textureLayer.SetTextureFilter(TFILTERB_TRILINEAR);
-	textureLayer.SetTextureAddressModes(TADDRESS_MIRROR);
+	textureLayer.SetTextureFilter(ETextureFilterTypeBroad::TRILINEAR);
+	textureLayer.SetTextureAddressModes(ETextureAddressMode::MIRROR);
 	textureLayer.SetTextureBorderColour(CColourValue::s_BLUE);
 	textureLayer.SetTexture(m_pTextures[m_Frame]);
 	g_pApp->GetRenderer()->SetTextureLayer(0, textureLayer);
@@ -245,8 +243,8 @@ void CTestProjLogic::Render()
 	texMatrix = CMatrix4x4::BuildScale(1.0f, 1.0f, 1.0f);
 	//wvp = projectionMatrix * viewMatrix * worldMatrix;
 
-	textureLayer.SetTextureAddressModes(TADDRESS_WRAP);
-	textureLayer.SetTextureFilter(TFILTER_ANISOTROPIC, TFILTER_ANISOTROPIC, TFILTER_ANISOTROPIC);
+	textureLayer.SetTextureAddressModes(ETextureAddressMode::WRAP);
+	textureLayer.SetTextureFilter(ETextureFilterType::ANISOTROPIC, ETextureFilterType::ANISOTROPIC, ETextureFilterType::ANISOTROPIC);
 	g_pApp->GetRenderer()->SetTextureLayer(0, m_TerrainTextureLayer);
 
 	m_pVertexParamsPerObject->SetConstant("gTexMatrix", texMatrix);
@@ -257,9 +255,14 @@ void CTestProjLogic::Render()
 
 }
 
+void CTestProjLogic::HandleInput(const CInput& input, float deltaTime)
+{
+	
+}
+
 void CTestProjLogic::LoadTerrain()
 {
-	shared_ptr<ATexture> pHeightMap = g_pApp->GetRenderer()->VLoadTexture("terrain.png", ATexture::USAGE_READ_ONLY);
+	shared_ptr<ATexture> pHeightMap = g_pApp->GetRenderer()->VLoadTexture("terrain.png", ETextureUsage::READ_ONLY);
 
 	if (pHeightMap) {
 		CImage image = pHeightMap->VGetImage();
@@ -268,8 +271,8 @@ void CTestProjLogic::LoadTerrain()
 		int numPixels = image.GetSize();
 		std::vector<TVertex> vertices(numPixels);
 
-		for (int z = 0; z < image.GetHeight(); ++z) {
-			for (int x = 0; x < image.GetWidth(); ++x) {
+		for (unsigned int z = 0; z < image.GetHeight(); ++z) {
+			for (unsigned int x = 0; x < image.GetWidth(); ++x) {
 				CColour colour = image[z][x];
 				TVertex vert;
 
@@ -283,8 +286,8 @@ void CTestProjLogic::LoadTerrain()
 			}
 		}
 
-		for (int z = 0; z < image.GetHeight(); ++z) {
-			for (int x = 0; x < image.GetWidth(); ++x) {
+		for (unsigned int z = 0; z < image.GetHeight(); ++z) {
+			for (unsigned int x = 0; x < image.GetWidth(); ++x) {
 				TVertex currentVert = vertices[x + z * image.GetWidth()];
 				CVector3 averagedNormal(0, 0, 0);
 				CVector3 lastLine(0, 0, 0);
@@ -310,9 +313,10 @@ void CTestProjLogic::LoadTerrain()
 					}
 				};
 
-				for (int i = 0; i < 8; ++i) {
+				for (unsigned int i = 0; i < 8; ++i) {
 					if (neighbourX < 0 || neighbourZ < 0 ||
-						neighbourX >= image.GetWidth() || neighbourZ >= image.GetHeight()) {
+						neighbourX >= static_cast<int>(image.GetWidth()) || 
+						neighbourZ >= static_cast<int>(image.GetHeight())) {
 						// Is this neighbour outside the image?
 						// Don't evaluate it.
 						increment(i);
@@ -344,11 +348,11 @@ void CTestProjLogic::LoadTerrain()
 		std::vector<int> indices(numIndices);
 		int index = 0;
 
-		for (int z = 0; z < image.GetHeight() - 1; ++z) {
+		for (unsigned int z = 0; z < image.GetHeight() - 1; ++z) {
 			// Even rows move left to right, odd rows move right to left.
 			if (z % 2 == 0) {
 				// Is this an even row?
-				for (int x = 0; x < image.GetWidth(); ++x) {
+				for (int x = 0; x < static_cast<int>(image.GetWidth()); ++x) {
 					indices[index] = x + z * image.GetWidth();
 					++index;
 					indices[index] = x + z * image.GetWidth() + image.GetWidth();	// Next row.
@@ -364,7 +368,7 @@ void CTestProjLogic::LoadTerrain()
 			}
 			else {
 				// This is an odd row.
-				for (int x = image.GetWidth() - 1; x >= 0; --x) {
+				for (int x = static_cast<int>(image.GetWidth()) - 1; x >= 0; --x) {
 					indices[index] = x + z * image.GetWidth();
 					++index;
 					indices[index] = x + z * image.GetWidth() + image.GetWidth();	// Next row.

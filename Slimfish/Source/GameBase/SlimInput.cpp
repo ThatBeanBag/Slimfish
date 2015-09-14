@@ -25,8 +25,8 @@
 namespace Slim {
 
 CInput::CInput()
-	:m_KeyStates(static_cast<int>(EKeyCode::MAX), false),
-	m_PerFrameKeyStates(static_cast<int>(EKeyCode::MAX), EKeyState::NONE)
+	:m_KeyStates(static_cast<int>(EKeyCode::MAX), EButtonState::UP),
+	m_MouseButtonStates(static_cast<int>(EMouseButton::MAX), EButtonState::UP)
 {
 
 }
@@ -36,38 +36,82 @@ CInput::~CInput()
 
 }
 
+bool CInput::IsMouseButtonDown(EMouseButton mouseButton) const
+{
+	return IsButtonDown(m_MouseButtonStates[static_cast<int>(mouseButton)]);
+}
+
+bool CInput::GetMouseButtonPress(EMouseButton mouseButton) const
+{
+	return m_MouseButtonStates[static_cast<int>(mouseButton)] == EButtonState::PRESS;
+}
+
+bool CInput::GetMouseButtonRelease(EMouseButton mouseButton) const
+{
+	return m_MouseButtonStates[static_cast<int>(mouseButton)] == EButtonState::RELEASE;
+}
+
+
+void CInput::GetMousePosition(int& x, int& y) const
+{
+	x = m_MouseX;
+	y = m_MouseY;
+}
+
 bool CInput::IsKeyDown(EKeyCode key) const
 {
-	return m_KeyStates[static_cast<int>(key)];
+	return IsButtonDown(m_KeyStates[static_cast<int>(key)]);
 }
 
 bool CInput::GetKeyPress(EKeyCode key) const
 {
-	return m_PerFrameKeyStates[static_cast<int>(key)] == EKeyState::PRESS;
+	return m_KeyStates[static_cast<int>(key)] == EButtonState::PRESS;
 }
 
 bool CInput::GetKeyRelease(EKeyCode key) const
 {
-	return m_PerFrameKeyStates[static_cast<int>(key)] == EKeyState::RELEASE;
+	return m_KeyStates[static_cast<int>(key)] == EButtonState::RELEASE;
 }
 
-void CInput::SetKeyPressed(EKeyCode key)
+void CInput::SetMouseButtonPress(EMouseButton button)
 {
-	int index = static_cast<int>(key);
-	m_KeyStates[index] = true;
-	m_PerFrameKeyStates[index] = EKeyState::PRESS;
+	m_MouseButtonStates[static_cast<int>(button)] = EButtonState::PRESS;
 }
 
-void CInput::SetKeyReleased(EKeyCode key)
+void CInput::SetMouseButtonRelease(EMouseButton button)
 {
-	int index = static_cast<int>(key);
-	m_KeyStates[index] = false;
-	m_PerFrameKeyStates[index] = EKeyState::RELEASE;
+	m_MouseButtonStates[static_cast<int>(button)] = EButtonState::RELEASE;
+}
+
+void CInput::SetMousePosition(int x, int y)
+{
+	m_MouseX = x;
+	m_MouseY = y;
+}
+
+void CInput::SetKeyPress(EKeyCode key)
+{
+	m_KeyStates[static_cast<int>(key)] = EButtonState::PRESS;
+}
+
+void CInput::SetKeyRelease(EKeyCode key)
+{
+	m_KeyStates[static_cast<int>(key)] = EButtonState::RELEASE;
 }
 
 void CInput::FlushPerFrameStates()
 {
-	fill(m_PerFrameKeyStates.begin(), m_PerFrameKeyStates.end(), EKeyState::NONE);
+	static auto flushState = [](EButtonState& buttonState) { 
+		if (buttonState == EButtonState::PRESS) {
+			buttonState = EButtonState::DOWN;
+		}
+		else if (buttonState == EButtonState::RELEASE) {
+			buttonState = EButtonState::UP;
+		}
+	};
+
+	std::for_each(m_KeyStates.begin(), m_KeyStates.end(), flushState);
+	std::for_each(m_MouseButtonStates.begin(), m_MouseButtonStates.end(), flushState);
 }
 
 }

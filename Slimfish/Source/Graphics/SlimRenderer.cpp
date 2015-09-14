@@ -61,12 +61,12 @@ void ARenderer::Resize(size_t width, size_t height)
 	VOnResize();
 }
 
-shared_ptr<AIndexGpuBuffer> ARenderer::CreateIndexBuffer(const std::vector<int>& indices, AGpuBuffer::EUsage usage /*= AGpuBuffer::USAGE_STATIC*/, bool isInSystemMemory /*= false*/)
+shared_ptr<AIndexGpuBuffer> ARenderer::CreateIndexBuffer(const std::vector<int>& indices, EGpuBufferUsage usage /*= EGpuBufferUsage::STATIC*/, bool isInSystemMemory /*= false*/)
 {
 	return VCreateIndexBuffer(indices.size(), AIndexGpuBuffer::INDEX_TYPE_32, reinterpret_cast<const void*>(&indices[0]), usage, isInSystemMemory);
 }
 
-shared_ptr<AIndexGpuBuffer> ARenderer::CreateIndexBuffer(const std::vector<short>& indices, AGpuBuffer::EUsage usage /*= AGpuBuffer::USAGE_STATIC*/, bool isInSystemMemory /*= false*/)
+shared_ptr<AIndexGpuBuffer> ARenderer::CreateIndexBuffer(const std::vector<short>& indices, EGpuBufferUsage usage /*= EGpuBufferUsage::STATIC*/, bool isInSystemMemory /*= false*/)
 {
 	return VCreateIndexBuffer(indices.size(), AIndexGpuBuffer::INDEX_TYPE_16, reinterpret_cast<const void*>(&indices[0]), usage, isInSystemMemory);
 }
@@ -77,16 +77,17 @@ void ARenderer::SetTextureLayer(size_t layer, CTextureLayer& textureLayer)
 	VSetTexture(layer, textureLayer.GetTexture(), false);
 
 	// Set texture filtering.
-	VSetTextureLayerFiltering(layer, 
-							 textureLayer.GetTextureFilter(TSAMP_MIN),
-							 textureLayer.GetTextureFilter(TSAMP_MAG),
-							 textureLayer.GetTextureFilter(TSAMP_MIP));
+	VSetTextureLayerFiltering(
+		layer, 
+		textureLayer.GetTextureFilter(ETextureSamplerType::MIN),
+		textureLayer.GetTextureFilter(ETextureSamplerType::MAG),
+		textureLayer.GetTextureFilter(ETextureSamplerType::MIP));
 
 	// Set the blending options.
 	VSetTextureLayerBlendState(layer, textureLayer.GetBlendState());
 
 	const TTextureUVWAddressModes& addressModes = textureLayer.GetTextureAddressModes();
-	if (addressModes.m_u == TADDRESS_BORDER || addressModes.m_v == TADDRESS_BORDER || addressModes.m_w == TADDRESS_BORDER) {
+	if (addressModes.m_u == ETextureAddressMode::BORDER || addressModes.m_v == ETextureAddressMode::BORDER || addressModes.m_w == ETextureAddressMode::BORDER) {
 	// Does one of the addressing modes use TADDRESS_BORDER?
 		// Set the border colour.
 		VSetTextureBorderColour(layer, textureLayer.GetTextureBorderColour());

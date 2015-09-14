@@ -28,7 +28,7 @@ namespace Slim {
 class CD3D10Texture : public ATexture {
 	// Member Functions
 public:
-	CD3D10Texture(ID3D10Device* pD3DDevice, const std::string& name, EType textureType, EUsage usage);
+	CD3D10Texture(ID3D10Device* pD3DDevice, const std::string& name, ETextureType textureType, ETextureUsage usage);
 	~CD3D10Texture();
 
 	virtual void VLoad() override;

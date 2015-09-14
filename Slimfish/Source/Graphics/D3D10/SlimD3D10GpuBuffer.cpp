@@ -26,7 +26,7 @@ namespace Slim {
 
 	CD3D10GpuBuffer::CD3D10GpuBuffer(ID3D10Device* pDevice,
 									 EBufferType bufferType, size_t bufferSize, const void* pSource,
-									 AGpuBuffer::EUsage usage, bool isInSystemMemory)
+									 EGpuBufferUsage usage, bool isInSystemMemory)
 		:AGpuBuffer(bufferSize, usage, isInSystemMemory)
 	{
 		ZeroMemory(&m_desc, sizeof(D3D10_BUFFER_DESC));
@@ -34,7 +34,7 @@ namespace Slim {
 		m_desc.ByteWidth = bufferSize;
 		m_desc.MiscFlags = 0;
 
-		if (usage & AGpuBuffer::USAGE_WRITE_ONLY) {
+		if (usage == EGpuBufferUsage::WRITE_ONLY) {
 			m_desc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
 		}
 
@@ -69,15 +69,15 @@ namespace Slim {
 		SafeRelease(m_pBuffer);
 	}
 
-	void* CD3D10GpuBuffer::VLock(size_t offset, size_t size, ELockType lockType)
+	void* CD3D10GpuBuffer::VLock(size_t offset, size_t size, EGpuBufferLockType lockType)
 	{
 		D3D10_MAP map = D3D10Conversions::GetLockType(lockType);
 
 		void* pSource;
 
-		if (FAILED(m_pBuffer->Map(map, 0, &pSource))) {
-			//throw CRenderingError();
-			// TODO: throw error.
+		HRESULT hResult = m_pBuffer->Map(map, 0, &pSource);
+		if (FAILED(hResult)) {
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to lock buffer with error " << GetErrorMessage(hResult);
 			return nullptr;
 		}
 

@@ -228,12 +228,12 @@ namespace Slim {
 		m_pSwapChain->Present(0, 0);
 	}
 
-	shared_ptr<AVertexGpuBuffer> CD3D10Renderer::VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory)
+	shared_ptr<AVertexGpuBuffer> CD3D10Renderer::VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory)
 	{
 		return shared_ptr<AVertexGpuBuffer>(new CD3D10VertexGpuBuffer(m_pD3DDevice, numVertices, stride, pSource, usage, isInSystemMemory));
 	}
 
-	shared_ptr<AIndexGpuBuffer> CD3D10Renderer::VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory)
+	shared_ptr<AIndexGpuBuffer> CD3D10Renderer::VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory)
 	{
 		return shared_ptr<AIndexGpuBuffer>(new CD3D10IndexGpuBuffer(m_pD3DDevice, numIndices, indexType, pSource, usage, isInSystemMemory));
 	}
@@ -252,9 +252,9 @@ namespace Slim {
 		}
 	}
 
-	shared_ptr<ATexture> CD3D10Renderer::VLoadTexture(const std::string& name, ATexture::EUsage usage)
+	shared_ptr<ATexture> CD3D10Renderer::VLoadTexture(const std::string& name, ETextureUsage usage)
 	{
-		shared_ptr<CD3D10Texture> pTexture(new CD3D10Texture(m_pD3DDevice, name, ATexture::TEXTURE_TYPE_2D, usage));
+		shared_ptr<CD3D10Texture> pTexture(new CD3D10Texture(m_pD3DDevice, name, ETextureType::TYPE_2D, usage));
 
 		if (pTexture) {
 			pTexture->VLoad();

@@ -30,7 +30,7 @@ namespace Slim {
 		size_t numIndices, 
 		EIndexType type, 
 		const void* pSource,
-		AGpuBuffer::EUsage usage, 
+		EGpuBufferUsage usage, 
 		bool isInSystemMemory)
 		:AIndexGpuBuffer(numIndices, type, usage, isInSystemMemory)
 	{
@@ -53,7 +53,7 @@ namespace Slim {
 		return m_pImpl->GetD3DBuffer();
 	}
 
-	void* CD3D10IndexGpuBuffer::VLock(size_t offset, size_t size, ELockType lockType)
+	void* CD3D10IndexGpuBuffer::VLock(size_t offset, size_t size, EGpuBufferLockType lockType)
 	{
 		if (m_pImpl) {
 			return m_pImpl->Lock(offset, size, lockType);

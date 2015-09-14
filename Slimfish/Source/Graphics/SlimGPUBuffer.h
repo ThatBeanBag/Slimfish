@@ -23,6 +23,46 @@
 
 namespace Slim {
 
+/** List of usage flags that describe how a buffer is used.
+	@note
+		This enumeration is weakly typed, as in it can be implicitly
+		converted to and from an int this gives it the functionality to be
+		used as a flag, but the downside is that it lacks type safety.
+	*/
+enum class EGpuBufferUsage : int {
+	// Indicates that the buffer will rarely be modified.
+	STATIC = 1,
+	// Buffer requires dynamic use, allows for locking with options LOCK_DISCARD and 
+	// LOCK_NO_OVERWRITE. Dynamic buffers are typically not placed in video memory
+	// instead they are placed in AGP memory.
+	DYNAMIC = 2,
+	// Indicates the buffer will only be written. Using LOCK_READ_ONLY with a buffer
+	// created with this usage is not allowed.
+	WRITE_ONLY = 4,
+	// Indicates that the buffer will only be read from. Use LOCK_READ_ONLY with a
+	// buffer created with this usage.
+	READ_ONLY = 8,
+	// Indicates that the application will be refilling the entire contents frequently.
+	DISCARDABLE = 16
+};
+
+/** List of locking options that describe a type of lock to perform when locking a buffer.
+*/
+enum class EGpuBufferLockType {
+	// Normal lock mode, allows both reading and writing.
+	NORMAL,
+	// Discard all memory in the buffer, this option is only valid when the buffer is created 
+	// using USAGE_DYNAMIC.
+	DISCARD,
+	// Lock the buffer for reading only as in the application will not write to the buffer. 
+	// Not allowed for buffers created with USAGE_WRITE_ONLY and is compulsory for buffers 
+	// created with USAGE_STATIC.
+	READ_ONLY,
+	// Same as USAGE_NORMAL except indicates the application will not overwrite any region of 
+	// the buffer that has been used this frame.
+	NO_OVERWRITE
+};
+
 /** Abstract class representing a buffer primarily stored in video memory (can be
 	stored in system memory as well).
 	@remarks
@@ -38,47 +78,6 @@ namespace Slim {
 		buffers. See CGPUBufferLock for more details.
 	*/
 class AGpuBuffer {
-public:
-	/** List of usage flags that define how the buffer is used.
-		@note
-			This enumeration is weakly typed, as in it can be implicitly
-			converted to and from an int this gives it the functionality to be
-			used as a flag, but the downside is that it lacks type safety.
-		*/
-	enum EUsage : int {
-		// Indicates that the buffer will rarely be modified.
-		USAGE_STATIC = 1,
-		// Buffer requires dynamic use, allows for locking with options LOCK_DISCARD and 
-		// LOCK_NO_OVERWRITE. Dynamic buffers are typically not placed in video memory
-		// instead they are placed in AGP memory.
-		USAGE_DYNAMIC = 2,
-		// Indicates the buffer will only be written. Using LOCK_READ_ONLY with a buffer
-		// created with this usage is not allowed.
-		USAGE_WRITE_ONLY = 4,
-		// Indicates that the buffer will only be read from. Use LOCK_READ_ONLY with a
-		// buffer created with this usage.
-		USAGE_READ_ONLY = 8,
-		// Indicates that the application will be refilling the entire contents frequently.
-		USAGE_DISCARDABLE = 16,
-	};
-
-	/** List of locking options that describe a type of lock to perform when locking a buffer.
-	*/
-	enum ELockType {
-		// Normal lock mode, allows both reading and writing.
-		LOCK_NORMAL,
-		// Discard all memory in the buffer, this option is only valid when the buffer is created 
-		// using USAGE_DYNAMIC.
-		LOCK_DISCARD,
-		// Lock the buffer for reading only as in the application will not write to the buffer. 
-		// Not allowed for buffers created with USAGE_WRITE_ONLY and is compulsory for buffers 
-		// created with USAGE_STATIC.
-		LOCK_READ_ONLY,
-		// Same as USAGE_NORMAL except indicates the application will not overwrite any region of 
-		// the buffer that has been used this frame.
-		LOCK_NO_OVERWRITE,
-	};
-
 	// Member Functions
 public:
 	/** Construct a buffer stored in video memory (can also be stored in system memory
@@ -88,14 +87,14 @@ public:
 			size Size of the buffer in bytes.
 		@param
 			usage How the buffer is intended to be used e.g. statically, dynamically, write only
-			etc. see AGPUBuffer::EUsage.
+			etc. see EGpuBufferUsage.
 		@param
 			isInSystemMemory True if the buffer should be stored in system memory and not in video
 			memory on the GPU. This is the least optimal for buffers that need to sent to the GPU
 			at some point, but can be used for heavily dynamic buffers that will be changed frequently
 			by the CPU.
 		*/
-	AGpuBuffer(size_t size, EUsage usage, bool isInSystemMemory);
+	AGpuBuffer(size_t size, EGpuBufferUsage usage, bool isInSystemMemory);
 
 	/** Destructor
 		@author Hayden Asplet
@@ -111,18 +110,18 @@ public:
 		@param
 			lockType The type of lock to perform e.g. LOCK_NORMAL (for both reading and writing),
 			LOCK_DISCARD (discard the current buffer's contents), LOCK_READ_ONLY and LOCK_NO_OVERWRITE.
-			See AGPUBuffer::ELockType for more detials.
+			See EGpuBufferLockType for more detials.
 		@return
 			A pointer to the contents of the buffer for both or either reading and writing to depending
 			on the lock type.
 		*/
-	void* Lock(size_t offset, size_t size, ELockType lockType);
+	void* Lock(size_t offset, size_t size, EGpuBufferLockType lockType);
 
 	/** Unlock a the locked buffer. @author Hayden Asplet */
 	void Unlock();
 
 	/** Get how the buffer is intended to be used. @author Hayden Asplet */
-	const EUsage GetUsage() const;
+	const EGpuBufferUsage GetUsage() const;
 	/** Get the size of the buffer in bytes. @author Hayden Asplet */
 	const size_t GetSize() const;
 	/** Get if the buffer is stored in system memory or not. @author Hayden Asplet */
@@ -137,14 +136,14 @@ private:
 		@param
 			size Size of the region to lock in bytes.
 		@param
-			lockType The type of lock to perform e.g. LOCK_NORMAL (for both reading and writing),
-			LOCK_DISCARD (discard the current buffer's contents), LOCK_READ_ONLY and LOCK_NO_OVERWRITE.
-			See AGPUBuffer::ELockType for more detials.
+			lockType The type of lock to perform e.g. NORMAL (for both reading and writing),
+			DISCARD (discard the current buffer's contents), READ_ONLY and NO_OVERWRITE.
+			See EGpuBufferLockType for more detials.
 		@return
 			A pointer to the contents of the buffer for both or either reading and writing to depending
 			on the lock type.
 		*/
-	virtual void* VLock(size_t offset, size_t size, ELockType lockType) = 0;
+	virtual void* VLock(size_t offset, size_t size, EGpuBufferLockType lockType) = 0;
 
 	/** Internal delegating method to unlock the buffer. @author Hayden Asplet */
 	virtual void VUnlock() = 0;
@@ -153,7 +152,7 @@ private:
 public:
 protected:
 private:
-	EUsage m_usage;			// Usage 
+	EGpuBufferUsage m_usage;// Usage 
 	size_t m_bufferSize;	// Size of the buffer in bytes.
 	bool m_isInSystemMemory;// True if the buffer is stored in system memory (CPU) and not on the GPU
 
@@ -186,9 +185,9 @@ public:
 		@param
 			lockType The type of lock to perform e.g. LOCK_NORMAL (for both reading and writing),
 			LOCK_DISCARD (discard the current buffer's contents), LOCK_READ_ONLY and LOCK_NO_OVERWRITE.
-			See AGPUBuffer::ELockType for more detials.
+			See EGpuBufferLockType for more detials.
 	*/
-	CGPUBufferLock(const shared_ptr<AGpuBuffer>& pBuffer, size_t offset, size_t size, AGpuBuffer::ELockType lockType);
+	CGPUBufferLock(const shared_ptr<AGpuBuffer>& pBuffer, size_t offset, size_t size, EGpuBufferLockType lockType);
 
 	/** Destructor
 		@remarks

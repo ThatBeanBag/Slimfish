@@ -44,15 +44,15 @@ public:
 	virtual void VPostRender() override;
 
 	/* @copydoc ARenderer::VCreateVertexBuffer */
-	virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) override;
+	virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory) override;
 	/* @copydoc ARenderer::VCreateVertexBuffer */
-	virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, AGpuBuffer::EUsage usage, bool isInSystemMemory) override;
+	virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory) override;
 
 	/* @copydoc ARenderer::VCreateShaderProgram */
 	virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, AShaderProgram::EShaderType type);
 
 	/* @copydoc ARenderer::VLoadTexture */
-	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ATexture::EUsage usage) override;
+	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ETextureUsage usage) override;
 
 	/* @copydoc ARenderer::VRender */
 	virtual void VRender(const CVertexDeclaration& vertexDeclaration, 

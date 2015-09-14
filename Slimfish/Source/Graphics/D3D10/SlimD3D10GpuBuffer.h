@@ -52,7 +52,7 @@ namespace Slim {
 		*/
 		CD3D10GpuBuffer(ID3D10Device* pD3DDevice, 
 						EBufferType bufferType, size_t bufferSize, const void* pSource,
-						AGpuBuffer::EUsage usage, bool isInSystemMemory);
+						EGpuBufferUsage usage, bool isInSystemMemory);
 		/** Destructor
 		 	@author Hayden Asplet
 		*/
@@ -67,7 +67,7 @@ namespace Slim {
 	protected:
 	private:
 		/** @copydoc AGpuBuffer::VLock */
-		virtual void* VLock(size_t offset, size_t size, ELockType lockType) override;
+		virtual void* VLock(size_t offset, size_t size, EGpuBufferLockType lockType) override;
 		/** @copydoc AGpuBuffer::VUnlock */
 		virtual void VUnlock() override;
 		// Member Variables

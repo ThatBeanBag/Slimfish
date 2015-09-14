@@ -25,6 +25,8 @@ namespace Slim {
 
 #undef DELETE
 
+/** List of key codes corresponding to keys on a standard U.S. keyboard.
+*/
 enum class EKeyCode {
 	// Numbers.
 	NUM_0 = 0, NUM_1 = 1, NUM_2 = 2, NUM_3 = 3, NUM_4 = 4, NUM_5 = 5, NUM_6 = 6, NUM_7 = 7, NUM_8 = 8, NUM_9 = 9,
@@ -34,6 +36,8 @@ enum class EKeyCode {
 	A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
 	// F Keys.
 	F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, F11, F12,
+	// Arrow keys.
+	LEFT_ARROW, RIGHT_ARROW, UP_ARROW, DOWN_ARROW,
 	// Virtual key codes.
 	LEFT_SHIFT, RIGHT_SHIFT,
 	LEFT_CONTROL, RIGHT_CONTROL,
@@ -54,33 +58,48 @@ enum class EKeyCode {
 	PAGE_DOWN,
 	PRINT_SCREEN,
 	PAUSE,
+	// The '`~' key.
 	TELDA,
 	NUM_LOCK,
 	SCROLL_LOCK,
+	// The '=+' key.
 	EQUALS,
+	// The '-_' key.
 	HYPHEN,
 	NUM_PAD_MINUS, 
 	NUM_PAD_PLUS, 
 	NUM_PAD_DIVIDE, 
 	NUM_PAD_MULTIPLY,
+	// The ',<' key.
 	COMMA,
+	// The '.>' key.
 	PERIOD,
-	SLASH,
+	// The '/?' key.
+	FORWARD_SLASH,
+	// The '\|' key.
+	BACK_SLASH,
+	// The ';:'
 	SEMI_COLON,
+	// The ''"' key.
 	QUOTE,
+	// The '[{' key.
 	LEFT_BRACKET,
+	// The ']}' key.
 	RIGHT_BRACKET,
-	
-	// Arrow keys.
-	LEFT_ARROW, RIGHT_ARROW, UP_ARROW, DOWN_ARROW,
-
+	// Describe the maximum key code value. Not to be used as an actual key code.
 	MAX
 };
 
+/** List of mouse buttons.
+*/
 enum class EMouseButton {
 	LEFT,
 	MIDDLE,
 	RIGHT,
+	EXTRA_1,
+	EXTRA_2,
+	// Describe the maximum key code value. Not to be used as an actual key code.
+	MAX
 };
 
 /** 
@@ -89,53 +108,118 @@ enum class EMouseButton {
 */
 class CInput {
 	// Member Functions
-	enum class EKeyState {
-		NONE,
-		PRESS,
+	enum class EButtonState {
+		// The button is up.
+		UP,
+		// The button is down.
+		DOWN,
+		// The button was released this frame.
 		RELEASE,
+		// The button was pressed down this frame.
+		PRESS,
 	};
 
 public:
+	/** Constructor.
+	 	@author Hayden Asplet
+	*/
 	CInput();
+
+	/** Destructor.
+	 	@author Hayden Asplet
+	*/
 	~CInput();
 
-	/** Gets whether a key is currently pressed down or not.
+	/** Retrieve whether a mouse button is down or not.
+	 	@author Hayden Asplet
+	 	@return True if the button is pressed down.
+	*/
+	bool IsMouseButtonDown(EMouseButton mouseButton) const;
+
+	/** Get whether a mouse button was pressed down this frame or not.
+		@author Hayden Asplet
+		@return True if the mouse button was pressed down this frame.
+	*/
+	bool GetMouseButtonPress(EMouseButton mouseButton) const;
+
+	/** Get whether a mouse button was released this frame or not.
+	 	@author Hayden Asplet
+	 	@return True if the mouse button was released this frame.
+	*/
+	bool GetMouseButtonRelease(EMouseButton mouseButton) const;
+
+	/** Get the mouse position.
+	 	@author Hayden Asplet
+	*/
+	void GetMousePosition(int& x, int& y) const;
+
+	/** Get whether a key is currently pressed down or not.
 	 	@author Hayden Asplet
 	 	@return True if the key is currently pressed in.
 	*/
 	bool IsKeyDown(EKeyCode key) const;
 
-	/** Retrieve whether a key has been pressed last frame or not.
+	/** Retrieve whether a key has been pressed this frame or not.
 	 	@author Hayden Asplet
-		return True if the key code was pressed down last frame.
+		return True if the key code was pressed down this frame.
 	*/
 	bool GetKeyPress(EKeyCode key) const;
 
-	/** Retrieve whether a key has been released last frame or not.
+	/** Retrieve whether a key has been released this frame or not.
 	 	@author Hayden Asplet
-	 	@return True if the key code was released last frame.
+	 	@return True if the key code was released this frame.
 	*/
 	bool GetKeyRelease(EKeyCode key) const;
-protected:
-private:
-	void SetKeyPressed(EKeyCode key);
-	void SetKeyReleased(EKeyCode key);
+
+	/** Set the state of a mouse button to pressed.
+		@note This is to be called internally. Do NOT call it yourself.
+	 	@author Hayden Asplet
+	*/
+	void SetMouseButtonPress(EMouseButton button);
+
+	/** Set the state of a mouse button to released.
+		@note This is to be called internally. Do NOT call it yourself.
+	 	@author Hayden Asplet
+	*/
+	void SetMouseButtonRelease(EMouseButton button);
+
+	/** Set the mouse position.
+		@note This is to be called internally. Do NOT call it yourself.
+	 	@author Hayden Asplet
+	*/
+	void SetMousePosition(int x, int y);
+
+	/** Set the state of a key to pressed.
+		@note This is to be called internally. Do NOT call it yourself.
+	 	@author Hayden Asplet
+	*/
+	void SetKeyPress(EKeyCode key);
+
+	/** Set the state of a key to released.
+		@note This is to be called internally. Do NOT call it yourself.
+	 	@author Hayden Asplet
+	*/
+	void SetKeyRelease(EKeyCode key);
 
 	/** Flushes the per frame states of the key codes.
 		@note This is to be called internally every tick. Do NOT call it yourself.
 	 	@author Hayden Asplet
 	*/
 	void FlushPerFrameStates();
+protected:
+private:
+
+	static bool IsButtonDown(EButtonState buttonState) { return buttonState == EButtonState::DOWN ||
+																buttonState == EButtonState::PRESS; }
 
 	// Member Variables
 public:
 protected:
 private:
-	std::vector<bool> m_KeyStates;	// Keeps track of the keys current state (up or down). 
-	std::vector<EKeyState> m_PerFrameKeyStates;	// Keeps track of a keys per frame state (whether it was pressed or released this frame or not).
-
-	std::vector<bool> m_MouseButtonStates;
-	std::vector<EKeyState> m_PerFrameMouseButtonStates;
+	std::vector<EButtonState> m_KeyStates;	// Keeps track of a keys per frame state (whether it was pressed or released this frame or not).
+	std::vector<EButtonState> m_MouseButtonStates;
+	int m_MouseX;
+	int m_MouseY;
 };
 
 }

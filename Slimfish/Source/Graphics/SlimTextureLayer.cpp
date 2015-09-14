@@ -26,9 +26,9 @@ namespace Slim {
 
 CTextureLayer::CTextureLayer()
 	:m_pTexture(nullptr),
-	m_minFilter(TFILTER_LINEAR),
-	m_magFilter(TFILTER_LINEAR),
-	m_mipFilter(TFILTER_POINT),
+	m_minFilter(ETextureFilterType::LINEAR),
+	m_magFilter(ETextureFilterType::LINEAR),
+	m_mipFilter(ETextureFilterType::POINT),
 	m_textureTransform(CMatrix4x4::s_IDENTITY),
 	m_uTranslation(0),
 	m_vTranslation(0),
@@ -37,9 +37,9 @@ CTextureLayer::CTextureLayer()
 	m_radAngle(0),
 	m_isTransformDirty(false)
 {
-	SetColourOperation(TLAYEROP_MODULATE);
-	SetAlphaOperation(TLAYEROP_MODULATE);
-	SetTextureAddressModes(TADDRESS_WRAP);
+	SetColourOperation(ETextureLayerBlendOperation::MODULATE);
+	SetAlphaOperation(ETextureLayerBlendOperation::MODULATE);
+	SetTextureAddressModes(ETextureAddressMode::WRAP);
 }
 
 CTextureLayer::~CTextureLayer()
@@ -60,28 +60,28 @@ const shared_ptr<ATexture>& CTextureLayer::GetTexture()
 void CTextureLayer::SetTextureFilter(ETextureFilterTypeBroad filterType)
 {
 	switch (filterType) {
-		case TFILTERB_NONE: {
-			m_minFilter = TFILTER_POINT;
-			m_magFilter = TFILTER_POINT;
-			m_mipFilter = TFILTER_NONE;
+		case ETextureFilterTypeBroad::NONE: {
+			m_minFilter = ETextureFilterType::POINT;
+			m_magFilter = ETextureFilterType::POINT;
+			m_mipFilter = ETextureFilterType::NONE;
 			break;
 		}
-		case TFILTERB_BILINEAR: {
-			m_minFilter = TFILTER_LINEAR;
-			m_magFilter = TFILTER_LINEAR;
-			m_mipFilter = TFILTER_POINT;
+		case ETextureFilterTypeBroad::BILINEAR: {
+			m_minFilter = ETextureFilterType::LINEAR;
+			m_magFilter = ETextureFilterType::LINEAR;
+			m_mipFilter = ETextureFilterType::POINT;
 			break;
 		}
-		case TFILTERB_TRILINEAR: {
-			m_minFilter = TFILTER_LINEAR;
-			m_magFilter = TFILTER_LINEAR;
-			m_mipFilter = TFILTER_LINEAR;
+		case ETextureFilterTypeBroad::TRILINEAR: {
+			m_minFilter = ETextureFilterType::LINEAR;
+			m_magFilter = ETextureFilterType::LINEAR;
+			m_mipFilter = ETextureFilterType::LINEAR;
 			break;
 		}
-		case TFILTERB_ANISOTROPIC: {
-			m_minFilter = TFILTER_ANISOTROPIC;
-			m_magFilter = TFILTER_ANISOTROPIC;
-			m_mipFilter = TFILTER_LINEAR;
+		case ETextureFilterTypeBroad::ANISOTROPIC: {
+			m_minFilter = ETextureFilterType::ANISOTROPIC;
+			m_magFilter = ETextureFilterType::ANISOTROPIC;
+			m_mipFilter = ETextureFilterType::LINEAR;
 			break;
 		}
 	}
@@ -97,13 +97,13 @@ void CTextureLayer::SetTextureFilter(ETextureFilterType minFilter, ETextureFilte
 ETextureFilterType CTextureLayer::GetTextureFilter(ETextureSamplerType samplerType)
 {
 	switch (samplerType) {
-		case TSAMP_MIN: {
+		case ETextureSamplerType::MIN: {
 			return m_minFilter;
 		}
-		case TSAMP_MAG: {
+		case ETextureSamplerType::MAG: {
 			return m_magFilter;
 		}
-		case TSAMP_MIP: {
+		case ETextureSamplerType::MIP: {
 			return m_mipFilter;
 		}
 		default: {

@@ -39,14 +39,14 @@ namespace Slim {
 			@param 
 				stride Size in bytes of a single vertex.
 		 	@param 
-				usage Specifies how the buffer is intended to be used. See AGpuBuffer::EUsage.
+				usage Specifies how the buffer is intended to be used. See EGpuBufferUsage.
 		 	@param 
 				isInSystemMemory True if the buffer should be stored in system memory and not
 				video memory.
 		*/
 		AVertexGpuBuffer(size_t numVertices, 
 						 size_t stride,
-						 AGpuBuffer::EUsage usage, 
+						 EGpuBufferUsage usage, 
 						 bool isInSystemMemory);
 		/** Destructor
 			@author Hayden Asplet

@@ -23,27 +23,32 @@
 
 namespace Slim {
 
+	/** List of types of shader constants.
+	@remarks
+		Describes the type of a constant variable used by a shader program.
+	*/
+enum class EShaderConstantType {
+	INT,
+	INT2,
+	INT3,
+	INT4,
+	FLOAT,
+	FLOAT2,
+	FLOAT3,
+	FLOAT4,
+	MATRIX4X4,
+	SAMPLER1D,
+	SAMPLER2D,
+	SAMPLER3D,
+	SAMPLERCUBE
+};
+
 /** Class representing a constant definition in a shader.
 @remarks
 		
 */
 class CShaderConstant {
 public:
-	enum EConstantType {
-		TYPE_INT,
-		TYPE_INT2,
-		TYPE_INT3,
-		TYPE_INT4,
-		TYPE_FLOAT,
-		TYPE_FLOAT2,
-		TYPE_FLOAT3,
-		TYPE_FLOAT4,
-		TYPE_MATRIX4X4,
-		TYPE_SAMPLER1D,
-		TYPE_SAMPLER2D,
-		TYPE_SAMPLER3D,
-		TYPE_SAMPLERCUBE
-	};
 
 	// Member Functions
 public:
@@ -52,7 +57,7 @@ public:
 	/** Constructor
 	 	@author Hayden Asplet
 	*/
-	CShaderConstant(EConstantType type, size_t index = 0);
+	CShaderConstant(EShaderConstantType type, size_t index = 0);
 
 	/** Destructor
 	 	@author Hayden Asplet
@@ -69,13 +74,13 @@ public:
 	const size_t GetSizeInBytes() const;
 
 	/** Return true if this constant is an int. @author Hayden Asplet */
-	static const size_t GetSizeFromType(EConstantType type);
+	static const size_t GetSizeFromType(EShaderConstantType type);
 protected:
 private:
 	
 	// Member Variables
 public:
-	EConstantType m_Type;
+	EShaderConstantType m_Type;
 	size_t m_Index;
 	size_t m_Size;
 protected:
@@ -110,9 +115,9 @@ public:
 		@note This must be called before SetConstant()
 	 	@author Hayden Asplet
 	 	@param name The name of the constant definition.
-	 	@param type The type of constant definition e.g. TYPE_INT, TYPE_INT2, TYPE_FLOAT, TYPE_MATRI4X4 etc.
+	 	@param type The type of constant definition e.g. INT, INT2, FLOAT, MATRI4X4 etc.
 	*/
-	void AddConstant(const std::string& name, CShaderConstant::EConstantType type);
+	void AddConstant(const std::string& name, EShaderConstantType type);
 
 	/** Clears all the constant definitions. @author Hayden Asplet */
 	void ClearConstants();

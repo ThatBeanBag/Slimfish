@@ -44,14 +44,14 @@ public:
 		@param
 			type Index type either INDEX_TYPE_16 or INDEX_TYPE_32.
 		@param
-			usage Describes how the buffer is intended to be used. See AGpuBuffer::EUsage.
+			usage Describes how the buffer is intended to be used. See EGpuBufferUsage.
 		@param
 			isInSystemMemory True if the buffer should be stored in system memory and not
 			video memory.
 	*/
 	AIndexGpuBuffer(size_t numIndices,
 					EIndexType type,
-					EUsage usage,
+					EGpuBufferUsage usage,
 					bool isInSystemMemory);
 	/** Destructor.
 		@author Hayden Asplet

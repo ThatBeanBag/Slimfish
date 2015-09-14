@@ -52,7 +52,7 @@ public:
 	*/
 	CD3D10IndexGpuBuffer(ID3D10Device* pD3DDevice,
 						 size_t numIndices, EIndexType type, const void* pSource,
-						 AGpuBuffer::EUsage usage, bool isInSystemMemory);
+						 EGpuBufferUsage usage, bool isInSystemMemory);
 	/** Destructor
 		@author Hayden Asplet
 	*/
@@ -73,11 +73,11 @@ private:
 	@param
 		size Size in bytes of the region to lock.
 	@param
-		lockType The type of lock e.g. LOCK_DISCARD, LOCK_READ_ONLY etc. see AGpuBuffer::ELockType.
+		lockType The type of lock e.g. LOCK_DISCARD, LOCK_READ_ONLY etc. see EGpuBufferLockType.
 	@return
 		A pointer to the locked region of memory for reading/writing to.
 	*/
-	virtual void* VLock(size_t offset, size_t size, ELockType lockType) override;
+	virtual void* VLock(size_t offset, size_t size, EGpuBufferLockType lockType) override;
 
 	/** Internal method for unlocking the vertex buffer.
 		@author Hayden Asplet

@@ -25,14 +25,14 @@
 namespace Slim {
 
 	CShaderConstant::CShaderConstant() 
-		:m_Type(TYPE_INT), 
+		:m_Type(EShaderConstantType::INT),
 		m_Index(0), 
 		m_Size(0)
 	{
 
 	}
 
-	CShaderConstant::CShaderConstant(EConstantType type, size_t index /*= 0*/) 
+	CShaderConstant::CShaderConstant(EShaderConstantType type, size_t index /*= 0*/) 
 		:m_Type(type),
 		m_Index(index),
 		m_Size(GetSizeFromType(type))
@@ -48,11 +48,11 @@ namespace Slim {
 	bool CShaderConstant::IsFloat() const
 	{
 		switch (m_Type) {
-			case TYPE_FLOAT:		// Fall through.
-			case TYPE_FLOAT2:		// Fall through.
-			case TYPE_FLOAT3:		// Fall through.
-			case TYPE_FLOAT4:		// Fall through.
-			case TYPE_MATRIX4X4: {
+			case EShaderConstantType::FLOAT:		// Fall through.
+			case EShaderConstantType::FLOAT2:		// Fall through.
+			case EShaderConstantType::FLOAT3:		// Fall through.
+			case EShaderConstantType::FLOAT4:		// Fall through.
+			case EShaderConstantType::MATRIX4X4: {
 				return true;
 			}
 			default: {
@@ -64,10 +64,10 @@ namespace Slim {
 	bool CShaderConstant::IsInt() const
 	{
 		switch (m_Type) {
-			case TYPE_INT:			// Fall through.
-			case TYPE_INT2:			// Fall through.
-			case TYPE_INT3:			// Fall through.
-			case TYPE_INT4: {
+			case EShaderConstantType::INT:			// Fall through.
+			case EShaderConstantType::INT2:			// Fall through.
+			case EShaderConstantType::INT3:			// Fall through.
+			case EShaderConstantType::INT4: {
 				return true;
 			}
 			default: {
@@ -81,10 +81,10 @@ namespace Slim {
 	bool CShaderConstant::IsSampler() const
 	{
 		switch (m_Type) {
-			case TYPE_SAMPLER1D:	// Fall through.
-			case TYPE_SAMPLER2D:	// Fall through.
-			case TYPE_SAMPLER3D:	// Fall through.
-			case TYPE_SAMPLERCUBE: {
+			case EShaderConstantType::SAMPLER1D:	// Fall through.
+			case EShaderConstantType::SAMPLER2D:	// Fall through.
+			case EShaderConstantType::SAMPLER3D:	// Fall through.
+			case EShaderConstantType::SAMPLERCUBE: {
 				return true;
 			}
 			default: {
@@ -105,30 +105,30 @@ namespace Slim {
 		}
 	}
 
-	const size_t CShaderConstant::GetSizeFromType(EConstantType type)
+	const size_t CShaderConstant::GetSizeFromType(EShaderConstantType type)
 	{
 		switch (type) {
-			case TYPE_FLOAT:		// Fall through.
-			case TYPE_INT:			// Fall through.
-			case TYPE_SAMPLER1D:	// Fall through.
-			case TYPE_SAMPLER2D:	// Fall through.
-			case TYPE_SAMPLER3D:	// Fall through.
-			case TYPE_SAMPLERCUBE: {
+			case EShaderConstantType::FLOAT:		// Fall through.
+			case EShaderConstantType::INT:			// Fall through.
+			case EShaderConstantType::SAMPLER1D:	// Fall through.
+			case EShaderConstantType::SAMPLER2D:	// Fall through.
+			case EShaderConstantType::SAMPLER3D:	// Fall through.
+			case EShaderConstantType::SAMPLERCUBE: {
 				return 1;
 			}
-			case TYPE_INT2:			// Fall through.
-			case TYPE_FLOAT2: {
+			case EShaderConstantType::INT2:			// Fall through.
+			case EShaderConstantType::FLOAT2: {
 				return 2;
 			}
-			case TYPE_INT3:			// Fall through.
-			case TYPE_FLOAT3: {
+			case EShaderConstantType::INT3:			// Fall through.
+			case EShaderConstantType::FLOAT3: {
 				return 3;
 			}
-			case TYPE_INT4:			// Fall through.
-			case TYPE_FLOAT4: {
+			case EShaderConstantType::INT4:			// Fall through.
+			case EShaderConstantType::FLOAT4: {
 				return 4;
 			}
-			case TYPE_MATRIX4X4: {
+			case EShaderConstantType::MATRIX4X4: {
 				return 16;
 			}
 			default: {
@@ -149,7 +149,7 @@ namespace Slim {
 
 	}
 
-	void CShaderParams::AddConstant(const std::string& name, CShaderConstant::EConstantType type)
+	void CShaderParams::AddConstant(const std::string& name, EShaderConstantType type)
 	{
 		if (m_NamedConstantMap.find(name) != m_NamedConstantMap.end()) {
 			// TODO: throw up and error.
@@ -182,7 +182,7 @@ namespace Slim {
 	{
 		NamedConstantMap::iterator findIter = m_NamedConstantMap.find(name);
 		if (findIter == m_NamedConstantMap.end()) {
-			// TODO: throw up an error.
+			SLIM_THROW(EExceptionType::ENTRY_NOT_FOUND) << "Couldn't find constant " << name << " when setting parameters";
 			return;
 		}
 
@@ -191,15 +191,13 @@ namespace Slim {
 		for (size_t i = 0; i < count && i + shaderConstant.m_Index < m_ConstantInts.size(); ++i) {
 			m_ConstantInts[shaderConstant.m_Index + i] = pValue[i];
 		}
-
-		//memcpy(&m_ConstantInts[shaderConstant.m_Index], pValue, sizeof(int) * shaderConstant.m_Size);
 	}
 
 	void CShaderParams::SetConstant(const std::string& name, const float* pValue, size_t count)
 	{
 		NamedConstantMap::iterator findIter = m_NamedConstantMap.find(name);
 		if (findIter == m_NamedConstantMap.end()) {
-			// TODO: throw up an error.
+			SLIM_THROW(EExceptionType::ENTRY_NOT_FOUND) << "Couldn't find constant " << name << " when setting parameters";
 			return;
 		}
 
@@ -208,8 +206,6 @@ namespace Slim {
 		for (size_t i = 0; i < count && i + shaderConstant.m_Index < m_ConstantFloats.size(); ++i) {
 			m_ConstantFloats[shaderConstant.m_Index + i] = pValue[i];
 		}
-
-		//memcpy(&m_ConstantFloats[shaderConstant.m_Index], pValue, sizeof(float) * shaderConstant.m_Size);
 	}
 
 	void CShaderParams::SetConstant(const std::string& name, const CColourValue& value)
@@ -253,7 +249,7 @@ namespace Slim {
 		NamedConstantMap::iterator findIter = m_NamedConstantMap.find(name);
 
 		if (findIter == m_NamedConstantMap.end()) {
-			// TODO: throw exception.
+			SLIM_THROW(EExceptionType::ENTRY_NOT_FOUND) << "Couldn't find constant " << name << " to retrieve.";
 		}
 
 		return findIter->second;

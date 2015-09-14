@@ -23,6 +23,7 @@
 #include <Windows.h>
 
 // Local Includes
+#include "SlimInput.h"
 
 namespace Slim {
 
@@ -47,6 +48,8 @@ public:
 	virtual bool VInitialise(HINSTANCE hInstance, LPSTR lpCmdLine, HWND hWnd, size_t screenHeight, size_t screenWidth);
 
 	static LRESULT CALLBACK MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+	static EKeyCode GetKeyCode(WPARAM wParam);
+
 	HWND GetHWND() { return m_hWnd; }
 
 	void Update();
@@ -68,6 +71,7 @@ private:
 
 	std::unique_ptr<CGameLogic> m_pGame;
 	std::unique_ptr<ARenderer> m_pRenderer;
+	CInput m_Input;
 
 	bool m_bIsRunning;
 	bool m_bIsQuitting;

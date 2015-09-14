@@ -25,6 +25,40 @@
 
 namespace Slim {
 
+/** List of usage flags that describe how a texture is used.
+	@note
+		This enumeration is weakly typed, as in it can be implicitly
+		converted to and from an int this gives it the functionality to be
+		used as a flag, but the downside is that it lacks type safety.
+*/
+enum class ETextureUsage : int {
+	// See CGPUBuffer::USAGE_STATIC.
+	STATIC,
+	// See CGPUBuffer::USAGE_DYNAMIC.
+	DYNAMIC,
+	// See CGPUBuffer::USAGE_WRITE_ONLY.
+	WRITE_ONLY,
+	// See CGpuBuffer::USAGE_READ_ONLY.
+	READ_ONLY,
+	// See CGPUBuffer::USAGE_DISCARDABLE.
+	DISCARDABLE,
+	// The texture resource will be used as a render target.
+	RENDER_TARGET = DISCARDABLE * 2
+};
+
+/** List of standard texture types.
+*/
+enum class ETextureType {
+	// 1 dimensional texture.
+	TYPE_1D,
+	// 2 dimensional texture (most commonly used for standard textures).
+	TYPE_2D,
+	// 3 dimensional textures. Basically an array of 2D textures.
+	TYPE_3D,
+	// Cube mapping textures.
+	TYPE_CUBIC
+};
+
 /** Abstract class representing a texture resource.
 @remarks
 	A texture is a rendering resource that can be used by shaders to provide definition
@@ -40,41 +74,6 @@ namespace Slim {
 	in several advanced rendering techniques.
 */
 class ATexture {
-public:
-	/** List of usage flags that define how the buffer is used.
-		@note
-			This enumeration is weakly typed, as in it can be implicitly
-			converted to and from an int this gives it the functionality to be
-			used as a flag, but the downside is that it lacks type safety.
-	*/
-	enum EUsage : int {
-		// See CGPUBuffer::USAGE_STATIC.
-		USAGE_STATIC = AGpuBuffer::USAGE_STATIC,
-		// See CGPUBuffer::USAGE_DYNAMIC.
-		USAGE_DYNAMIC = AGpuBuffer::USAGE_DYNAMIC,
-		// See CGPUBuffer::USAGE_WRITE_ONLY.
-		USAGE_WRITE_ONLY = AGpuBuffer::USAGE_WRITE_ONLY,
-		// See CGpuBuffer::USAGE_READ_ONLY.
-		USAGE_READ_ONLY = AGpuBuffer::USAGE_READ_ONLY,
-		// See CGPUBuffer::USAGE_DISCARDABLE.
-		USAGE_DISCARDABLE = AGpuBuffer::USAGE_DISCARDABLE,
-		// The texture resource will be used as a render target.
-		USAGE_RENDER_TARGET = USAGE_DISCARDABLE * 2
-	};
-
-	/** List of standard texture types.
-	*/
-	enum EType {
-		// 1 dimensional texture.
-		TEXTURE_TYPE_1D,
-		// 2 dimensional texture (most commonly used for standard textures).
-		TEXTURE_TYPE_2D,
-		// 3 dimensional textures. Basically an array of 2D textures.
-		TEXTURE_TYPE_3D,
-		// Cube mapping textures.
-		TEXTURE_TYPE_CUBIC
-	};
-
 	// Member Functions
 public:
 	/** Default constructor.
@@ -83,13 +82,13 @@ public:
 			name Name of the resource, will be use to load the texture from file and
 			to identify the texture in code.
 	 	@param 
-			textureType Type of the texture e.g. TEXTURE_TYPE_1D, TEXTURE_TYPE_2D, 
-			TEXTURE_TYPE_3D and TEXTURE_TYPE_CUBIC.
+			textureType Type of the texture e.g. TYPE_1D, TYPE_2D, 
+			TYPE_3D and TYPE_CUBIC.
 	 	@param 
 			usage Describes how the texture is intended to be used e.g. USAGE_STATIC, 
 			USAGE_DYNAMIC, USAGE_WRITE_ONLY, USAGE_DISCARDBLE and USAGE_RENDER_TARGET.
 	*/
-	ATexture(const std::string& name, EType textureType, EUsage usage);
+	ATexture(const std::string& name, ETextureType textureType, ETextureUsage usage);
 
 	/** Destructor.
 	 	@author Hayden Asplet
@@ -127,22 +126,22 @@ public:
 	/** Set the texture type e.g. 1D, 2D, 3D or cubic.
 	 	@author Hayden Asplet
 	*/
-	void SetType(EType textureType);
+	void SetType(ETextureType textureType);
 
 	/** Get the texture type e.g. 1D, 2D, 3D or cubic.
 	 	@author Hayden Asplet
 	*/
-	EType GetTextureType() const;
+	ETextureType GetTextureType() const;
 
 	/** Set how the texture is intended to be used (only useful prior to loading).
 	 	@author Hayden Asplet
 	*/
-	void SetUsage(EUsage usage);
+	void SetUsage(ETextureUsage usage);
 
 	/** Get how the texture is intended to be used.
 	 	@author Hayden Asplet
 	*/
-	const EUsage GetUsage() const;
+	const ETextureUsage GetUsage() const;
 
 	/** Return true if the texture resource has been loaded successfully.
 	 	@author Hayden Asplet
@@ -160,7 +159,7 @@ public:
 	const size_t GetHeight() const;
 
 	/** Get the depth of the 3D texture. 
-		@note Only valid with 3D textures, aka texture type is TEXTURE_TYPE_3D.
+		@note Only valid with 3D textures, aka texture type is TYPE_3D.
 		@author Hayden Asplet 
 	*/
 	const size_t GetDepth() const;
@@ -168,7 +167,7 @@ public:
 	/** Set the width of the texture.
 		@note 
 			Only applicable prior to loading and when texture is being used as a 
-			render target (usage is USAGE_RENDER_TARGET).
+			render target (usage is RENDER_TARGET).
 		@author Hayden Asplet 
 	*/
 	void SetWidth(size_t width);
@@ -176,7 +175,7 @@ public:
 	/** Set the height of the texture.
 		@note
 			Only applicable prior to loading and when texture is being used as a
-			render target (usage is USAGE_RENDER_TARGET).
+			render target (usage is RENDER_TARGET).
 		@author Hayden Asplet 
 	*/
 	void SetHeight(size_t height);
@@ -184,9 +183,9 @@ public:
 	/** Set the depth of the 3D texture.
 		@note
 			Only applicable prior to loading and when texture is being used as a
-			render target (usage is USAGE_RENDER_TARGET).
+			render target (usage is RENDER_TARGET).
 		@note
-			Only valid with 3D textures, aka texture type is TEXTURE_TYPE_3D.
+			Only valid with 3D textures, aka texture type is TYPE_3D.
 		@author Hayden Asplet
 	*/
 	void SetDepth(size_t depth);
@@ -256,9 +255,9 @@ private:
 public:
 protected:
 private:
-	std::string m_Name;		// Name of the texture, also specifies the filename of the file to load.
-	EType m_TextureType;	// The type of texture e.g. TEXTURE_TYPE_1D, TEXTURE_TYPE_2D etc.
-	EUsage m_Usage;			// Describes how the texture is intended to be used.
+	std::string m_Name;				// Name of the texture, also specifies the filename of the file to load.
+	ETextureType m_TextureType;		// The type of texture e.g. TYPE_1D, TYPE_2D etc.
+	ETextureUsage m_Usage;			// Describes how the texture is intended to be used.
 
 	bool m_IsLoaded; // True if the texture resource has been loaded successfully.
 
