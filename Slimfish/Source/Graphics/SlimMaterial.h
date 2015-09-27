@@ -30,18 +30,30 @@ namespace Slim {
 /* Represents the graphical material of an object in the scene. 
 /************************************************************************/
 class CMaterial {
+	typedef std::vector<std::unique_ptr<CRenderPass>> TTechnique;
+	typedef std::vector<TTechnique> TTechniques;
+
 	// Member Functions
 public:
 	CMaterial();
 	~CMaterial();
 
+	TTechnique* CreateTechnique();
+	TTechnique* GetBestTechnique();
+	TTechnique* GetTechnique(size_t lod);
+	size_t GetNumTechniques() const { return m_Techniques.size(); }
 
+
+	void RemoveTechnique(size_t lod);
+	void ClearTechniques();
 protected:
 private:
 	// Member Variables
 public:
 protected:
 private:
+	TTechniques m_Techniques;
+
 	CColourValue m_diffuse;
 	CColourValue m_ambient;
 	CColourValue m_specular;

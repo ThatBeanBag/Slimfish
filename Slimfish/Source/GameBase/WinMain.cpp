@@ -35,7 +35,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		ZeroMemory(&msg, sizeof(msg));
 
 		// Perform the initialization sequence.
-		if (!g_pApp->VInitialise(hInstance, lpCmdLine, NULL, 860, 640)) {
+		if (!g_pApp->VInitialise(hInstance, lpCmdLine, NULL, 1920, 1080)) {
 			// Failed to initialize.
 			g_pApp->OnClose();
 			return 0;

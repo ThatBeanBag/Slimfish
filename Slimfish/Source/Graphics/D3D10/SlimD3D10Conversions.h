@@ -49,7 +49,7 @@ namespace D3D10Conversions {
 	DXGI_FORMAT GetFormat(CInputElement::EFormat inputElementFormat);
 	DXGI_FORMAT GetFormat(AIndexGpuBuffer::EIndexType indexType);
 
-	D3D10_PRIMITIVE_TOPOLOGY GetPrimitiveType(CVertexDeclaration::EPrimitiveType primitiveType);
+	D3D10_PRIMITIVE_TOPOLOGY GetPrimitiveType(EPrimitiveType primitiveType);
 	D3D10_TEXTURE_ADDRESS_MODE GetAddressMode(ETextureAddressMode addressMode);
 	D3D10_FILTER GetFilter(ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter);
 
@@ -58,9 +58,11 @@ namespace D3D10Conversions {
 	D3D10_BLEND_OP GetBlendOperation(EBlendOperation blendOperation);
 	D3D10_BLEND GetBlendFactor(EBlendFactor blendFactor);
 
-
-	D3D10_CULL_MODE GetCullMode(ECullingMode cullingMode);
+	D3D10_CULL_MODE GetCullingMode(ECullingMode cullingMode);
 	D3D10_FILL_MODE GetFillMode(EFillMode fillMode);
+
+	D3D10_COMPARISON_FUNC GetComparisonFunction(EComparisonFunction function);
+	D3D10_STENCIL_OP GetStencilOperation(EStencilOperation operation);
 }
 
 }

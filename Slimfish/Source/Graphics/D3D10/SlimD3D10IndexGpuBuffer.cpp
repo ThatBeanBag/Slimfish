@@ -45,7 +45,7 @@ namespace Slim {
 
 	CD3D10IndexGpuBuffer::~CD3D10IndexGpuBuffer()
 	{
-		SafeDelete(m_pImpl);
+		SLIM_SAFE_DELETE(m_pImpl);
 	}
 
 	ID3D10Buffer* CD3D10IndexGpuBuffer::GetD3DBuffer()

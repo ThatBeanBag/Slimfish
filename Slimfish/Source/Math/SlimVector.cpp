@@ -24,9 +24,11 @@
 
 namespace Slim {
 
-const CVector3 CVector3::s_FORWARD = CVector3(0, 0, 1);
+const CVector3 CVector3::s_FORWARD = CVector3(0, 0, -1);
 const CVector3 CVector3::s_RIGHT = CVector3(1, 0, 0);
 const CVector3 CVector3::s_UP = CVector3(0, 1, 0);
+const CVector3 CVector3::s_ZERO = CVector3(0, 0, 0);
+const CVector3 CVector3::s_ONE = CVector3(1.0f, 1.0f, 1.0f);
 
 CVector3::CVector3()
 	:m_x(0), m_y(0), m_z(0)
@@ -91,6 +93,31 @@ CVector3& CVector3::operator-=(float scalar)
 	return *this;
 }
 
+const CVector3 CVector3::Normalise(const CVector3& vec3)
+{
+	float magnitude = vec3.GetLength();
+
+	if (magnitude == 0.0f) {
+		return CVector3();
+	}
+	
+	return CVector3(vec3.GetX() / magnitude, vec3.GetY() / magnitude, vec3.GetZ() / magnitude);
+}
+
+const CVector3 CVector3::CrossProduct(const CVector3& vec3A, const CVector3& vec3B)
+{
+	return CVector3(vec3A.GetY() * vec3B.GetZ() - vec3A.GetZ() * vec3B.GetY(),
+				    vec3A.GetZ() * vec3B.GetX() - vec3A.GetX() * vec3B.GetZ(),
+				    vec3A.GetX() * vec3B.GetY() - vec3A.GetY() * vec3B.GetX());
+}
+
+const float CVector3::DotProduct(const CVector3& vec3A, const CVector3& vec3B)
+{
+	return (vec3A.GetX() * vec3B.GetX() + 
+			vec3A.GetY() * vec3B.GetY() +
+			vec3A.GetZ() * vec3B.GetZ());
+}
+
 const CVector3 operator+(const CVector3& vec3A, const CVector3& vec3B)
 {
 	CVector3 addition = vec3A;
@@ -146,29 +173,5 @@ const CVector3 operator*(float scalar, const CVector3& vec3)
 	return vec3 * scalar;
 }
 
-const CVector3 Normalise(const CVector3& vec3)
-{
-	float magnitude = vec3.GetLength();
-
-	if (magnitude == 0.0f) {
-		return CVector3();
-	}
-	
-	return CVector3(vec3.GetX() / magnitude, vec3.GetY() / magnitude, vec3.GetZ() / magnitude);
-}
-
-const CVector3 CrossProduct(const CVector3& vec3A, const CVector3& vec3B)
-{
-	return CVector3(vec3A.GetY() * vec3B.GetZ() - vec3A.GetZ() * vec3B.GetY(),
-				 vec3A.GetZ() * vec3B.GetX() - vec3A.GetX() * vec3B.GetZ(),
-				 vec3A.GetX() * vec3B.GetY() - vec3A.GetY() * vec3B.GetX());
-}
-
-const float DotProduct(const CVector3& vec3A, const CVector3& vec3B)
-{
-	return (vec3A.GetX() * vec3B.GetX() + 
-			vec3A.GetY() * vec3B.GetY() +
-			vec3A.GetZ() * vec3B.GetZ());
-}
 
 }

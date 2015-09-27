@@ -37,6 +37,7 @@ public:
 	virtual const CImage VGetImage() const;
 
 	ID3D10ShaderResourceView* GetD3DTexture();
+	ID3D10Resource* GetD3DResource();
 protected:
 private:
 	void CreateRenderTarget1D();

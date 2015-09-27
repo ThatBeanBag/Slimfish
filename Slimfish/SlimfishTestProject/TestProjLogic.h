@@ -18,12 +18,14 @@
 #define __TESTPROJLOGIC_H__
 
 // Library Includes
-#include <GameBase/SlimGameLogic.h>
-#include <Graphics/SlimVertexGpuBuffer.h>
-#include <Graphics/SlimIndexGpuBuffer.h>
-#include <Graphics/SlimShaderProgram.h>
-#include <Graphics/SlimTexture.h>
-#include <Graphics/SlimTextureLayer.h>
+#include <GameBase\SlimGameLogic.h>
+#include <Graphics\SlimVertexGpuBuffer.h>
+#include <Graphics\SlimIndexGpuBuffer.h>
+#include <Graphics\SlimShaderProgram.h>
+#include <Graphics\SlimTexture.h>
+#include <Graphics\SlimTextureLayer.h>
+#include <Graphics\SlimRenderPass.h>
+#include <Graphics\SlimRenderTexture.h>
 
 // Local Includes
 
@@ -38,9 +40,9 @@ public:
 	virtual void Render();
 	virtual void HandleInput(const CInput& input, float deltaTime) override;
 
-	void LoadTerrain();
-
-
+	void BuildWater(size_t n, size_t m);
+	void BuildSkySphere(int latLines, int longLines);
+	void LoadTerrain(const CVector3& scale);
 protected:
 private:
 	// Member Variables
@@ -52,28 +54,48 @@ private:
 	shared_ptr<AIndexGpuBuffer> m_pTerrainIndices;
 	CTextureLayer m_TerrainTextureLayer;
 	CVertexDeclaration m_TerrainVertexDeclaration;
-	shared_ptr<AShaderProgram> m_TerrainVertexShader;
-	shared_ptr<AShaderProgram> m_TerrainPixelShader;
+	shared_ptr<CShaderParams> m_TerrainVSParams;
+	shared_ptr<CShaderParams> m_TerrainPSParams;
 	CMatrix4x4 m_TerrainWorldTransform;
+	CRenderPass m_TerrainRenderPass;
 
 	// Water.
 	shared_ptr<AVertexGpuBuffer> m_pWaterVertices;
 	shared_ptr<AIndexGpuBuffer> m_pWaterIndices;
-	CTextureLayer m_WaterTexture;
-	CTextureLayer m_WaterSpecular;
-	CTextureLayer m_WaterNormalMap;
 	CVertexDeclaration m_WaterVertexDeclaration;
-	shared_ptr<AShaderProgram> m_WaterVertexShader;
-	shared_ptr<AShaderProgram> m_WaterPixelShader;
-	CMatrix4x4 m_WaterWorldTransform;
+	shared_ptr<CShaderParams> m_WaterVSParams;
+	shared_ptr<CShaderParams> m_WaterPSParams;
+	CMatrix4x4 m_WaterTransform;
+	CMatrix4x4 m_WaterWaveTransform1;
+	CMatrix4x4 m_WaterWaveTransform2;
+	CMatrix4x4 m_WaterWaveTransform3;
+	CMatrix4x4 m_WaterWaveTransform4;
+	CRenderPass m_WaterRenderPass;
+
+	// SkyBox.
+	CRenderPass m_SkyBoxRenderPass;
+	CVertexDeclaration m_SkyBoxVertexDeclaration;
+	shared_ptr<AVertexGpuBuffer> m_pSkyBoxVertices;
+	shared_ptr<AIndexGpuBuffer> m_pSkyBoxIndices;
+	shared_ptr<CShaderParams> m_pSkyBoxShaderParams;
+	CMatrix4x4 m_SkyBoxWorldTransform;
 
 	CMatrix4x4 m_ViewMatrix;
+	CMatrix4x4 m_ReflectionViewMatrix;
 	CMatrix4x4 m_ProjectionMatrix;
+
+	std::unique_ptr<ARenderTexture> m_pRefractionRenderTarget;
+	std::unique_ptr<ARenderTexture> m_pReflectionRenderTarget;
+
+	CVector3 m_EyePosition;
 
 	float m_ElapsedTime;
 
 	float m_CameraPitch;
 	float m_CameraYaw;
+	float m_CameraDistance;
+	int m_LastMouseX;
+	int m_LastMouseY;
 };
 
 #endif // __TESTPROJLOGIC_H__

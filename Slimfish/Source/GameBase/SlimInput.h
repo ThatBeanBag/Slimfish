@@ -93,10 +93,15 @@ enum class EKeyCode {
 /** List of mouse buttons.
 */
 enum class EMouseButton {
+	// Left mouse click.
 	LEFT,
+	// The middle mouse button (scroll wheel).
 	MIDDLE,
+	// Right mouse click.
 	RIGHT,
+	// First extra button on the mouse.
 	EXTRA_1,
+	// Second extra button on the mouse.
 	EXTRA_2,
 	// Describe the maximum key code value. Not to be used as an actual key code.
 	MAX
@@ -148,10 +153,10 @@ public:
 	*/
 	bool GetMouseButtonRelease(EMouseButton mouseButton) const;
 
-	/** Get the mouse position.
+	/** Get the mouse position as a point on the screen.
 	 	@author Hayden Asplet
 	*/
-	void GetMousePosition(int& x, int& y) const;
+	const CPoint& GetMousePosition() const;
 
 	/** Get whether a key is currently pressed down or not.
 	 	@author Hayden Asplet
@@ -218,8 +223,7 @@ protected:
 private:
 	std::vector<EButtonState> m_KeyStates;	// Keeps track of a keys per frame state (whether it was pressed or released this frame or not).
 	std::vector<EButtonState> m_MouseButtonStates;
-	int m_MouseX;
-	int m_MouseY;
+	CPoint m_MousePosition;
 };
 
 }

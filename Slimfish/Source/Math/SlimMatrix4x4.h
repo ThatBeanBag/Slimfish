@@ -24,6 +24,8 @@
 
 namespace Slim {
 
+	class CQuaternion;
+
 /** Standard 4 by 4 homogeneous matrix class for affine transformations of vectors.
 	@remarks
 		All matrices are column-major and should be concatenated appropriately.
@@ -116,10 +118,16 @@ public:
 	CMatrix4x4& operator-=(const CMatrix4x4& other);
 
 	/** Transform a vector 3
+		@note If the vector is a normal use TransformNormal instead.
 	 	@author Hayden Asplet
 		@return Resultant transformed and homogenized vector.
 	*/
-	const CVector3 Transform(const CVector3& vector);
+	const CVector3 Transform(const CVector3& vector) const;
+
+	/** Transform a normal vector.
+	 	@author Hayden Asplet
+	*/
+	const CVector3 TransformNormal(const CVector3& normal) const;
 
 	/************************************************************************/
 	/* Accessor Methods
@@ -214,8 +222,18 @@ public:
 	/** Get the up vector of the transform. @author Hayden Asplet */
 	const CVector3 GetUp() const;
 
-	// Convenience Build Functions
+	/** Break the matrix into it's translation, rotation and scale components.
+	 	@author Hayden Asplet
+		@param position Restulant position.
+		@param scale Resultant scale.
+	 	@param rotation	Resultant rotation.
+	*/
+	void Decompose(CVector3& position, CVector3& scale, CQuaternion& rotation);
 
+	// Convenience Build Methods
+
+	/** Build a transform from each component, translation, rotation, and scale. @author Hayden Asplet */
+	static const CMatrix4x4 BuildTransform(const CVector3& translation, const CVector3& scale, const CQuaternion& rotation);
 	/** Build a scale transform. @author Hayden Asplet */
 	static const CMatrix4x4 BuildScale(float xScale, float yScale, float zScale);
 	/** Build a scale transform. @author Hayden Asplet */
@@ -236,6 +254,8 @@ public:
 	static const CMatrix4x4 BuildTranslation(const CVector3& position);
 	/** Build a view matrix from a camera position, a look at position and an up direction. @author Hayden Asplet */
 	static const CMatrix4x4 BuildLookAt(const CVector3& eye, const CVector3& at, const CVector3& up);
+	/** Build a reflection matrix to reflect a point through a plane */
+	static const CMatrix4x4 BuildReflect(const CVector3& planeNormal, float d);
 
 	/** Build a perspective projection matrix.
 	 	@author Hayden Asplet

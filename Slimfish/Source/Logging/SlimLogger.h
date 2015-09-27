@@ -27,7 +27,7 @@
 
 namespace Slim {
 
-/** Singleton class managing log files. 
+/** Singleton class for managing log files. 
 @remarks
 	
 */
@@ -116,45 +116,44 @@ private:
 	CLog* m_pCurrentLog;	// The current log.
 };
 
-
-#define SLIM_BREAK_ON_ERROR 1
-
 #ifndef SLIM_BREAK_ON_ERROR
 
 #define SLIM_LOG(logLevel)	\
-	CLogger::GetInstance()->CreateStream(logLevel, __FILE__, __LINE__, __FUNCTION__)
+	if(true) \
+		CLogger::GetInstance()->CreateStream(logLevel, __FILE__, __LINE__, __FUNCTION__)
 
-#define SLIM_LOG_IF(condition, logLevel)\
+#define SLIM_LOG_IF(condition, logLevel) \
 	if(condition) \
 		CLogger::GetInstance()->CreateStream(logLevel, __FILE__, __LINE__, __FUNCTION__)
 
 #else
 
-#define SLIM_LOG(logLevel)\
-	if(logLevel >= LOG_ERROR)\
-		__debugbreak();\
-	CLogger::GetInstance()->CreateStream(logLevel, __FILE__, __LINE__, __FUNCTION__)
+#define SLIM_LOG(logLevel) \
+	if(logLevel >= LOG_ERROR) \
+		__debugbreak(); \
+	if(true) \
+		CLogger::GetInstance()->CreateStream(logLevel, __FILE__, __LINE__, __FUNCTION__)
 
-#define SLIM_LOG_IF(condition, logLevel)\
-	if(condition && logLevel >= LOG_ERROR)\
-		__debugbreak();\
-	if(condition)\
+#define SLIM_LOG_IF(condition, logLevel) \
+	if(condition && logLevel >= LOG_ERROR) \
+		__debugbreak(); \
+	if(condition) \
 		CLogger::GetInstance()->CreateStream(logLevel, __FILE__, __LINE__, __FUNCTION__)
 
 #endif
 
 // Convenience macros for logging at specific levels.
-#define SLIM_INFO()\
+#define SLIM_INFO() \
 	SLIM_LOG(LOG_INFO)
-#define SLIM_INFO_IF(condition)\
+#define SLIM_INFO_IF(condition) \
 	SLIM_LOG_IF(condition, LOG_INFO)
-#define SLIM_WARNING()\
+#define SLIM_WARNING() \
 	SLIM_LOG(LOG_WARNING)
-#define SLIM_WARNING_IF(condition)\
+#define SLIM_WARNING_IF(condition) \
 	SLIM_LOG_IF(condition, LOG_WARNING)
 #define SLIM_ERROR() \
 	SLIM_LOG(LOG_ERROR)
-#define SLIM_ERROR_IF(condition)\
+#define SLIM_ERROR_IF(condition) \
 	SLIM_LOG_IF(condition, LOG_ERROR)
 
 }

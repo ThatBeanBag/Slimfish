@@ -18,16 +18,31 @@
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Conversions.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10IndexGpuBuffer.cpp" />
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10RenderTexture.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10ShaderProgram.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Texture.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10VertexDeclaration.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10Renderer.cpp" />
     <ClCompile Include="..\Graphics\D3D10\SlimD3D10VertexGpuBuffer.cpp" />
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11Conversions.cpp" />
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11GpuBuffer.cpp" />
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11IndexGpuBuffer.cpp" />
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11Renderer.cpp" />
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11RenderTexture.cpp" />
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11ShaderProgram.cpp" />
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11Texture.cpp" />
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11VertexDeclaration.cpp" />
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11VertexGpuBuffer.cpp" />
+    <ClCompile Include="..\Graphics\SlimCamera.cpp" />
     <ClCompile Include="..\Graphics\SlimColour.cpp" />
+    <ClCompile Include="..\Graphics\SlimFrustum.cpp" />
     <ClCompile Include="..\Graphics\SlimGpuBuffer.cpp" />
     <ClCompile Include="..\Graphics\SlimImage.cpp" />
     <ClCompile Include="..\Graphics\SlimIndexGpuBuffer.cpp" />
     <ClCompile Include="..\Graphics\SlimLight.cpp" />
+    <ClCompile Include="..\Graphics\SlimRenderPass.cpp" />
+    <ClCompile Include="..\Graphics\SlimRenderTexture.cpp" />
+    <ClCompile Include="..\Graphics\SlimSceneNode.cpp" />
     <ClCompile Include="..\Graphics\SlimShaderParams.cpp" />
     <ClCompile Include="..\Graphics\SlimShaderProgram.cpp" />
     <ClCompile Include="..\Graphics\SlimTexture.cpp" />
@@ -39,6 +54,7 @@
     <ClCompile Include="..\Logging\SlimLog.cpp" />
     <ClCompile Include="..\Logging\SlimLogger.cpp" />
     <ClCompile Include="..\Math\SlimMatrix4x4.cpp" />
+    <ClCompile Include="..\Math\SlimPlane.cpp" />
     <ClCompile Include="..\Math\SlimQuaternion.cpp" />
     <ClCompile Include="..\Math\SlimVector.cpp" />
     <ClCompile Include="SlimStd.cpp">
@@ -54,18 +70,35 @@
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Forward.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10GpuBuffer.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10IndexGpuBuffer.h" />
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10RenderTexture.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10ShaderProgram.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10VertexDeclaration.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Renderer.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10Texture.h" />
     <ClInclude Include="..\Graphics\D3D10\SlimD3D10VertexGpuBuffer.h" />
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11Conversions.h" />
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11Forward.h" />
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11GpuBuffer.h" />
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11IndexGpuBuffer.h" />
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11Renderer.h" />
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11RenderTexture.h" />
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11ShaderProgram.h" />
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11Texture.h" />
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11VertexDeclaration.h" />
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11VertexGpuBuffer.h" />
     <ClInclude Include="..\Graphics\D3D9\SlimD3D9Renderer.h" />
     <ClInclude Include="..\Graphics\D3D9\SlimD3D9Texture.h" />
+    <ClInclude Include="..\Graphics\SlimCamera.h" />
+    <ClInclude Include="..\Graphics\SlimFrustum.h" />
+    <ClInclude Include="..\Graphics\SlimRenderQueue.h" />
+    <ClInclude Include="..\Graphics\SlimRenderTexture.h" />
     <ClInclude Include="..\Graphics\SlimColour.h" />
     <ClInclude Include="..\Graphics\SlimGpuBuffer.h" />
     <ClInclude Include="..\Graphics\SlimImage.h" />
     <ClInclude Include="..\Graphics\SlimIndexGpuBuffer.h" />
     <ClInclude Include="..\Graphics\SlimLight.h" />
+    <ClInclude Include="..\Graphics\SlimRenderPass.h" />
+    <ClInclude Include="..\Graphics\SlimSceneNode.h" />
     <ClInclude Include="..\Graphics\SlimShaderParams.h" />
     <ClInclude Include="..\Graphics\SlimVertexDeclaration.h" />
     <ClInclude Include="..\Graphics\SlimShaderProgram.h" />
@@ -81,6 +114,7 @@
     <ClInclude Include="..\Logging\SlimLogger.h" />
     <ClInclude Include="..\Math\SlimMath.h" />
     <ClInclude Include="..\Math\SlimMatrix4x4.h" />
+    <ClInclude Include="..\Math\SlimPlane.h" />
     <ClInclude Include="..\Math\SlimQuaternion.h" />
     <ClInclude Include="..\Math\SlimVector.h" />
     <ClInclude Include="..\Utilities\SlimInline.h" />
@@ -118,14 +152,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Visual Leak Detector\include;H:\Semester 2\Slimfish\Slimfish\Source\Msvc;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath);$(DXSDK_DIR)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath);H:\Semester 2\Slimfish\Slimfish\Source\Msvc</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\Temp\$(PlatformName)$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\Visual Leak Detector\include;H:\Semester 2\Slimfish\Slimfish\Source\Msvc;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath);$(DXSDK_DIR)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath);$(DXSDK_DIR)Lib\x86</LibraryPath>
+    <IncludePath>$(DXSDK_DIR)Include;C:\Program Files %28x86%29\Visual Leak Detector\include;$(IncludePath);H:\Semester 2\Slimfish\Slimfish\Source\Msvc</IncludePath>
+    <LibraryPath>$(DXSDK_DIR)Lib\x86;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\Temp\$(PlatformName)$(Configuration)\</IntDir>
   </PropertyGroup>

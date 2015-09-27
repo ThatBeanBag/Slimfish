@@ -36,11 +36,15 @@ const size_t g_MAX_ACTIVE_LIGHTS = 8;
 
 }
 
+#define SLIM_LOG_EXCEPTIONS 1
+#define SLIM_BREAK_ON_ERROR 1
+
 // Local Includes
 #include "..\Logging\SlimLogger.h"
 #include "..\Logging\SlimExceptions.h"
 #include "..\Utilities\SlimInline.h"
 #include "..\Utilities\SlimSingleton.h"
+#include "..\Utilities\SlimPoint.h"
 #include "..\Math\SlimMatrix4x4.h"
 #include "..\Math\SlimQuaternion.h"
 #include "..\Math\SlimVector.h"

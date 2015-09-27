@@ -26,8 +26,6 @@
 namespace Slim {
 
 /** List of logging levels used when determining verbosity.
-@remarks
-
 */
 enum ELogLevel {
 	LOG_DEBUG,

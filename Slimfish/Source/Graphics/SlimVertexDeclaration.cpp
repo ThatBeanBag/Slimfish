@@ -90,15 +90,7 @@ const size_t CInputElement::GetSizeFromFormat(EFormat format)
 }
 
 CVertexDeclaration::CVertexDeclaration()
-	:m_PrimitiveType(PRIMITIVE_TYPE_TRIANGLELIST),
-	m_NeedsRebuilding(true)
-{
-
-}
-
-CVertexDeclaration::CVertexDeclaration(EPrimitiveType primitiveType)
-	:m_PrimitiveType(primitiveType),
-	m_NeedsRebuilding(true)
+	:m_NeedsRebuilding(true)
 {
 
 }
@@ -142,17 +134,6 @@ const CInputElement& CVertexDeclaration::GetElement(size_t index) const
 int CVertexDeclaration::GetNumElements() const
 {
 	return m_ElementList.size();
-}
-
-
-void CVertexDeclaration::SetPrimitiveType(EPrimitiveType primitiveType)
-{
-	m_PrimitiveType = primitiveType;
-}
-
-Slim::CVertexDeclaration::EPrimitiveType CVertexDeclaration::GetPrimitiveType() const
-{
-	return m_PrimitiveType;
 }
 
 void CVertexDeclaration::SetRebuilt()

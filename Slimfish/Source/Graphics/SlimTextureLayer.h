@@ -202,14 +202,12 @@ namespace Slim {
 		~CTextureLayer();
 
 		/** Set the texture of the layer.
-		 	@author
-		 		Hayden Asplet
+		 	@author Hayden Asplet
 		*/
 		void SetTexture(const shared_ptr<ATexture>& pTexture);
 
 		/** Get the texture resource of layer.
-		 	@author
-		 		Hayden Asplet
+		 	@author Hayden Asplet
 			@return
 				shared_ptr to the texture resource.
 		*/
@@ -219,10 +217,17 @@ namespace Slim {
 			@remarks 
 				Convenience function for setting commonly used combinations
 				of filtering and sampler types
-		 	@author
-		 		Hayden Asplet
+		 	@author Hayden Asplet
 		*/
 		void SetTextureFilter(ETextureFilterTypeBroad filterType);
+
+		/** Set the texture filter for min, mag, and mip all at once.
+			@remarks
+				Convenience function for setting min, mag and mip filters
+				to the same filter type all at once.
+		 	@author Hayden Asplet
+		*/
+		void SetTextureFilter(ETextureFilterType filterType);
 
 		/** Set the min mag and mip texture filters of the layer.
 		 	@author
@@ -234,15 +239,13 @@ namespace Slim {
 		void SetTextureFilter(ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter);
 
 		/** Get the texture filter options of a specific sampler type (min, mag and mip).
-		 	@author
-		 		Hayden Asplet
+		 	@author Hayden Asplet
 		 	@param	samplerType The sampler type to get the texture filter of e.g.g min, mag or mip.
 		*/
 		ETextureFilterType GetTextureFilter(ETextureSamplerType samplerType);
 
 		/** Set the colour operation and arguments of the texture layer.
-		 	@author
-		 		Hayden Asplet
+		 	@author Hayden Asplet
 		 	@param 
 				operation Blending operation to perform on the texture 
 				layer e.g. modulate, add, subtract.

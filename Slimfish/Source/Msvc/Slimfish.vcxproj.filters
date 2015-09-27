@@ -22,6 +22,9 @@
     <Filter Include="GameBase">
       <UniqueIdentifier>{9593325f-da3f-4790-a031-2490e706872a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\D3D11">
+      <UniqueIdentifier>{8b71fbbf-3813-445e-b158-a514abbc36fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Math\SlimMatrix4x4.cpp">
@@ -112,7 +115,57 @@
     <ClCompile Include="..\Graphics\SlimLight.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\GameBase\SlimInput.cpp" />
+    <ClCompile Include="..\Graphics\SlimRenderPass.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\GameBase\SlimInput.cpp">
+      <Filter>GameBase</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D10\SlimD3D10RenderTexture.cpp">
+      <Filter>Graphics\D3D10</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimRenderTexture.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimSceneNode.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11Conversions.cpp">
+      <Filter>Graphics\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11GpuBuffer.cpp">
+      <Filter>Graphics\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11IndexGpuBuffer.cpp">
+      <Filter>Graphics\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11Renderer.cpp">
+      <Filter>Graphics\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11RenderTexture.cpp">
+      <Filter>Graphics\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11ShaderProgram.cpp">
+      <Filter>Graphics\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11Texture.cpp">
+      <Filter>Graphics\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11VertexDeclaration.cpp">
+      <Filter>Graphics\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\D3D11\SlimD3D11VertexGpuBuffer.cpp">
+      <Filter>Graphics\D3D11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Math\SlimPlane.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimFrustum.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimCamera.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -232,6 +285,60 @@
     </ClInclude>
     <ClInclude Include="..\GameBase\SlimInput.h">
       <Filter>GameBase</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimRenderPass.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimRenderTexture.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D10\SlimD3D10RenderTexture.h">
+      <Filter>Graphics\D3D10</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimCamera.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimSceneNode.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimRenderQueue.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11Conversions.h">
+      <Filter>Graphics\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11Forward.h">
+      <Filter>Graphics\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11GpuBuffer.h">
+      <Filter>Graphics\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11IndexGpuBuffer.h">
+      <Filter>Graphics\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11Renderer.h">
+      <Filter>Graphics\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11RenderTexture.h">
+      <Filter>Graphics\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11ShaderProgram.h">
+      <Filter>Graphics\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11Texture.h">
+      <Filter>Graphics\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11VertexDeclaration.h">
+      <Filter>Graphics\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\D3D11\SlimD3D11VertexGpuBuffer.h">
+      <Filter>Graphics\D3D11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimFrustum.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Math\SlimPlane.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

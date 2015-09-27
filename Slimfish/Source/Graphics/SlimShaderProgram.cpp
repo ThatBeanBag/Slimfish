@@ -24,7 +24,7 @@
 
 namespace Slim {
 
-	AShaderProgram::AShaderProgram(const std::string& name, EShaderType type) :m_Name(name),
+	AShaderProgram::AShaderProgram(const std::string& name, EShaderProgramType type) :m_Name(name),
 		m_ShaderType(type)
 	{
 
@@ -55,7 +55,7 @@ namespace Slim {
 		return m_ShaderModel;
 	}
 
-	const AShaderProgram::EShaderType AShaderProgram::GetType()
+	const EShaderProgramType AShaderProgram::GetType()
 	{
 		return m_ShaderType;
 	}

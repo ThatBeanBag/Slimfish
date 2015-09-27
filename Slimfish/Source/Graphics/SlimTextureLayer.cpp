@@ -94,6 +94,11 @@ void CTextureLayer::SetTextureFilter(ETextureFilterType minFilter, ETextureFilte
 	m_mipFilter = mipFilter;
 }
 
+void CTextureLayer::SetTextureFilter(ETextureFilterType filterType)
+{
+	SetTextureFilter(filterType, filterType, filterType);
+}
+
 ETextureFilterType CTextureLayer::GetTextureFilter(ETextureSamplerType samplerType)
 {
 	switch (samplerType) {

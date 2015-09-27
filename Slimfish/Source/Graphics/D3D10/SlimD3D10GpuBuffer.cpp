@@ -66,7 +66,7 @@ namespace Slim {
 
 	CD3D10GpuBuffer::~CD3D10GpuBuffer()
 	{
-		SafeRelease(m_pBuffer);
+		SLIM_SAFE_RELEASE(m_pBuffer);
 	}
 
 	void* CD3D10GpuBuffer::VLock(size_t offset, size_t size, EGpuBufferLockType lockType)

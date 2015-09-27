@@ -136,6 +136,21 @@ public:
 	 		Hayden Asplet
 	*/
 	const float GetLengthSquared() const { return (m_x * m_x + m_y * m_y + m_z * m_z); }
+
+	/** Normalise a vector3 so that the length of the vector is 1. @author Hayden Asplet */
+	static const CVector3 Normalise(const CVector3& vec3);
+
+	/** Get the cross product of two vectors.
+		@remarks
+			This operation is not commutative as in CrossProduct(A,B) != CrossProduct(B,A).
+		@author Hayden Asplet
+	*/
+	static const CVector3 CrossProduct(const CVector3& vec3A, const CVector3& vec3B);
+
+	/** Retrieve the dot product of two vectors.
+		@author Hayden Asplet
+	*/
+	static const float DotProduct(const CVector3& vec3A, const CVector3& vec3B);
 protected:
 private:
 	// Member Variables
@@ -143,6 +158,8 @@ public:
 	static const CVector3 s_FORWARD;
 	static const CVector3 s_RIGHT;
 	static const CVector3 s_UP;
+	static const CVector3 s_ZERO;
+	static const CVector3 s_ONE;
 protected:
 private:
 	float m_x;
@@ -171,20 +188,6 @@ const CVector3 operator-(const CVector3& vec3, float scalar);
 /** Negate a vector @author Hayden Asplet */
 const CVector3 operator-(const CVector3& vec3);
 
-/** Normalise a vector3 so that the length of the vector is 1. @author Hayden Asplet */
-const CVector3 Normalise(const CVector3& vec3);
-
-/** Get the cross product of two vectors.
-	@remarks
-		This operation is not commutative as in CrossProduct(A,B) != CrossProduct(B,A).
-	@author Hayden Asplet
-*/
-const CVector3 CrossProduct(const CVector3& vec3A, const CVector3& vec3B);
-
-/** Retrieve the dot product of two vectors.
-	@author Hayden Asplet
-*/
-const float DotProduct(const CVector3& vec3A, const CVector3& vec3B);
 
 }
 

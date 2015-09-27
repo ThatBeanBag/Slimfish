@@ -21,6 +21,7 @@
 #include "SlimRenderer.h"
 
 // Local Includes
+#include "SlimRenderPass.h"
 
 namespace Slim {
 
@@ -59,6 +60,57 @@ void ARenderer::Resize(size_t width, size_t height)
 	m_Width = width; 
 	height = m_Height;
 	VOnResize();
+}
+
+void ARenderer::SetRenderPass(CRenderPass* pPass)
+{
+	assert(pPass);
+
+	// Set the texture layers from the pass.
+	const std::vector<CTextureLayer> textureLayers(pPass->GetTextureLayers());
+	for (unsigned int i = 0; i < pPass->GetNumTextureLayers(); ++i) {
+		SetTextureLayer(i, pPass->GetTextureLayer(i));
+	}
+
+	// Disable the unused texture layers.
+	DisableTextureLayer(pPass->GetNumTextureLayers());
+
+	// Set rasterizer settings.
+	VSetCullingMode(pPass->GetCullingMode());
+	VSetFillMode(pPass->GetFillMode());
+
+	// Set blending settings
+	VSetBlendingMode(pPass->GetBlendingMode());
+	VSetColourWritesEnabled(pPass->GetColourWritesEnabled());
+
+	// Set depth-stencil settings.
+	VSetDepthBufferSettings(
+		pPass->GetDepthCheckEnabled(), 
+		pPass->GetDepthWriteEnabled(), 
+		pPass->GetDepthCompareFunction());
+	VSetStencilBufferSettings(pPass->GetStencilBufferSettings());
+
+	// Set the shader programs.
+	if (pPass->HasVertexShader()) {
+		VSetShaderProgram(pPass->GetVertexShader());
+	}
+	else {
+		VDisableShaderProgram(EShaderProgramType::VERTEX);
+	}
+
+	if (pPass->HasPixelShader()) {
+		VSetShaderProgram(pPass->GetPixelShader());
+	}
+	else {
+		VDisableShaderProgram(EShaderProgramType::PIXEL);
+	}
+
+	if (pPass->HasGeometryShader()) {
+		VSetShaderProgram(pPass->GetGeometryShader());
+	}
+	else {
+		VDisableShaderProgram(EShaderProgramType::GEOMETRY);
+	}
 }
 
 shared_ptr<AIndexGpuBuffer> ARenderer::CreateIndexBuffer(const std::vector<int>& indices, EGpuBufferUsage usage /*= EGpuBufferUsage::STATIC*/, bool isInSystemMemory /*= false*/)
@@ -102,36 +154,6 @@ void ARenderer::DisableTextureLayer(size_t layer)
 {
 	VSetTexture(layer, nullptr, true);
 }
-
-/*
-void ARenderer::SetTextureLayerFiltering(size_t layer, ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter)
-{
-	SetTextureLayerFiltering(layer, TSAMP_MIN, minFilter);
-	SetTextureLayerFiltering(layer, TSAMP_MAG, magFilter);
-	SetTextureLayerFiltering(layer, TSAMP_MIP, mipFilter);
-}
-
-void ARenderer::SetTextureLayerFiltering(size_t layer, ETextureSamplerType samplerType, ETextureFilterType filterType)
-{
-	switch (samplerType) {
-		case TSAMP_MIN: {
-			m_MinFilter = filterType;
-			break;
-		}
-		case TSAMP_MAG: {
-			m_MagFilter = filterType;
-			break;
-		}
-		case TSAMP_MIP: {
-			m_MipFilter = filterType;
-			break;
-		}
-		default: {
-			break;
-		}
-	}
-}
-*/
 
 void ARenderer::DisableTextureLayerFrom(size_t layer)
 {

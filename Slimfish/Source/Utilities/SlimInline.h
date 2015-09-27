@@ -23,33 +23,6 @@
 
 namespace Slim {
 
-	template<class T>
-	inline void SafeDelete(T* pObject)
-	{
-		if (pObject) {
-			delete pObject;
-			pObject = nullptr;
-		}
-	}
-
-	template<class T>
-	inline void SafeDeleteArray(T* pArray)
-	{
-		if (pArray) {
-			delete[] pArray;
-			pArray = nullptr;
-		}
-	}
-
-	template<class T>
-	inline void SafeRelease(T* pObject)
-	{
-		if (pObject) {
-			pObject->Release();
-			pObject = nullptr;
-		}
-	}
-
 #define SLIM_SAFE_DELETE(object) \
 	do \
 	{ \

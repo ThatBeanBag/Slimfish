@@ -25,7 +25,7 @@
 
 namespace Slim {
 
-	CD3D10ShaderProgram::CD3D10ShaderProgram(ID3D10Device* pD3DDevice, const std::string& name, EShaderType type)
+	CD3D10ShaderProgram::CD3D10ShaderProgram(ID3D10Device* pD3DDevice, const std::string& name, EShaderProgramType type)
 		:AShaderProgram(name, type),
 		m_pD3DDevice(pD3DDevice),
 		m_pVertexShader(nullptr),
@@ -61,7 +61,7 @@ namespace Slim {
 		return CompileShader();
 	}
 
-	void CD3D10ShaderProgram::VUpdateProgramParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams)
+	void CD3D10ShaderProgram::VUpdateShaderParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams)
 	{
 		TConstantBufferMap::iterator findIter = m_NameToConstantBuffer.find(constantBufferName);
 		if (findIter == m_NameToConstantBuffer.end()) {
@@ -111,7 +111,7 @@ namespace Slim {
 		constantBuffer.m_pBuffer->Unmap();
 	}
 
-	shared_ptr<CShaderParams> CD3D10ShaderProgram::CreateShaderParams(const std::string& constantBufferName)
+	shared_ptr<CShaderParams> CD3D10ShaderProgram::VCreateShaderParams(const std::string& constantBufferName)
 	{
 		m_pParams.reset(new CShaderParams());
 
@@ -251,8 +251,8 @@ namespace Slim {
 		if (FAILED(hResult)) {
 			std::string errorMessage = "Failed to compile shader from file " + m_Name + " Errors:\n" + static_cast<const char*>(pCompilationErrors->GetBufferPointer());
 			// TODO: Display errorMessage.
-			SafeRelease(pCompilationErrors);
-			SafeRelease(pCompiledShader);
+			SLIM_SAFE_RELEASE(pCompilationErrors);
+			SLIM_SAFE_RELEASE(pCompiledShader);
 
 			return false;
 		}
@@ -260,7 +260,7 @@ namespace Slim {
 		m_ByteCode.resize(pCompiledShader->GetBufferSize());
 		memcpy(&m_ByteCode[0], pCompiledShader->GetBufferPointer(), m_ByteCode.size());
 
-		SafeRelease(pCompiledShader);
+		SLIM_SAFE_RELEASE(pCompiledShader);
 
 		// Create constant buffers.
 		hResult = D3DReflect(reinterpret_cast<void*>(&m_ByteCode[0]), 
@@ -284,15 +284,15 @@ namespace Slim {
 
 		// Create the shader from the compiled byte code.
 		switch (m_ShaderType) {
-			case SHADER_TYPE_VERTEX: {
+			case EShaderProgramType::VERTEX: {
 				CreateVertexShader();
 				break;
 			}
-			case SHADER_TYPE_PIXEL: {
+			case EShaderProgramType::PIXEL: {
 				CreatePixelShader();
 				break;
 			}
-			case SHADER_TYPE_GEOMETRY: {
+			case EShaderProgramType::GEOMETRY: {
 				CreateGeometryShader();
 				break;
 			}
@@ -311,8 +311,8 @@ namespace Slim {
 		HRESULT hResult = m_pD3DDevice->CreateVertexShader(&m_ByteCode[0], m_ByteCode.size(), &m_pVertexShader);
 		if (FAILED(hResult)) {
 			// TODO: Display an error.
-
-			SafeRelease(m_pVertexShader);
+			SLIM_SAFE_RELEASE(m_pVertexShader);
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create vertex shader for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 		else {
 			assert(m_pVertexShader);
@@ -326,7 +326,8 @@ namespace Slim {
 		HRESULT hResult = m_pD3DDevice->CreatePixelShader(&m_ByteCode[0], m_ByteCode.size(), &m_pPixelShader);
 		if (FAILED(hResult)) {
 			// TODO: Display an error.
-			SafeRelease(m_pPixelShader);
+			SLIM_SAFE_RELEASE(m_pPixelShader);
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create pixel shader for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 		else {
 			assert(m_pPixelShader);
@@ -389,8 +390,8 @@ namespace Slim {
 		}
 
 		if (FAILED(hResult)) {
-			SLIM_ERROR() << "Failed to create geometry shader " << m_Name;
-			SafeRelease(m_pGeometryShader);
+			SLIM_SAFE_RELEASE(m_pGeometryShader);
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create geometry shader for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 		else {
 			assert(m_pGeometryShader);
@@ -403,7 +404,7 @@ namespace Slim {
 		HRESULT hResult = pReflectionConstantBuffer->GetDesc(&shaderBufferDesc);
 
 		if (FAILED(hResult)) {
-			SLIM_ERROR() << "Failed to get description of D3D10 constant buffer for shader " << m_Name;
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to get description of D3D10 constant buffer for shader " << m_Name << " with error: " << GetErrorMessage(hResult);
 			return;
 		}
 
@@ -443,10 +444,11 @@ namespace Slim {
 
 		ID3D10Buffer* pBuffer;	// The actual buffer.
 
-		hResult = m_pD3DDevice->CreateBuffer(&bufferDesc, NULL, &pBuffer);
+		hResult = m_pD3DDevice->CreateBuffer(&bufferDesc, nullptr, &pBuffer);
 		if (FAILED(hResult)) {
-			SLIM_ERROR() << "Failed to create constant buffer " << shaderBufferDesc.Name << " for D3D10 shader " << m_Name;
-			SafeRelease(pBuffer);
+			SLIM_SAFE_RELEASE(pBuffer);
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create constant buffer " << shaderBufferDesc.Name << " for shader " << m_Name
+				<< " with error: " << GetErrorMessage(hResult);
 			return;
 		}
 
@@ -492,7 +494,7 @@ namespace Slim {
 			&pLayout);							// Output input layout.
 
 		if (FAILED(hResult)) {
-			SLIM_ERROR() << "Failed to create input layout when binding vertex declaration to shader " << m_Name;
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create input layout when binding vertex declaration to shader " << m_Name << " with error: " << GetErrorMessage(hResult);
 			return nullptr;
 		}
 
@@ -505,7 +507,7 @@ namespace Slim {
 		HRESULT hResult = pVariableReflectionType->GetDesc(&variableTypeDesc);
 
 		if (FAILED(hResult)) {
-			SLIM_ERROR() << "Failed to get param type description from D3D10 shader program " << m_Name;
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to get param type description from shader program " << m_Name << " with error: " << GetErrorMessage(hResult);
 			return;
 		}
 
@@ -535,7 +537,7 @@ namespace Slim {
 				 variableTypeDesc.Type == D3D10_SVT_BOOL) {
 			paramName = prefix + paramName;
 
-			CShaderConstant::EConstantType type = D3D10Conversions::GetShaderConstantType(variableTypeDesc);
+			EShaderConstantType type = D3D10Conversions::GetShaderConstantType(variableTypeDesc);
 			m_pParams->AddConstant(paramName, type);
 
 			// Save the constant variable details for when we update shader params in the buffer.

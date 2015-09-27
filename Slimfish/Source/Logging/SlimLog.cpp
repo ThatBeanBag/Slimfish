@@ -16,13 +16,13 @@
 #include "SlimStd.h"
 
 // Library Includes
+#include <ctime>
+#include <iomanip>
 
 // This Include
 #include "SlimLog.h"
 
 // Local Includes
-#include <ctime>
-#include <iomanip>
 
 namespace Slim {
 
@@ -55,7 +55,8 @@ namespace Slim {
 		return *this;
 	}
 
-	CLog::CLog(const std::string& filename, bool outputToDebug /*= true*/, ELogLevel loggingLevel /*= LOG_MESSAGE*/) :m_Filename(filename),
+	CLog::CLog(const std::string& filename, bool outputToDebug /*= true*/, ELogLevel loggingLevel /*= LOG_MESSAGE*/) 
+		:m_Filename(filename),
 		m_OutputToDebug(outputToDebug),
 		m_LoggingLevel(loggingLevel)
 	{

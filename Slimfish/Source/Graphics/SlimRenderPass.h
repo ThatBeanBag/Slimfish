@@ -30,9 +30,14 @@ class AShaderProgram;
 
 /** Class representing a single render pass of a material.
 @remarks
-	Complex techniques require multiple passes thus, passes have
-	a many to one relationship with techniques. The same way techniques have 
-	a many to one relationship with materials. 
+	Complex techniques require multiple passes thus, passes have a many to one 
+	relationship with techniques. The same way techniques have a many to one 
+	relationship with materials. 
+@par
+	Defines everything that is specific to a single render pass. This includes
+	texture layers. Shader programs for the programmable pipeline. Blending mode,
+	colour writes enabled, rasterizer state descriptors, depth and stencil
+	settings etc.
 */
 class CRenderPass {
 	// Member Functions
@@ -73,6 +78,8 @@ public:
 	*/
 	CTextureLayer& GetTextureLayer(size_t layerIndex);
 
+	const std::vector<CTextureLayer>& GetTextureLayers() const;
+
 	/** Remove a texture layer at an index.
 	 	@author Hayden Asplet
 	 	@param layerIndex Index of the layer to remove (must be in range of the number of texture layers).
@@ -112,16 +119,113 @@ public:
 	*/
 	const shared_ptr<AShaderProgram> GetGeometryShader() const;
 
+	/** Retrieves whether the pass has a vertex shader or not. @author Hayden Asplet */
+	const bool HasVertexShader() const;
+	/** Retrieves whether the pass has a pixel shader or not. @author Hayden Asplet */
+	const bool HasPixelShader() const;
+	/** Retrieves whether the pass has a geometry shader or not. @author Hayden Asplet */
+	const bool HasGeometryShader() const;
+
+	/** Set the blending mode of the pass (the blending factors and operations for colour and alpha).
+	 	@author Hayden Asplet
+		@param 
+			blendingMode Structure describing how a source alpha/colour blends with the destinations
+			alpha/colour.
+	*/
+	void SetBlendingMode(TBlendingMode blendingMode);
+
+	/** Get the blending mode of the pass (the blending factors and operations for colour and alpha).
+	 	@author Hayden Asplet
+		@return 
+			Structure describing how a source alpha/colour blends with the destinations
+			alpha/colour.
+	*/
+	const TBlendingMode& GetBlendingMode() const;
+
+	/** Set the colour writes enabled to describe which colour channels are written to the back buffer.
+	 	@author Hayden Asplet
+	*/
+	void SetColourWritesEnabled(bool red, bool blue, bool green, bool alpha);
+
+	/** Convenience method to set the colour writes enabled for all colour channels at once.
+	 	@author Hayden Asplet
+	 	@param all True if all colours channels should be written to the back buffer.
+	*/
+	void SetColourWritesEnabled(bool all);
+
+	/** Get the colour writes enabled that describe which colour channels should be written to the back buffer.
+	 	@author Hayden Asplet
+	*/
+	const TColourWritesEnabled GetColourWritesEnabled();
+
+	// Depth buffer settings.
+	
+	/** Set the depth check of the pass to enabled or disabled. @author Hayden Asplet */
+	void SetDepthCheckEnabled(bool depthCheckEnabled);
+	/** Get whether the depth check of the pass is enabled or disabled. @author Hayden Asplet */
+	const bool GetDepthCheckEnabled() const;
+	/** Set writing to the depth buffer to enabled or disabled for the pass. @author Hayden Asplet */
+	void SetDepthWriteEnabled(bool depthWriteEnabled);
+	/** Get whether the pass will write to the depth buffer or not. @author Hayden Asplet */
+	const bool GetDepthWriteEnabled() const;
+	/** Set the compare function to use when testing depth for the pass. @author Hayden Asplet */
+	void SetDepthCompareFunction(EComparisonFunction compareFunction);
+	/** Get the compare function to use when testing depth for the pass. @author Hayden Asplet */
+	const EComparisonFunction GetDepthCompareFunction() const;
+
+	// Stencil buffer settings.
+
+	/** Set the stencil buffer settings of the pass. @author Hayden Asplet */
+	void SetStencilBufferSettings(const TStencilBufferSettings& settings);
+	/** Get the stencil buffer settings of the pass. @author Hayden Asplet */
+	const TStencilBufferSettings& GetStencilBufferSettings() const;
+	/** Set the stencil check of the pass to enabled or disabled. @author Hayden Asplet */
+	void SetStencilCheckEnabled(bool enabled);
+	/** Get whether the stencil check of the pass is enabled or disabled. @author Hayden Asplet */
+	const bool GetStencilCheckEnabled() const;
+	/** Set the compare function to use when testing stencil for the pass. @author Hayden Asplet */
+	void SetStencilCompareFunction(EComparisonFunction compareFunction);
+	/** Get the compare function to use when testing stencil for the pass. @author Hayden Asplet */
+	const EComparisonFunction GetStencilCompareFunction() const;
+	/** Set the stencil reference value to perform against when going a stencil test. @author Hayden Asplet */
+	void SetStencilReferenceValue(size_t refValue);
+	/** Get the stencil reference value to perform against when going a stencil test. @author Hayden Asplet */
+	const size_t GetStencilReferenceValue() const;
+	/** Set the stencil write mask to identify the portion of the depth-stencil buffer for writing stencil data.
+	 	@author Hayden Asplet
+	*/
+	void SetStencilWriteMask(size_t mask);
+	/** Get the stencil write mask that identifies the portion of the depth-stencil buffer for writing stencil data.
+		@author Hayden Asplet
+	*/
+	const size_t GetStencilWriteMask() const;
+	/** Set the stencil operation to perform when the stencil test fails. @author Hayden Asplet */
+	void SetStencilFailOperation(EStencilOperation operation);
+	/** Get the stencil operation to perform when the stencil test fails. @author Hayden Asplet */
+	const EStencilOperation GetStencilFailOperation() const;
+	/** Set the stencil operation to perform when the stencil passes, but the depth test fails. @author Hayden Asplet */
+	void SetStencilDepthFailOperation(EStencilOperation operation);
+	/** Get the stencil operation to perform when the stencil passes, but the depth test fails. @author Hayden Asplet */
+	const EStencilOperation GetStencilDepthFailOperation() const;
+	/** Set the stencil operation to perform when both the stencil and depth tests pass. @author Hayden Asplet */
+	void SetStencilPassOperation(EStencilOperation operation);
+	/** Get the stencil operation to perform when both the stencil and depth tests pass. @author Hayden Asplet */
+	const EStencilOperation GetStencilPassOperation() const;
+
+	// Rasterizer settings.
+
 	/** Set the cull mode of the pass. @author Hayden Asplet */
-	void SetCullMode(ECullingMode cullingMode);
+	void SetCullingMode(ECullingMode cullingMode);
 	/** Get the cull mode of the pass. @author Hayden Asplet */
-	const ECullingMode GetCullMode() const;
+	const ECullingMode GetCullingMode() const;
 	/** Set the fill mode of the pass. @author Hayden Asplet */
 	void SetFillMode(EFillMode fillMode);
 	/** Get the fill mode of the pass. @author Hayden Asplet */
 	const EFillMode GetFillMode() const;
+
 protected:
 private:
+
 	// Member Variables
 public:
 protected:
@@ -135,16 +239,20 @@ private:
 	shared_ptr<AShaderProgram> m_pPixelShader;
 	shared_ptr<AShaderProgram> m_pGeometryShader;
 
-	// Colour blending.
-	EBlendFactor m_SourceColourBlendFactor;
-	EBlendFactor m_DestColourBlendFactor;
-	EBlendOperation m_ColourBlendOperation;
-	// Alpha blending.
-	EBlendFactor m_SourceAlphaBlendFactor;
-	EBlendFactor m_DestAlphaBlendFactor;
-	EBlendOperation m_AlphaBlendOperation;
+	// Blending and colour writes for the output merger stage.
+	TBlendingMode m_BlendingMode;
+	TColourWritesEnabled m_ColourWrites;
 
-	ECullingMode m_CullMode;
+	// Depth buffer settings
+	bool m_DepthCheckEnabled;
+	bool m_DepthWriteEnabled;
+	EComparisonFunction m_DepthCompareFunction;
+
+	// Stencil buffer settings
+	TStencilBufferSettings m_StencilBufferSettings;
+
+	// Rasterizer state descriptors.
+	ECullingMode m_CullingMode;
 	EFillMode m_FillMode;
 };
 

@@ -111,27 +111,39 @@ CMatrix4x4& CMatrix4x4::operator-=(const CMatrix4x4& other)
 	return *this;
 }
 
-const CVector3 CMatrix4x4::Transform(const CVector3& vector)
+const CVector3 CMatrix4x4::Transform(const CVector3& vector) const
 {
-	CVector3 result(0.0f, 0.0f, 0.0f);
+	float x = vector.GetX();
+	float y = vector.GetY();
+	float z = vector.GetZ();
 	float w = 0.0f;
 
-	// Loop through row by row to minimize cache misses.
-	for (int i = 0; i < 4; ++i) {
-		int row = i * 4;
-		result.SetX(result.GetX() + vector.GetX() * m_pMatrix[row][0]);
-		result.SetY(result.GetY() + vector.GetX() * m_pMatrix[row][1]);
-		result.SetZ(result.GetZ() + vector.GetX() * m_pMatrix[row][2]);
-		w += m_pMatrix[row][3];
-	}
+	CVector3 result(
+		m_pMatrix[0][0] * x + m_pMatrix[0][1] * y + m_pMatrix[0][2] * z + m_pMatrix[0][3],
+		m_pMatrix[1][0] * x + m_pMatrix[1][1] * y + m_pMatrix[1][2] * z + m_pMatrix[1][3],
+		m_pMatrix[2][0] * x + m_pMatrix[2][1] * y + m_pMatrix[2][2] * z + m_pMatrix[2][3]);
+	w = m_pMatrix[3][0] * x + m_pMatrix[3][1] * y + m_pMatrix[3][2] * z + m_pMatrix[3][3];
 
 	if (w != 0.0f && w != 1.0f) {
-		result.SetX(result.GetX() / w);
-		result.SetY(result.GetY() / w);
-		result.SetZ(result.GetZ() / w);
+		float wReciprocal = 1.0f / w;
+		result *= w;
 	}
 
 	return result;
+}
+
+const CVector3 CMatrix4x4::TransformNormal(const CVector3& normal) const
+{
+	float x = normal.GetX();
+	float y = normal.GetY();
+	float z = normal.GetZ();
+
+	CVector3 result(
+		m_pMatrix[0][0] * x + m_pMatrix[0][1] * y + m_pMatrix[0][2] * z,
+		m_pMatrix[1][0] * x + m_pMatrix[1][1] * y + m_pMatrix[1][2] * z,
+		m_pMatrix[2][0] * x + m_pMatrix[2][1] * y + m_pMatrix[2][2] * z);
+
+	return CVector3::Normalise(result);
 }
 
 /************************************************************************/
@@ -354,6 +366,19 @@ const CVector3 CMatrix4x4::GetUp() const
 	return CVector3(m_pMatrix[0][1], m_pMatrix[1][1], m_pMatrix[2][1]);
 }
 
+void CMatrix4x4::Decompose(CVector3& position, CVector3& scale, CQuaternion& rotation)
+{
+	// TODO
+}
+
+const CMatrix4x4 CMatrix4x4::BuildTransform(const CVector3& translation, const CVector3& scale, const CQuaternion& rotation)
+{
+	CMatrix4x4 transform = rotation.ToRotationMatrix();
+	transform.SetPosition(translation);
+
+	return transform * BuildScale(scale);
+}
+
 void CMatrix4x4::Copy(const float pMatrix[4][4])
 {
 	for (int i = 0; i < 4; ++i) {
@@ -523,17 +548,37 @@ const CMatrix4x4 CMatrix4x4::BuildTranslation(const CVector3& position)
 
 const CMatrix4x4 CMatrix4x4::BuildLookAt(const CVector3& eye, const CVector3& at, const CVector3& up)
 {
-	CVector3 zAxis = Normalise(eye - at);
-	CVector3 xAxis = Normalise(CrossProduct(CVector3::s_UP, zAxis));
-	CVector3 yAxis = CrossProduct(zAxis, xAxis);
+	CVector3 zAxis = CVector3::Normalise(eye - at);
+	CVector3 xAxis = CVector3::Normalise(CVector3::CrossProduct(CVector3::s_UP, zAxis));
+	CVector3 yAxis = CVector3::CrossProduct(zAxis, xAxis);
 
 	CMatrix4x4 matrix = BuildRotationFromAxis(xAxis, yAxis, zAxis);
 
-	matrix[0][3] = -DotProduct(xAxis, eye);
-	matrix[1][3] = -DotProduct(yAxis, eye);
-	matrix[2][3] = -DotProduct(zAxis, eye);
+	matrix[0][3] = -CVector3::DotProduct(xAxis, eye);
+	matrix[1][3] = -CVector3::DotProduct(yAxis, eye);
+	matrix[2][3] = -CVector3::DotProduct(zAxis, eye);
 
 	return matrix;
+}
+
+const CMatrix4x4 CMatrix4x4::BuildReflect(const CVector3& planeNormal, float d)
+{
+	float a = planeNormal.GetX();
+	float b = planeNormal.GetY();
+	float c = planeNormal.GetZ();
+	CMatrix4x4 unitVector = {
+		a, 0, 0, 0,
+		b, 0, 0, 0,
+		c, 0, 0, 0,
+		d, 0, 0, 1 };
+	CMatrix4x4 two = {
+		2, 0, 0, 0,
+		0, 2, 0, 0,
+		0, 0, 2, 0,
+		0, 0, 0, 0 };
+
+	// Reflection = I - 2 * N * T(N) where N is the 3D unit vector of the plane normal.
+	return CMatrix4x4::s_IDENTITY - (two * unitVector * unitVector.GetTranspose());
 }
 
 const CMatrix4x4 CMatrix4x4::BuildProjection(float radFOV, float aspectRatio, float nearPlane, float farPlane)

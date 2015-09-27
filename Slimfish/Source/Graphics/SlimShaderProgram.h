@@ -25,26 +25,29 @@
 
 namespace Slim {
 
+/** List of shader program types.
+*/
+enum class EShaderProgramType {
+	VERTEX,
+	PIXEL,
+	GEOMETRY,
+};
+
 /** Abstract class representing a program that runs on the GPU.
 @remarks
 		
 */
 class AShaderProgram {
 public:
-	enum EShaderType {
-		SHADER_TYPE_VERTEX,
-		SHADER_TYPE_PIXEL,
-		SHADER_TYPE_GEOMETRY,
-	};
 
 	// Member Functions
 public:
-	AShaderProgram(const std::string& name, EShaderType type);
+	AShaderProgram(const std::string& name, EShaderProgramType type);
 	virtual ~AShaderProgram();
 
 	virtual bool VLoad() = 0;
-	virtual void VUpdateProgramParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams) = 0;
-	virtual shared_ptr<CShaderParams> CreateShaderParams(const std::string& constantBufferName) = 0;
+	virtual void VUpdateShaderParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams) = 0;
+	virtual shared_ptr<CShaderParams> VCreateShaderParams(const std::string& constantBufferName) = 0;
 
 	void SetEntryPoint(const std::string& entryPoint);
 	const std::string& GetEntryPoint() const;
@@ -52,7 +55,7 @@ public:
 	void SetShaderModel(const std::string& shaderModel);
 	const std::string& GetShaderModel() const;
 
-	const EShaderType GetType();
+	const EShaderProgramType GetType();
 	const std::string& GetName();
 protected:
 private:
@@ -60,7 +63,7 @@ private:
 public:
 protected:
 	std::string m_Name;
-	EShaderType m_ShaderType;
+	EShaderProgramType m_ShaderType;
 
 	std::string m_ShaderModel;
 	std::string m_EntryPoint;

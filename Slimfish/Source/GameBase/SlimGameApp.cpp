@@ -16,14 +16,14 @@
 #include "SlimStd.h"
 
 // Library Includes
-#include <afxwin.h>
+#include <Windowsx.h>
 
 // This Include
 #include "SlimGameApp.h"
 
 // Local Includes
 #include "SlimGameLogic.h"
-#include "..\Graphics\D3D10\SlimD3D10Renderer.h"
+#include "..\Graphics\D3D11\SlimD3D11Renderer.h"
 
 namespace Slim {
 
@@ -103,7 +103,7 @@ bool CGameApp::VInitialise(HINSTANCE hInstance, LPSTR lpCmdLine, HWND hWnd, size
 	RECT clientRect;
 	GetClientRect(m_hWnd, &clientRect);
 
-	m_pRenderer.reset(new CD3D10Renderer(clientRect.right - clientRect.left, clientRect.bottom - clientRect.top, true));
+	m_pRenderer.reset(new CD3D11Renderer(clientRect.right - clientRect.left, clientRect.bottom - clientRect.top, true));
 	if (!m_pRenderer) {
 	// Failed to create the renderer.
 	// TODO: display error.
@@ -156,13 +156,17 @@ LRESULT CALLBACK CGameApp::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 		// Keys
 		case WM_KEYDOWN: {
 			EKeyCode keycode = GetKeyCode(wParam);
-			g_pApp->m_Input.SetKeyPress(keycode);
+			if (keycode != EKeyCode::MAX) {
+				g_pApp->m_Input.SetKeyPress(keycode);
+			}
 
 			break;
 		}
 		case WM_KEYUP: {
 			EKeyCode keycode = GetKeyCode(wParam);
-			g_pApp->m_Input.SetKeyRelease(keycode);
+			if (keycode != EKeyCode::MAX) {
+				g_pApp->m_Input.SetKeyPress(keycode);
+			}
 
 			break;
 		}
@@ -331,6 +335,8 @@ EKeyCode CGameApp::GetKeyCode(WPARAM wParam)
 		case VK_OEM_4: return EKeyCode::LEFT_BRACKET;
 		case VK_OEM_6: return EKeyCode::RIGHT_BRACKET;
 	}
+
+	return EKeyCode::MAX;
 }
 
 void CGameApp::Update()

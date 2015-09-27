@@ -33,8 +33,10 @@ namespace Slim {
 	class AVertexGpuBuffer;
 	class AIndexGpuBuffer;
 	class AShaderProgram;
+	class ARenderTexture;
 	class CVertexDeclaration;
 	class CColour;
+	class CRenderPass;
 
 	/** Abstract class encapsulating a rendering system.
 	@remarks
@@ -77,6 +79,11 @@ namespace Slim {
 		bool IsWindowed() const;
 		void GetWindowSize(size_t& width, size_t& height);
 		void Resize(size_t width, size_t height);
+
+		/** Set the render pass for any succeeding render calls.
+		 	@author Hayden Asplet
+		*/
+		void SetRenderPass(CRenderPass* pPass);
 
 		/** Create a vertex buffer on the GPU.
 		@author Hayden Asplet
@@ -135,14 +142,19 @@ namespace Slim {
 		 	@author Hayden Asplet
 		 	@param name Name of the shader file.
 		 	@param type The type of shader e.g. vertex, pixel or geometry shader.
+			@param entry Name of the entry point to the program.
+			@param shaderModel Shader model of the program e.g. vs_4_0, ps_4_0 etc.
 		 	@return Pointer to the shader programs; not valid if creation failed.
 		*/
-		virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, AShaderProgram::EShaderType type) = 0;
+		virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, EShaderProgramType type, const std::string& entry, const std::string& shaderModel) = 0;
 
 		/** Loads a texture from file.
 		 	@author Hayden Asplet
 		*/
-		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ETextureUsage usage = ETextureUsage::STATIC) = 0;
+		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ETextureType type = ETextureType::TYPE_2D, ETextureUsage usage = ETextureUsage::STATIC) = 0;
+
+		virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(const std::string& name, size_t width, size_t height, 
+			size_t msaaCount = 1, size_t msaaQuality = 0, ETextureType textureType = ETextureType::TYPE_2D) = 0;
 
 		/** Perform a render operation, rendering a set of vertices.
 		 	@author Hayden Asplet
@@ -156,6 +168,7 @@ namespace Slim {
 				be indexed however to avoid duplicate vertices it is recommended to use an index buffer.
 		*/
 		virtual void VRender(const CVertexDeclaration& vertexDeclaration, 
+							 EPrimitiveType primitiveType, 
 							 shared_ptr<AVertexGpuBuffer> pVertexBuffer, 
 							 shared_ptr<AIndexGpuBuffer> pIndexBuffer = nullptr) = 0;
 
@@ -167,6 +180,18 @@ namespace Slim {
 		 	@param pShader Pointer to the vertex, pixel or geometry shader to bind.
 		*/
 		virtual void VSetShaderProgram(shared_ptr<AShaderProgram> pShader) = 0;
+
+		/** Disable a previously set shader program.
+		 	@author Hayden Asplet
+		 	@param programType The shader program type to disable e.g. VERTEX, PIXEL, or GEOMETRY.
+		*/
+		virtual void VDisableShaderProgram(EShaderProgramType programType) = 0;
+
+		/** Set the render target to render to.
+		 	@author Hayden Asplet
+		 	@param pRenderTarget Pointer to the render target to render to.
+		*/
+		virtual void VSetRenderTarget(ARenderTexture* pRenderTarget) = 0;
 
 		/** Set the world transform. */
 		virtual void VSetWorldTransform(const CMatrix4x4& worldTransform) = 0;
@@ -206,6 +231,38 @@ namespace Slim {
 							 float start = 0.0f,
 							 float end = 1.0f,
 							 float exponentialDensity = 1.0f) = 0;
+
+		/** Set the blending mode to describe how a source colour/alpha blends with a destination 
+			colour/alpha in the rendering pipeline.
+		 	@author Hayden Asplet
+			@param 
+				blendingMode Structure containing the blending operations and factors to describe 
+				how a source colour/alpha blends with a destination colour/alpha in the rendering 
+				pipeline.
+		*/
+		virtual void VSetBlendingMode(const TBlendingMode& blendingMode) = 0;
+
+		/** Set the colour writes enabled that describe which colour channels are written to the back buffer.
+			@author Hayden Asplet
+		*/
+		virtual void VSetColourWritesEnabled(const TColourWritesEnabled& colourWritesEnabled) = 0;
+
+		/** Set the stencil buffer settings. @author Hayden Asplet */
+		virtual void VSetStencilBufferSettings(const TStencilBufferSettings& settings) = 0;
+
+		/** Set the depth buffer settings.
+		 	@author Hayden Asplet
+		 	@param enabled True if the depth buffer should be enabled.
+		 	@param writeEnabled True if the depth buffer should be written to.
+		 	@param compareFunction The comparison function to use when testing depth.
+		*/
+		virtual void VSetDepthBufferSettings(bool enabled, bool writeEnabled, EComparisonFunction compareFunction) = 0;
+
+		/** Set the culling mode of the rasterizer. @author Hayden Asplet */
+		virtual void VSetCullingMode(ECullingMode cullingMode) = 0;
+		/** Set the fill mode of the rasterizer. @author Hayden Asplet */
+		virtual void VSetFillMode(EFillMode fillMode) = 0;
+
 
 		/** Set the texture layer options of a specified layer.
 		 	@author Hayden Asplet

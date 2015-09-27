@@ -97,24 +97,6 @@ private:
 class CVertexDeclaration {
 	typedef std::vector<CInputElement> TElementList;
 public:
-	/** List of primitive types for describing how vertex data gets interpreted by the 
-		rendering system.
-	*/
-	enum EPrimitiveType {
-		// A list of points.
-		PRIMITIVE_TYPE_POINTLIST,
-		// A list of lines, 2 vertices to a line.
-		PRIMITIVE_TYPE_LINELIST,
-		// A strip of connected lines, each new vertex adds a new line (excluding the first).
-		PRIMITIVE_TYPE_LINESTRIP,
-		// A list of triangles, 3 vertices per triangle.
-		PRIMITIVE_TYPE_TRIANGLELIST,
-		// A strip of connected triangles, each new vertex adds a new triangle (excluding the first two).
-		PRIMITIVE_TYPE_TRIANGLESTRIP,
-		// A fan of triangles, similar to PRIMITIVE_TYPE_TRIANGLESTRIP except each triangle shares one 
-		// central vertex (the first vertex).
-		//PRIMITIVE_TYPE_TRIANGLEFAN	// Not used in directX 10.
-	};
 
 	// Member Functions
 public:
@@ -123,11 +105,6 @@ public:
 	 	@author Hayden Asplet
 	*/
 	CVertexDeclaration();
-
-	/** Construct a vertex declaration by specifying the primitive type to use.
-	 	@author Hayden Asplet
-	*/
-	CVertexDeclaration(EPrimitiveType primitiveType);
 
 	/** Destructor.
 	 	@author Hayden Asplet
@@ -166,11 +143,6 @@ public:
 	/** Get the number of elements in the list. @author Hayden Asplet */
 	int GetNumElements() const;
 
-	/** Set the primitive type of the vertex declaration. @author Hayden Asplet */
-	void SetPrimitiveType(EPrimitiveType primitiveType);
-	/** Get the primitive type described by this vertex declaration. @author Hayden Asplet */
-	EPrimitiveType GetPrimitiveType() const;
-
 	void SetRebuilt();
 	const bool NeedsRebuilding() const;
 protected:
@@ -195,8 +167,6 @@ public:
 protected:
 private:
 	TElementList m_ElementList;	// The list of input elements that make up the vertex declaration.
-	EPrimitiveType m_PrimitiveType;
-
 	bool m_NeedsRebuilding;
 };
 

@@ -89,6 +89,10 @@ namespace Slim {
 			loadInfo.BindFlags = 0;
 		}
 
+		if (GetTextureType() == ETextureType::TYPE_CUBIC) {
+			loadInfo.MiscFlags = D3D10_RESOURCE_MISC_TEXTURECUBE;
+		}
+
 		hResult = D3DX10CreateTextureFromFileA(m_pD3DDevice, GetName().c_str(), &loadInfo, NULL, &m_pTexture, NULL);
 
 		if (FAILED(hResult)) {
@@ -203,6 +207,11 @@ namespace Slim {
 		return m_pShaderResourceView;
 	}
 
+	ID3D10Resource* CD3D10Texture::GetD3DResource()
+	{
+		return m_pTexture;
+	}
+
 	void CD3D10Texture::CreateRenderTarget1D()
 	{
 		assert(GetWidth() > 0);
@@ -217,6 +226,7 @@ namespace Slim {
 		desc.BindFlags = D3D10_BIND_SHADER_RESOURCE | D3D10_BIND_RENDER_TARGET;
 		desc.CPUAccessFlags = D3D10Conversions::GetCPUAccessFlags(GetUsage());
 		desc.MiscFlags = D3D10_RESOURCE_MISC_GENERATE_MIPS;
+		desc.MipLevels = 1;
 
 		SetSourceWidth(desc.Width);
 
@@ -251,6 +261,7 @@ namespace Slim {
 		desc.BindFlags = D3D10_BIND_SHADER_RESOURCE | D3D10_BIND_RENDER_TARGET;
 		desc.CPUAccessFlags = D3D10Conversions::GetCPUAccessFlags(GetUsage());
 		desc.MiscFlags = D3D10_RESOURCE_MISC_GENERATE_MIPS;
+		desc.MipLevels = 1;
 
 		SetSourceWidth(desc.Width);
 		SetSourceHeight(desc.Height);
@@ -293,6 +304,7 @@ namespace Slim {
 		desc.BindFlags = D3D10_BIND_SHADER_RESOURCE | D3D10_BIND_RENDER_TARGET;
 		desc.CPUAccessFlags = D3D10Conversions::GetCPUAccessFlags(GetUsage());
 		desc.MiscFlags = D3D10_RESOURCE_MISC_GENERATE_MIPS;
+		desc.MipLevels = 1;
 
 		SetSourceWidth(desc.Width);
 		SetSourceHeight(desc.Height);

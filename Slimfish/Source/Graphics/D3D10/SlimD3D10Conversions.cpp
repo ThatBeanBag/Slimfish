@@ -179,22 +179,22 @@ DXGI_FORMAT D3D10Conversions::GetFormat(CInputElement::EFormat inputElementForma
 	return DXGI_FORMAT_R32_FLOAT;
 }
 
-D3D10_PRIMITIVE_TOPOLOGY D3D10Conversions::GetPrimitiveType(CVertexDeclaration::EPrimitiveType primitiveType)
+D3D10_PRIMITIVE_TOPOLOGY D3D10Conversions::GetPrimitiveType(EPrimitiveType primitiveType)
 {
 	switch (primitiveType) {
-		case CVertexDeclaration::PRIMITIVE_TYPE_POINTLIST: {
+		case EPrimitiveType::POINTLIST: {
 			return D3D10_PRIMITIVE_TOPOLOGY_POINTLIST;
 		}
-		case CVertexDeclaration::PRIMITIVE_TYPE_LINELIST: {
+		case EPrimitiveType::LINELIST: {
 			return D3D10_PRIMITIVE_TOPOLOGY_LINELIST;
 		}
-		case CVertexDeclaration::PRIMITIVE_TYPE_LINESTRIP: {
+		case EPrimitiveType::LINESTRIP: {
 			return D3D10_PRIMITIVE_TOPOLOGY_LINESTRIP;
 		};
-		case CVertexDeclaration::PRIMITIVE_TYPE_TRIANGLELIST: {
+		case EPrimitiveType::TRIANGLELIST: {
 			return D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 		}
-		case CVertexDeclaration::PRIMITIVE_TYPE_TRIANGLESTRIP: {
+		case EPrimitiveType::TRIANGLESTRIP: {
 			return D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 		}
 		default: {
@@ -403,7 +403,7 @@ D3D10_BLEND D3D10Conversions::GetBlendFactor(EBlendFactor blendFactor)
 	return D3D10_BLEND_ZERO;
 }
 
-D3D10_CULL_MODE D3D10Conversions::GetCullMode(ECullingMode cullingMode)
+D3D10_CULL_MODE D3D10Conversions::GetCullingMode(ECullingMode cullingMode)
 {
 	switch (cullingMode) {
 		case ECullingMode::NONE: {
@@ -438,6 +438,76 @@ D3D10_FILL_MODE D3D10Conversions::GetFillMode(EFillMode fillMode)
 	}
 
 	return D3D10_FILL_SOLID;
+}
+
+D3D10_COMPARISON_FUNC D3D10Conversions::GetComparisonFunction(EComparisonFunction function)
+{
+	switch (function) {
+		case EComparisonFunction::NEVER: {
+			return D3D10_COMPARISON_NEVER;
+		}
+		case EComparisonFunction::LESS: {
+			return D3D10_COMPARISON_LESS;
+		}
+		case EComparisonFunction::EQUAL: {
+			return D3D10_COMPARISON_EQUAL;
+		}
+		case EComparisonFunction::LESS_EQUAL: {
+			return D3D10_COMPARISON_LESS_EQUAL;
+		}
+		case EComparisonFunction::GREATER: {
+			return D3D10_COMPARISON_GREATER;
+		}
+		case EComparisonFunction::NOT_EQUAL: {
+			return D3D10_COMPARISON_NOT_EQUAL;
+		}
+		case EComparisonFunction::GREATER_EQUAL: {
+			return D3D10_COMPARISON_GREATER_EQUAL;
+		}
+		case EComparisonFunction::ALWAYS: {
+			return D3D10_COMPARISON_ALWAYS;
+		}
+		default: {
+			break;
+		}
+	}
+
+	return D3D10_COMPARISON_ALWAYS;
+}
+
+D3D10_STENCIL_OP D3D10Conversions::GetStencilOperation(EStencilOperation operation)
+{
+	switch (operation) {
+		case EStencilOperation::KEEP: {
+			return D3D10_STENCIL_OP_KEEP;
+		}
+		case EStencilOperation::ZERO: {
+			return D3D10_STENCIL_OP_ZERO;
+		}
+		case EStencilOperation::REPLACE: {
+			return D3D10_STENCIL_OP_REPLACE;
+		}
+		case EStencilOperation::INVERT: {
+			return D3D10_STENCIL_OP_INVERT;
+		}
+		case EStencilOperation::INCREMENT: {
+			return D3D10_STENCIL_OP_INCR;
+		}
+		case EStencilOperation::DECREMENT: {
+			return D3D10_STENCIL_OP_DECR;
+		}
+		case EStencilOperation::INCREMENT_CLAMP: {
+			return D3D10_STENCIL_OP_INCR_SAT;
+		}
+		case EStencilOperation::DECREMENT_CLAMP: {
+			return D3D10_STENCIL_OP_DECR_SAT;
+		}
+		default: {
+			break;
+		}
+	}
+
+	return D3D10_STENCIL_OP_KEEP;
 }
 
 }

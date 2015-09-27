@@ -37,8 +37,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="VertexShader.hlsl" />
-    <FxCompile Include="PixelShader.hlsl" />
+    <FxCompile Include="QuadTexPS.hlsl" />
+    <FxCompile Include="QuadTexVS.hlsl" />
+    <FxCompile Include="SkyBoxVS.hlsl" />
+    <FxCompile Include="SkyBoxPS.hlsl" />
+    <FxCompile Include="WaterVS.hlsl" />
+    <FxCompile Include="WaterPS.hlsl" />
+    <FxCompile Include="TerrainPS.hlsl" />
+    <FxCompile Include="TerrainVS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LightingHelper.hlsli" />

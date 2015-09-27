@@ -51,12 +51,12 @@ public:
 
 	// Member Functions
 public:
-	CD3D10ShaderProgram(ID3D10Device* pD3DDevice, const std::string& name, EShaderType type);
+	CD3D10ShaderProgram(ID3D10Device* pD3DDevice, const std::string& name, EShaderProgramType type);
 	~CD3D10ShaderProgram();
 
 	virtual bool VLoad() override;
-	virtual void VUpdateProgramParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams);
-	virtual shared_ptr<CShaderParams> CreateShaderParams(const std::string& constantBufferName);
+	virtual void VUpdateShaderParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams);
+	virtual shared_ptr<CShaderParams> VCreateShaderParams(const std::string& constantBufferName);
 
 	const TByteCode& GetByteCode() const;
 

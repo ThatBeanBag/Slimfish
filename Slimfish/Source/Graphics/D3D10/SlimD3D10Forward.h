@@ -34,6 +34,7 @@ namespace Slim {
 	class CD3D10VertexGpuBuffer;
 	class CD3D10IndexGpuBuffer;
 	class CD3D10ShaderProgram;
+	class CD3D10RenderTexture;
 
 	inline std::string GetErrorMessage(HRESULT hResult)
 	{

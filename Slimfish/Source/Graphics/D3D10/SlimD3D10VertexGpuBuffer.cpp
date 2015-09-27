@@ -39,7 +39,7 @@ namespace Slim {
 
 	CD3D10VertexGpuBuffer::~CD3D10VertexGpuBuffer()
 	{
-		SafeDelete(m_pImpl);
+		SLIM_SAFE_DELETE(m_pImpl);
 	}
 
 	ID3D10Buffer* CD3D10VertexGpuBuffer::GetD3DBuffer()

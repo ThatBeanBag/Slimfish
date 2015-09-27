@@ -23,20 +23,20 @@
 
 namespace Slim {
 	
-	class CScene {
-		// Member Functions
-	public:
-		CScene();
-		~CScene();
+class CScene {
+	// Member Functions
+public:
+	CScene();
+	~CScene();
 
 
-	protected:
-	private:
-		// Member Variables
-	public:
-	protected:
-	private:
-	};
+protected:
+private:
+	// Member Variables
+public:
+protected:
+private:
+};
 
 }
 

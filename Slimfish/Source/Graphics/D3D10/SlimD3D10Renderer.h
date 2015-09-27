@@ -33,7 +33,14 @@ namespace Slim {
 class CD3D10Renderer :public ARenderer {
 	// Member Functions
 public:
+	/** Default Constructor.
+	 	@author Hayden Asplet
+	*/
 	CD3D10Renderer(int width, int height, bool isWindowed);
+
+	/** Destructor.
+	 	@author Hayden Asplet
+	*/
 	virtual ~CD3D10Renderer();
 
 	/* @copydoc ARenderer::VInitialize */
@@ -49,27 +56,55 @@ public:
 	virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory) override;
 
 	/* @copydoc ARenderer::VCreateShaderProgram */
-	virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, AShaderProgram::EShaderType type);
+	virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, EShaderProgramType type, const std::string& entry, const std::string& shaderModel);
 
 	/* @copydoc ARenderer::VLoadTexture */
-	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ETextureUsage usage) override;
+	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ETextureType type, ETextureUsage usage) override;
+
+	/* @copydoc ARenderer::VCreateRenderTexture */
+	virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t msaaCount, size_t msaaQuality, ETextureType textureType /* = ETextureType::TYPE_2D */) override;
 
 	/* @copydoc ARenderer::VRender */
-	virtual void VRender(const CVertexDeclaration& vertexDeclaration, 
+	virtual void VRender(const CVertexDeclaration& vertexDeclaration,
+						 EPrimitiveType primitiveType, 
 						 shared_ptr<AVertexGpuBuffer> pVertexBuffer,
-						 shared_ptr<AIndexGpuBuffer> pIndexBuffer /* = nullptr */);
+						 shared_ptr<AIndexGpuBuffer> pIndexBuffer = nullptr);
 
 	/* @copydoc ARenderer::VSetShaderProgram */
 	virtual void VSetShaderProgram(shared_ptr<AShaderProgram> pShader);
+	/* @copydoc ARenderer::VDisableShaderProgram */
+	virtual void VDisableShaderProgram(EShaderProgramType programType) override;
 
+	/* @copydoc ARenderer::VSetRenderTarget */
+	virtual void VSetRenderTarget(ARenderTexture* pRenderTarget) override;
+
+	/* @copydoc ARenderer::VSetWorldTransform */
 	virtual void VSetWorldTransform(const CMatrix4x4& worldTransform) override;
+	/* @copydoc ARenderer::VSetViewTransform */
 	virtual void VSetViewTransform(const CMatrix4x4& viewTransform) override;
+	/* @copydoc ARenderer::VSetProjectionTransform */
 	virtual void VSetProjectionTransform(const CMatrix4x4& projectionTransform) override;
 
+	/* @copydoc ARenderer::VSetAmbientColour */
 	virtual void VSetAmbientColour(const CColour& colour) override;
+	/* @copydoc ARenderer::VSetBackgroundColour */
 	virtual void VSetBackgroundColour(const CColourValue& colour) override;
 
+	/* @copydoc ARenderer::VSetFog */
 	virtual void VSetFog(EFogType fogType, const CColourValue& colour = CColourValue::s_BLACK, float start = 0.0f, float end = 1.0f, float exponentialDensity = 1.0f) override;
+	/* @copydoc ARenderer::VSetBlending */
+	virtual void VSetBlendingMode(const TBlendingMode& blendingMode) override;
+
+	/* @copydoc ARenderer::VSetColourWritesEnabled */
+	virtual void VSetColourWritesEnabled(const TColourWritesEnabled& colourWritesEnabled) override;
+	/* @copydoc ARenderer::VSetStencilBufferSettings */
+	virtual void VSetStencilBufferSettings(const TStencilBufferSettings& settings) override;
+	/* @copydoc ARenderer::VSetDepthBufferSettings */
+	virtual void VSetDepthBufferSettings(bool enabled, bool writeEnabled, EComparisonFunction compareFunction) override;
+	/* @copydoc ARenderer::VSetCullingMode */
+	virtual void VSetCullingMode(ECullingMode cullingMode) override;
+	/* @copydoc ARenderer::VSetFillMode */
+	virtual void VSetFillMode(EFillMode fillMode) override;
 protected:
 private:
 	// Windows functions that should be in a windows class.
@@ -81,14 +116,22 @@ private:
 	*/
 	DXGI_SAMPLE_DESC DetermineMultiSampleLevels();
 
+	/* @copydoc ARenderer::VSetTextureLayerFiltering */
 	virtual void VSetTextureLayerFiltering(size_t layer, ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter);
+	/* @copydoc ARenderer::VSetTextureLayerFiltering */
 	virtual void VSetTexture(size_t layer, const shared_ptr<ATexture>& pTexture, bool disable = false) override;
+	/* @copydoc ARenderer::VSetTextureBlendState */
 	virtual void VSetTextureLayerBlendState(size_t layer, const TTextureLayerBlendState& blendState) override;
+	/* @copydoc ARenderer::VSetTextureAddressModes */
 	virtual void VSetTextureAddressModes(size_t layer, const TTextureUVWAddressModes& addressModes) override;
+	/* @copydoc ARenderer::VSetTextureBorderColour */
 	virtual void VSetTextureBorderColour(size_t layer, const CColourValue& colour) override;
 
+	/* @copydoc ARenderer::VSetVertexDeclaration */
 	virtual void VSetVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
+	/* @copydoc ARenderer::VSetVertexBuffer */
 	virtual void VSetVertexBuffer(shared_ptr<AVertexGpuBuffer> pVertexBuffer);
+	/* @copydoc ARenderer::VSetIndexBuffer */
 	virtual void VSetIndexBuffer(shared_ptr<AIndexGpuBuffer> pIndexBuffer);
 
 	/** Internal helper method for creating a sampler state for a texture layer.
@@ -102,6 +145,7 @@ private:
 	*/
 	std::vector<D3D10_INPUT_ELEMENT_DESC> GetD3DVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
 
+
 	// Member Variables
 public:
 protected:
@@ -111,8 +155,19 @@ private:
 	ID3D10RenderTargetView* m_pRenderTargetView;
 	ID3D10Texture2D* m_pDepthStencilBuffer;
 	ID3D10DepthStencilView* m_pDepthStencilView;
-	ID3D10DepthStencilState* m_pDepthStencilState;
+
+	// Blending.
+	D3D10_BLEND_DESC m_BlendDesc;
+	ID3D10BlendState* m_pBlendState;
+
+	// Rasterizer.
+	D3D10_RASTERIZER_DESC m_RasterizerDesc;
 	ID3D10RasterizerState* m_pRasterizerState;
+
+	// Depth-stencil buffer.
+	D3D10_DEPTH_STENCIL_DESC m_DepthStencilDesc;
+	ID3D10DepthStencilState* m_pDepthStencilState;
+	size_t m_StencilReferenceValue;
 
 	// Texture layering.
 	std::vector<D3D10_SAMPLER_DESC> m_SamplerDescs;
@@ -130,7 +185,7 @@ private:
 	shared_ptr<CD3D10ShaderProgram> m_pBoundPixelShader;
 	shared_ptr<CD3D10ShaderProgram> m_pBoundGeometryShader;
 
-	CVertexDeclaration::EPrimitiveType m_PrimitiveType;
+	CD3D10RenderTexture* m_pBoundRenderTarget;
 };
 
 }
