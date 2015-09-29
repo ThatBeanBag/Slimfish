@@ -25,7 +25,7 @@
 
 namespace Slim {
 
-const CQuaternion CQuaternion::s_IDENTITY = CQuaternion(1, 1, 1, 0);
+const CQuaternion CQuaternion::s_IDENTITY = CQuaternion(0, 0, 0, 1);
 const CQuaternion CQuaternion::s_ZERO = CQuaternion(0, 0, 0, 0);
 
 CQuaternion::CQuaternion()
@@ -42,9 +42,9 @@ CQuaternion::CQuaternion(float x, float y, float z, float w)
 
 CQuaternion::CQuaternion(const CVector3& axis, float radAngle)
 {
-	float sinTheta = sinf(radAngle / 2.0f);
+	float sinTheta = std::sinf(radAngle * 0.5f);
 
-	m_w = cosf(radAngle / 2.0f);
+	m_w = std::cosf(radAngle * 0.5f);
 	m_x = sinTheta * axis.GetX();
 	m_y = sinTheta * axis.GetY();
 	m_z = sinTheta * axis.GetZ();
@@ -113,6 +113,24 @@ CQuaternion::CQuaternion(const CMatrix4x4& rotationMatrix)
 	}
 }
 
+CQuaternion::CQuaternion(float yaw, float pitch, float roll)
+{
+	*this = /*CQuaternion(CVector3::s_UP, yaw) **/ CQuaternion(CVector3::s_RIGHT, pitch)/* * CQuaternion(CVector3::s_FORWARD, roll)*/;
+
+	// Implementation from:
+	// http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/
+	float c1 = std::cosf(yaw * 0.5f);
+	float s1 = std::sinf(yaw * 0.5f);
+	float c2 = std::cosf(roll * 0.5f);
+	float s2 = std::sinf(roll * 0.5f);
+	float c3 = std::cosf(pitch * 0.5f);
+	float s3 = std::sinf(pitch * 0.5f);
+	m_w = (c1 * c2 * c3) - (s1 * s2 * s3);
+	m_x = (c1 * c2 * s3) + (s1 * s2 * c3);
+	m_y = (s1 * c2 * c3) + (c1 * s2 * s3);
+	m_z = (c1 * s2 * c3) - (s1 * c2 * s3);
+}
+
 CQuaternion::~CQuaternion()
 {
 
@@ -124,6 +142,17 @@ CQuaternion& CQuaternion::operator*=(const CQuaternion& other)
 	*this = *this * other;
 
 	return *this;
+}
+
+const CVector3 CQuaternion::operator*(const CVector3& vector) const
+{
+	CVector3 quaternionVector(m_x, m_y, m_z);
+	CVector3 qCrossV = CVector3::CrossProduct(quaternionVector, vector);
+	CVector3 qCrossVCrossV = CVector3::CrossProduct(quaternionVector, qCrossV);
+	qCrossV *= 2.0f * m_w;
+	qCrossVCrossV *= 2.0f;
+
+	return (vector + qCrossV + qCrossVCrossV);
 }
 
 CQuaternion& CQuaternion::operator+=(const CQuaternion& other)
@@ -191,12 +220,12 @@ const CQuaternion CQuaternion::operator*(float scalar) const
 
 const CQuaternion CQuaternion::GetNormalise() const
 {
-	return *this * (1.0f / GetMagnitude());
+	return (*this * (1.0f / GetMagnitude()));
 }
 
 const CQuaternion CQuaternion::GetConjugate() const
 {
-	return CQuaternion(m_w, -m_x, -m_y, -m_z);
+	return CQuaternion(-m_x, -m_y, -m_z, m_w);
 }
 
 const CQuaternion CQuaternion::GetInverse() const
@@ -218,38 +247,61 @@ const float CQuaternion::GetMagnitude() const
 
 const CMatrix4x4 CQuaternion::ToRotationMatrix() const
 {
-	float f2i = m_x + m_x;
-	float f2j = m_y + m_y;
-	float f2k = m_z + m_z;
+	float xx = m_x + m_x;
+	float yy = m_y + m_y;
+	float zz = m_z + m_z;
 
-	float f2wi = f2i * m_w;
-	float f2wj = f2j * m_w;
-	float f2wk = f2k * m_w;
-	float f2ii = f2i * m_x;
-	float f2ij = f2j * m_x;
-	float f2ik = f2k * m_x;
-	float f2jj = f2j * m_y;
-	float f2jk = f2k * m_y;
-	float f2kk = f2k * m_z;
+	float f2wx = xx * m_w;
+	float f2wy = yy * m_w;
+	float f2wz = zz * m_w;
+	float f2xx = xx * m_x;
+	float f2xy = yy * m_x;
+	float f2xz = zz * m_x;
+	float f2yy = yy * m_y;
+	float f2yz = zz * m_y;
+	float f2zz = zz * m_z;
 
 	CMatrix4x4 rotation(CMatrix4x4::s_IDENTITY);
 
-	rotation[0][0] = 1.0f - f2jj - f2kk;
-	rotation[0][1] = f2ij - f2wk;
-	rotation[0][2] = f2ik + f2wj;
-	rotation[1][0] = f2ij + f2wk;
-	rotation[1][1] = 1.0f - f2ii - f2kk;
-	rotation[1][2] = f2jk - f2wi;
-	rotation[2][0] = f2ik - f2wj;
-	rotation[2][1] = f2jk - f2wi;
-	rotation[2][2] = 1.0f - f2ii - f2jj;
+	rotation[0][0] = 1.0f - (f2yy + f2zz);
+	rotation[0][1] = f2xy - f2wz;
+	rotation[0][2] = f2xz + f2wy;
+	rotation[1][0] = f2xy + f2wz;
+	rotation[1][1] = 1.0f - (f2xx + f2zz);
+	rotation[1][2] = f2yz - f2wx;
+	rotation[2][0] = f2xz - f2wy;
+	rotation[2][1] = f2yz + f2wx;
+	rotation[2][2] = 1.0f - (f2xx + f2yy);
 
 	return rotation;
+}
+
+const CVector3 CQuaternion::GetDirection() const
+{
+	CVector3 direction = *this * CVector3::s_FORWARD;
+	return direction;
+}
+
+const CVector3 CQuaternion::GetRight() const
+{
+	CVector3 right = *this * CVector3::s_RIGHT;
+	return right;
+}
+
+const CVector3 CQuaternion::GetUp() const
+{
+	CVector3 up = *this * CVector3::s_UP;
+	return up;
 }
 
 const CQuaternion operator*(float scalar, const CQuaternion& other)
 {
 	return (other * scalar);
+}
+
+const CVector3 operator*(const CVector3& vector, const CQuaternion& rotation)
+{
+	return (rotation * vector);
 }
 
 }

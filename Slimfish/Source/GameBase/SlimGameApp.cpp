@@ -155,7 +155,7 @@ LRESULT CALLBACK CGameApp::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 		/************************************************************************/
 		// Keys
 		case WM_KEYDOWN: {
-			EKeyCode keycode = GetKeyCode(wParam);
+			EKeyCode keycode = GetKeyCode(wParam, lParam);
 			if (keycode != EKeyCode::MAX) {
 				g_pApp->m_Input.SetKeyPress(keycode);
 			}
@@ -163,9 +163,9 @@ LRESULT CALLBACK CGameApp::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 			break;
 		}
 		case WM_KEYUP: {
-			EKeyCode keycode = GetKeyCode(wParam);
+			EKeyCode keycode = GetKeyCode(wParam, lParam);
 			if (keycode != EKeyCode::MAX) {
-				g_pApp->m_Input.SetKeyPress(keycode);
+				g_pApp->m_Input.SetKeyRelease(keycode);
 			}
 
 			break;
@@ -230,7 +230,7 @@ LRESULT CALLBACK CGameApp::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-EKeyCode CGameApp::GetKeyCode(WPARAM wParam)
+EKeyCode CGameApp::GetKeyCode(WPARAM wParam, LPARAM lParam)
 {
 	switch (wParam) {
 		case '0': return EKeyCode::NUM_0;
@@ -295,12 +295,6 @@ EKeyCode CGameApp::GetKeyCode(WPARAM wParam)
 		case VK_RIGHT: return EKeyCode::RIGHT_ARROW;
 		case VK_UP: return EKeyCode::UP_ARROW;
 		case VK_DOWN: return EKeyCode::DOWN_ARROW;
-		case VK_LSHIFT: return EKeyCode::LEFT_SHIFT;
-		case VK_RSHIFT: return EKeyCode::RIGHT_SHIFT;
-		case VK_LCONTROL: return EKeyCode::LEFT_CONTROL;
-		case VK_RCONTROL: return EKeyCode::RIGHT_CONTROL;
-		case VK_LMENU: return EKeyCode::LEFT_ALT;
-		case VK_RMENU: return EKeyCode::RIGHT_ALT;
 		case VK_BACK: return EKeyCode::BACK_SPACE;
 		case VK_TAB: return EKeyCode::TAB;
 		case VK_CLEAR: return EKeyCode::CLEAR;
@@ -334,6 +328,23 @@ EKeyCode CGameApp::GetKeyCode(WPARAM wParam)
 		case VK_OEM_7: return EKeyCode::QUOTE;
 		case VK_OEM_4: return EKeyCode::LEFT_BRACKET;
 		case VK_OEM_6: return EKeyCode::RIGHT_BRACKET;
+		case VK_SHIFT:		// Fall through.
+		case VK_CONTROL:	// Fall through.
+		case VK_MENU: {
+			UINT scancode = (lParam & 0x00ff0000) >> 16;
+			WPARAM mappedKey = MapVirtualKey(scancode, MAPVK_VSC_TO_VK_EX);
+			switch (mappedKey) {
+				case VK_LSHIFT: return EKeyCode::LEFT_SHIFT;
+				case VK_RSHIFT: return EKeyCode::RIGHT_SHIFT;
+				case VK_LCONTROL: return EKeyCode::LEFT_CONTROL;
+				case VK_RCONTROL: return EKeyCode::RIGHT_CONTROL;
+				case VK_LMENU: return EKeyCode::LEFT_ALT;
+				case VK_RMENU: return EKeyCode::RIGHT_ALT;
+				default: break;
+			}
+		}
+
+		default: break;
 	}
 
 	return EKeyCode::MAX;

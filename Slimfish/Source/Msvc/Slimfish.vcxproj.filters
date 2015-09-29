@@ -166,6 +166,9 @@
     <ClCompile Include="..\Graphics\SlimCamera.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\Utilities\SlimPoint.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -339,6 +342,9 @@
     </ClInclude>
     <ClInclude Include="..\Math\SlimPlane.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\SlimPoint.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

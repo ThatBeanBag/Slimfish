@@ -126,6 +126,9 @@ namespace Slim {
 
 	CD3D11RenderTexture::~CD3D11RenderTexture()
 	{
+		shared_ptr<CD3D11Texture> pD3DTexture = static_pointer_cast<CD3D11Texture>(GetTexture());
+		//pD3DTexture->GetD3DResource()->Release();
+
 		SLIM_SAFE_RELEASE(m_pRenderTargetView);
 		SLIM_SAFE_RELEASE(m_pDepthStencilView);
 	}

@@ -48,7 +48,7 @@ public:
 	virtual bool VInitialise(HINSTANCE hInstance, LPSTR lpCmdLine, HWND hWnd, size_t screenHeight, size_t screenWidth);
 
 	static LRESULT CALLBACK MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-	static EKeyCode GetKeyCode(WPARAM wParam);
+	static EKeyCode GetKeyCode(WPARAM wParam, LPARAM lParam);
 
 	HWND GetHWND() { return m_hWnd; }
 

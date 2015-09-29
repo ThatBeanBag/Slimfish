@@ -10,19 +10,37 @@ cbuffer constantBuffer {
 	float4 gFogColour;
 };
 
+static const float gCliffStart = 0.2f;
+static const float gCliffFull = 0.35f;
+
+static const float gSandStart = 4.0f;
+static const float gSandFull = 2.0f;
+
+static const float gDetailStart = 0.998f;
+static const float gDetailFull = 0.996f;
+
 Texture2D gGrassTexture;
 Texture2D gCliffTexture;
+Texture2D gSandTexture;
 Texture2D gSpecularMap;
+Texture2D gGrassNormalMap;
+Texture2D gCliffNormalMap;
+Texture2D gSandNormalMap;
 SamplerState gSample0;
 SamplerState gSample1;
 SamplerState gSample2;
+SamplerState gSample3;
+SamplerState gSample4;
+SamplerState gSample5;
+SamplerState gSample6;
 
 struct PS_INPUT {
 	float4 positionScreen : SV_POSITION;
 	float3 positionWorld : POSITION;
+	float4 positionDepth : TEXCOORD0;
 	float3 normal : NORMAL;
 	float3 tangent : TANGENT;
-	float2 texCoord : TEXCOORD;
+	float2 texCoord : TEXCOORD1;
 	float clip : SV_ClipDistance0;
 };
 
@@ -51,66 +69,78 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 	pIn.tangent = normalize(pIn.tangent);
 
 	float4 grass = gGrassTexture.Sample(gSample0, pIn.texCoord);
-	float4 specular = gSpecularMap.Sample(gSample2, pIn.texCoord);
+	float4 sand = gSandTexture.Sample(gSample1, pIn.texCoord);
+	float4 specular = gSpecularMap.Sample(gSample3, pIn.texCoord);
 
-	float3 triPlanarBlending = abs(pIn.normal);
-	float b = (triPlanarBlending.x + triPlanarBlending.y + triPlanarBlending.z);
-	triPlanarBlending /= b; 
-
-	// Get the planar projections.
-	float4 cliffX = gCliffTexture.Sample(gSample1, pIn.positionWorld.yz * 0.1f);
-	float4 cliffY = gCliffTexture.Sample(gSample1, pIn.positionWorld.xz * 0.1f);
-	float4 cliffZ = gCliffTexture.Sample(gSample1, pIn.positionWorld.xy * 0.1f);
-	// Blend the planar projections.
-	float4 cliff = cliffX * triPlanarBlending.x + cliffY * triPlanarBlending.y + cliffZ * triPlanarBlending.z;
-
-
-	// Normal mapping.
-	/*float3 normalMapSample = gNormalMap.Sample(gSample2, pIn.texCoord);
-	float3 normalMapSample2 = gNormalMap.Sample(gSample2, pIn.texCoord2);
-
-	//float3 combinedNormalMapSample = normalize(normalMapSample + normalMapSample2);
-	float3 combinedNormalMapSample = normalMapSample;
-
-	float3 finalNormal = GetBumpedNormal(pIn.normal, combinedNormalMapSample, pIn.tangent);
-	float3 finalNormal = normalMapSample + normalize((2.0f * normalMapSample - 1.0f) + pIn.normal);*/
+	float3 normalSample = gGrassNormalMap.Sample(gSample4, pIn.texCoord).xyz;
 
 	// Blend in the sand.
-	float4 sand = float4(0.85f, 0.73f, 0.65f, 1.0f);
-	const float sandStart = 3.0f;
-	const float sandFull =	1.0f;
 	float sandBlend = 0.0f;
-	if (pIn.positionWorld.y < sandStart) {
-		sandBlend = saturate((pIn.positionWorld.y - sandStart) / (sandFull - sandStart));
+	if (pIn.positionWorld.y < gSandStart) {
+		sandBlend = saturate((pIn.positionWorld.y - gSandStart) / (gSandFull - gSandStart));
+
+		// Calculate normal for sand.
+		float3 sandNormal = gSandTexture.Sample(gSample6, pIn.texCoord);
+		normalSample = lerp(normalSample, sandNormal, sandBlend);
+		//normalSample += sandNormal * sandBlend;
 	}
 
-	float4	diffuse = lerp(grass, sand, sandBlend);
+	float4 diffuse = lerp(grass, sand, sandBlend);
 
 	// Blend in the cliff.
-	const float cliffStart = 0.15f;
-	const float cliffFull = 0.3f;
-
-	float blend = 0.0f;
-
+	float cliffBlend = 0.0f;
 	float incline = 1.0f - max(dot(pIn.normal, float3(0.0f, 1.0f, 0.0f)), 0.0f);
-	if (incline >= cliffStart) {
-		blend = saturate((incline - cliffStart) / (cliffFull - cliffStart));
+	if (incline >= gCliffStart) {
+		cliffBlend = saturate((incline - gCliffStart) / (gCliffFull - gCliffStart));
+
+		// Calculate tri-planar blending.
+		float3 triPlanarBlending = abs(pIn.normal);
+			float b = (triPlanarBlending.x + triPlanarBlending.y + triPlanarBlending.z);
+		triPlanarBlending /= b;
+
+		// Get the planar projections.
+		float4 cliffX = gCliffTexture.Sample(gSample1, pIn.positionWorld.yz * 0.05f);
+		float4 cliffY = gCliffTexture.Sample(gSample1, pIn.positionWorld.xz * 0.05f);
+		float4 cliffZ = gCliffTexture.Sample(gSample1, pIn.positionWorld.xy * 0.05f);
+		// Blend the planar projections.
+		float4 cliff = cliffX * triPlanarBlending.x + cliffY * triPlanarBlending.y + cliffZ * triPlanarBlending.z;
+
+		diffuse = lerp(diffuse, cliff, cliffBlend);
+
+		// Calculate normal mapping for cliff.
+		// Get the planar projections.
+		float3 cliffNormalX = gCliffNormalMap.Sample(gSample5, pIn.positionWorld.yz * 0.05f).xyz;
+		float3 cliffNormalY = gCliffNormalMap.Sample(gSample5, pIn.positionWorld.xz * 0.05f).xyz;
+		float3 cliffNormalZ = gCliffNormalMap.Sample(gSample5, pIn.positionWorld.xy * 0.05f).xyz;
+		// Blend the planar projections.
+		float3 cliffNormal = cliffNormalX * triPlanarBlending.x + cliffNormalY * triPlanarBlending.y + cliffNormalZ * triPlanarBlending.z;
+
+		normalSample = lerp(normalSample, cliffNormal, cliffBlend);
+		//normalSample += cliffNormal * cliffBlend;
 	}
-	
-	diffuse = lerp(diffuse, cliff, blend);
+
+	// Normal mapping.
+	float depthValue = pIn.positionDepth.z / pIn.positionDepth.w;
+
+	float3 finalNormal = pIn.normal;
+	if (depthValue < gDetailStart) {
+		float normalBlend = saturate((depthValue - gDetailStart) / (gDetailFull - gDetailStart));
+		float3 bumpedNormal = GetBumpedNormal(pIn.normal, normalSample, pIn.tangent);
+		finalNormal = lerp(pIn.normal, bumpedNormal, normalBlend);
+	}
 
 	// Lighting.
 	Material material = { diffuse, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 1.0f };
 
 	float3 lightColour;
 	if (gLight.type == 0) {
-		lightColour = ParallelLight(pIn.normal, material, gLight, toEye);
+		lightColour = ParallelLight(finalNormal, material, gLight, toEye);
 	}
 	else if (gLight.type == 1) {
-		lightColour = PointLight(pIn.positionWorld.xyz, pIn.normal, material, gLight, toEye);
+		lightColour = PointLight(pIn.positionWorld.xyz, finalNormal, material, gLight, toEye);
 	}
 	else {
-		lightColour = SpotLight(pIn.positionWorld.xyz, pIn.normal, material, gLight, toEye);
+		lightColour = SpotLight(pIn.positionWorld.xyz, finalNormal, material, gLight, toEye);
 	}
 
 	lightColour += diffuse.xyz * gAmbientLight.xyz;

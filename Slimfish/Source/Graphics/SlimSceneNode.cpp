@@ -24,6 +24,40 @@
 
 namespace Slim {
 
+	CSceneNode::CSceneNode(CScene* pCreatorScene)
+		:m_pCreatorScene(pCreatorScene),
+		m_Scale(CVector3::s_ONE),
+		m_Rotation(CQuaternion::s_IDENTITY),
+		m_Position(CVector3::s_ZERO)
+	{
+
+	}
+
+	CSceneNode::~CSceneNode()
+	{
+
+	}
+
+	bool CSceneNode::VPreRender()
+	{
+		return true;
+	}
+
+	bool CSceneNode::VRender()
+	{
+		return true;
+	}
+
+	bool CSceneNode::VRenderChildren()
+	{
+		return true;
+	}
+
+	bool CSceneNode::VPostRender()
+	{
+		return true;
+	}
+
 	void CSceneNode::SetVisibility(bool isVisible, bool recursive /*= true*/)
 	{
 		m_bIsVisible = isVisible;

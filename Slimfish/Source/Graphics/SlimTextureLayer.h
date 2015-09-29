@@ -204,7 +204,7 @@ namespace Slim {
 		/** Set the texture of the layer.
 		 	@author Hayden Asplet
 		*/
-		void SetTexture(const shared_ptr<ATexture>& pTexture);
+		void SetTexture(shared_ptr<ATexture> pTexture);
 
 		/** Get the texture resource of layer.
 		 	@author Hayden Asplet

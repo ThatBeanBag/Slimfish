@@ -92,11 +92,15 @@ namespace Slim {
 		}
 
 		// Inverse the position and rotation of the camera to construct a view matrix.
-		CQuaternion viewRotation = GetRotation().GetInverse();
+		CQuaternion viewRotation = GetRotation();
 		CVector3 viewPosition = -GetPosition();
 
+		CMatrix4x4 rotation = viewRotation.ToRotationMatrix().GetTranspose();
+		CMatrix4x4 translation = CMatrix4x4::BuildTranslation(viewPosition);
+
 		// Set the view matrix internally.
-		CFrustum::SetViewMatrix(CMatrix4x4::BuildTransform(viewPosition, CVector3::s_ONE, viewRotation));
+		//CFrustum::SetViewMatrix(CMatrix4x4::BuildTransform(viewPosition, CVector3::s_ONE, viewRotation));
+		CFrustum::SetViewMatrix(rotation * translation);	// Have to use opposite ordering for inverse-ness.
 	}
 
 	void CCamera::SetFieldOfView(float radFieldOfView)

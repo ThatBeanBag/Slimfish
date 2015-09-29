@@ -160,6 +160,18 @@ const CVector3 operator-(const CVector3& vec3)
 	return negated;
 }
 
+bool operator==(const CVector3& vectorA, const CVector3& vectorB)
+{
+	return (vectorA.GetX() == vectorB.GetY() &&
+		vectorA.GetY() == vectorB.GetY() &&
+		vectorA.GetZ() == vectorB.GetZ());
+}
+
+bool operator!=(const CVector3& vectorA, const CVector3& vectorB)
+{
+	return !(vectorA == vectorB);
+}
+
 const CVector3 operator*(const CVector3& vec3, float scalar)
 {
 	CVector3 scaled = vec3;

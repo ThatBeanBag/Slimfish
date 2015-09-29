@@ -58,7 +58,7 @@ public:
 	 	@author Hayden Asplet
 	 	@param textureLayer Texture layer to add.
 	*/
-	void AddTextureLayer(const CTextureLayer& textureLayer);
+	CTextureLayer* AddTextureLayer(const CTextureLayer& textureLayer);
 
 	/** Add a new texture layer to the pass by loading a texture and creating a texture layer from it.
 		@remarks
@@ -69,16 +69,23 @@ public:
 	 	@return 
 			Reference to the created texture layer for further modification.
 	*/
-	CTextureLayer& AddTextureLayer(const std::string& textureName);
+	CTextureLayer* AddTextureLayer(const std::string& textureName);
+
+	/**  Add a new texture layer to the pass.
+	 	@author Hayden Asplet
+	 	@return Pointer to the new texture layer for modification.
+	*/
+	CTextureLayer* AddTextureLayer();
 
 	/** Retrieve a texture layer at the index specified.
 	 	@author Hayden Asplet
 	 	@param layerIndex Index of the layer to get (must be in range of the number of texture layers).
 	 	@return Reference to the texture layer for modification and reading.
 	*/
-	CTextureLayer& GetTextureLayer(size_t layerIndex);
+	CTextureLayer* GetTextureLayer(size_t layerIndex);
 
-	const std::vector<CTextureLayer>& GetTextureLayers() const;
+	/** Retrieve all textures layers of the render pass for iteration. @author Hayden Asplet. */
+	const std::vector<std::unique_ptr<CTextureLayer>>& GetTextureLayers() const;
 
 	/** Remove a texture layer at an index.
 	 	@author Hayden Asplet
@@ -141,6 +148,31 @@ public:
 			alpha/colour.
 	*/
 	const TBlendingMode& GetBlendingMode() const;
+
+	/** Set the source colour blend factor. @author Hayden Asplet */
+	void SetSourceColourBlendFactor(EBlendFactor sourceColourBlendFactor);
+	/** Get the source colour blend factor. @author Hayden Asplet */
+	const EBlendFactor GetSourceColourBlendFactor() const;
+	/** Set the destination colour blend factor. @author Hayden Asplet */
+	void SetDestColourBlendFactor(EBlendFactor destColourBlendFactor);
+	/** Get the destination colour blend factor. @author Hayden Asplet */
+	const EBlendFactor GetDestColourBlendFactor() const;
+	/** Set the colour blend operation. @author Hayden Asplet */
+	void SetColourBlendOperation(EBlendOperation colourBlendOperation);
+	/** Get the colour blend operation. @author Hayden Asplet */
+	const EBlendOperation GetColourBlendOperation() const;
+	/** Set the source alpha blend factor. @author Hayden Asplet */
+	void SetSourceAlphaBlendFactor(EBlendFactor sourceAlphaBlendFactor);
+	/** Get the source alpha blend factor. @author Hayden Asplet */
+	const EBlendFactor GetSourceAlphaBlendFactor() const;
+	/** Set the destination alpha blend factor. @author Hayden Asplet */
+	void SetDestAlphaBlendFactor(EBlendFactor destAlphaBlendFactor);
+	/** Get the destination alpha blend factor. @author Hayden Asplet */
+	const EBlendFactor GetDestAlphaBlendFactor() const;
+	/** Set the alpha blend operation. @author Hayden Asplet */
+	void SetAlphaBlendOperation(EBlendOperation alphaBlendOperation);
+	/** Get the alpha blend operation. @author Hayden Asplet */
+	const EBlendOperation GetAlphaBlendOperation() const;
 
 	/** Set the colour writes enabled to describe which colour channels are written to the back buffer.
 	 	@author Hayden Asplet
@@ -231,7 +263,7 @@ public:
 protected:
 private:
 	// Texture layers.
-	std::vector<CTextureLayer> m_TextureLayers;
+	std::vector<std::unique_ptr<CTextureLayer>> m_TextureLayers;
 
 	// Shader programs of the pass. 
 	// May not all be valid if the pass does not require the programmable pipeline.

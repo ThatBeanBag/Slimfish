@@ -21,6 +21,7 @@
 
 // This Include
 #include "SlimMatrix4x4.h"
+#include "SlimPlane.h"
 
 // Local Includes
 
@@ -351,19 +352,22 @@ const CVector3 CMatrix4x4::GetPosition() const
 const CVector3 CMatrix4x4::GetDirection() const
 {
 	// Return third column of the rotation component of the matrix.
-	return CVector3(m_pMatrix[0][2], m_pMatrix[1][2], m_pMatrix[2][2]);
+	//return CVector3(m_pMatrix[0][2], m_pMatrix[1][2], m_pMatrix[2][2]);
+	return TransformNormal(CVector3::s_FORWARD);
 }
 
 const CVector3 CMatrix4x4::GetRight() const 
 {
 	// Return first column of the rotation component of the matrix.
-	return CVector3(m_pMatrix[0][0], m_pMatrix[1][0], m_pMatrix[2][0]);
+	//return CVector3(m_pMatrix[0][0], m_pMatrix[1][0], m_pMatrix[2][0]);
+	return TransformNormal(CVector3::s_RIGHT);
 }
 
 const CVector3 CMatrix4x4::GetUp() const
 {
 	// Return second column of the rotation component of the matrix.
-	return CVector3(m_pMatrix[0][1], m_pMatrix[1][1], m_pMatrix[2][1]);
+	//return CVector3(m_pMatrix[0][1], m_pMatrix[1][1], m_pMatrix[2][1]);
+	return TransformNormal(CVector3::s_UP);
 }
 
 void CMatrix4x4::Decompose(CVector3& position, CVector3& scale, CQuaternion& rotation)
@@ -373,10 +377,7 @@ void CMatrix4x4::Decompose(CVector3& position, CVector3& scale, CQuaternion& rot
 
 const CMatrix4x4 CMatrix4x4::BuildTransform(const CVector3& translation, const CVector3& scale, const CQuaternion& rotation)
 {
-	CMatrix4x4 transform = rotation.ToRotationMatrix();
-	transform.SetPosition(translation);
-
-	return transform * BuildScale(scale);
+	return BuildTranslation(translation) * rotation.ToRotationMatrix() * BuildScale(scale);
 }
 
 void CMatrix4x4::Copy(const float pMatrix[4][4])
@@ -528,6 +529,16 @@ const CMatrix4x4 CMatrix4x4::BuildRotationFromAxis(const CVector3& right, const 
 	return matrix;
 }
 
+const CMatrix4x4 CMatrix4x4::BuildRotationFromAxis(const CVector3& up, const CVector3& forward)
+{
+	return BuildRotationFromAxis(CVector3::CrossProduct(forward, up), up, forward);
+}
+
+const CMatrix4x4 CMatrix4x4::BuildRotationFromAxis(const CVector3& forward)
+{
+	return BuildRotationFromAxis(CVector3::s_UP, forward);
+}
+
 const CMatrix4x4 CMatrix4x4::BuildYawPitchRoll(float radYaw, float radPitch, float radRoll)
 {
 	return BuildRotationY(radYaw) * BuildRotationX(radPitch) * BuildRotationZ(radRoll);
@@ -561,16 +572,13 @@ const CMatrix4x4 CMatrix4x4::BuildLookAt(const CVector3& eye, const CVector3& at
 	return matrix;
 }
 
-const CMatrix4x4 CMatrix4x4::BuildReflect(const CVector3& planeNormal, float d)
+const CMatrix4x4 CMatrix4x4::BuildReflect(const CPlane& plane)
 {
-	float a = planeNormal.GetX();
-	float b = planeNormal.GetY();
-	float c = planeNormal.GetZ();
 	CMatrix4x4 unitVector = {
-		a, 0, 0, 0,
-		b, 0, 0, 0,
-		c, 0, 0, 0,
-		d, 0, 0, 1 };
+		plane.GetA(), 0, 0, 0,
+		plane.GetB(), 0, 0, 0,
+		plane.GetC(), 0, 0, 0,
+		plane.GetD(), 0, 0, 1 };
 	CMatrix4x4 two = {
 		2, 0, 0, 0,
 		0, 2, 0, 0,

@@ -24,7 +24,9 @@
 
 namespace Slim {
 
+	// Forward Declaration.
 	class CQuaternion;
+	class CPlane;
 
 /** Standard 4 by 4 homogeneous matrix class for affine transformations of vectors.
 	@remarks
@@ -246,6 +248,10 @@ public:
 	static const CMatrix4x4 BuildRotationZ(float radians);
 	/** Build a rotation transform from 3 perpendicular axis. @author Hayden Asplet */
 	static const CMatrix4x4 BuildRotationFromAxis(const CVector3& right, const CVector3& up, const CVector3& forward);
+	/** Build a rotation transform from 2 perpendicular axis. @author Hayden Asplet */
+	static const CMatrix4x4 BuildRotationFromAxis(const CVector3& up, const CVector3& forward);
+	/** Build a rotation transform from a single direction axis and the up (0, 1, 0) axis. @author Hayden Asplet */
+	static const CMatrix4x4 BuildRotationFromAxis(const CVector3& forward);
 	/** Build a rotation transform from yaw pitch and roll. @author Hayden Asplet */
 	static const CMatrix4x4 BuildYawPitchRoll(float radYaw, float radPitch, float radRoll);
 	/** Build a translation transform. @author Hayden Asplet */
@@ -255,7 +261,7 @@ public:
 	/** Build a view matrix from a camera position, a look at position and an up direction. @author Hayden Asplet */
 	static const CMatrix4x4 BuildLookAt(const CVector3& eye, const CVector3& at, const CVector3& up);
 	/** Build a reflection matrix to reflect a point through a plane */
-	static const CMatrix4x4 BuildReflect(const CVector3& planeNormal, float d);
+	static const CMatrix4x4 BuildReflect(const CPlane& plane);
 
 	/** Build a perspective projection matrix.
 	 	@author Hayden Asplet

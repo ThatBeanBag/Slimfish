@@ -49,6 +49,8 @@ public:
 	*/
 	CQuaternion(const CVector3& axis, float radAngle);
 
+	CQuaternion(float yaw, float pitch, float roll);
+
 	/** Construct a quaternion from a rotation matrix.
 	 	@author Hayden Asplet
 	*/
@@ -100,6 +102,8 @@ public:
 	/** Multiply a quaternion by a scalar @author Hayden Asplet */
 	const CQuaternion operator*(float scalar) const;
 
+	const CVector3 operator*(const CVector3& vector) const;
+
 	/** Get the normalised version of the quaternion (magnitude 1). @author Hayden Asplet */
 	const CQuaternion GetNormalise() const;
 	/** Get the conjugate of the quaternion. @author Hayden Asplet */
@@ -111,6 +115,10 @@ public:
 
 	/** Convert the quaternion to a 4x4 rotation matrix. @author Hayden Asplet */
 	const CMatrix4x4 ToRotationMatrix() const;
+
+	const CVector3 GetDirection() const;
+	const CVector3 GetRight() const;
+	const CVector3 GetUp() const;
 
 	/** Set the w (real) component of the quaternion. @author Hayden Asplet */
 	void SetW(float w) { m_w = w; }
@@ -144,6 +152,9 @@ private:
 
 /** Multiply a quaternion by a scalar. @author Hayden Asplet */
 const CQuaternion operator*(float scalar, const CQuaternion& other);
+
+/** Multiply a vector by a quaternion. @author Hayden Asplet */
+const CVector3 operator*(const CVector3& vector, const CQuaternion& rotation);
 
 }
 #endif	// __SLIMQUATERNION_H__

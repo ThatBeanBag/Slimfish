@@ -47,7 +47,7 @@ CTextureLayer::~CTextureLayer()
 
 }
 
-void CTextureLayer::SetTexture(const shared_ptr<ATexture>& pTexture)
+void CTextureLayer::SetTexture(shared_ptr<ATexture> pTexture)
 {
 	m_pTexture = pTexture;
 }

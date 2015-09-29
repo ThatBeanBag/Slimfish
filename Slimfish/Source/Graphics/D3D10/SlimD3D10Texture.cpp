@@ -108,6 +108,7 @@ namespace Slim {
 			}
 			case D3D10_RESOURCE_DIMENSION_TEXTURE1D: {
 				m_pTexture1D = static_cast<ID3D10Texture1D*>(m_pTexture);
+				m_pTexture1D->AddRef();
 
 				// Get the texture description.
 				D3D10_TEXTURE1D_DESC desc;
@@ -123,6 +124,7 @@ namespace Slim {
 			}
 			case D3D10_RESOURCE_DIMENSION_TEXTURE2D: {
 				m_pTexture2D = static_cast<ID3D10Texture2D*>(m_pTexture);
+				m_pTexture2D->AddRef();
 
 				// Get the texture description.
 				D3D10_TEXTURE2D_DESC desc;
@@ -139,6 +141,7 @@ namespace Slim {
 			}
 			case D3D10_RESOURCE_DIMENSION_TEXTURE3D: {
 				m_pTexture3D = static_cast<ID3D10Texture3D*>(m_pTexture);
+				m_pTexture3D->AddRef();
 
 				// Get the texture description.
 				D3D10_TEXTURE3D_DESC desc;
@@ -162,7 +165,7 @@ namespace Slim {
 
 	void CD3D10Texture::VUnload()
 	{
-		//SLIM_SAFE_RELEASE(m_pTexture);
+		SLIM_SAFE_RELEASE(m_pTexture);
 		SLIM_SAFE_RELEASE(m_pTexture1D);
 		SLIM_SAFE_RELEASE(m_pTexture2D);
 		SLIM_SAFE_RELEASE(m_pTexture3D);  

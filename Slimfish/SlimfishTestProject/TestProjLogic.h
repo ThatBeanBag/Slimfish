@@ -26,6 +26,7 @@
 #include <Graphics\SlimTextureLayer.h>
 #include <Graphics\SlimRenderPass.h>
 #include <Graphics\SlimRenderTexture.h>
+#include <Graphics\SlimCamera.h>
 
 // Local Includes
 
@@ -39,6 +40,8 @@ public:
 	virtual void Update(float deltaTime);
 	virtual void Render();
 	virtual void HandleInput(const CInput& input, float deltaTime) override;
+
+	void CreateRenderTextures(int screenWidth, int screenHeight);
 
 	void BuildWater(size_t n, size_t m);
 	void BuildSkySphere(int latLines, int longLines);
@@ -86,7 +89,11 @@ private:
 
 	std::unique_ptr<ARenderTexture> m_pRefractionRenderTarget;
 	std::unique_ptr<ARenderTexture> m_pReflectionRenderTarget;
+	CTextureLayer* m_pRefractionLayer;
+	CTextureLayer* m_pReflectionLayer;
 
+	// Camera
+	std::unique_ptr<CCamera> m_pCamera;
 	CVector3 m_EyePosition;
 
 	float m_ElapsedTime;
@@ -94,8 +101,8 @@ private:
 	float m_CameraPitch;
 	float m_CameraYaw;
 	float m_CameraDistance;
-	int m_LastMouseX;
-	int m_LastMouseY;
+	CPoint m_lastMousePosition;
+	CPoint m_lastScreenSize;
 };
 
 #endif // __TESTPROJLOGIC_H__

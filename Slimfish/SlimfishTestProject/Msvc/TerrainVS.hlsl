@@ -19,9 +19,10 @@ struct VS_IN {
 struct VS_OUT {
 	float4 positionScreen : SV_POSITION;
 	float3 positionWorld : POSITION;
+	float4 positionDepth : TEXCOORD0;
 	float3 normal : NORMAL;
 	float3 tangent : TANGENT;
-	float2 texCoord : TEXCOORD;
+	float2 texCoord : TEXCOORD1;
 	float clip : SV_ClipDistance0;
 };
 
@@ -33,6 +34,7 @@ VS_OUT main(VS_IN vIn)
 
 	vOut.positionScreen = mul(float4(vIn.position, 1.0f), worldViewProj);
 	vOut.positionWorld = mul(float4(vIn.position, 1.0f), gWorldMatrix).xyz;
+	vOut.positionDepth = vOut.positionScreen;
 	vOut.normal = mul(float4(vIn.normal, 0.0f), gWorldMatrix).xyz;
 	vOut.tangent = mul(float4(vIn.tangent, 0.0f), gWorldMatrix).xyz;
 	vOut.texCoord = mul(float4(vIn.texCoord, 0.0f, 1.0f), gTexMatrix).xy;

@@ -72,6 +72,10 @@ namespace Slim {
 	/** Subtract a point from another. @author Hayden Asplet */
 	CPoint operator-(const CPoint& pointA, const CPoint& pointB);
 
+	/** Compares a point with another. @author Hayden Asplet */
+	bool operator==(const CPoint& pointA, const CPoint& pointB);
+	bool operator!=(const CPoint& pointA, const CPoint& pointB);
+
 }
 
 #endif	// __SLIMPOINT_H__

@@ -24,140 +24,145 @@
 
 namespace Slim {
 
-	CLight::CLight()
-	{
+CLight::CLight()
+{
 
-	}
+}
 
-	CLight::~CLight()
-	{
+CLight::~CLight()
+{
 
-	}
+}
 
-	void CLight::SetType(ELightType type)
-	{
-		m_LightProperties.m_Type = type;
-	}
+void CLight::SetType(ELightType type)
+{
+	m_LightProperties.type = type;
+}
 
-	Slim::ELightType CLight::GetType() const
-	{
-		return m_LightProperties.m_Type;
-	}
+Slim::ELightType CLight::GetType() const
+{
+	return m_LightProperties.type;
+}
 
-	void CLight::SetDiffuse(const CColourValue& diffuse)
-	{
-		m_LightProperties.m_Diffuse = diffuse;
-	}
+void CLight::SetDiffuse(const CColourValue& diffuse)
+{
+	m_LightProperties.diffuse = diffuse;
+}
 
-	const CColourValue& CLight::GetDiffuse() const
-	{
-		return m_LightProperties.m_Diffuse;
-	}
+const CColourValue& CLight::GetDiffuse() const
+{
+	return m_LightProperties.diffuse;
+}
 
-	void CLight::SetSpecular(const CColourValue& specular)
-	{
-		m_LightProperties.m_Specular = specular;
-	}
+void CLight::SetSpecular(const CColourValue& specular)
+{
+	m_LightProperties.specular = specular;
+}
 
-	const CColourValue& CLight::GetSpecular() const
-	{
-		return m_LightProperties.m_Specular;
-	}
+const CColourValue& CLight::GetSpecular() const
+{
+	return m_LightProperties.specular;
+}
 
-	void CLight::SetPosition(const CVector3& position)
-	{
-		m_LightProperties.m_Position = position;
-	}
+void CLight::SetPosition(const CVector3& position)
+{
+	m_LightProperties.position = position;
+}
 
-	const CVector3& CLight::GetPosition() const
-	{
-		return m_LightProperties.m_Position;
-	}
+const CVector3& CLight::GetPosition() const
+{
+	return m_LightProperties.position;
+}
 
-	void CLight::SetDirection(const CVector3& direction)
-	{
-		m_LightProperties.m_Direction = direction;
-	}
+void CLight::SetDirection(const CVector3& direction)
+{
+	m_LightProperties.direction = direction;
+}
 
-	const CVector3& CLight::GetDirection() const
-	{
-		return m_LightProperties.m_Direction;
-	}
+const CVector3& CLight::GetDirection() const
+{
+	return m_LightProperties.direction;
+}
 
-	void CLight::SetRange(float range)
-	{
-		m_LightProperties.m_Range = range;
-	}
+void CLight::SetRange(float range)
+{
+	m_LightProperties.range = range;
+}
 
-	const float CLight::GetRange() const
-	{
-		return m_LightProperties.m_Range;
-	}
+const float CLight::GetRange() const
+{
+	return m_LightProperties.range;
+}
 
-	void CLight::SetFalloff(float falloff)
-	{
-		m_LightProperties.m_Falloff = falloff;
-	}
+void CLight::SetFalloff(float falloff)
+{
+	m_LightProperties.falloff = falloff;
+}
 
-	const float CLight::GetFalloff() const
-	{
-		return m_LightProperties.m_Falloff;
-	}
+const float CLight::GetFalloff() const
+{
+	return m_LightProperties.falloff;
+}
 
-	void CLight::SetAttenuationConstant(float attenuationConst)
-	{
-		m_LightProperties.m_AttenuationConst = attenuationConst;
-	}
+void CLight::SetAttenuationConstant(float attenuationConst)
+{
+	m_LightProperties.attenuationConst = attenuationConst;
+}
 
-	const float CLight::GetAttenuationConstant() const
-	{
-		return m_LightProperties.m_AttenuationConst;
-	}
+const float CLight::GetAttenuationConstant() const
+{
+	return m_LightProperties.attenuationConst;
+}
 
-	void CLight::SetAttenuationLinear(float attenuationLinear)
-	{
-		m_LightProperties.m_AttenuationLinear = attenuationLinear;
-	}
+void CLight::SetAttenuationLinear(float attenuationLinear)
+{
+	m_LightProperties.attenuationLinear = attenuationLinear;
+}
 
-	const float CLight::GetAttenuationLinear() const
-	{
-		return m_LightProperties.m_AttenuationLinear;
-	}
+const float CLight::GetAttenuationLinear() const
+{
+	return m_LightProperties.attenuationLinear;
+}
 
-	void CLight::SetAttenuationQuadratic(float attenuationQuad)
-	{
-		m_LightProperties.m_AttenuationQuad = attenuationQuad;
-	}
+void CLight::SetAttenuationQuadratic(float attenuationQuad)
+{
+	m_LightProperties.attenuationQuad = attenuationQuad;
+}
 
-	const float CLight::GetAttenuationQuadratic() const
-	{
-		return m_LightProperties.m_AttenuationQuad;
-	}
+const float CLight::GetAttenuationQuadratic() const
+{
+	return m_LightProperties.attenuationQuad;
+}
 
-	void CLight::SetSpotTheta(float spotTheta)
-	{
-		m_LightProperties.m_SpotTheta = spotTheta;
-	}
+CVector3 CLight::GetAttenuation() const
+{
+	return CVector3(m_LightProperties.attenuationConst, m_LightProperties.attenuationLinear, m_LightProperties.attenuationQuad);
+}
 
-	const float CLight::GetSpotTheta() const
-	{
-		return m_LightProperties.m_SpotTheta;
-	}
+void CLight::SetSpotTheta(float spotTheta)
+{
+	m_LightProperties.spotTheta = spotTheta;
+}
 
-	void CLight::SetSpotPhi(float spotPhi)
-	{
-		m_LightProperties.m_SpotPhi = spotPhi;
-	}
+const float CLight::GetSpotTheta() const
+{
+	return m_LightProperties.spotTheta;
+}
 
-	const float CLight::GetSpotPhi() const
-	{
-		return m_LightProperties.m_SpotPhi;
-	}
+void CLight::SetSpotPhi(float spotPhi)
+{
+	m_LightProperties.spotPhi = spotPhi;
+}
 
-	const TLightProperties& CLight::GetLightProperties() const
-	{
-		return m_LightProperties;
-	}
+const float CLight::GetSpotPhi() const
+{
+	return m_LightProperties.spotPhi;
+}
+
+const TLightProperties& CLight::GetLightProperties() const
+{
+	return m_LightProperties;
+}
 
 }
 

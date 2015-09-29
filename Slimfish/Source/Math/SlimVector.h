@@ -188,6 +188,18 @@ const CVector3 operator-(const CVector3& vec3, float scalar);
 /** Negate a vector @author Hayden Asplet */
 const CVector3 operator-(const CVector3& vec3);
 
+/** Compare two vectors to see if they are equal.
+	@author Hayden Asplet.
+ 	@return True if each component of vectorA and vectorB are equal.
+*/
+bool operator==(const CVector3& vectorA, const CVector3& vectorB);
+
+/** Compare two vectors to see if they are not equal.
+	@author Hayden Asplet.
+	@return True if any component of vectorA and vectorB are not equal.
+*/
+bool operator!=(const CVector3& vectorA, const CVector3& vectorB);
+
 
 }
 

@@ -49,10 +49,10 @@ bool ARenderer::IsWindowed() const
 	return m_IsWindowed;
 }
 
-void ARenderer::GetWindowSize(size_t& width, size_t& height)
+CPoint ARenderer::GetWindowSize()
 {
-	width = m_Width;
-	height = m_Height;
+	CPoint windowSize(m_Width, m_Height);
+	return windowSize;
 }
 
 void ARenderer::Resize(size_t width, size_t height)
@@ -67,9 +67,8 @@ void ARenderer::SetRenderPass(CRenderPass* pPass)
 	assert(pPass);
 
 	// Set the texture layers from the pass.
-	const std::vector<CTextureLayer> textureLayers(pPass->GetTextureLayers());
 	for (unsigned int i = 0; i < pPass->GetNumTextureLayers(); ++i) {
-		SetTextureLayer(i, pPass->GetTextureLayer(i));
+		SetTextureLayer(i, *pPass->GetTextureLayer(i));
 	}
 
 	// Disable the unused texture layers.

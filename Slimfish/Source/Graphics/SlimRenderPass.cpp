@@ -21,6 +21,8 @@
 #include "SlimRenderPass.h"
 
 // Local Includes
+#include "..\GameBase\SlimGameApp.h"
+#include "SlimRenderer.h"
 
 namespace Slim {
 
@@ -39,30 +41,38 @@ namespace Slim {
 
 	}
 
-	CTextureLayer& CRenderPass::AddTextureLayer(const std::string& textureName)
+	CTextureLayer* CRenderPass::AddTextureLayer(const std::string& textureName)
 	{
-		//CTextureLayer textureLayer;
-		//shared_ptr<ATexture> pTexture = g_pApp->GetRenderer()->VLoadTexture(textureName);
-		//if (pTexture) {
-		//	textureLayer.SetTexture(pTexture);
-		//	m_TextureLayers.push_back(textureLayer);
-		//}
-		//// TODO: add error handling here.
+		CTextureLayer* pTextureLayer = AddTextureLayer();
+		shared_ptr<ATexture> pTexture = g_pApp->GetRenderer()->VLoadTexture(textureName);
+		if (pTexture && pTextureLayer) {
+			pTextureLayer->SetTexture(pTexture);
+		}
+		else {
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to add texture layer with texture " << textureName;
+		}
 
-		return m_TextureLayers.back();
+		return m_TextureLayers.back().get();
 	}
 
-	void CRenderPass::AddTextureLayer(const CTextureLayer& textureLayer)
+	CTextureLayer* CRenderPass::AddTextureLayer(const CTextureLayer& textureLayer)
 	{
-		m_TextureLayers.push_back(textureLayer);
+		std::unique_ptr<CTextureLayer> pTextureLayer = std::make_unique<CTextureLayer>(textureLayer);
+		m_TextureLayers.push_back(std::move(pTextureLayer));
+		return m_TextureLayers.back().get();
 	}
 
-	CTextureLayer& CRenderPass::GetTextureLayer(size_t layerIndex)
+	CTextureLayer* CRenderPass::AddTextureLayer()
 	{
-		return m_TextureLayers[layerIndex];
+		return AddTextureLayer(CTextureLayer());
 	}
 
-	const std::vector<CTextureLayer>& CRenderPass::GetTextureLayers() const
+	CTextureLayer* CRenderPass::GetTextureLayer(size_t layerIndex)
+	{
+		return m_TextureLayers[layerIndex].get();
+	}
+
+	const std::vector<std::unique_ptr<CTextureLayer>>& CRenderPass::GetTextureLayers() const
 	{
 		return m_TextureLayers;
 	}
@@ -135,6 +145,66 @@ namespace Slim {
 	const TBlendingMode& CRenderPass::GetBlendingMode() const
 	{
 		return m_BlendingMode;
+	}
+
+	void CRenderPass::SetSourceColourBlendFactor(EBlendFactor sourceColourBlendFactor)
+	{
+		m_BlendingMode.sourceColourBlendFactor = sourceColourBlendFactor;
+	}
+
+	const EBlendFactor CRenderPass::GetSourceColourBlendFactor() const
+	{
+		return m_BlendingMode.sourceColourBlendFactor;
+	}
+
+	void CRenderPass::SetDestColourBlendFactor(EBlendFactor destColourBlendFactor)
+	{
+		m_BlendingMode.destColourBlendFactor = destColourBlendFactor;
+	}
+
+	const EBlendFactor CRenderPass::GetDestColourBlendFactor() const
+	{
+		return m_BlendingMode.destColourBlendFactor;
+	}
+
+	void CRenderPass::SetColourBlendOperation(EBlendOperation colourBlendOperation)
+	{
+		m_BlendingMode.colourBlendOperation = colourBlendOperation;
+	}
+
+	const EBlendOperation CRenderPass::GetColourBlendOperation() const
+	{
+		return m_BlendingMode.colourBlendOperation;
+	}
+
+	void CRenderPass::SetSourceAlphaBlendFactor(EBlendFactor sourceAlphaBlendFactor)
+	{
+		m_BlendingMode.sourceAlphaBlendFactor = sourceAlphaBlendFactor;
+	}
+
+	const EBlendFactor CRenderPass::GetSourceAlphaBlendFactor() const
+	{
+		return m_BlendingMode.sourceAlphaBlendFactor;
+	}
+
+	void CRenderPass::SetDestAlphaBlendFactor(EBlendFactor destAlphaBlendFactor)
+	{
+		m_BlendingMode.destAlphaBlendFactor = destAlphaBlendFactor;
+	}
+
+	const EBlendFactor CRenderPass::GetDestAlphaBlendFactor() const
+	{
+		return m_BlendingMode.destAlphaBlendFactor;
+	}
+
+	void CRenderPass::SetAlphaBlendOperation(EBlendOperation alphaBlendOperation)
+	{
+		m_BlendingMode.alphaBlendOperation = alphaBlendOperation;
+	}
+
+	const EBlendOperation CRenderPass::GetAlphaBlendOperation() const
+	{
+		return m_BlendingMode.alphaBlendOperation;
 	}
 
 	void CRenderPass::SetColourWritesEnabled(bool all)

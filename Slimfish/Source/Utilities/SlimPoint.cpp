@@ -36,11 +36,6 @@ namespace Slim {
 
 	}
 
-	CPoint::CPoint()
-	{
-
-	}
-
 	CPoint::~CPoint()
 	{
 
@@ -88,6 +83,16 @@ namespace Slim {
 		return CPoint(pointA.GetX() - pointB.GetX(), pointA.GetY() - pointB.GetY());
 	}
 
+	bool operator==(const CPoint& pointA, const CPoint& pointB)
+	{
+		return pointA.GetX() == pointB.GetX() &&
+			pointA.GetY() == pointB.GetY();
+	}
+
+	bool operator!=(const CPoint& pointA, const CPoint& pointB)
+	{
+		return !(pointA == pointB);
+	}
 }
 
 

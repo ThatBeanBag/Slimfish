@@ -110,12 +110,19 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 	float4 refractionB = gRefraction.Load((pIn.position.xy), refracMapDimensions.z);*/
 
 	//float4 refraction = lerp(refractionA, refractionB, refractionA.w);
+
+	float4 waterColour = diffuse * float4(0.5f, 0.5f, 0.5f, 0.5f);
+
+	float fDistScale = saturate(pIn.position.w * 0.001f);
+	float4 waterDeepColour = lerp(refractionA, waterColour, fDistScale);
+	waterColour = lerp(waterColour, waterDeepColour, nDotL);
 	
-	float4 combinedColour = lerp(reflection, refractionA, nDotL);
+	//float4 combinedColour = lerp(reflection, refractionA, nDotL);
+	float4 combinedColour = reflection + waterColour;
 
 	// Add refraction and reflection to get our final colour.
 	float4 finalColour = lerp(combinedColour, diffuse, 0.2f);
-	//finalColour = refractionA;
+	finalColour = combinedColour;
 
 	// Lighting.
 	//SurfaceInfo v = { pIn.positionWorld.xyz, finalNormal, finalColour, specular };

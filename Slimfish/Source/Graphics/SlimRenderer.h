@@ -77,7 +77,7 @@ namespace Slim {
 		void SetWindowed(bool windowed);
 		void ToggleWindowed();
 		bool IsWindowed() const;
-		void GetWindowSize(size_t& width, size_t& height);
+		CPoint GetWindowSize();
 		void Resize(size_t width, size_t height);
 
 		/** Set the render pass for any succeeding render calls.

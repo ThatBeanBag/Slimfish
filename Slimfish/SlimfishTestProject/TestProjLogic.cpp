@@ -27,34 +27,36 @@
 // Local Includes
 
 struct TVertex {
-	CVector3 m_Position;
-	CVector3 m_Normal;
-	CVector3 m_Tangent;
-	float m_U;
-	float m_V;
+	CVector3 position;
+	CVector3 normal;
+	CVector3 tangent;
+	float u;
+	float v;
 };
 
 struct TSkyBoxVertex {
-	CVector3 m_Position;
-	float m_U;
-	float m_V;
+	CVector3 position;
+	float u;
+	float v;
 };
 
 CTestProjLogic::CTestProjLogic()
 	:m_TerrainWorldTransform(CMatrix4x4::s_IDENTITY),
 	m_WaterTransform(CMatrix4x4::s_IDENTITY),
 	m_ViewMatrix(CMatrix4x4::s_IDENTITY),
-	m_ProjectionMatrix(CMatrix4x4::s_IDENTITY)
+	m_ProjectionMatrix(CMatrix4x4::s_IDENTITY),
+	m_pCamera(new CCamera(nullptr))
 {
 	m_WaterTransform = CMatrix4x4::BuildScale(400.0f, 1.0f, 400.0f);
 	m_TerrainWorldTransform = CMatrix4x4::BuildTranslation(0.0f, -10.0f, 0.0f) * CMatrix4x4::BuildRotationY(DegreesToRadians(0));
-	m_ProjectionMatrix = CMatrix4x4::BuildProjection(DegreesToRadians(110), 1.0f, 0.1f, 1000.0f);
+	m_ProjectionMatrix = CMatrix4x4::BuildProjection(DegreesToRadians(90), 1.0f, 0.1f, 1000.0f);
 	m_SkyBoxWorldTransform = CMatrix4x4::BuildScale(999, 999, 999);
 
-	m_ViewMatrix = CMatrix4x4::BuildYawPitchRoll(m_CameraYaw, m_CameraPitch, 0);
-	CMatrix4x4 invView = m_ViewMatrix * CMatrix4x4::BuildTranslation(0.0f, 0.0f, 50.0f);
-	m_EyePosition = invView.GetPosition();
-	m_ViewMatrix = CMatrix4x4::BuildTranslation(0.0f, 0.0f, -50.0f) * m_ViewMatrix.GetTranspose();
+	m_pCamera->SetPosition(CVector3(0.0f, 50.0f, 0.0f));
+	m_pCamera->SetProjectionMode(EProjectionMode::PERSPECTIVE);
+	m_pCamera->SetNearClipDistance(0.1f);
+	m_pCamera->SetFarClipDistance(1000.0f);
+	m_pCamera->SetFieldOfView(DegreesToRadians(90.0f));
 }
 
 CTestProjLogic::~CTestProjLogic()
@@ -135,10 +137,8 @@ bool CTestProjLogic::Initialise()
 	CLight light;
 	light.SetType(LIGHT_DIRECTIONAL);
 	light.SetDiffuse(CColourValue(0.7f, 0.7f, 0.7f));
-	light.SetSpecular(CColourValue(1.0f, 0.8f, 0.6f, 100.0f));
-
-	light.SetDirection(CVector3::Normalise(CVector3(-1.0f, -1.5f, 1.0f)));
-	float atten[3] = { light.GetAttenuationConstant(), light.GetAttenuationLinear(), light.GetAttenuationQuadratic() };
+	light.SetSpecular(CColourValue(1.0f, 0.65f, 0.45f, 100.0f));
+	light.SetDirection(CVector3::Normalise(CVector3(-1.0f, -0.8f, 1.0f)));
 
 	// Create the input layout.
 	m_WaterVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT3);
@@ -146,23 +146,9 @@ bool CTestProjLogic::Initialise()
 	m_WaterVertexDeclaration.AddElement("TANGENT", CInputElement::FORMAT_FLOAT3);
 	m_WaterVertexDeclaration.AddElement("TEXCOORD", CInputElement::FORMAT_FLOAT2);
 
-	CTextureLayer waterTexture;
-	CTextureLayer waterSpecular;
-	CTextureLayer waterNormalMap;
-	waterTexture.SetTextureFilter(ETextureFilterType::ANISOTROPIC);
-	waterSpecular.SetTextureFilter(ETextureFilterType::ANISOTROPIC);
-	waterNormalMap.SetTextureFilter(ETextureFilterType::ANISOTROPIC);
-	waterTexture.SetTexture(g_pApp->GetRenderer()->VLoadTexture("WaterTextures/Wavy_Water - Transparent.png"));
-	waterSpecular.SetTexture(g_pApp->GetRenderer()->VLoadTexture("WaterTextures/Specular.png"));
-	waterNormalMap.SetTexture(g_pApp->GetRenderer()->VLoadTexture("WaterTextures/Wavy_Water - Height (Normal Map 2).png"));
-	m_WaterRenderPass.AddTextureLayer(waterTexture);
-	m_WaterRenderPass.AddTextureLayer(waterSpecular);
-	m_WaterRenderPass.AddTextureLayer(waterNormalMap);
-
-	TBlendingMode blendingMode;
-	//blendingMode.sourceColourBlendFactor = EBlendFactor::SOURCE_ALPHA;
-	//blendingMode.destColourBlendFactor = EBlendFactor::INVERSE_SOURCE_ALPHA;
-	m_WaterRenderPass.SetBlendingMode(blendingMode);
+	m_WaterRenderPass.AddTextureLayer("WaterTextures/Wavy_Water - Transparent.png");
+	m_WaterRenderPass.AddTextureLayer("WaterTextures/Specular.png");
+	m_WaterRenderPass.AddTextureLayer("WaterTextures/Wavy_Water - Height (Normal Map 2).png");
 
 	m_WaterRenderPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("WaterVS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
 	m_WaterRenderPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("WaterPS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
@@ -177,28 +163,31 @@ bool CTestProjLogic::Initialise()
 	m_WaterPSParams->SetConstant("gLight.specular", light.GetSpecular());
 	m_WaterPSParams->SetConstant("gLight.direction", light.GetDirection());
 	m_WaterPSParams->SetConstant("gLight.range", light.GetRange());
-	m_WaterPSParams->SetConstant("gLight.attenuation", atten, 3);
+	m_WaterPSParams->SetConstant("gLight.attenuation", light.GetAttenuation());
 	m_WaterPSParams->SetConstant("gEyePosition", m_ViewMatrix.GetPosition());
 	m_WaterPSParams->SetConstant("gFogStart", 200.0f);
 	m_WaterPSParams->SetConstant("gFogRange", 40.0f);
 	m_WaterPSParams->SetConstant("gFogColour", CColourValue(0.3686f, 0.3686f, 0.43137f, 1.0f));
 	m_WaterPSParams->SetConstant("gAmbientLight", CColourValue(0.3f, 0.3f, 0.3f));
 
-	size_t windowWidth, windowHeight;
-	g_pApp->GetRenderer()->GetWindowSize(windowWidth, windowHeight);
-	m_pReflectionRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture("Reflection", windowWidth, windowHeight);
-	m_pRefractionRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture("Refraction", windowWidth, windowHeight);
-	CTextureLayer reflectionLayer;
-	CTextureLayer refractionLayer;
-	reflectionLayer.SetTextureAddressModes(ETextureAddressMode::MIRROR);
-	refractionLayer.SetTextureAddressModes(ETextureAddressMode::MIRROR);
-	reflectionLayer.SetTexture(m_pReflectionRenderTarget->GetTexture());
-	refractionLayer.SetTexture(m_pRefractionRenderTarget->GetTexture());
-	m_WaterRenderPass.AddTextureLayer(refractionLayer);
-	m_WaterRenderPass.AddTextureLayer(reflectionLayer);
+	//
+	// RENDER TARGETS.
+	//
+	
+	m_lastScreenSize = g_pApp->GetRenderer()->GetWindowSize();
+	m_pCamera->SetAspectRatio(static_cast<float>(m_lastScreenSize.GetX()) / static_cast<float>(m_lastScreenSize.GetY()));
+
+	m_pReflectionRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture("Reflection", m_lastScreenSize.GetX(), m_lastScreenSize.GetY());
+	m_pRefractionRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture("Refraction", m_lastScreenSize.GetX(), m_lastScreenSize.GetY());
+	m_pRefractionLayer = m_WaterRenderPass.AddTextureLayer();
+	m_pReflectionLayer = m_WaterRenderPass.AddTextureLayer();
+	m_pReflectionLayer->SetTextureAddressModes(ETextureAddressMode::MIRROR);
+	m_pRefractionLayer->SetTextureAddressModes(ETextureAddressMode::MIRROR);
+	m_pReflectionLayer->SetTexture(m_pReflectionRenderTarget->GetTexture());
+	m_pRefractionLayer->SetTexture(m_pRefractionRenderTarget->GetTexture());
 
 	//
-	// TERRAIN STUFFS
+	// TERRAIN
 	//
 	
 	// Init shaders.
@@ -212,24 +201,19 @@ bool CTestProjLogic::Initialise()
 	m_TerrainRenderPass.GetPixelShader()->VCreateShaderParams("constantBuffer");
 
 	// Init texture layers.
-	CTextureLayer terrainGrass;
-	CTextureLayer terrainCliff;
-	CTextureLayer terrainSpecular;
-	terrainGrass.SetTextureFilter(ETextureFilterType::ANISOTROPIC);
-	terrainCliff.SetTextureFilter(ETextureFilterType::ANISOTROPIC);
-	terrainSpecular.SetTextureFilter(ETextureFilterType::ANISOTROPIC);
-	terrainGrass.SetTexture(g_pApp->GetRenderer()->VLoadTexture("terraingrass.jpg"));
-	terrainCliff.SetTexture(g_pApp->GetRenderer()->VLoadTexture("terraincliff.jpg"));
-	terrainSpecular.SetTexture(g_pApp->GetRenderer()->VLoadTexture("defaultspec.dds"));
-	m_TerrainRenderPass.AddTextureLayer(terrainGrass);
-	m_TerrainRenderPass.AddTextureLayer(terrainCliff);
-	m_TerrainRenderPass.AddTextureLayer(terrainSpecular);
+	m_TerrainRenderPass.AddTextureLayer("TerrainTextures/grass_01_v1.png")->SetTextureFilter(ETextureFilterType::ANISOTROPIC);
+	m_TerrainRenderPass.AddTextureLayer("TerrainTextures/cliff_01_v1.png")->SetTextureFilter(ETextureFilterType::ANISOTROPIC);
+	m_TerrainRenderPass.AddTextureLayer("TerrainTextures/sand_diffuse.png")->SetTextureFilter(ETextureFilterType::ANISOTROPIC);
+	m_TerrainRenderPass.AddTextureLayer("defaultspec.dds");
+	m_TerrainRenderPass.AddTextureLayer("TerrainTextures/grass_01_normal.png")->SetTextureFilter(ETextureFilterType::ANISOTROPIC);
+	m_TerrainRenderPass.AddTextureLayer("TerrainTextures/cliff_01_normal.png")->SetTextureFilter(ETextureFilterType::ANISOTROPIC);
+	m_TerrainRenderPass.AddTextureLayer("TerrainTextures/sand_normal.png")->SetTextureFilter(ETextureFilterType::ANISOTROPIC);
 
 	m_TerrainVSParams->SetConstant("gViewMatrix", m_ViewMatrix);
 	m_TerrainVSParams->SetConstant("gProjectionMatrix", m_ProjectionMatrix);
 
 	//
-	// SKY BOX STUFFS
+	// SKY BOX
 	//
 	m_SkyBoxVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT3);
 	m_SkyBoxVertexDeclaration.AddElement("TEXCOORD", CInputElement::FORMAT_FLOAT2);
@@ -260,20 +244,37 @@ bool CTestProjLogic::Initialise()
 void CTestProjLogic::Update(float deltaTime)
 {
 	m_ElapsedTime += deltaTime;
+
+	// Move wave normal maps around.
 	m_WaterWaveTransform1 = CMatrix4x4::BuildTranslation(m_ElapsedTime * -0.02f, m_ElapsedTime * 0.0f, 0.0f) *		CMatrix4x4::BuildScale(6.0f, 6.0f, 6.0f);
 	m_WaterWaveTransform2 = CMatrix4x4::BuildTranslation(m_ElapsedTime * -0.05f, m_ElapsedTime * -0.05f, 0.0f) *	CMatrix4x4::BuildScale(6.0f, 6.0f, 6.0f);
 	m_WaterWaveTransform3 = CMatrix4x4::BuildTranslation(m_ElapsedTime * -0.07f, m_ElapsedTime * 0.05f, 0.0f) *		CMatrix4x4::BuildScale(6.0f, 6.0f, 6.0f);
 	m_WaterWaveTransform4 = CMatrix4x4::BuildTranslation(m_ElapsedTime * 0.1f, m_ElapsedTime * 0.07f, 0.0f) *		CMatrix4x4::BuildScale(6.0f, 6.0f, 6.0f);
+
+	// Update aspect ratio and render targets if the window size has changed.
+	CPoint screenSize = g_pApp->GetRenderer()->GetWindowSize();
+	if (m_lastScreenSize != screenSize) {
+		m_lastScreenSize = screenSize;
+
+		// Update aspect ratio.
+		m_pCamera->SetAspectRatio(static_cast<float>(m_lastScreenSize.GetX()) / static_cast<float>(m_lastScreenSize.GetY()));
+
+		// Create new render targets of the screen size.
+		m_pReflectionRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture("Reflection", screenSize.GetX(), screenSize.GetY());
+		m_pRefractionRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture("Reflection", screenSize.GetX(), screenSize.GetY());
+		m_pRefractionLayer->SetTexture(m_pRefractionRenderTarget->GetTexture());
+		m_pReflectionLayer->SetTexture(m_pReflectionRenderTarget->GetTexture());
+	}
 }
 
 void CTestProjLogic::Render()
 {
-	CMatrix4x4 reflect = CMatrix4x4::BuildReflect(CVector3(0.0f, 1.0f, 0.0f), 0.0f);
+	m_pCamera->UpdateViewTransform();
 
 	g_pApp->GetRenderer()->VSetRenderTarget(m_pRefractionRenderTarget.get());
 	g_pApp->GetRenderer()->VPreRender();
 
-	m_pSkyBoxShaderParams->SetConstant("gViewMatrix", m_ViewMatrix);
+	m_pSkyBoxShaderParams->SetConstant("gViewMatrix", m_pCamera->GetViewMatrix());
 	m_pSkyBoxShaderParams->SetConstant("gWorldMatrix", m_SkyBoxWorldTransform);
 	m_SkyBoxRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pSkyBoxShaderParams);
 
@@ -282,7 +283,8 @@ void CTestProjLogic::Render()
 	g_pApp->GetRenderer()->VRender(m_SkyBoxVertexDeclaration, EPrimitiveType::TRIANGLELIST, m_pSkyBoxVertices, m_pSkyBoxIndices);
 
 	// Update terrain parameters.
-	m_TerrainVSParams->SetConstant("gViewMatrix", m_ViewMatrix);
+	m_TerrainVSParams->SetConstant("gViewMatrix", m_pCamera->GetViewMatrix());
+	m_TerrainVSParams->SetConstant("gProjectionMatrix", m_pCamera->GetProjectionMatrix());
 	m_TerrainVSParams->SetConstant("gWorldMatrix", m_TerrainWorldTransform);
 	m_TerrainRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_TerrainVSParams);
 	m_TerrainRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_WaterPSParams);
@@ -302,6 +304,7 @@ void CTestProjLogic::Render()
 
 	m_pSkyBoxShaderParams->SetConstant("gViewMatrix", m_ReflectionViewMatrix);
 	m_pSkyBoxShaderParams->SetConstant("gWorldMatrix", m_SkyBoxWorldTransform);
+	m_pSkyBoxShaderParams->SetConstant("gProjectionMatrix", m_pCamera->GetProjectionMatrix());
 	m_pSkyBoxShaderParams->SetConstant("gClipPlane", pPlane, 4);
 	m_SkyBoxRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pSkyBoxShaderParams);
 
@@ -312,6 +315,7 @@ void CTestProjLogic::Render()
 	// Update terrain parameters.
 	m_TerrainVSParams->SetConstant("gViewMatrix", m_ReflectionViewMatrix);
 	m_TerrainVSParams->SetConstant("gWorldMatrix", m_TerrainWorldTransform);
+	m_TerrainVSParams->SetConstant("gProjectionMatrix", m_pCamera->GetProjectionMatrix());
 	m_TerrainVSParams->SetConstant("gClipPlane", pPlane, 4);
 	m_TerrainRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_TerrainVSParams);
 	m_TerrainRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_WaterPSParams);
@@ -332,10 +336,11 @@ void CTestProjLogic::Render()
 	m_WaterVSParams->SetConstant("gWaveMatrix3", m_WaterWaveTransform4);
 	m_WaterVSParams->SetConstant("gReflectionMatrix", m_ReflectionViewMatrix);
 	m_WaterVSParams->SetConstant("gElapsedTime", m_ElapsedTime);
-	m_WaterVSParams->SetConstant("gViewMatrix", m_ViewMatrix);
+	m_WaterVSParams->SetConstant("gViewMatrix", m_pCamera->GetViewMatrix());
+	m_WaterVSParams->SetConstant("gProjectionMatrix", m_pCamera->GetProjectionMatrix());
 	m_WaterRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_WaterVSParams);
 
-	m_WaterPSParams->SetConstant("gEyePosition", m_EyePosition);
+	m_WaterPSParams->SetConstant("gEyePosition", m_pCamera->GetPosition());
 	m_WaterRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_WaterPSParams);
 
 	m_WaterRenderPass.SetCullingMode(ECullingMode::NONE);
@@ -348,7 +353,7 @@ void CTestProjLogic::Render()
 	// Draw the refraction map to the back buffer.
 	//
 
-	m_pSkyBoxShaderParams->SetConstant("gViewMatrix", m_ViewMatrix);
+	m_pSkyBoxShaderParams->SetConstant("gViewMatrix", m_pCamera->GetViewMatrix());
 	m_pSkyBoxShaderParams->SetConstant("gWorldMatrix", m_SkyBoxWorldTransform);
 	m_pSkyBoxShaderParams->SetConstant("gClipPlane", pNotAPlane, 4);
 	m_SkyBoxRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pSkyBoxShaderParams);
@@ -358,7 +363,7 @@ void CTestProjLogic::Render()
 	g_pApp->GetRenderer()->VRender(m_SkyBoxVertexDeclaration, EPrimitiveType::TRIANGLELIST, m_pSkyBoxVertices, m_pSkyBoxIndices);
 
 	// Update terrain parameters.
-	m_TerrainVSParams->SetConstant("gViewMatrix", m_ViewMatrix);
+	m_TerrainVSParams->SetConstant("gViewMatrix", m_pCamera->GetViewMatrix());
 	m_TerrainVSParams->SetConstant("gWorldMatrix", m_TerrainWorldTransform);
 	m_TerrainVSParams->SetConstant("gClipPlane", pNotAPlane, 4);
 	m_TerrainRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_TerrainVSParams);
@@ -466,50 +471,85 @@ void CTestProjLogic::Render()
 
 void CTestProjLogic::HandleInput(const CInput& input, float deltaTime)
 {
-	int x;
-	int y;
-	input.GetMousePosition(x, y);
+	CPoint mousePosition = input.GetMousePosition();
 
-	if (input.IsMouseButtonDown(EMouseButton::MIDDLE)) {
-		input.GetMousePosition(x, y);
-		m_CameraYaw -= (x - m_LastMouseX) * 0.01f;
-		m_CameraPitch -= (y - m_LastMouseY) * 0.01f;
-
-		m_LastMouseX = x;
-		m_LastMouseY = y;
+	/*if (input.IsMouseButtonDown(EMouseButton::MIDDLE)) {
+		CPoint deltaPosition = mousePosition - m_lastMousePosition;
+		m_CameraYaw -= deltaPosition.GetX() * 0.01f;
+		m_CameraPitch -= deltaPosition.GetY() * 0.01f;
 
 		m_ViewMatrix = CMatrix4x4::BuildYawPitchRoll(m_CameraYaw, m_CameraPitch, 0);
 		CMatrix4x4 invView = m_ViewMatrix * CMatrix4x4::BuildTranslation(0.0f, 0.0f, 50.0f);
 		m_EyePosition = invView.GetPosition();
 		m_ViewMatrix = CMatrix4x4::BuildTranslation(0.0f, 0.0f, -50.0f) * m_ViewMatrix.GetTranspose();
+	}*/
 
-		// Create reflection view matrix.
-		CVector3 reflectedPosition = m_EyePosition;
-		reflectedPosition.SetY(-reflectedPosition.GetY() + (m_WaterTransform.GetPosition().GetY() * 2.0f));
+	// Handle rotation of camera.
+	if (input.IsMouseButtonDown(EMouseButton::LEFT)) {
+		CPoint deltaPosition = mousePosition - m_lastMousePosition;
+		m_CameraYaw -= deltaPosition.GetX() * 0.01f;
+		m_CameraPitch -= deltaPosition.GetY() * 0.01f;
 
-		float reflectedYaw = m_CameraYaw;
-		float reflectedPitch = -m_CameraPitch;
-
-		CMatrix4x4 reflectedRotation = CMatrix4x4::BuildYawPitchRoll(reflectedYaw, reflectedPitch, 0);
-		CVector3 look = reflectedRotation.TransformNormal(CVector3::s_FORWARD);
-		CVector3 up = reflectedRotation.TransformNormal(CVector3::s_UP);
-
-		CVector3 lookAt = reflectedPosition + look;
-		m_ReflectionViewMatrix = CMatrix4x4::BuildLookAt(reflectedPosition, lookAt, up);
-
-		/*CVector3 viewRight = m_ViewMatrix.GetRight();
-		CVector3 viewUp = m_ViewMatrix.GetUp();
-		CVector3 viewForward = m_ViewMatrix.GetDirection();
-		m_ReflectionViewMatrix = CMatrix4x4::BuildRotationFromAxis(-viewRight, -viewUp, viewForward);
-
-		CVector3 reflectedPosition = m_ViewMatrix.GetPosition();
-		reflectedPosition.SetY(-reflectedPosition.GetY() + (m_WaterTransform.GetPosition().GetY() * 2.0f));
-		m_ReflectionViewMatrix.SetPosition(reflectedPosition);*/
+		m_pCamera->SetRotation(CQuaternion(m_CameraYaw, m_CameraPitch, 0.0f));
 	}
 
-	m_LastMouseX = x;
-	m_LastMouseY = y;
+	// Handle translation of camera.
+	static float speed = 25.0f;
+	if (input.IsKeyDown(EKeyCode::LEFT_SHIFT)) {
+		speed = 50.0f;
+	}
 
+	CVector3 cameraTranslation = CVector3::s_ZERO;
+	const CQuaternion& cameraRotation = m_pCamera->GetRotation();
+
+	if (input.IsKeyDown(EKeyCode::W)) {
+		cameraTranslation += cameraRotation.GetDirection();
+	}
+
+	if (input.IsKeyDown(EKeyCode::S)) {
+		cameraTranslation -= cameraRotation.GetDirection();
+	}
+
+	if (input.IsKeyDown(EKeyCode::A)) {
+		cameraTranslation -= cameraRotation.GetRight();
+	}
+
+	if (input.IsKeyDown(EKeyCode::D)) {
+		cameraTranslation += cameraRotation.GetRight();
+	}
+
+	if (input.IsKeyDown(EKeyCode::SPACE)) {
+		cameraTranslation += cameraRotation.GetUp();
+	}
+
+	if (input.IsKeyDown(EKeyCode::LEFT_CONTROL)) {
+		cameraTranslation -= cameraRotation.GetUp();
+	}
+
+	if (cameraTranslation != CVector3::s_ZERO) {
+		cameraTranslation = CVector3::Normalise(cameraTranslation);
+		cameraTranslation *= deltaTime * speed;
+
+		m_pCamera->SetPosition(cameraTranslation + m_pCamera->GetPosition());
+	}
+
+	m_SkyBoxWorldTransform = CMatrix4x4::BuildTranslation(m_pCamera->GetPosition()) * CMatrix4x4::BuildScale(999, 999, 999);
+
+	// Create reflection view matrix.
+	CVector3 reflectedPosition = m_pCamera->GetPosition();
+	reflectedPosition.SetY(-reflectedPosition.GetY() + (m_WaterTransform.GetPosition().GetY() * 2.0f));
+
+	float reflectedYaw = m_CameraYaw;
+	float reflectedPitch = -m_CameraPitch;
+
+	CMatrix4x4 reflectedRotation = CMatrix4x4::BuildYawPitchRoll(reflectedYaw, reflectedPitch, 0);
+	CVector3 look = reflectedRotation.TransformNormal(CVector3::s_FORWARD);
+	CVector3 up = reflectedRotation.TransformNormal(CVector3::s_UP);
+
+	CVector3 lookAt = reflectedPosition + look;
+	m_ReflectionViewMatrix = CMatrix4x4::BuildLookAt(reflectedPosition, lookAt, up);
+
+	m_lastMousePosition = mousePosition;
 }
 
 void CTestProjLogic::BuildWater(size_t n, size_t m) 
@@ -519,13 +559,13 @@ void CTestProjLogic::BuildWater(size_t n, size_t m)
 	for (unsigned int z = 0; z < m; ++z) {
 		for (unsigned int x = 0; x < n; ++x) {
 			TVertex vert;
-			vert.m_Position.SetX(static_cast<float>(x) / static_cast<float>(n) - 0.5f);
-			vert.m_Position.SetY(0.0f);
-			vert.m_Position.SetZ(static_cast<float>(z) / static_cast<float>(m) - 0.5f);
-			vert.m_Normal = CVector3::s_UP;
-			vert.m_Tangent = CVector3::s_RIGHT;
-			vert.m_U = (static_cast<float>(x) / static_cast<float>(n - 1));
-			vert.m_V = (static_cast<float>(z) / static_cast<float>(n - 1));
+			vert.position.SetX(static_cast<float>(x) / static_cast<float>(n) - 0.5f);
+			vert.position.SetY(0.0f);
+			vert.position.SetZ(static_cast<float>(z) / static_cast<float>(m) - 0.5f);
+			vert.normal = CVector3::s_UP;
+			vert.tangent = CVector3::s_RIGHT;
+			vert.u = (static_cast<float>(x) / static_cast<float>(n - 1));
+			vert.v = (static_cast<float>(z) / static_cast<float>(n - 1));
 
 			vertices[x + z * n] = vert;
 		}
@@ -587,9 +627,9 @@ void CTestProjLogic::BuildSkySphere(int rings, int segments)
 			float x0 = r0 * std::sinf(seg * fDeltaSegAngle);
 			float z0 = r0 * std::cosf(seg * fDeltaSegAngle);
 
-			vertices[ring * segments + seg].m_Position = CVector3(x0, y0, z0);
-			vertices[ring * segments + seg].m_U = static_cast<float>(seg) / static_cast<float>(segments);
-			vertices[ring * segments + seg].m_V = static_cast<float>(ring) / static_cast<float>(rings);
+			vertices[ring * segments + seg].position = CVector3(x0, y0, z0);
+			vertices[ring * segments + seg].u = static_cast<float>(seg) / static_cast<float>(segments);
+			vertices[ring * segments + seg].v = static_cast<float>(ring) / static_cast<float>(rings);
 
 			if (ring != rings) {
 				indices[index++] = vertexIndex + segments + 1;
@@ -618,24 +658,24 @@ void CTestProjLogic::LoadTerrain(const CVector3& scale)
 		std::vector<TVertex> vertices(numPixels);
 
 		for (unsigned int z = 0; z < image.GetHeight(); ++z) {
+			int currentZ = z * image.GetWidth();
+
 			for (unsigned int x = 0; x < image.GetWidth(); ++x) {
-				CColour colour = image[z][x];
-				TVertex vert;
+				const CColour& colour = image[z][x];
+				TVertex& vert = vertices[x + currentZ];
 
-				vert.m_Position.SetX((static_cast<float>(x) / static_cast<float>(image.GetWidth()) - 0.5f) * scale.GetX());
-				vert.m_Position.SetY((static_cast<float>(colour.m_r) / 255.0f - 0.5f) * scale.GetY());
-				vert.m_Position.SetZ((static_cast<float>(z) / static_cast<float>(image.GetHeight()) - 0.5f) * scale.GetZ());
-				vert.m_U = (static_cast<float>(x) / static_cast<float>(image.GetWidth() - 1));
-				vert.m_V = (static_cast<float>(z) / static_cast<float>(image.GetWidth() - 1));
-
-				vertices[x + z * image.GetWidth()] = vert;
+				vert.position.SetX((static_cast<float>(x) / static_cast<float>(image.GetWidth()) - 0.5f) * scale.GetX());
+				vert.position.SetY((static_cast<float>(colour.m_r) / 255.0f - 0.5f) * scale.GetY());
+				vert.position.SetZ((static_cast<float>(z) / static_cast<float>(image.GetHeight()) - 0.5f) * scale.GetZ());
+				vert.u = (static_cast<float>(x) / static_cast<float>(image.GetWidth() - 1));
+				vert.v = (static_cast<float>(z) / static_cast<float>(image.GetHeight() - 1));
 			}
 		}
 
 		// Compute normals.
 		for (unsigned int z = 0; z < image.GetHeight(); ++z) {
 			for (unsigned int x = 0; x < image.GetWidth(); ++x) {
-				TVertex currentVert = vertices[x + z * image.GetWidth()];
+				TVertex& currentVert = vertices[x + z * image.GetWidth()];
 				CVector3 averagedNormal(0, 0, 0);
 				CVector3 lastLine(0, 0, 0);
 
@@ -673,7 +713,7 @@ void CTestProjLogic::LoadTerrain(const CVector3& scale)
 
 					TVertex neighbourVert = vertices[neighbourX + neighbourZ * image.GetWidth()];
 					CVector3 currentNormal(0, 0, 0);
-					CVector3 currentLine = currentVert.m_Position - neighbourVert.m_Position;
+					CVector3 currentLine = currentVert.position - neighbourVert.position;
 
 					currentNormal = CVector3::CrossProduct(lastLine, currentLine);
 					averagedNormal += currentNormal;
@@ -682,12 +722,36 @@ void CTestProjLogic::LoadTerrain(const CVector3& scale)
 					increment(i);
 				}
 
-				currentVert.m_Normal = CVector3::Normalise(averagedNormal);
-				vertices[x + z * image.GetWidth()] = currentVert;
+				currentVert.normal = CVector3::Normalise(averagedNormal);
 			}
 		}
 
-		m_pTerrainVertices = g_pApp->GetRenderer()->CreateVertexBuffer(vertices);
+		unsigned int numFaces = numPixels - 2;
+
+		// Generate Tangents.
+		/*for (unsigned int i = 0; i < numFaces; i+=3) {
+			TVertex& vert1 = vertices[i];
+			TVertex& vert2 = vertices[i + 1];
+			TVertex& vert3 = vertices[i + ];
+
+			// Delta position
+			CVector3 deltaPos1 = vert2.position - vert1.position;
+			CVector3 deltaPos2 = vert3.position - vert1.position;
+
+			// UV delta
+			float deltaU1 = vert2.u - vert1.u;
+			float deltaU2 = vert3.u - vert1.u;
+			float deltaV1 = vert2.v - vert1.v;
+			float deltaV2 = vert3.v - vert1.v;
+
+			float r = 1.0f / (deltaU1 * deltaV2 - deltaV1 * deltaU2);
+			CVector3 tangent = (deltaPos1 * deltaV2 - deltaPos2 * deltaV1) * r;
+			vert1.tangent = tangent;
+			vert2.tangent = tangent;
+			vert3.tangent = tangent;
+		}
+*/
+
 
 		int numIndices = ((image.GetWidth() * 2) * (image.GetHeight() - 1) + (image.GetHeight() - 2));
 
@@ -731,9 +795,31 @@ void CTestProjLogic::LoadTerrain(const CVector3& scale)
 			}
 		}
 
+		// Calculate tangents.
+		for (int i = 0; i < numIndices - 2; i+=3) {
+			TVertex& vert1 = vertices[indices[i]];
+			TVertex& vert2 = vertices[indices[i + 1]];
+			TVertex& vert3 = vertices[indices[i + 2]];
+
+			// Delta position
+			CVector3 deltaPos1 = vert2.position - vert1.position;
+			CVector3 deltaPos2 = vert3.position - vert1.position;
+
+			// UV delta
+			float deltaU1 = vert2.u - vert1.u;
+			float deltaU2 = vert3.u - vert1.u;
+			float deltaV1 = vert2.v - vert1.v;
+			float deltaV2 = vert3.v - vert1.v;
+
+			float r = 1.0f / (deltaU1 * deltaV2 - deltaV1 * deltaU2);
+			CVector3 tangent = (deltaPos1 * deltaV2 - deltaPos2 * deltaV1) * r;
+			vert1.tangent = tangent;
+			vert2.tangent = tangent;
+			vert3.tangent = tangent;
+		}
+
+		m_pTerrainVertices = g_pApp->GetRenderer()->CreateVertexBuffer(vertices);
 		m_pTerrainIndices = g_pApp->GetRenderer()->CreateIndexBuffer(indices);
-
-
 	}
 
 	/*shared_ptr<ATexture> pHeightMap = g_pApp->GetRenderer()->VLoadTexture("HighRes.bmp", ETextureType::TYPE_2D, ETextureUsage::READ_ONLY);

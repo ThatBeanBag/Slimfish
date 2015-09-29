@@ -42,8 +42,8 @@ private:
 	// Member Variables
 public:
 protected:
-private:
 	shared_ptr<ATexture> m_pTexture;
+private:
 };
 
 }
