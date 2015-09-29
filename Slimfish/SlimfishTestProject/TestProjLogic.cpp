@@ -40,12 +40,16 @@ struct TSkyBoxVertex {
 	float v;
 };
 
+const size_t CTestProjLogic::s_SHADOW_MAP_WIDTH = 1024;
+const size_t CTestProjLogic::s_SHADOW_MAP_HEIGHT = 1024;
+
 CTestProjLogic::CTestProjLogic()
 	:m_TerrainWorldTransform(CMatrix4x4::s_IDENTITY),
 	m_WaterTransform(CMatrix4x4::s_IDENTITY),
 	m_ViewMatrix(CMatrix4x4::s_IDENTITY),
 	m_ProjectionMatrix(CMatrix4x4::s_IDENTITY),
-	m_pCamera(new CCamera(nullptr))
+	m_pCamera(new CCamera(nullptr)),
+	m_lightCamera(nullptr)
 {
 	m_WaterTransform = CMatrix4x4::BuildScale(400.0f, 1.0f, 400.0f);
 	m_TerrainWorldTransform = CMatrix4x4::BuildTranslation(0.0f, -10.0f, 0.0f) * CMatrix4x4::BuildRotationY(DegreesToRadians(0));
@@ -140,6 +144,31 @@ bool CTestProjLogic::Initialise()
 	light.SetSpecular(CColourValue(1.0f, 0.65f, 0.45f, 100.0f));
 	light.SetDirection(CVector3::Normalise(CVector3(-1.0f, -0.8f, 1.0f)));
 
+	//
+	// SHADOW MAPPING DEPTH SHADER.
+	// 
+
+	m_RenderDepth.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("ShadowMappingVS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
+	m_RenderDepth.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("ShadowMappingPS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
+	m_pRenderDepthShaderParams = m_RenderDepth.GetVertexShader()->VCreateShaderParams("constantBuffer");
+
+	// Create the shadow map.
+	m_pShadowMap = g_pApp->GetRenderer()->VCreateRenderTexture("ShadowMap", s_SHADOW_MAP_WIDTH, s_SHADOW_MAP_HEIGHT);
+
+	// Create the light camera.
+	m_lightCamera.SetProjectionMode(EProjectionMode::ORTHOGRAPHIC);
+	m_lightCamera.SetPosition(-light.GetDirection() * 100.0f);
+	m_lightCamera.SetRotation(CQuaternion(light.GetDirection()));
+	m_lightCamera.SetNearClipDistance(0.1f);
+	m_lightCamera.SetFarClipDistance(200.0f);
+	m_lightCamera.SetAspectRatio(static_cast<float>(s_SHADOW_MAP_WIDTH) / static_cast<float>(s_SHADOW_MAP_HEIGHT));
+	m_lightCamera.SetOrthographicSize(20.0f);
+	m_lightCamera.UpdateViewTransform();
+
+	//
+	// WATER.
+	//
+
 	// Create the input layout.
 	m_WaterVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT3);
 	m_WaterVertexDeclaration.AddElement("NORMAL", CInputElement::FORMAT_FLOAT3);
@@ -176,15 +205,7 @@ bool CTestProjLogic::Initialise()
 	
 	m_lastScreenSize = g_pApp->GetRenderer()->GetWindowSize();
 	m_pCamera->SetAspectRatio(static_cast<float>(m_lastScreenSize.GetX()) / static_cast<float>(m_lastScreenSize.GetY()));
-
-	m_pReflectionRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture("Reflection", m_lastScreenSize.GetX(), m_lastScreenSize.GetY());
-	m_pRefractionRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture("Refraction", m_lastScreenSize.GetX(), m_lastScreenSize.GetY());
-	m_pRefractionLayer = m_WaterRenderPass.AddTextureLayer();
-	m_pReflectionLayer = m_WaterRenderPass.AddTextureLayer();
-	m_pReflectionLayer->SetTextureAddressModes(ETextureAddressMode::MIRROR);
-	m_pRefractionLayer->SetTextureAddressModes(ETextureAddressMode::MIRROR);
-	m_pReflectionLayer->SetTexture(m_pReflectionRenderTarget->GetTexture());
-	m_pRefractionLayer->SetTexture(m_pRefractionRenderTarget->GetTexture());
+	CreateRenderTextures();
 
 	//
 	// TERRAIN
@@ -269,6 +290,8 @@ void CTestProjLogic::Update(float deltaTime)
 
 void CTestProjLogic::Render()
 {
+	RenderToShadowMap();
+
 	m_pCamera->UpdateViewTransform();
 
 	g_pApp->GetRenderer()->VSetRenderTarget(m_pRefractionRenderTarget.get());
@@ -338,6 +361,8 @@ void CTestProjLogic::Render()
 	m_WaterVSParams->SetConstant("gElapsedTime", m_ElapsedTime);
 	m_WaterVSParams->SetConstant("gViewMatrix", m_pCamera->GetViewMatrix());
 	m_WaterVSParams->SetConstant("gProjectionMatrix", m_pCamera->GetProjectionMatrix());
+	m_WaterVSParams->SetConstant("gLightViewMatrix", m_lightCamera.GetViewMatrix());
+	m_WaterVSParams->SetConstant("gLightProjectionMatrix", m_lightCamera.GetProjectionMatrix());
 	m_WaterRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_WaterVSParams);
 
 	m_WaterPSParams->SetConstant("gEyePosition", m_pCamera->GetPosition());
@@ -552,7 +577,38 @@ void CTestProjLogic::HandleInput(const CInput& input, float deltaTime)
 	m_lastMousePosition = mousePosition;
 }
 
-void CTestProjLogic::BuildWater(size_t n, size_t m) 
+void CTestProjLogic::RenderToShadowMap()
+{
+	// Set the render target and prepare for rendering.
+	g_pApp->GetRenderer()->VSetRenderTarget(m_pShadowMap.get());
+	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue::s_BLACK);
+	g_pApp->GetRenderer()->VPreRender();
+
+	// Update the shader params.
+	m_pRenderDepthShaderParams->SetConstant("gLightViewMatrix", m_lightCamera.GetViewMatrix());
+	m_pRenderDepthShaderParams->SetConstant("gLightProjectionMatrix", m_lightCamera.GetProjectionMatrix());
+	m_pRenderDepthShaderParams->SetConstant("gWorldMatrix", m_TerrainWorldTransform);
+	m_RenderDepth.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pRenderDepthShaderParams);
+
+	// Draw the terrain to the shadow map.
+	g_pApp->GetRenderer()->SetRenderPass(&m_RenderDepth);
+	g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
+}
+
+void CTestProjLogic::CreateRenderTextures()
+{
+	m_pReflectionRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture("Reflection", m_lastScreenSize.GetX(), m_lastScreenSize.GetY());
+	m_pRefractionRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture("Refraction", m_lastScreenSize.GetX(), m_lastScreenSize.GetY());
+	m_pRefractionLayer = m_WaterRenderPass.AddTextureLayer();
+	m_pReflectionLayer = m_WaterRenderPass.AddTextureLayer();
+	m_pReflectionLayer->SetTextureAddressModes(ETextureAddressMode::MIRROR);
+	m_pRefractionLayer->SetTextureAddressModes(ETextureAddressMode::MIRROR);
+	m_pReflectionLayer->SetTexture(m_pReflectionRenderTarget->GetTexture());
+	m_pRefractionLayer->SetTexture(m_pRefractionRenderTarget->GetTexture());
+	m_WaterRenderPass.AddTextureLayer()->SetTexture(m_pShadowMap->GetTexture());
+}
+
+void CTestProjLogic::BuildWater(size_t n, size_t m)
 {
 	// Generate vertices.
 	std::vector<TVertex> vertices(n * m);
@@ -728,31 +784,6 @@ void CTestProjLogic::LoadTerrain(const CVector3& scale)
 
 		unsigned int numFaces = numPixels - 2;
 
-		// Generate Tangents.
-		/*for (unsigned int i = 0; i < numFaces; i+=3) {
-			TVertex& vert1 = vertices[i];
-			TVertex& vert2 = vertices[i + 1];
-			TVertex& vert3 = vertices[i + ];
-
-			// Delta position
-			CVector3 deltaPos1 = vert2.position - vert1.position;
-			CVector3 deltaPos2 = vert3.position - vert1.position;
-
-			// UV delta
-			float deltaU1 = vert2.u - vert1.u;
-			float deltaU2 = vert3.u - vert1.u;
-			float deltaV1 = vert2.v - vert1.v;
-			float deltaV2 = vert3.v - vert1.v;
-
-			float r = 1.0f / (deltaU1 * deltaV2 - deltaV1 * deltaU2);
-			CVector3 tangent = (deltaPos1 * deltaV2 - deltaPos2 * deltaV1) * r;
-			vert1.tangent = tangent;
-			vert2.tangent = tangent;
-			vert3.tangent = tangent;
-		}
-*/
-
-
 		int numIndices = ((image.GetWidth() * 2) * (image.GetHeight() - 1) + (image.GetHeight() - 2));
 
 		// Generate indices
@@ -889,3 +920,4 @@ void CTestProjLogic::LoadTerrain(const CVector3& scale)
 		m_pTerrainIndices = nullptr;
 	}*/
 }
+

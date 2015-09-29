@@ -41,7 +41,8 @@ public:
 	virtual void Render();
 	virtual void HandleInput(const CInput& input, float deltaTime) override;
 
-	void CreateRenderTextures(int screenWidth, int screenHeight);
+	void RenderToShadowMap();
+	void CreateRenderTextures();
 
 	void BuildWater(size_t n, size_t m);
 	void BuildSkySphere(int latLines, int longLines);
@@ -91,6 +92,14 @@ private:
 	std::unique_ptr<ARenderTexture> m_pReflectionRenderTarget;
 	CTextureLayer* m_pRefractionLayer;
 	CTextureLayer* m_pReflectionLayer;
+
+	// Shadow mapping stuffs.
+	CRenderPass m_RenderDepth;
+	std::shared_ptr<CShaderParams> m_pRenderDepthShaderParams;
+	std::unique_ptr<ARenderTexture> m_pShadowMap;
+	static const size_t s_SHADOW_MAP_WIDTH;
+	static const size_t s_SHADOW_MAP_HEIGHT;
+	CCamera m_lightCamera;
 
 	// Camera
 	std::unique_ptr<CCamera> m_pCamera;

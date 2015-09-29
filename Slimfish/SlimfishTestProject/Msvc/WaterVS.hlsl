@@ -10,6 +10,8 @@ cbuffer constantBuffer {
 	float4x4 gWaveMatrix1;
 	float4x4 gWaveMatrix2;
 	float4x4 gWaveMatrix3;
+	float4x4 gLightViewMatrix;
+	float4x4 gLightProjectionMatrix;
 	float gElapsedTime;
 };
 
@@ -31,6 +33,7 @@ struct VS_OUT {
 	float2 waveCoord3 : TEXCOORD4;
 	float4 reflectionPosition : TEXCOORD5;
 	float3 positionWorld : TEXCOORD6;
+	float4 lightViewPosition : TEXCOORD7;
 };
 
 VS_OUT main(VS_IN vIn)
@@ -64,6 +67,7 @@ VS_OUT main(VS_IN vIn)
 
 	float4x4 worldViewProj = mul(mul(gWorldMatrix, gViewMatrix), gProjectionMatrix);
 	float4x4 reflectProjWorld = mul(mul(gWorldMatrix, gReflectionMatrix), gProjectionMatrix);
+	float4x4 lightViewProj = mul(mul(gWorldMatrix, gLightViewMatrix), gLightProjectionMatrix);
 
 	vOut.position = mul(float4(vIn.position, 1.0f), worldViewProj);
 	vOut.positionScreen = mul(float4(vIn.position, 1.0f), worldViewProj);
@@ -76,6 +80,7 @@ VS_OUT main(VS_IN vIn)
 	vOut.waveCoord2 = mul(float4(vIn.texCoord, 0.0f, 1.0f), gWaveMatrix2).xy;
 	vOut.waveCoord3 = mul(float4(vIn.texCoord, 0.0f, 1.0f), gWaveMatrix3).xy;
 	vOut.reflectionPosition = mul(float4(vIn.position, 1.0f), reflectProjWorld);
+	vOut.lightViewPosition = mul(float4(vIn.position, 1.0f), lightViewProj);
 
 	return vOut;
 }

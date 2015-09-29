@@ -15,6 +15,7 @@ Texture2D gSpecularMap;
 Texture2D gNormalMap;
 Texture2D gRefraction;
 Texture2D gReflection;
+Texture2D gShadowMap;
 //Texture2DMS<float4, 8> gRefraction;
 //Texture2DMS<float4, 8> gReflection;
 SamplerState gSampleDiffuseMap;
@@ -22,6 +23,7 @@ SamplerState gSampleSpecularMap;
 SamplerState gSampleNormalMap;
 SamplerState gSampleRefraction;
 SamplerState gSampleReflection;
+SamplerState gSampleShadowMap;
 
 struct PS_INPUT {
 	float4 position : SV_POSITION;
@@ -34,6 +36,7 @@ struct PS_INPUT {
 	float2 waveCoord3 : TEXCOORD4;
 	float4 reflectionPosition : TEXCOORD5;
 	float3 positionWorld : TEXCOORD6;
+	float4 lightViewPosition : TEXCOORD7;
 };
 
 float3 GetBumpedNormal(float3 vertNormal, float3 normalMapSample, float3 tangent)
@@ -56,6 +59,8 @@ float Fresnel(float nDotL, float fresnelBias, float fresnelPow)
 
 float4 main(PS_INPUT pIn) : SV_TARGET
 {
+	float bias = 0.001f;
+
 	pIn.normal = normalize(pIn.normal);
 
 	float3 toEye = gEyePosition - pIn.positionWorld.xyz;
@@ -124,21 +129,43 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 	float4 finalColour = lerp(combinedColour, diffuse, 0.2f);
 	finalColour = combinedColour;
 
-	// Lighting.
-	//SurfaceInfo v = { pIn.positionWorld.xyz, finalNormal, finalColour, specular };
-	Material material = { finalColour, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 133.0f };
+	// Calculate shadow mapping coords.
+	float2 lightProjectTexCoords;
+	lightProjectTexCoords.x = pIn.lightViewPosition.x / pIn.lightViewPosition.w / 2.0f + 0.5f;
+	lightProjectTexCoords.y = -pIn.lightViewPosition.y / pIn.lightViewPosition.w / 2.0f + 0.5f;
 
-	float3 lightColour;
-	if (gLight.type == 0) {
-		lightColour = ParallelLight(finalNormal, material, gLight, toEye);
-	}
-	else if (gLight.type == 1) {
-		lightColour = PointLight(pIn.positionWorld.xyz, finalNormal, material, gLight, toEye);
-	}
-	else {
-		lightColour = SpotLight(pIn.positionWorld.xyz, finalNormal, material, gLight, toEye);
+	bool bCalculateLighting = true;
+
+	if (saturate(lightProjectTexCoords.x) == lightProjectTexCoords.x &&
+		saturate(lightProjectTexCoords.y) == lightProjectTexCoords.y) {
+		float shadowMapDepth = gShadowMap.Sample(gSampleShadowMap, lightProjectTexCoords).r;
+
+		float lightDepthValue = pIn.lightViewPosition.z / pIn.lightViewPosition.w;
+		lightDepthValue -= bias;
+
+		// Are we obscured by the shadow map.
+		if (lightDepthValue >= shadowMapDepth) {
+			bCalculateLighting = false;
+		}
 	}
 
+	float3 lightColour = float3(0.0f, 0.0f, 0.0f);
+	
+	if (bCalculateLighting) {
+		Material material = { finalColour, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 133.0f };
+
+		if (gLight.type == 0) {
+			lightColour = ParallelLight(finalNormal, material, gLight, toEye);
+		}
+		else if (gLight.type == 1) {
+			lightColour = PointLight(pIn.positionWorld.xyz, finalNormal, material, gLight, toEye);
+		}
+		else {
+			lightColour = SpotLight(pIn.positionWorld.xyz, finalNormal, material, gLight, toEye);
+		}
+	}
+
+	// Ambient Lighting.
 	lightColour += finalColour.xyz * gAmbientLight.xyz;
 
 	// Fog

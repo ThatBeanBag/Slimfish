@@ -45,6 +45,8 @@
     <FxCompile Include="WaterPS.hlsl" />
     <FxCompile Include="TerrainPS.hlsl" />
     <FxCompile Include="TerrainVS.hlsl" />
+    <FxCompile Include="ShadowMappingPS.hlsl" />
+    <FxCompile Include="ShadowMappingVS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LightingHelper.hlsli" />
