@@ -56,10 +56,11 @@ CQuaternion::CQuaternion(const CVector3& right, const CVector3& up, const CVecto
 	*this = CQuaternion(rotation);
 }
 
-CQuaternion::CQuaternion(const CVector3& forward)
+CQuaternion::CQuaternion(const CVector3& forward, const CVector3& up)
 {
-	CVector3 right = CVector3::CrossProduct(forward, CVector3::s_UP);
-	*this = CQuaternion(right, CVector3::s_UP, forward);
+	CVector3 right = CVector3::CrossProduct(forward, up);
+	CVector3 localUp = CVector3::CrossProduct(right, forward);
+	*this = CQuaternion(right, localUp, forward);
 }
 
 CQuaternion::CQuaternion(const CMatrix4x4& rotationMatrix)

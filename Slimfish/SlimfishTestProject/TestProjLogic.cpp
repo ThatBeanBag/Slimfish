@@ -157,13 +157,22 @@ bool CTestProjLogic::Initialise()
 
 	// Create the light camera.
 	m_lightCamera.SetProjectionMode(EProjectionMode::ORTHOGRAPHIC);
-	m_lightCamera.SetPosition(-light.GetDirection() * 100.0f);
-	m_lightCamera.SetRotation(CQuaternion(light.GetDirection()));
-	m_lightCamera.SetNearClipDistance(0.1f);
-	m_lightCamera.SetFarClipDistance(200.0f);
+	m_lightCamera.SetPosition(-light.GetDirection() * 200.0f);
+	m_lightCamera.SetRotation(CQuaternion(DegreesToRadians(10.0f), DegreesToRadians(45.0f), DegreesToRadians(10.0f)));
+	m_lightCamera.SetNearClipDistance(0.0f);
+	m_lightCamera.SetFarClipDistance(1000.0f);
 	m_lightCamera.SetAspectRatio(static_cast<float>(s_SHADOW_MAP_WIDTH) / static_cast<float>(s_SHADOW_MAP_HEIGHT));
-	m_lightCamera.SetOrthographicSize(20.0f);
+	m_lightCamera.SetOrthographicSize(200.0f);
 	m_lightCamera.UpdateViewTransform();
+
+	/*m_pCamera->SetProjectionMode(EProjectionMode::ORTHOGRAPHIC);
+	m_pCamera->SetPosition(-light.GetDirection() * 200.0f);
+	m_pCamera->SetRotation(CQuaternion(DegreesToRadians(-30.0f), DegreesToRadians(135.0f), 0.0f));
+	m_pCamera->SetNearClipDistance(0.0f);
+	m_pCamera->SetFarClipDistance(1000.0f);
+	m_pCamera->SetAspectRatio(static_cast<float>(s_SHADOW_MAP_WIDTH) / static_cast<float>(s_SHADOW_MAP_HEIGHT));
+	m_pCamera->SetOrthographicSize(200.0f);
+	m_pCamera->UpdateViewTransform();*/
 
 	//
 	// WATER.

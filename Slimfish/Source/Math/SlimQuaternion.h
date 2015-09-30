@@ -68,7 +68,7 @@ public:
 			forward The forward or look vector that describes the direction to face. The y component of this
 			should be 0 in order to produce an expected result. 
 	*/
-	CQuaternion(const CVector3& forward);
+	CQuaternion(const CVector3& forward, const CVector3& up = CVector3::s_UP);
 
 	/** Destructor.
 	 	@author Hayden Asplet

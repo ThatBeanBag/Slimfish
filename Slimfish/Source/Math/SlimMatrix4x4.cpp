@@ -615,7 +615,7 @@ const CMatrix4x4 CMatrix4x4::BuildOrthographic(float width, float height, float 
 	CMatrix4x4 ortho(CMatrix4x4::s_IDENTITY);
 	ortho[0][0] = 2.0f / width;
 	ortho[1][1] = 2.0f / height;
-	ortho[2][2] = 1.0f / (farPlane - nearPlane);
+	ortho[2][2] = 1.0f / (nearPlane - farPlane);
 	ortho[2][3] = nearPlane / (nearPlane - farPlane);
 
 	return ortho;
