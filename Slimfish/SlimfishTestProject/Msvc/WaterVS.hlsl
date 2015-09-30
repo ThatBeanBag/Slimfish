@@ -31,9 +31,10 @@ struct VS_OUT {
 	float2 waveCoord1 : TEXCOORD2;
 	float2 waveCoord2 : TEXCOORD3;
 	float2 waveCoord3 : TEXCOORD4;
-	float4 reflectionPosition : TEXCOORD5;
-	float3 positionWorld : TEXCOORD6;
-	float4 lightViewPosition : TEXCOORD7;
+	float2 heightMapCoord : TEXCOORD5;
+	float4 reflectionPosition : TEXCOORD6;
+	float3 positionWorld : TEXCOORD7;
+	float4 lightViewPosition : TEXCOORD8;
 };
 
 VS_OUT main(VS_IN vIn)
@@ -79,6 +80,7 @@ VS_OUT main(VS_IN vIn)
 	vOut.waveCoord1 = mul(float4(vIn.texCoord, 0.0f, 1.0f), gWaveMatrix1).xy;
 	vOut.waveCoord2 = mul(float4(vIn.texCoord, 0.0f, 1.0f), gWaveMatrix2).xy;
 	vOut.waveCoord3 = mul(float4(vIn.texCoord, 0.0f, 1.0f), gWaveMatrix3).xy;
+	vOut.heightMapCoord = vIn.texCoord;
 	vOut.reflectionPosition = mul(float4(vIn.position, 1.0f), reflectProjWorld);
 	vOut.lightViewPosition = mul(float4(vIn.position, 1.0f), lightViewProj);
 
