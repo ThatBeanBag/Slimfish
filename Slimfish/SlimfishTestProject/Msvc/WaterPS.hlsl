@@ -10,9 +10,13 @@ cbuffer constantBuffer {
 	float4 gFogColour;
 };
 
+static const float gDepthStart = 0.35f;
+static const float gDepthFull = 0.5001f;
+
 Texture2D gDiffuseMap;
 Texture2D gSpecularMap;
 Texture2D gNormalMap;
+Texture2D gHeightMap;
 Texture2D gRefraction;
 Texture2D gReflection;
 Texture2D gShadowMap;
@@ -21,6 +25,7 @@ Texture2D gShadowMap;
 SamplerState gSampleDiffuseMap;
 SamplerState gSampleSpecularMap;
 SamplerState gSampleNormalMap;
+SamplerState gSampleHeightMap;
 SamplerState gSampleRefraction;
 SamplerState gSampleReflection;
 SamplerState gSampleShadowMap;
@@ -34,9 +39,10 @@ struct PS_INPUT {
 	float2 waveCoord1 : TEXCOORD2;
 	float2 waveCoord2 : TEXCOORD3;
 	float2 waveCoord3 : TEXCOORD4;
-	float4 reflectionPosition : TEXCOORD5;
-	float3 positionWorld : TEXCOORD6;
-	float4 lightViewPosition : TEXCOORD7;
+	float2 heightMapCoord : TEXCOORD5;
+	float4 reflectionPosition : TEXCOORD6;
+	float3 positionWorld : TEXCOORD7;
+	float4 lightViewPosition : TEXCOORD8;
 };
 
 float3 GetBumpedNormal(float3 vertNormal, float3 normalMapSample, float3 tangent)
@@ -116,11 +122,18 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 
 	//float4 refraction = lerp(refractionA, refractionB, refractionA.w);
 
-	float4 waterColour = diffuse * float4(0.5f, 0.5f, 0.5f, 0.5f);
+	float depth = 1.0f - gHeightMap.Sample(gSampleHeightMap, pIn.heightMapCoord.xy).r;
+	//depth = saturate(2.0 * depth - 1.0f);
+	float depthBlend = 0.0f;
+	if (depth >= gDepthStart) {
+		depthBlend = saturate((depth - gDepthStart) / (gDepthFull - gDepthStart));
+	}
 
-	float fDistScale = saturate(pIn.position.w * 0.001f);
-	float4 waterDeepColour = lerp(refractionA, waterColour, fDistScale);
-	waterColour = lerp(waterColour, waterDeepColour, nDotL);
+	float4 waterColour = lerp(float4(1.0f, 1.0f, 1.0f, 1.0f), diffuse, depthBlend);
+
+	float fDistScale = depth;
+	float4 waterDeepColour = lerp(refractionA, waterColour, depthBlend);
+	waterColour = waterDeepColour;
 	
 	//float4 combinedColour = lerp(reflection, refractionA, nDotL);
 	float4 combinedColour = reflection + waterColour;

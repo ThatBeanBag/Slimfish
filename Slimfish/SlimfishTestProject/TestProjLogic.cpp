@@ -187,6 +187,7 @@ bool CTestProjLogic::Initialise()
 	m_WaterRenderPass.AddTextureLayer("WaterTextures/Wavy_Water - Transparent.png");
 	m_WaterRenderPass.AddTextureLayer("WaterTextures/Specular.png");
 	m_WaterRenderPass.AddTextureLayer("WaterTextures/Wavy_Water - Height (Normal Map 2).png");
+	m_WaterRenderPass.AddTextureLayer("TerrainTextures/HeightMap - Island.png");
 
 	m_WaterRenderPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("WaterVS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
 	m_WaterRenderPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("WaterPS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
