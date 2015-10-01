@@ -11,7 +11,7 @@ struct VS_IN {
 
 struct PS_INPUT {
 	float4 position : SV_POSITION;
-	float depth : TEXCOORD0;
+	float4 positionCoord : TEXCOORD0;
 };
 
 PS_INPUT main(VS_IN vIn)
@@ -20,7 +20,7 @@ PS_INPUT main(VS_IN vIn)
 
 	float4x4 lightViewProj = mul(mul(gWorldMatrix, gLightViewMatrix), gLightProjectionMatrix);
 	vOut.position = mul(float4(vIn.position, 1.0f), lightViewProj);
-	vOut.depth = vOut.position.z / vOut.position.w;
+	vOut.positionCoord = vOut.position;
 
 	return vOut;
 }

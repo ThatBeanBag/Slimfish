@@ -41,7 +41,7 @@ VS_OUT main(VS_IN vIn)
 {
 	VS_OUT vOut;
 
-	float gAmplitude = 1.0f;
+	float gAmplitude = 0.4f;
 	float gWaveLength = 0.0002f;
 	float gSpeed = 0.00005f;
 	float3 gDirection1 = float3(-1.0f, 0.0, 1.0f);

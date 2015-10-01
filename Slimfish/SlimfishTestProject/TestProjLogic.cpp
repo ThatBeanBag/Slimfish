@@ -52,7 +52,7 @@ CTestProjLogic::CTestProjLogic()
 	m_lightCamera(nullptr)
 {
 	m_WaterTransform = CMatrix4x4::BuildScale(400.0f, 1.0f, 400.0f);
-	m_TerrainWorldTransform = CMatrix4x4::BuildTranslation(0.0f, -10.0f, 0.0f) * CMatrix4x4::BuildRotationY(DegreesToRadians(0));
+	m_TerrainWorldTransform = CMatrix4x4::BuildTranslation(0.0f, -10.0f, 0.0f);
 	m_ProjectionMatrix = CMatrix4x4::BuildProjection(DegreesToRadians(90), 1.0f, 0.1f, 1000.0f);
 	m_SkyBoxWorldTransform = CMatrix4x4::BuildScale(999, 999, 999);
 
@@ -141,7 +141,7 @@ bool CTestProjLogic::Initialise()
 	CLight light;
 	light.SetType(LIGHT_DIRECTIONAL);
 	light.SetDiffuse(CColourValue(0.7f, 0.7f, 0.7f));
-	light.SetSpecular(CColourValue(1.0f, 0.65f, 0.45f, 100.0f));
+	light.SetSpecular(CColourValue(1.0f, 1.0f, 1.0f, 100.0f));
 	light.SetDirection(CVector3::Normalise(CVector3(-1.0f, -0.8f, 1.0f)));
 
 	//
@@ -157,13 +157,14 @@ bool CTestProjLogic::Initialise()
 
 	// Create the light camera.
 	m_lightCamera.SetProjectionMode(EProjectionMode::ORTHOGRAPHIC);
-	m_lightCamera.SetPosition(-light.GetDirection() * 200.0f);
+	m_lightCamera.SetPosition(-light.GetDirection() * 300.0f);
 	m_lightCamera.SetRotation(CQuaternion(DegreesToRadians(10.0f), DegreesToRadians(45.0f), DegreesToRadians(10.0f)));
 	m_lightCamera.SetNearClipDistance(0.0f);
-	m_lightCamera.SetFarClipDistance(1000.0f);
+	m_lightCamera.SetFarClipDistance(700.0f);
 	m_lightCamera.SetAspectRatio(static_cast<float>(s_SHADOW_MAP_WIDTH) / static_cast<float>(s_SHADOW_MAP_HEIGHT));
-	m_lightCamera.SetOrthographicSize(200.0f);
+	m_lightCamera.SetOrthographicSize(600.0f);
 	m_lightCamera.UpdateViewTransform();
+	//m_lightCamera.SetViewMatrix(CMatrix4x4::BuildLookAt(m_lightCamera.GetPosition(), CVector3::s_ZERO, CVector3::s_UP));
 
 	/*m_pCamera->SetProjectionMode(EProjectionMode::ORTHOGRAPHIC);
 	m_pCamera->SetPosition(-light.GetDirection() * 200.0f);
@@ -184,7 +185,7 @@ bool CTestProjLogic::Initialise()
 	m_WaterVertexDeclaration.AddElement("TANGENT", CInputElement::FORMAT_FLOAT3);
 	m_WaterVertexDeclaration.AddElement("TEXCOORD", CInputElement::FORMAT_FLOAT2);
 
-	m_WaterRenderPass.AddTextureLayer("WaterTextures/Wavy_Water - Transparent.png");
+	m_WaterRenderPass.AddTextureLayer("WaterTextures/Foam_Diffuse.png");
 	m_WaterRenderPass.AddTextureLayer("WaterTextures/Specular.png");
 	m_WaterRenderPass.AddTextureLayer("WaterTextures/Wavy_Water - Height (Normal Map 2).png");
 	m_WaterRenderPass.AddTextureLayer("TerrainTextures/HeightMap - Island.png");
@@ -277,10 +278,10 @@ void CTestProjLogic::Update(float deltaTime)
 	m_ElapsedTime += deltaTime;
 
 	// Move wave normal maps around.
-	m_WaterWaveTransform1 = CMatrix4x4::BuildTranslation(m_ElapsedTime * -0.02f, m_ElapsedTime * 0.0f, 0.0f) *		CMatrix4x4::BuildScale(6.0f, 6.0f, 6.0f);
-	m_WaterWaveTransform2 = CMatrix4x4::BuildTranslation(m_ElapsedTime * -0.05f, m_ElapsedTime * -0.05f, 0.0f) *	CMatrix4x4::BuildScale(6.0f, 6.0f, 6.0f);
-	m_WaterWaveTransform3 = CMatrix4x4::BuildTranslation(m_ElapsedTime * -0.07f, m_ElapsedTime * 0.05f, 0.0f) *		CMatrix4x4::BuildScale(6.0f, 6.0f, 6.0f);
-	m_WaterWaveTransform4 = CMatrix4x4::BuildTranslation(m_ElapsedTime * 0.1f, m_ElapsedTime * 0.07f, 0.0f) *		CMatrix4x4::BuildScale(6.0f, 6.0f, 6.0f);
+	m_WaterWaveTransform1 = CMatrix4x4::BuildTranslation(m_ElapsedTime * -0.02f, m_ElapsedTime * 0.0f, 0.0f)   * CMatrix4x4::BuildScale(6.0f, 6.0f, 6.0f);
+	m_WaterWaveTransform2 = CMatrix4x4::BuildTranslation(m_ElapsedTime * -0.05f, m_ElapsedTime * -0.05f, 0.0f) * CMatrix4x4::BuildScale(6.0f, 6.0f, 6.0f);
+	m_WaterWaveTransform3 = CMatrix4x4::BuildTranslation(m_ElapsedTime * -0.07f, m_ElapsedTime * 0.05f, 0.0f)  * CMatrix4x4::BuildScale(6.0f, 6.0f, 6.0f);
+	m_WaterWaveTransform4 = CMatrix4x4::BuildTranslation(m_ElapsedTime * 0.1f, m_ElapsedTime * 0.07f, 0.0f)    * CMatrix4x4::BuildScale(6.0f, 6.0f, 6.0f);
 
 	// Update aspect ratio and render targets if the window size has changed.
 	CPoint screenSize = g_pApp->GetRenderer()->GetWindowSize();
@@ -361,6 +362,8 @@ void CTestProjLogic::Render()
 	g_pApp->GetRenderer()->VSetRenderTarget(nullptr);
 	g_pApp->GetRenderer()->VPreRender();
 
+	CMatrix4x4 lightView = CMatrix4x4::BuildLookAt(m_lightCamera.GetPosition(), CVector3::s_ZERO, CVector3::s_UP);
+
 	// Draw the water.
 	m_WaterVSParams->SetConstant("gWorldMatrix", m_WaterTransform);
 	m_WaterVSParams->SetConstant("gWaveMatrix0", m_WaterWaveTransform1);
@@ -371,7 +374,7 @@ void CTestProjLogic::Render()
 	m_WaterVSParams->SetConstant("gElapsedTime", m_ElapsedTime);
 	m_WaterVSParams->SetConstant("gViewMatrix", m_pCamera->GetViewMatrix());
 	m_WaterVSParams->SetConstant("gProjectionMatrix", m_pCamera->GetProjectionMatrix());
-	m_WaterVSParams->SetConstant("gLightViewMatrix", m_lightCamera.GetViewMatrix());
+	m_WaterVSParams->SetConstant("gLightViewMatrix", lightView);
 	m_WaterVSParams->SetConstant("gLightProjectionMatrix", m_lightCamera.GetProjectionMatrix());
 	m_WaterRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_WaterVSParams);
 
@@ -591,11 +594,13 @@ void CTestProjLogic::RenderToShadowMap()
 {
 	// Set the render target and prepare for rendering.
 	g_pApp->GetRenderer()->VSetRenderTarget(m_pShadowMap.get());
-	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue::s_BLACK);
+	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue::s_WHITE);
 	g_pApp->GetRenderer()->VPreRender();
 
+	CMatrix4x4 lightView = CMatrix4x4::BuildLookAt(m_lightCamera.GetPosition(), CVector3::s_ZERO, CVector3::s_UP);
+
 	// Update the shader params.
-	m_pRenderDepthShaderParams->SetConstant("gLightViewMatrix", m_lightCamera.GetViewMatrix());
+	m_pRenderDepthShaderParams->SetConstant("gLightViewMatrix", lightView);
 	m_pRenderDepthShaderParams->SetConstant("gLightProjectionMatrix", m_lightCamera.GetProjectionMatrix());
 	m_pRenderDepthShaderParams->SetConstant("gWorldMatrix", m_TerrainWorldTransform);
 	m_RenderDepth.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pRenderDepthShaderParams);

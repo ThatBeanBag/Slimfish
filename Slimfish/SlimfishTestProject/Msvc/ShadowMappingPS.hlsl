@@ -2,10 +2,12 @@
 
 struct PS_INPUT {
 	float4 position : SV_POSITION;
-	float depth : TEXCOORD0;
+	float4 positionCoord : TEXCOORD0;
 };
 
 float4 main(PS_INPUT pIn) : SV_TARGET
 {
-	return float4(pIn.depth, pIn.depth, pIn.depth, 1.0f);
+	float depth = pIn.positionCoord.z / pIn.positionCoord.w;
+
+	return float4(depth, depth, depth, 1.0f);
 }

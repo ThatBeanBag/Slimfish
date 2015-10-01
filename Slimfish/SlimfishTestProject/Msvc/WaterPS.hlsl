@@ -10,8 +10,14 @@ cbuffer constantBuffer {
 	float4 gFogColour;
 };
 
-static const float gDepthStart = 0.35f;
-static const float gDepthFull = 0.5001f;
+static const float gDepthColourStart = 0.0f;
+static const float gDepthColourFull = 0.56f;
+static const float gDepthAlphaStart = 0.0f;
+static const float gDepthAlphaFull = 0.7f;
+static const float gDepthFoamStart = 0.433f;
+static const float gDepthFoamFull = 0.413f;
+static const float4 gDepthMidColour = float4(0.2666f, 0.835f, 0.745f, 1.0f);
+static const float4 gDepthFullColour = float4(0.11764f, 0.32549f, 0.52157f, 1.0f);
 
 Texture2D gDiffuseMap;
 Texture2D gSpecularMap;
@@ -65,7 +71,7 @@ float Fresnel(float nDotL, float fresnelBias, float fresnelPow)
 
 float4 main(PS_INPUT pIn) : SV_TARGET
 {
-	float bias = 0.001f;
+	float bias = 0.0f;
 
 	pIn.normal = normalize(pIn.normal);
 
@@ -112,27 +118,34 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 	reflection = fresnel * reflection;
 
 	// Calculate refraction.
-
 	float4 refractionA = gRefraction.Sample(gSampleRefraction, refractionCoords + refractionNormal.xy);
 	float4 refractionB = gRefraction.Sample(gSampleRefraction, refractionCoords);
-	/*float3 refracMapDimensions;
-	gRefraction.GetDimensions(refracMapDimensions.x, refracMapDimensions.y, refracMapDimensions.z);
-	float4 refractionA = gRefraction.Load((pIn.position.xy + refractionNormal.xy * refracMapDimensions.xy), refracMapDimensions.z);
-	float4 refractionB = gRefraction.Load((pIn.position.xy), refracMapDimensions.z);*/
 
 	//float4 refraction = lerp(refractionA, refractionB, refractionA.w);
 
 	float depth = 1.0f - gHeightMap.Sample(gSampleHeightMap, pIn.heightMapCoord.xy).r;
 	//depth = saturate(2.0 * depth - 1.0f);
-	float depthBlend = 0.0f;
-	if (depth >= gDepthStart) {
-		depthBlend = saturate((depth - gDepthStart) / (gDepthFull - gDepthStart));
+	float depthColourBlend = 0.0f;
+	if (depth >= gDepthColourStart) {
+		depthColourBlend = saturate((depth - gDepthColourStart) / (gDepthColourFull - gDepthColourStart));
 	}
 
-	float4 waterColour = lerp(float4(1.0f, 1.0f, 1.0f, 1.0f), diffuse, depthBlend);
+	float depthAlphaBlend = 0.0f;
+	if (depth >= gDepthAlphaStart) {
+		depthAlphaBlend = saturate((depth - gDepthAlphaStart) / (gDepthAlphaFull - gDepthAlphaStart));
+	}
+
+	float4 waterColour = lerp(float4(1.0f, 1.0f, 1.0f, 1.0f), gDepthMidColour, saturate(depthColourBlend / 0.5f));
+	waterColour = lerp(waterColour, gDepthFullColour, saturate((depthColourBlend - 0.5f) / 0.5f));
+
+	if (depth < gDepthFoamStart) {
+		float4 foam = gDiffuseMap.Sample(gSampleDiffuseMap, pIn.waveCoord0.xy);
+		float foamBlend = saturate((depth - gDepthFoamStart) / (gDepthFoamFull - gDepthFoamStart));
+		waterColour = lerp(waterColour, foam, foamBlend);
+	}
 
 	float fDistScale = depth;
-	float4 waterDeepColour = lerp(refractionA, waterColour, depthBlend);
+	float4 waterDeepColour = lerp(refractionA, waterColour, depthAlphaBlend);
 	waterColour = waterDeepColour;
 	
 	//float4 combinedColour = lerp(reflection, refractionA, nDotL);
@@ -157,7 +170,7 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 		lightDepthValue -= bias;
 
 		// Are we obscured by the shadow map.
-		if (lightDepthValue >= shadowMapDepth) {
+		if (shadowMapDepth < lightDepthValue) {
 			bCalculateLighting = false;
 		}
 	}
