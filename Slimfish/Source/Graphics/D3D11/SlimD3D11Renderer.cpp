@@ -622,6 +622,11 @@ void CD3D11Renderer::VSetFillMode(EFillMode fillMode)
 	m_RasterizerDesc.FillMode = D3D11Conversions::GetFillMode(fillMode);
 }
 
+void CD3D11Renderer::VDrawText(const std::string text, const CPoint& position, const CColour& colour)
+{
+
+}
+
 void CD3D11Renderer::VSetBlendingMode(const TBlendingMode& blendingMode)
 {
 	if (blendingMode.sourceColourBlendFactor == EBlendFactor::ONE && blendingMode.destColourBlendFactor == EBlendFactor::ZERO &&

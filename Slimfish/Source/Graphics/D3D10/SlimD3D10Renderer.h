@@ -105,6 +105,8 @@ public:
 	virtual void VSetCullingMode(ECullingMode cullingMode) override;
 	/* @copydoc ARenderer::VSetFillMode */
 	virtual void VSetFillMode(EFillMode fillMode) override;
+
+	virtual void VDrawText(const std::string text, const CPoint& position, const CColour& colour) override;
 protected:
 private:
 	// Windows functions that should be in a windows class.
@@ -146,6 +148,7 @@ private:
 	std::vector<D3D10_INPUT_ELEMENT_DESC> GetD3DVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
 
 
+
 	// Member Variables
 public:
 protected:
@@ -155,6 +158,9 @@ private:
 	ID3D10RenderTargetView* m_pRenderTargetView;
 	ID3D10Texture2D* m_pDepthStencilBuffer;
 	ID3D10DepthStencilView* m_pDepthStencilView;
+
+	// Text.
+	ID3DX10Font* m_pFont;
 
 	// Blending.
 	D3D10_BLEND_DESC m_BlendDesc;

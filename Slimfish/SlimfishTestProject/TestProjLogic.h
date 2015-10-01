@@ -51,6 +51,9 @@ protected:
 private:
 	// Member Variables
 public:
+	static const std::string m_ScreenText;
+	static const size_t s_SHADOW_MAP_WIDTH;
+	static const size_t s_SHADOW_MAP_HEIGHT;
 protected:
 private:
 	// Terrain.
@@ -97,8 +100,6 @@ private:
 	CRenderPass m_RenderDepth;
 	std::shared_ptr<CShaderParams> m_pRenderDepthShaderParams;
 	std::unique_ptr<ARenderTexture> m_pShadowMap;
-	static const size_t s_SHADOW_MAP_WIDTH;
-	static const size_t s_SHADOW_MAP_HEIGHT;
 	CCamera m_lightCamera;
 
 	// Camera

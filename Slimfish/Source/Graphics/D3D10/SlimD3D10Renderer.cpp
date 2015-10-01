@@ -58,6 +58,7 @@ CD3D10Renderer::~CD3D10Renderer()
 	SLIM_SAFE_RELEASE(m_pBlendState);
 	SLIM_SAFE_RELEASE(m_pRasterizerState);
 	SLIM_SAFE_RELEASE(m_pDepthStencilState);
+	SLIM_SAFE_RELEASE(m_pFont);
 
 	for (size_t i = 0; i < m_SamplerStates.size(); ++i) {
 		SLIM_SAFE_RELEASE(m_SamplerStates[i]);
@@ -210,6 +211,22 @@ bool CD3D10Renderer::VInitialize()
 		
 	m_pD3DDevice->CreateRasterizerState(&m_RasterizerDesc, &m_pRasterizerState);
 	m_pD3DDevice->RSSetState(m_pRasterizerState);
+
+	// Create font
+	D3DX10_FONT_DESCA fontDesc;
+	fontDesc.Height = 175;
+	fontDesc.Width = 20;
+	fontDesc.Weight = 400;
+	fontDesc.MipLevels = 1;
+	fontDesc.Italic = false;
+	fontDesc.CharSet = OUT_DEFAULT_PRECIS;
+	fontDesc.Quality = DEFAULT_QUALITY;
+	fontDesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
+	strcpy_s(fontDesc.FaceName, "");
+	hResult = D3DX10CreateFontIndirectA(m_pD3DDevice, &fontDesc, &m_pFont);
+	if (FAILED(hResult)) {
+		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create font with error: " << GetErrorMessage(hResult);
+	}
 
 	return true;
 }
@@ -747,6 +764,17 @@ std::vector<D3D10_INPUT_ELEMENT_DESC> CD3D10Renderer::GetD3DVertexDeclaration(co
 void CD3D10Renderer::VSetWindowed(bool windowed)
 {
 	m_pSwapChain->SetFullscreenState(!windowed, NULL);
+}
+
+void CD3D10Renderer::VDrawText(const std::string text, const CPoint& position, const CColour& colour)
+{
+	RECT rect;
+	rect.left = position.GetX();
+	rect.right = position.GetX() + 500;
+	rect.top = position.GetY();
+	rect.bottom = position.GetY() + 500;
+
+	m_pFont->DrawTextA(nullptr, text.c_str(), -1, &rect, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 void CD3D10Renderer::VOnResize()

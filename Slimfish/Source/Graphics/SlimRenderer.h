@@ -73,7 +73,7 @@ namespace Slim {
 		*/
 		virtual void VPostRender() = 0;
 
-		// Window functions that should be in a window class.
+		// TODO: Window functions that should be in a window class.
 		void SetWindowed(bool windowed);
 		void ToggleWindowed();
 		bool IsWindowed() const;
@@ -281,6 +281,13 @@ namespace Slim {
 		*/
 		void DisableTextureLayerFrom(size_t layer);
 
+		/** Draw text to the screen.
+		 	@author Hayden Asplet
+		 	@param text Text string to be rendered.
+		 	@param position Position of the text in screen coordinates.
+		 	@param colour Colour of the text.
+		*/
+		virtual void VDrawText(const std::string text, const CPoint& position, const CColour& colour) = 0;
 	protected:
 	private:
 		// Windows functions that should be in a windows class.

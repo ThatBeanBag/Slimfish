@@ -43,6 +43,9 @@ struct TSkyBoxVertex {
 const size_t CTestProjLogic::s_SHADOW_MAP_WIDTH = 1024;
 const size_t CTestProjLogic::s_SHADOW_MAP_HEIGHT = 1024;
 
+const std::string CTestProjLogic::m_ScreenText = "WASD keys to move.\nClick and hold left mouse button to rotate.\nSpace and control to go up and down.";
+
+
 CTestProjLogic::CTestProjLogic()
 	:m_TerrainWorldTransform(CMatrix4x4::s_IDENTITY),
 	m_WaterTransform(CMatrix4x4::s_IDENTITY),
@@ -411,6 +414,7 @@ void CTestProjLogic::Render()
 	g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
 	g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
 
+	g_pApp->GetRenderer()->VDrawText(m_ScreenText, CPoint(10, 10), CColour::s_YELLOW);
 
 	/*// Update skybox parameters.
 	m_pSkyBoxShaderParams->SetConstant("gViewMatrix", m_ViewMatrix);
@@ -773,7 +777,7 @@ void CTestProjLogic::LoadTerrain(const CVector3& scale)
 
 				for (unsigned int i = 0; i < 8; ++i) {
 					if (neighbourX < 0 || neighbourZ < 0 ||
-						neighbourX >= static_cast<int>(image.GetWidth()) || 
+						neighbourX >= static_cast<int>(image.GetWidth()) ||
 						neighbourZ >= static_cast<int>(image.GetHeight())) {
 						// Is this neighbour outside the image?
 						// Don't evaluate it.
@@ -842,7 +846,7 @@ void CTestProjLogic::LoadTerrain(const CVector3& scale)
 		}
 
 		// Calculate tangents.
-		for (int i = 0; i < numIndices - 2; i+=3) {
+		for (int i = 0; i < numIndices - 2; i += 3) {
 			TVertex& vert1 = vertices[indices[i]];
 			TVertex& vert2 = vertices[indices[i + 1]];
 			TVertex& vert3 = vertices[indices[i + 2]];
@@ -867,72 +871,5 @@ void CTestProjLogic::LoadTerrain(const CVector3& scale)
 		m_pTerrainVertices = g_pApp->GetRenderer()->CreateVertexBuffer(vertices);
 		m_pTerrainIndices = g_pApp->GetRenderer()->CreateIndexBuffer(indices);
 	}
-
-	/*shared_ptr<ATexture> pHeightMap = g_pApp->GetRenderer()->VLoadTexture("HighRes.bmp", ETextureType::TYPE_2D, ETextureUsage::READ_ONLY);
-
-	if (pHeightMap) {
-		CImage image = pHeightMap->VGetImage();
-
-		int numPolys = 2 * (image.GetWidth() - 1) * (image.GetHeight() - 1);
-		std::vector<TVertex> vertices(numPolys * 3);
-
-		auto createVert = [&](int x, int z) {
-			CColour colour = image.GetPixel(x, z);
-			TVertex vert;
-
-			vert.m_Position.SetX((static_cast<float>(x) / static_cast<float>(image.GetWidth())) - 0.5f);
-			vert.m_Position.SetY((static_cast<float>(colour.m_r) / 255.0f) - 0.5f);
-			vert.m_Position.SetZ((static_cast<float>(z) / static_cast<float>(image.GetHeight())) - 0.5f);
-			vert.m_U = (static_cast<float>(x) / static_cast<float>(image.GetWidth() - 1));
-			vert.m_V = (static_cast<float>(z) / static_cast<float>(image.GetHeight() - 1));
-
-			return vert;
-		};
-
-		int index = 0;
-
-		auto addPolygon = [&](TVertex& _rVertA, TVertex& _rVertB, TVertex& _rVertC) {
-			CVector3 vec3LineAB = _rVertB.m_Position - _rVertA.m_Position;
-			CVector3 vec3LineAC = _rVertC.m_Position - _rVertA.m_Position;
-
-			// Get the crossproduct of the lines, to define the normal of the polygon.
-			CVector3 vec3Normal = CrossProduct(vec3LineAB, vec3LineAC);
-			vec3Normal = Normalise(vec3Normal);
-
-			// Set the normals of the vertices.
-			_rVertA.m_Normal = vec3Normal;
-			_rVertB.m_Normal = vec3Normal;
-			_rVertC.m_Normal = vec3Normal;
-
-			vertices[index++] = _rVertA;
-			vertices[index++] = _rVertB;
-			vertices[index++] = _rVertC;
-		};
-
-		for (int iZ = 0; iZ < image.GetHeight() - 1; ++iZ) {
-			// Even rows move left to right, odd rows move right to left.
-			for (int iX = 0; iX < image.GetWidth() - 1; ++iX) {
-				//				  |\
-				// Add a polygon  | \
-				//				  |__\
-				//
-				TVertex vert1 = createVert(iX, iZ);
-				TVertex vert2 = createVert(iX + 1, iZ + 1);
-				TVertex vert3 = createVert(iX + 1, iZ);
-				addPolygon(vert1, vert2, vert3);
-				//				  ___
-				//				  \  |
-				// Add a polygon   \ |
-				//				    \|
-				TVertex vert4 = createVert(iX, iZ);
-				TVertex vert5 = createVert(iX, iZ + 1);
-				TVertex vert6 = createVert(iX + 1, iZ + 1);
-				addPolygon(vert4, vert5, vert6);
-			}
-		}
-
-		m_pTerrainVertices = g_pApp->GetRenderer()->CreateVertexBuffer(vertices);
-		m_pTerrainIndices = nullptr;
-	}*/
 }
 
