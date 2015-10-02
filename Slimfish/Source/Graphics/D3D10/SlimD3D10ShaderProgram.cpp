@@ -250,6 +250,7 @@ namespace Slim {
 
 		if (FAILED(hResult)) {
 			std::string errorMessage = "Failed to compile shader from file " + m_Name + " Errors:\n" + static_cast<const char*>(pCompilationErrors->GetBufferPointer());
+			SLIM_ERROR() << errorMessage;
 			// TODO: Display errorMessage.
 			SLIM_SAFE_RELEASE(pCompilationErrors);
 			SLIM_SAFE_RELEASE(pCompiledShader);

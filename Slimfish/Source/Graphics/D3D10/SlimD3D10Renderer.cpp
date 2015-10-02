@@ -214,15 +214,15 @@ bool CD3D10Renderer::VInitialize()
 
 	// Create font
 	D3DX10_FONT_DESCA fontDesc;
-	fontDesc.Height = 175;
-	fontDesc.Width = 20;
-	fontDesc.Weight = 400;
+	fontDesc.Height = 12;
+	fontDesc.Width = 0;
+	fontDesc.Weight = 0;
 	fontDesc.MipLevels = 1;
 	fontDesc.Italic = false;
 	fontDesc.CharSet = OUT_DEFAULT_PRECIS;
 	fontDesc.Quality = DEFAULT_QUALITY;
 	fontDesc.PitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
-	strcpy_s(fontDesc.FaceName, "");
+	strcpy_s(fontDesc.FaceName, "Arial");
 	hResult = D3DX10CreateFontIndirectA(m_pD3DDevice, &fontDesc, &m_pFont);
 	if (FAILED(hResult)) {
 		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create font with error: " << GetErrorMessage(hResult);

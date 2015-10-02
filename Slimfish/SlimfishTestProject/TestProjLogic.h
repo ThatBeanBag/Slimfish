@@ -27,6 +27,7 @@
 #include <Graphics\SlimRenderPass.h>
 #include <Graphics\SlimRenderTexture.h>
 #include <Graphics\SlimCamera.h>
+#include <Graphics\SlimLight.h>
 
 // Local Includes
 
@@ -41,8 +42,16 @@ public:
 	virtual void Render();
 	virtual void HandleInput(const CInput& input, float deltaTime) override;
 
-	void RenderToShadowMap();
+	bool InitialiseWater();
+	bool InitialiseTerrain();
+	bool InitialiseSkyBox();
+	bool InitialiseControlsText();
+
 	void CreateRenderTextures();
+
+	void RenderToShadowMap();
+	void RenderToRefractionMap();
+	void RenderToReflectionMap();
 
 	void BuildWater(size_t n, size_t m);
 	void BuildSkySphere(int latLines, int longLines);
@@ -56,6 +65,8 @@ public:
 	static const size_t s_SHADOW_MAP_HEIGHT;
 protected:
 private:
+	float m_ElapsedTime;
+
 	// Terrain.
 	shared_ptr<AVertexGpuBuffer> m_pTerrainVertices;
 	shared_ptr<AIndexGpuBuffer> m_pTerrainIndices;
@@ -79,7 +90,7 @@ private:
 	CMatrix4x4 m_WaterWaveTransform4;
 	CRenderPass m_WaterRenderPass;
 
-	// SkyBox.
+	// Sky box.
 	CRenderPass m_SkyBoxRenderPass;
 	CVertexDeclaration m_SkyBoxVertexDeclaration;
 	shared_ptr<AVertexGpuBuffer> m_pSkyBoxVertices;
@@ -87,30 +98,35 @@ private:
 	shared_ptr<CShaderParams> m_pSkyBoxShaderParams;
 	CMatrix4x4 m_SkyBoxWorldTransform;
 
-	CMatrix4x4 m_ViewMatrix;
-	CMatrix4x4 m_ReflectionViewMatrix;
-	CMatrix4x4 m_ProjectionMatrix;
-
+	// Refraction and reflection maps.
 	std::unique_ptr<ARenderTexture> m_pRefractionRenderTarget;
 	std::unique_ptr<ARenderTexture> m_pReflectionRenderTarget;
 	CTextureLayer* m_pRefractionLayer;
 	CTextureLayer* m_pReflectionLayer;
 
-	// Shadow mapping stuffs.
+	// Shadow mapping.
 	CRenderPass m_RenderDepth;
 	std::shared_ptr<CShaderParams> m_pRenderDepthShaderParams;
 	std::unique_ptr<ARenderTexture> m_pShadowMap;
-	CCamera m_lightCamera;
+	CLight m_Light;
+	CCamera m_LightCamera;
+
+	// Controls Text.
+	std::shared_ptr<AVertexGpuBuffer> m_pQuadVertexBuffer;
+	std::shared_ptr<AIndexGpuBuffer> m_pQuadIndexBuffer;
+	std::shared_ptr<CShaderParams> m_pQuadVSParams;
+	CRenderPass m_QuadRenderPass;
+	CCamera m_OrthoCamera;
+	CMatrix4x4 m_ControlsTextMatrix;
 
 	// Camera
-	std::unique_ptr<CCamera> m_pCamera;
-	CVector3 m_EyePosition;
-
-	float m_ElapsedTime;
-
+	CCamera m_Camera;
+	CMatrix4x4 m_ReflectionViewMatrix;
 	float m_CameraPitch;
 	float m_CameraYaw;
 	float m_CameraDistance;
+
+	// Input.
 	CPoint m_lastMousePosition;
 	CPoint m_lastScreenSize;
 };

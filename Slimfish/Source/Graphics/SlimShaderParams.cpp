@@ -21,6 +21,7 @@
 #include "SlimShaderParams.h"
 
 // Local Includes
+#include "..\Math\SlimPlane.h"
 
 namespace Slim {
 
@@ -242,6 +243,12 @@ namespace Slim {
 	void CShaderParams::SetConstant(const std::string& name, float value)
 	{
 		SetConstant(name, &value, 1);
+	}
+
+	void CShaderParams::SetConstant(const std::string& name, const CPlane& value)
+	{
+		float pPlane[4] = { value.GetA(), value.GetB(), value.GetC(), value.GetD() };
+		SetConstant(name, pPlane, 4);
 	}
 
 	const CShaderConstant CShaderParams::GetConstant(const std::string& name)

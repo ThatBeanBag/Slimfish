@@ -35,7 +35,7 @@ ARenderer::ARenderer(int width, int height, bool isWindowed)
 
 void ARenderer::SetWindowed(bool windowed)
 {
-	m_IsWindowed = true; 
+	m_IsWindowed = windowed; 
 	VSetWindowed(windowed);
 }
 

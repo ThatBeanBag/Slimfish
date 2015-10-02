@@ -162,6 +162,14 @@ public:
 	*/
 	void SetConstant(const std::string& name, const CColourValue& value);
 
+	/** Set a constant definition as a plane.
+		@remarks
+			The constant definition has to be added first using AddConstant() and the appropriate
+			constant type must be specified.
+		@author Hayden Asplet
+	*/
+	void SetConstant(const std::string& name, const CPlane& value);
+
 	/** Set a constant definition as an array of floats.
 		@remarks
 			The constant definition has to be added first using AddConstant() and the appropriate
