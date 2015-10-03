@@ -49,7 +49,8 @@ CGameApp::~CGameApp()
 
 bool CGameApp::VInitialise(HINSTANCE hInstance, LPSTR lpCmdLine, HWND hWnd, size_t screenHeight, size_t screenWidth)
 {
-	CLogger::GetInstance()->CreateLog("slim.log");
+	CLogger::GetInstance()->CreateLog("SLIM.log");
+	SLIM_INFO_IF(false) << "TestMessge";
 
 	m_hInstance = hInstance;
 
