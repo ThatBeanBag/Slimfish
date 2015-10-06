@@ -140,7 +140,9 @@ LRESULT CALLBACK CGameApp::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 {
 	switch (msg) {
 		case WM_SIZE: {
-			g_pApp->GetRenderer()->Resize(0, 0);
+			if (g_pApp->GetRenderer()) {
+				g_pApp->GetRenderer()->Resize(0, 0);
+			}
 			break;
 		}
 		case WM_CLOSE: {

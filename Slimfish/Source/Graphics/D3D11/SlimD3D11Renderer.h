@@ -152,29 +152,29 @@ private:
 public:
 protected:
 private:
-	ID3D11Device* m_pD3DDevice;
-	ID3D11DeviceContext* m_pImmediateContext;
-	IDXGISwapChain* m_pSwapChain;
-	ID3D11RenderTargetView* m_pRenderTargetView;
-	ID3D11Texture2D* m_pDepthStencilBuffer;
-	ID3D11DepthStencilView* m_pDepthStencilView;
+	ComPtr<ID3D11Device> m_pD3DDevice;
+	ComPtr<ID3D11DeviceContext> m_pImmediateContext;
+	ComPtr<IDXGISwapChain> m_pSwapChain;
+	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
+	ComPtr<ID3D11Texture2D> m_pDepthStencilBuffer;
+	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;
 
 	// Blending.
 	D3D11_BLEND_DESC m_BlendDesc;
-	ID3D11BlendState* m_pBlendState;
+	ComPtr<ID3D11BlendState> m_pBlendState;
 
 	// Rasterizer.
 	D3D11_RASTERIZER_DESC m_RasterizerDesc;
-	ID3D11RasterizerState* m_pRasterizerState;
+	ComPtr<ID3D11RasterizerState> m_pRasterizerState;
 
 	// Depth-stencil buffer.
 	D3D11_DEPTH_STENCIL_DESC m_DepthStencilDesc;
-	ID3D11DepthStencilState* m_pDepthStencilState;
+	ComPtr<ID3D11DepthStencilState> m_pDepthStencilState;
 	size_t m_StencilReferenceValue;
 
 	// Texture layering.
 	std::vector<D3D11_SAMPLER_DESC> m_SamplerDescs;
-	std::vector<ID3D11SamplerState*> m_SamplerStates;
+	std::vector<ComPtr<ID3D11SamplerState> > m_SamplerStates;
 	std::vector<ID3D11ShaderResourceView*> m_Textures;
 
 	float m_pBackgroundColour[4];	// The clear colour.

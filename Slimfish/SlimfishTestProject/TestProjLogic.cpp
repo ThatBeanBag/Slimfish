@@ -277,8 +277,8 @@ void CTestProjLogic::Render()
 	m_TerrainRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_WaterPSParams);
 
 	// Draw the terrain.
-	g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
-	g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
+	//g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
+	//g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
 
 	// Draw the controls
 	g_pApp->GetRenderer()->SetRenderPass(&m_QuadRenderPass);
@@ -485,6 +485,8 @@ bool CTestProjLogic::InitialiseWater()
 	m_WaterRenderPass.AddTextureLayer("WaterTextures/Wavy_Water - Height (Normal Map 2).png");
 	m_WaterRenderPass.AddTextureLayer("TerrainTextures/HeightMap - Island.png");
 
+	m_WaterRenderPass.SetFillMode(EFillMode::WIREFRAME);
+
 	// Create shaders.
 	m_WaterRenderPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("WaterVS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
 	m_WaterRenderPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("WaterPS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
@@ -505,7 +507,7 @@ bool CTestProjLogic::InitialiseWater()
 	m_WaterPSParams->SetConstant("gFogColour", CColourValue(0.3686f, 0.3686f, 0.43137f, 1.0f));
 	m_WaterPSParams->SetConstant("gAmbientLight", CColourValue(0.3f, 0.3f, 0.3f));
 
-	BuildWater(40, 40);
+	BuildWater(400, 400);
 
 	return true;
 }
@@ -529,7 +531,7 @@ bool CTestProjLogic::InitialiseTerrain()
 	m_TerrainRenderPass.AddTextureLayer("TerrainTextures/cliff_01_normal.png")->SetTextureFilter(ETextureFilterType::ANISOTROPIC);
 	m_TerrainRenderPass.AddTextureLayer("TerrainTextures/sand_normal.png")->SetTextureFilter(ETextureFilterType::ANISOTROPIC);
 
-	LoadTerrain(CVector3(400.0f, 75.0f, 400.0f));
+	//LoadTerrain(CVector3(400.0f, 75.0f, 400.0f));
 
 	return true;
 }
@@ -620,8 +622,8 @@ void CTestProjLogic::RenderToShadowMap()
 	m_RenderDepth.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pRenderDepthShaderParams);
 
 	// Draw the terrain to the shadow map.
-	g_pApp->GetRenderer()->SetRenderPass(&m_RenderDepth);
-	g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
+	//g_pApp->GetRenderer()->SetRenderPass(&m_RenderDepth);
+	//g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
 }
 
 void CTestProjLogic::RenderToRefractionMap()
@@ -645,8 +647,8 @@ void CTestProjLogic::RenderToRefractionMap()
 	m_TerrainRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_WaterPSParams);
 
 	// Draw the terrain.
-	g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
-	g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
+	//g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
+	//g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
 }
 
 void CTestProjLogic::RenderToReflectionMap()
@@ -675,8 +677,8 @@ void CTestProjLogic::RenderToReflectionMap()
 	m_TerrainRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_WaterPSParams);
 
 	// Draw the terrain.
-	g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
-	g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
+	//g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
+	//g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
 
 }
 

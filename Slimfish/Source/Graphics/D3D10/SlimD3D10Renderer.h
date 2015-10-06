@@ -105,8 +105,6 @@ public:
 	virtual void VSetCullingMode(ECullingMode cullingMode) override;
 	/* @copydoc ARenderer::VSetFillMode */
 	virtual void VSetFillMode(EFillMode fillMode) override;
-
-	virtual void VDrawText(const std::string text, const CPoint& position, const CColour& colour) override;
 protected:
 private:
 	// Windows functions that should be in a windows class.
@@ -147,38 +145,33 @@ private:
 	*/
 	std::vector<D3D10_INPUT_ELEMENT_DESC> GetD3DVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
 
-
-
 	// Member Variables
 public:
 protected:
 private:
-	ID3D10Device* m_pD3DDevice;
-	IDXGISwapChain* m_pSwapChain;
-	ID3D10RenderTargetView* m_pRenderTargetView;
-	ID3D10Texture2D* m_pDepthStencilBuffer;
-	ID3D10DepthStencilView* m_pDepthStencilView;
-
-	// Text.
-	ID3DX10Font* m_pFont;
+	ComPtr<ID3D10Device> m_pD3DDevice;
+	ComPtr<IDXGISwapChain> m_pSwapChain;
+	ComPtr<ID3D10RenderTargetView> m_pRenderTargetView;
+	ComPtr<ID3D10Texture2D> m_pDepthStencilBuffer;
+	ComPtr<ID3D10DepthStencilView> m_pDepthStencilView;
 
 	// Blending.
 	D3D10_BLEND_DESC m_BlendDesc;
-	ID3D10BlendState* m_pBlendState;
+	ComPtr<ID3D10BlendState> m_pBlendState;
 
 	// Rasterizer.
 	D3D10_RASTERIZER_DESC m_RasterizerDesc;
-	ID3D10RasterizerState* m_pRasterizerState;
+	ComPtr<ID3D10RasterizerState> m_pRasterizerState;
 
 	// Depth-stencil buffer.
 	D3D10_DEPTH_STENCIL_DESC m_DepthStencilDesc;
-	ID3D10DepthStencilState* m_pDepthStencilState;
+	ComPtr<ID3D10DepthStencilState> m_pDepthStencilState;
 	size_t m_StencilReferenceValue;
 
 	// Texture layering.
 	std::vector<D3D10_SAMPLER_DESC> m_SamplerDescs;
-	std::vector<ID3D10SamplerState*> m_SamplerStates;
-	std::vector<ID3D10ShaderResourceView*> m_Textures;
+	std::vector<ComPtr<ID3D10SamplerState>> m_SamplerStates;
+	std::vector<ComPtr<ID3D10ShaderResourceView>> m_Textures;
 
 	D3DXCOLOR m_BackgroundColour;	// The clear colour.
 	D3D10_VIEWPORT m_ViewPort;		// Current view port.

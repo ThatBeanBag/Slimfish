@@ -43,15 +43,15 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\Temp\$(PlatformName)$(Configuration)\</IntDir>
-    <IncludePath>$(DXSDK_DIR)Include;C:\Program Files %28x86%29\Visual Leak Detector\include;$(ProjectDir)..\..\Source;$(ProjectDir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(DXSDK_DIR)Lib\x86;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(DXSDK_DIR)Include;C:\Program Files %28x86%29\Visual Leak Detector\include;$(ProjectDir)..\..\Source;$(ProjectDir)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Windows Kits\8.1\Lib\winv6.3\um\x86;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(LibraryPath);$(DXSDK_DIR)Lib\x86;$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\..\Temp\$(PlatformName)$(Configuration)\</IntDir>
-    <IncludePath>$(DXSDK_DIR)Include;C:\Program Files %28x86%29\Visual Leak Detector\include;$(ProjectDir)..\..\Source;$(ProjectDir);$(IncludePath)</IncludePath>
-    <LibraryPath>$(DXSDK_DIR)Lib\x86;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(IncludePath);$(DXSDK_DIR)Include;C:\Program Files %28x86%29\Visual Leak Detector\include;$(ProjectDir)..\..\Source;$(ProjectDir)</IncludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Windows Kits\8.1\Lib\winv6.3\um\x86;C:\Program Files %28x86%29\Visual Leak Detector\lib\Win32;$(LibraryPath);$(DXSDK_DIR)Lib\x86;$(ProjectDir)..\..\Lib\$(PlatformName)$(Configuration)\</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

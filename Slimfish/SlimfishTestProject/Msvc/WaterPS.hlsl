@@ -72,6 +72,7 @@ float Fresnel(float nDotL, float fresnelBias, float fresnelPow)
 float4 main(PS_INPUT pIn) : SV_TARGET
 {
 	pIn.normal = normalize(pIn.normal);
+	pIn.tangent = normalize(pIn.tangent);
 
 	float3 toEye = gEyePosition - pIn.positionWorld.xyz;
 	float distanceToEye = length(toEye);
@@ -139,6 +140,7 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 	
 	// Add reflection and refraction to get the final colour.
 	float4 finalColour = reflection + waterColour;
+	finalColour = waterColour;
 
 	bool bCalculateLighting = true;
 
@@ -181,8 +183,8 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 	lightColour += finalColour.xyz * gAmbientLight.xyz;
 
 	// Fog
-	float fogLerp = saturate((distanceToEye - gFogStart) / gFogRange);
-	lightColour = lerp(lightColour, gFogColour.xyz, fogLerp);
+	//float fogLerp = saturate((distanceToEye - gFogStart) / gFogRange);
+	//lightColour = lerp(lightColour, gFogColour.xyz, fogLerp);
 
 	return float4(lightColour, 1.0f);
 }

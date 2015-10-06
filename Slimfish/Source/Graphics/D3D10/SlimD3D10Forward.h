@@ -23,11 +23,14 @@
 #include <d3dx10.h>
 #include <d3dcompiler.h>
 #include <comdef.h>
+#include <wrl/client.h>
 
 // Local Includes
 #include "SlimD3D10Conversions.h"
 
 namespace Slim {
+	using Microsoft::WRL::ComPtr;
+
 	class CD3D10Renderer;
 	class CD3D10Texture;
 	class CD3D10GpuBuffer;

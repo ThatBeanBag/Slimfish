@@ -25,11 +25,15 @@
 #include <comdef.h>
 #include <DirectXMath.h>
 #include <atlbase.h>
+#include <wrl/client.h>
+
 
 // Local Includes
 #include "SlimD3D11Conversions.h"
 
 namespace Slim {
+	using Microsoft::WRL::ComPtr;
+
 	class CD3D11Renderer;
 	class CD3D11Texture;
 	class CD3D11GpuBuffer;
