@@ -485,7 +485,7 @@ bool CTestProjLogic::InitialiseWater()
 	m_WaterRenderPass.AddTextureLayer("WaterTextures/Wavy_Water - Height (Normal Map 2).png");
 	m_WaterRenderPass.AddTextureLayer("TerrainTextures/HeightMap - Island.png");
 
-	m_WaterRenderPass.SetFillMode(EFillMode::WIREFRAME);
+	//m_WaterRenderPass.SetFillMode(EFillMode::WIREFRAME);
 
 	// Create shaders.
 	m_WaterRenderPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("WaterVS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));

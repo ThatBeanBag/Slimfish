@@ -57,16 +57,16 @@ namespace Slim {
 		D3D11_SUBRESOURCE_DATA initData;
 		initData.pSysMem = pSource;
 
-		if (FAILED(pDevice->CreateBuffer(&m_desc, &initData, &m_pBuffer))) {
-			//throw CRenderingError();
-			// TODO: throw error.
+		HRESULT hResult = pDevice->CreateBuffer(&m_desc, &initData, m_pBuffer.GetAddressOf());
+		if(FAILED(hResult)) {
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create gpu buffer with error:" << GetErrorMessage(hResult);
 			return;
 		}
 	}
 
 	CD3D11GpuBuffer::~CD3D11GpuBuffer()
 	{
-		SLIM_SAFE_RELEASE(m_pBuffer);
+
 	}
 
 	void* CD3D11GpuBuffer::VLock(size_t offset, size_t size, EGpuBufferLockType lockType)
@@ -75,7 +75,7 @@ namespace Slim {
 
 		D3D11_MAPPED_SUBRESOURCE mappedData;
 
-		HRESULT hResult = m_pD3DImmediateContext->Map(m_pBuffer, 0, map, 0, &mappedData);
+		HRESULT hResult = m_pD3DImmediateContext->Map(m_pBuffer.Get(), 0, map, 0, &mappedData);
 		if (FAILED(hResult)) {
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to lock buffer with error " << GetErrorMessage(hResult);
 			return nullptr;
@@ -86,12 +86,12 @@ namespace Slim {
 
 	void CD3D11GpuBuffer::VUnlock()
 	{
-		m_pD3DImmediateContext->Unmap(m_pBuffer, 0);
+		m_pD3DImmediateContext->Unmap(m_pBuffer.Get(), 0);
 	}
 
 	ID3D11Buffer* CD3D11GpuBuffer::GetD3DBuffer()
 	{
-		return m_pBuffer;
+		return m_pBuffer.Get();
 	}
 
 }

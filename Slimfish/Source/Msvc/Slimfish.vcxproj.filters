@@ -169,6 +169,7 @@
     <ClCompile Include="..\Utilities\SlimPoint.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\Graphics\SlimTechnique.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -345,6 +346,9 @@
     </ClInclude>
     <ClInclude Include="..\Utilities\SlimPoint.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimTechnique.h">
+      <Filter>Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

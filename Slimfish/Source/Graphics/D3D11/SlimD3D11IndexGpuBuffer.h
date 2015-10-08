@@ -90,8 +90,8 @@ private:
 public:
 protected:
 private:
-	// This class just takes the name vertex buffer; the actual implementation is in CD3D11GpuBuffer.
-	CD3D11GpuBuffer* m_pImpl;	// To avoid multiple inheritance and the dreaded diamond of death, use PIMPL (pointer to implementation).
+	// This class just takes the name index buffer; the actual implementation is in CD3D11GpuBuffer.
+	std::unique_ptr<CD3D11GpuBuffer> m_pImpl;	// To avoid multiple inheritance and the dreaded diamond of death, use PIMPL (pointer to implementation).
 };
 
 }

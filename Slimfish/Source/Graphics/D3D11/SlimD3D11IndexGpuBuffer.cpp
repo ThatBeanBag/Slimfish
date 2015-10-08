@@ -35,7 +35,7 @@ namespace Slim {
 		bool isInSystemMemory)
 		:AIndexGpuBuffer(numIndices, type, usage, isInSystemMemory)
 	{
-		m_pImpl = new CD3D11GpuBuffer(
+		m_pImpl = std::make_unique<CD3D11GpuBuffer>(
 			pD3DDevice,
 			pImmediateContext,
 			CD3D11GpuBuffer::BUFFER_TYPE_INDEX,
@@ -47,7 +47,7 @@ namespace Slim {
 
 	CD3D11IndexGpuBuffer::~CD3D11IndexGpuBuffer()
 	{
-		SLIM_SAFE_DELETE(m_pImpl);
+
 	}
 
 	ID3D11Buffer* CD3D11IndexGpuBuffer::GetD3DBuffer()

@@ -77,7 +77,7 @@ namespace Slim {
 		ID3D11Device* m_pD3DDevice;	// Pointer to the device, owned by the renderer.
 		ID3D11DeviceContext* m_pD3DImmediateContext;	// Pointer to the immediate context, owned by the renderer.
 
-		ID3D11Buffer* m_pBuffer;	// The buffer itself.
+		ComPtr<ID3D11Buffer> m_pBuffer;	// The buffer itself.
 		D3D11_BUFFER_DESC m_desc;	// Description of the buffer.
 	};
 

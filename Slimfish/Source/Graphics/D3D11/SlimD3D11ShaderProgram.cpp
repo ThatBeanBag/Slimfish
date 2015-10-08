@@ -40,21 +40,21 @@ namespace Slim {
 
 	CD3D11ShaderProgram::~CD3D11ShaderProgram()
 	{
-		SLIM_SAFE_RELEASE(m_pVertexShader);
-		SLIM_SAFE_RELEASE(m_pPixelShader);
-		SLIM_SAFE_RELEASE(m_pGeometryShader);
-		SLIM_SAFE_RELEASE(m_pShaderReflection);
+		//SLIM_SAFE_RELEASE(m_pVertexShader);
+		//SLIM_SAFE_RELEASE(m_pPixelShader);
+		//SLIM_SAFE_RELEASE(m_pGeometryShader);
+		//SLIM_SAFE_RELEASE(m_pShaderReflection);
 
 		// Release constant buffers.
 		m_NameToConstantBuffer.clear();
 
-		for (size_t i = 0; i < m_ConstantBuffers.size(); ++i) {
-			SLIM_SAFE_RELEASE(m_ConstantBuffers[i]);
-		}
-
-		for (auto iter = m_BoundVertexDeclarations.begin(); iter != m_BoundVertexDeclarations.end(); ++iter) {
-			SLIM_SAFE_RELEASE(iter->second);
-		}
+		//for (size_t i = 0; i < m_ConstantBuffers.size(); ++i) {
+		//	SLIM_SAFE_RELEASE(m_ConstantBuffers[i]);
+		//}
+		//
+		//for (auto iter = m_BoundVertexDeclarations.begin(); iter != m_BoundVertexDeclarations.end(); ++iter) {
+		//	SLIM_SAFE_RELEASE(iter->second);
+		//}
 	}
 
 	bool CD3D11ShaderProgram::VLoad()
@@ -186,17 +186,17 @@ namespace Slim {
 
 	ID3D11VertexShader* CD3D11ShaderProgram::GetD3DVertexShader()
 	{
-		return m_pVertexShader;
+		return m_pVertexShader.Get();
 	}
 
 	ID3D11PixelShader* CD3D11ShaderProgram::GetD3DPixelShader()
 	{
-		return m_pPixelShader;
+		return m_pPixelShader.Get();
 	}
 
 	ID3D11GeometryShader* CD3D11ShaderProgram::GetD3DGeometryShader()
 	{
-		return m_pGeometryShader;
+		return m_pGeometryShader.Get();
 	}
 
 	const CD3D11ShaderProgram::TConstantBufferList& CD3D11ShaderProgram::GetD3DConstantBuffers()
@@ -213,7 +213,7 @@ namespace Slim {
 		TVertexDeclToInputLayout::iterator findIter = m_BoundVertexDeclarations.find(pVertexDeclaration);
 		if (findIter != m_BoundVertexDeclarations.end()) {
 			// Do we already have an input layout for this vertex declaration?
-			pLayout = findIter->second;
+			pLayout = findIter->second.Get();
 		}
 		else {
 			pLayout = CreateD3DInputLayout(pVertexDeclaration);
@@ -268,7 +268,7 @@ namespace Slim {
 		hResult = D3DReflect(reinterpret_cast<void*>(&m_ByteCode[0]), 
 							 m_ByteCode.size(),
 							 IID_ID3D11ShaderReflection, 
-							 reinterpret_cast<void**>(&m_pShaderReflection));
+							 reinterpret_cast<void**>(m_pShaderReflection.GetAddressOf()));
 
 		if (SUCCEEDED(hResult)) {
 			hResult = m_pShaderReflection->GetDesc(&m_ShaderDesc);
@@ -310,10 +310,9 @@ namespace Slim {
 	{
 		assert(!m_ByteCode.empty());
 
-		HRESULT hResult = m_pD3DDevice->CreateVertexShader(&m_ByteCode[0], m_ByteCode.size(), nullptr, &m_pVertexShader);
+		HRESULT hResult = m_pD3DDevice->CreateVertexShader(&m_ByteCode[0], m_ByteCode.size(), nullptr, m_pVertexShader.GetAddressOf());
 		if (FAILED(hResult)) {
-			// TODO: Display an error.
-			SLIM_SAFE_RELEASE(m_pVertexShader);
+			//SLIM_SAFE_RELEASE(m_pVertexShader);
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create vertex shader for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 		else {
@@ -325,10 +324,9 @@ namespace Slim {
 	{
 		assert(!m_ByteCode.empty());
 
-		HRESULT hResult = m_pD3DDevice->CreatePixelShader(&m_ByteCode[0], m_ByteCode.size(), nullptr, &m_pPixelShader);
+		HRESULT hResult = m_pD3DDevice->CreatePixelShader(&m_ByteCode[0], m_ByteCode.size(), nullptr, m_pPixelShader.GetAddressOf());
 		if (FAILED(hResult)) {
-			// TODO: Display an error.
-			SLIM_SAFE_RELEASE(m_pPixelShader);
+			//SLIM_SAFE_RELEASE(m_pPixelShader);
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create pixel shader for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 		else {
@@ -385,18 +383,18 @@ namespace Slim {
 				1,								// Number of stream strides.
 				0,								// Rasterized stream.
 				nullptr,						// Class linkage.
-				&m_pGeometryShader);			// Shader.
+				m_pGeometryShader.GetAddressOf());			// Shader.
 		}
 		else {
 			hResult = m_pD3DDevice->CreateGeometryShader(
 				&m_ByteCode[0],
 				m_ByteCode.size(),
 				nullptr,
-				&m_pGeometryShader);
+				m_pGeometryShader.GetAddressOf());
 		}
 
 		if (FAILED(hResult)) {
-			SLIM_SAFE_RELEASE(m_pGeometryShader);
+			//SLIM_SAFE_RELEASE(m_pGeometryShader);
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create geometry shader for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 		else {

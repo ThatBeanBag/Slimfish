@@ -24,23 +24,42 @@
 
 namespace Slim {
 
-/************************************************************************/
-/* CMaterial
-/* 
-/* Represents the graphical material of an object in the scene. 
-/************************************************************************/
+class CTechnique;
+
+/** Class representing the graphical material of an object in the scene. 
+	@remarks
+	
+*/
 class CMaterial {
-	typedef std::vector<std::unique_ptr<CRenderPass>> TTechnique;
-	typedef std::vector<TTechnique> TTechniques;
+	using TTechniques = std::vector<std::unique_ptr<CTechnique>>;
 
 	// Member Functions
 public:
+	/** Default constructor.
+	 	@author Hayden Asplet
+	*/
 	CMaterial();
+
+	/** Destructor.
+	 	@author Hayden Asplet
+	*/
 	~CMaterial();
 
-	TTechnique* CreateTechnique();
-	TTechnique* GetBestTechnique();
-	TTechnique* GetTechnique(size_t lod);
+	/** Create a technique and adds it to the material at the back.
+	 	@author Hayden Asplet
+	 	@return Pointer to the new technique for further modification.
+	*/
+	CTechnique* CreateTechnique();
+
+	/** Add a technique to the list of the techniques. 
+	 	@author Hayden Asplet
+	 	@param const CTechnique & technique
+	 	@return
+	*/
+	CTechnique* AddTechnique(const CTechnique& technique);
+
+	CTechnique* GetBestTechnique();
+	CTechnique* GetTechnique(size_t lod);
 	size_t GetNumTechniques() const { return m_Techniques.size(); }
 
 

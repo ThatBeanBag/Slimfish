@@ -356,7 +356,7 @@ void CD3D11Renderer::VSetShaderProgram(shared_ptr<AShaderProgram> pShader)
 			// Set constant buffers.
 			const CD3D11ShaderProgram::TConstantBufferList& buffers = m_pBoundVertexShader->GetD3DConstantBuffers();
 			if (!buffers.empty()) {
-				m_pImmediateContext->VSSetConstantBuffers(0, buffers.size(), &buffers[0]);
+				m_pImmediateContext->VSSetConstantBuffers(0, buffers.size(), buffers[0].GetAddressOf());
 			}
 			else {
 				m_pImmediateContext->VSSetConstantBuffers(0, 0, NULL);
@@ -377,7 +377,7 @@ void CD3D11Renderer::VSetShaderProgram(shared_ptr<AShaderProgram> pShader)
 			const CD3D11ShaderProgram::TConstantBufferList& buffers = m_pBoundPixelShader->GetD3DConstantBuffers();
 
 			if (!buffers.empty()) {
-				m_pImmediateContext->PSSetConstantBuffers(0, buffers.size(), &buffers[0]);
+				m_pImmediateContext->PSSetConstantBuffers(0, buffers.size(), buffers[0].GetAddressOf());
 			}
 			else {
 				m_pImmediateContext->PSSetConstantBuffers(0, 0, NULL);
@@ -397,7 +397,7 @@ void CD3D11Renderer::VSetShaderProgram(shared_ptr<AShaderProgram> pShader)
 			// Set the constant buffers.
 			const CD3D11ShaderProgram::TConstantBufferList& buffers = m_pBoundGeometryShader->GetD3DConstantBuffers();
 			if (!buffers.empty()) {
-				m_pImmediateContext->GSSetConstantBuffers(0, buffers.size(), &buffers[0]);
+				m_pImmediateContext->GSSetConstantBuffers(0, buffers.size(), buffers[0].GetAddressOf());
 			}
 			else {
 				m_pImmediateContext->GSSetConstantBuffers(0, 0, NULL);
@@ -521,7 +521,6 @@ void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimi
 		}
 
 		CreateSamplerState(i);
-
 		samplerStates.push_back(m_SamplerStates[i].Get());
 
 		numLayers++;
@@ -537,7 +536,6 @@ void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimi
 		m_pImmediateContext->PSSetShaderResources(0, numLayers, &m_Textures[0]);
 	}
 
-	bool isUsingIndices = pIndexBuffer != nullptr;
 
 	VSetVertexDeclaration(vertexDeclaration);
 	m_pImmediateContext->IASetPrimitiveTopology(D3D11Conversions::GetPrimitiveType(primitiveType));
@@ -545,6 +543,7 @@ void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimi
 	// Set buffers.
 	VSetVertexBuffer(pVertexBuffer);
 
+	bool isUsingIndices = pIndexBuffer != nullptr;
 	if (isUsingIndices) {
 		VSetIndexBuffer(pIndexBuffer);
 

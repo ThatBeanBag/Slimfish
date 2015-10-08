@@ -44,9 +44,9 @@ class CD3D11ShaderProgram : public AShaderProgram {
 	};
 
 	typedef std::map<std::string, TConstantBuffer> TConstantBufferMap;
-	typedef std::map<const CVertexDeclaration*, ID3D11InputLayout*> TVertexDeclToInputLayout;
+	typedef std::map<const CVertexDeclaration*, ComPtr<ID3D11InputLayout> > TVertexDeclToInputLayout;
 public:
-	typedef std::vector<ID3D11Buffer*> TConstantBufferList;
+	typedef std::vector<ComPtr<ID3D11Buffer> > TConstantBufferList;
 	typedef std::vector<unsigned char> TByteCode;
 
 	// Member Functions
@@ -90,9 +90,9 @@ private:
 	TByteCode m_ByteCode;
 
 	// Shaders
-	ID3D11VertexShader* m_pVertexShader;
-	ID3D11PixelShader* m_pPixelShader;
-	ID3D11GeometryShader* m_pGeometryShader;
+	ComPtr<ID3D11VertexShader> m_pVertexShader;
+	ComPtr<ID3D11PixelShader> m_pPixelShader;
+	ComPtr<ID3D11GeometryShader> m_pGeometryShader;
 	
 	// Vertex declarations
 	TVertexDeclToInputLayout m_BoundVertexDeclarations;
@@ -102,7 +102,7 @@ private:
 	TConstantBufferList m_ConstantBuffers;
 
 	// Shader reflection
-	ID3D11ShaderReflection* m_pShaderReflection;
+	ComPtr<ID3D11ShaderReflection> m_pShaderReflection;
 	D3D11_SHADER_DESC m_ShaderDesc;
 
 	shared_ptr<CShaderParams> m_pParams;

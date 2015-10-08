@@ -45,6 +45,7 @@
     <ClCompile Include="..\Graphics\SlimSceneNode.cpp" />
     <ClCompile Include="..\Graphics\SlimShaderParams.cpp" />
     <ClCompile Include="..\Graphics\SlimShaderProgram.cpp" />
+    <ClCompile Include="..\Graphics\SlimTechnique.cpp" />
     <ClCompile Include="..\Graphics\SlimTexture.cpp" />
     <ClCompile Include="..\Graphics\SlimVertexDeclaration.cpp" />
     <ClCompile Include="..\Graphics\SlimRenderer.cpp" />
@@ -101,6 +102,7 @@
     <ClInclude Include="..\Graphics\SlimRenderPass.h" />
     <ClInclude Include="..\Graphics\SlimSceneNode.h" />
     <ClInclude Include="..\Graphics\SlimShaderParams.h" />
+    <ClInclude Include="..\Graphics\SlimTechnique.h" />
     <ClInclude Include="..\Graphics\SlimVertexDeclaration.h" />
     <ClInclude Include="..\Graphics\SlimShaderProgram.h" />
     <ClInclude Include="..\Graphics\SlimTypes.h" />
