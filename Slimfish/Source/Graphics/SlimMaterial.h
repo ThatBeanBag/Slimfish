@@ -53,18 +53,33 @@ public:
 
 	/** Add a technique to the list of the techniques. 
 	 	@author Hayden Asplet
-	 	@param const CTechnique & technique
-	 	@return
+	 	@return Pointer to the new technique for further modification.
 	*/
 	CTechnique* AddTechnique(const CTechnique& technique);
 
+	/** Get the best possible technique for the current level of detail.
+	 	@author Hayden Asplet
+	*/
 	CTechnique* GetBestTechnique();
+	/** 
+	 	@author Hayden Asplet
+	 	@param size_t lod
+	 	@return
+	*/
 	CTechnique* GetTechnique(size_t lod);
+	/** 
+	 	@author Hayden Asplet
+	 	@return
+	*/
 	size_t GetNumTechniques() const { return m_Techniques.size(); }
-
 
 	void RemoveTechnique(size_t lod);
 	void ClearTechniques();
+
+	/** Set the current level of detail. @author Hayden Asplet */
+	void SetLevelOfDetail(size_t lod) { m_CurrentLOD = lod; }
+	/** Get the current level of detail. @author Hayden Asplet */
+	const size_t SetLevelOfDetail() const { return m_CurrentLOD; }
 protected:
 private:
 	// Member Variables
@@ -73,11 +88,12 @@ protected:
 private:
 	TTechniques m_Techniques;
 
-	CColourValue m_diffuse;
-	CColourValue m_ambient;
-	CColourValue m_specular;
-	CColourValue m_emissive;
-	float m_power;
+	size_t m_CurrentLOD;
+	CColourValue m_Diffuse;
+	CColourValue m_Ambient;
+	CColourValue m_Specular;
+	CColourValue m_Emissive;
+	float m_Power;
 
 };
 

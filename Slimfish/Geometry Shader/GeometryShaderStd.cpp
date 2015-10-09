@@ -6,22 +6,18 @@
 //
 // (c) 2005 - 2015 Media Design School
 //
-// File Name	: SlimTestProjectStd.h
-// Description	: CSlimTestProjectStd declaration file.
+// File Name	: GeometryShaderStd.cpp
+// Description	: CGeometryShaderStd implementation file.
 // Author		: Hayden Asplet.
 // Mail			: hayden.asplet@mediadesignschool.com
 //
 
-#pragma once
-
-#ifndef __SLIMTESTPROJECTSTD_H__
-#define __SLIMTESTPROJECTSTD_H__
-
 // Library Includes
 
+// This Include
+#include "GeometryShaderStd.h"	// Creates the PCH.
+
 // Local Includes
-#include <Msvc/SlimStd.h>
 
-using namespace Slim;
 
-#endif // __SLIMTESTPROJECTSTD_H__
+

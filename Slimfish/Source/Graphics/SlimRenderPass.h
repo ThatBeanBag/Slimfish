@@ -47,6 +47,9 @@ public:
 	*/
 	CRenderPass();
 
+	CRenderPass(const CRenderPass& other);
+	CRenderPass& operator=(const CRenderPass& other);
+
 	/** Destructor.
 	 	@author Hayden Asplet
 	*/
