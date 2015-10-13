@@ -77,14 +77,13 @@ namespace Slim {
 			}
 		}
 
-		HRESULT hResult = m_pD3DDevice->CreateRenderTargetView(pD3DTexture->GetD3DResource(), &desc, &m_pRenderTargetView);
+		HRESULT hResult = m_pD3DDevice->CreateRenderTargetView(pD3DTexture->GetD3DResource(), &desc, m_pRenderTargetView.GetAddressOf());
 		if (FAILED(hResult)) {
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create render target view for " << pTexture->GetName() << " with error: " << GetErrorMessage(hResult);
 			return;
 		}
 
-		// TODO: Create depth stencil view.
-		ID3D10Texture2D* pDepthStencilBuffer = nullptr;
+		ComPtr<ID3D10Texture2D> pDepthStencilBuffer = nullptr;
 		D3D10_TEXTURE2D_DESC descDepth;
 
 		descDepth.Width = pD3DTexture->GetWidth();
@@ -99,7 +98,7 @@ namespace Slim {
 		descDepth.CPUAccessFlags = 0;
 		descDepth.MiscFlags = 0;
 
-		hResult = m_pD3DDevice->CreateTexture2D(&descDepth, nullptr, &pDepthStencilBuffer);
+		hResult = m_pD3DDevice->CreateTexture2D(&descDepth, nullptr, pDepthStencilBuffer.GetAddressOf());
 		if (FAILED(hResult)) {
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create depth buffer for " << pTexture->GetName() << " with error: " << GetErrorMessage(hResult);
 		}
@@ -114,28 +113,25 @@ namespace Slim {
 			descDepthView.ViewDimension = D3D10_DSV_DIMENSION_TEXTURE2D;
 		}
 
-		hResult = m_pD3DDevice->CreateDepthStencilView(pDepthStencilBuffer, &descDepthView, &m_pDepthStencilView);
+		hResult = m_pD3DDevice->CreateDepthStencilView(pDepthStencilBuffer.Get(), &descDepthView, m_pDepthStencilView.GetAddressOf());
 		if (FAILED(hResult)) {
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create depth stencil view for " << pTexture->GetName() << " with error: " << GetErrorMessage(hResult);
 		}
-
-		SLIM_SAFE_RELEASE(pDepthStencilBuffer);
 	}
 
 	CD3D10RenderTexture::~CD3D10RenderTexture()
 	{
-		SLIM_SAFE_RELEASE(m_pRenderTargetView);
-		SLIM_SAFE_RELEASE(m_pDepthStencilView);
+
 	}
 
 	ID3D10DepthStencilView* CD3D10RenderTexture::GetDepthStencilView()
 	{
-		return m_pDepthStencilView;
+		return m_pDepthStencilView.Get();
 	}
 
 	ID3D10RenderTargetView* CD3D10RenderTexture::GetRenderTargetView()
 	{
-		return m_pRenderTargetView;
+		return m_pRenderTargetView.Get();
 	}
 
 }

@@ -21,6 +21,7 @@
 #include "SlimTechnique.h"
 
 // Local Includes
+#include "SlimRenderPass.h"
 
 namespace Slim {
 

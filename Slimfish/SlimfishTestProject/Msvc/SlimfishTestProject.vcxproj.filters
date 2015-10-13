@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{cd99cce7-e762-4240-a22a-eecc9b53b3dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\TestProjApp.h">
@@ -37,18 +40,40 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="QuadTexPS.hlsl" />
-    <FxCompile Include="QuadTexVS.hlsl" />
-    <FxCompile Include="SkyBoxVS.hlsl" />
-    <FxCompile Include="SkyBoxPS.hlsl" />
-    <FxCompile Include="WaterVS.hlsl" />
-    <FxCompile Include="WaterPS.hlsl" />
-    <FxCompile Include="TerrainPS.hlsl" />
-    <FxCompile Include="TerrainVS.hlsl" />
-    <FxCompile Include="ShadowMappingPS.hlsl" />
-    <FxCompile Include="ShadowMappingVS.hlsl" />
+    <FxCompile Include="QuadTexPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="QuadTexVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="ShadowMappingPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="ShadowMappingVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyBoxPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="SkyBoxVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="TerrainPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="TerrainVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="WaterPS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="WaterVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="LightingHelper.hlsli" />
+    <None Include="LightingHelper.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

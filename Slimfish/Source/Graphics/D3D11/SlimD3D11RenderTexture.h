@@ -42,8 +42,8 @@ protected:
 private:
 	ID3D11Device* m_pD3DDevice;
 
-	ID3D11RenderTargetView* m_pRenderTargetView;
-	ID3D11DepthStencilView* m_pDepthStencilView;
+	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
+	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;
 };
 
 }

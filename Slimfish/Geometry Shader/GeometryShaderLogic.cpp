@@ -54,26 +54,34 @@ bool CGeometryShaderLogic::Initialise()
 	m_StarRenderPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("StarVS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
 	m_StarRenderPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("StarPS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
 	m_StarRenderPass.SetGeometryShader(g_pApp->GetRenderer()->VCreateShaderProgram("StarGS.hlsl", EShaderProgramType::GEOMETRY, "main", "gs_4_0"));
+	m_StarRenderPass.SetCullingMode(ECullingMode::NONE);
+	//m_StarRenderPass.SetFillMode(EFillMode::WIREFRAME);
 
 	m_pGSParams = m_StarRenderPass.GetGeometryShader()->VCreateShaderParams("constantBuffer");
 
 	// Setup camera.
-	m_Camera.SetPosition(CVector3(0.0f, 0.0f, 00.0f));
+	m_Camera.SetPosition(CVector3(0.0f, 0.0f, 10.0f));
 	m_Camera.SetProjectionMode(EProjectionMode::PERSPECTIVE);
 	m_Camera.SetNearClipDistance(0.1f);
-	m_Camera.SetFarClipDistance(1000.0f);
-	m_Camera.SetFieldOfView(DegreesToRadians(90.0f));
+	m_Camera.SetFarClipDistance(100.0f);
+	m_Camera.SetFieldOfView(DegreesToRadians(60.0f));
+	m_Camera.SetOrthographicSize(20.0f);
+
+	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
 
 	return true;
 }
 
 void CGeometryShaderLogic::Update(float deltaTime)
 {
-	
+	CPoint screenSize = g_pApp->GetRenderer()->GetWindowSize();
+	m_Camera.SetAspectRatio(static_cast<float>(screenSize.GetX()) / static_cast<float>(screenSize.GetY()));
 }
 
 void CGeometryShaderLogic::Render()
 {
+	m_Camera.UpdateViewTransform();
+
 	m_pGSParams->SetConstant("gWVP", m_Camera.GetProjectionMatrix() * m_Camera.GetViewMatrix());
 	m_StarRenderPass.GetGeometryShader()->VUpdateShaderParams("constantBuffer", m_pGSParams);
 
@@ -94,12 +102,14 @@ void CGeometryShaderLogic::HandleInput(const CInput& input, float deltaTime)
 		m_Camera.SetRotation(CQuaternion(m_CameraYaw, m_CameraPitch, 0.0f));
 	}
 
+	m_lastMousePosition = mousePosition;
+
 	/*if (input.GetKeyRelease(EKeyCode::F1)) {
 	g_pApp->GetRenderer()->ToggleWindowed(); // If only :(
 	}*/
 
 	// Handle translation of camera.
-	static float speed = 25.0f;
+	static float speed = 5.0f;
 	if (input.IsKeyDown(EKeyCode::LEFT_SHIFT)) {
 		speed = 50.0f;
 	}

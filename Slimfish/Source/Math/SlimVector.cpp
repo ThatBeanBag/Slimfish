@@ -48,6 +48,7 @@ CVector3::~CVector3()
 }
 
 
+
 CVector3& CVector3::operator+=(const CVector3& other)
 {
 	m_x += other.m_x;
@@ -73,6 +74,11 @@ CVector3& CVector3::operator*=(float scalar)
 	m_z *= scalar;
 
 	return *this;
+}
+
+CVector3& CVector3::operator/=(float scalar)
+{
+	return *this *= 1 / scalar;
 }
 
 CVector3& CVector3::operator+=(float scalar)
@@ -116,6 +122,19 @@ const float CVector3::DotProduct(const CVector3& vec3A, const CVector3& vec3B)
 	return (vec3A.GetX() * vec3B.GetX() + 
 			vec3A.GetY() * vec3B.GetY() +
 			vec3A.GetZ() * vec3B.GetZ());
+}
+
+const CVector3 operator/(const CVector3& vec3, float scalar)
+{
+	CVector3 division = vec3;
+	division /= scalar;
+
+	return division;
+}
+
+const CVector3 operator/(float scalar, const CVector3& vec3)
+{
+	return vec3 / scalar;
 }
 
 const CVector3 operator+(const CVector3& vec3A, const CVector3& vec3B)

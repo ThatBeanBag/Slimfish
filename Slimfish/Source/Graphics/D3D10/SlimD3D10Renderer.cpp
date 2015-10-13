@@ -349,7 +349,7 @@ void CD3D10Renderer::VSetShaderProgram(shared_ptr<AShaderProgram> pShader)
 			// Set constant buffers.
 			const CD3D10ShaderProgram::TConstantBufferList& buffers = m_pBoundVertexShader->GetD3DConstantBuffers();
 			if (!buffers.empty()) {
-				m_pD3DDevice->VSSetConstantBuffers(0, buffers.size(), &buffers[0]);
+				m_pD3DDevice->VSSetConstantBuffers(0, buffers.size(), buffers[0].GetAddressOf());
 			}
 			else {
 				m_pD3DDevice->VSSetConstantBuffers(0, 0, NULL);
@@ -370,7 +370,7 @@ void CD3D10Renderer::VSetShaderProgram(shared_ptr<AShaderProgram> pShader)
 			const CD3D10ShaderProgram::TConstantBufferList& buffers = m_pBoundPixelShader->GetD3DConstantBuffers();
 
 			if (!buffers.empty()) {
-				m_pD3DDevice->PSSetConstantBuffers(0, buffers.size(), &buffers[0]);
+				m_pD3DDevice->PSSetConstantBuffers(0, buffers.size(), buffers[0].GetAddressOf());
 			}
 			else {
 				m_pD3DDevice->PSSetConstantBuffers(0, 0, NULL);
@@ -390,7 +390,7 @@ void CD3D10Renderer::VSetShaderProgram(shared_ptr<AShaderProgram> pShader)
 			// Set the constant buffers.
 			const CD3D10ShaderProgram::TConstantBufferList& buffers = m_pBoundGeometryShader->GetD3DConstantBuffers();
 			if (!buffers.empty()) {
-				m_pD3DDevice->GSSetConstantBuffers(0, buffers.size(), &buffers[0]);
+				m_pD3DDevice->GSSetConstantBuffers(0, buffers.size(), buffers[0].GetAddressOf());
 			}
 			else {
 				m_pD3DDevice->GSSetConstantBuffers(0, 0, NULL);

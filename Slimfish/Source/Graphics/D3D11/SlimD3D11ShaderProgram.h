@@ -76,7 +76,7 @@ private:
 
 	void CreateConstantBuffer(ID3D11ShaderReflectionConstantBuffer* pReflectionConstantBuffer);
 
-	ID3D11InputLayout* CreateD3DInputLayout(const CVertexDeclaration* pVertexDeclaration);
+	ComPtr<ID3D11InputLayout> CreateD3DInputLayout(const CVertexDeclaration* pVertexDeclaration);
 
 	void CreateShaderParam(const std::string& prefix, const std::string& name, size_t index, size_t offset, ID3D11ShaderReflectionType* pVariableReflectionType, TConstantBuffer& constantBuffer);
 

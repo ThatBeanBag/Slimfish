@@ -62,6 +62,11 @@ public:
 	*/
 	CVector3& operator*=(float scalar);
 
+	/** Divide the vector by a scalar and assign the vector to the result.
+		@author Hayden Asplet
+	*/
+	CVector3& operator/=(float scalar);
+
 	/** Add a scalar to a vector and assign the vector to the result.
 		@author Hayden Asplet
 	*/
@@ -181,6 +186,10 @@ const CVector3 operator-(const CVector3& vec3A, const CVector3& vec3B);
 const CVector3 operator*(const CVector3& vec3, float scalar);
 /** Multiply a vector by a scalar. @author Hayden Asplet */
 const CVector3 operator*(float scalar, const CVector3& vec3);
+/** Divide a vector by a scalar. @author Hayden Asplet */
+const CVector3 operator/(const CVector3& vec3, float scalar);
+/** Divide a vector by a scalar. @author Hayden Asplet */
+const CVector3 operator/(float scalar, const CVector3& vec3);
 /** Add a scalar to a vector. @author Hayden Asplet */
 const CVector3 operator+(const CVector3& vec3, float scalar);
 /** Subtract a scalar from a vector. @author Hayden Asplet */

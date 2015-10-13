@@ -25,7 +25,8 @@
 
 namespace Slim {
 
-	CD3D11RenderTexture::CD3D11RenderTexture(ID3D11Device* pDevice, shared_ptr<ATexture> pTexture) :ARenderTexture(pTexture),
+	CD3D11RenderTexture::CD3D11RenderTexture(ID3D11Device* pDevice, shared_ptr<ATexture> pTexture) 
+		:ARenderTexture(pTexture),
 		m_pD3DDevice(pDevice),
 		m_pDepthStencilView(nullptr),
 		m_pRenderTargetView(nullptr)
@@ -77,14 +78,13 @@ namespace Slim {
 			}
 		}
 
-		HRESULT hResult = m_pD3DDevice->CreateRenderTargetView(pD3DTexture->GetD3DResource(), &desc, &m_pRenderTargetView);
+		HRESULT hResult = m_pD3DDevice->CreateRenderTargetView(pD3DTexture->GetD3DResource(), &desc, m_pRenderTargetView.GetAddressOf());
 		if (FAILED(hResult)) {
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create render target view for " << pTexture->GetName() << " with error: " << GetErrorMessage(hResult);
 			return;
 		}
 
-		// TODO: Create depth stencil view.
-		ID3D11Texture2D* pDepthStencilBuffer = nullptr;
+		ComPtr<ID3D11Texture2D> pDepthStencilBuffer = nullptr;
 		D3D11_TEXTURE2D_DESC descDepth;
 
 		descDepth.Width = pD3DTexture->GetWidth();
@@ -99,9 +99,8 @@ namespace Slim {
 		descDepth.CPUAccessFlags = 0;
 		descDepth.MiscFlags = 0;
 
-		hResult = m_pD3DDevice->CreateTexture2D(&descDepth, nullptr, &pDepthStencilBuffer);
+		hResult = m_pD3DDevice->CreateTexture2D(&descDepth, nullptr, pDepthStencilBuffer.GetAddressOf());
 		if (FAILED(hResult)) {
-			SLIM_SAFE_RELEASE(pDepthStencilBuffer);
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create depth buffer for " << pTexture->GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 
@@ -115,32 +114,25 @@ namespace Slim {
 			descDepthView.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 		}
 
-		hResult = m_pD3DDevice->CreateDepthStencilView(pDepthStencilBuffer, &descDepthView, &m_pDepthStencilView);
+		hResult = m_pD3DDevice->CreateDepthStencilView(pDepthStencilBuffer.Get(), &descDepthView, m_pDepthStencilView.GetAddressOf());
 		if (FAILED(hResult)) {
-			SLIM_SAFE_RELEASE(pDepthStencilBuffer);
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create depth stencil view for " << pTexture->GetName() << " with error: " << GetErrorMessage(hResult);
 		}
-
-		SLIM_SAFE_RELEASE(pDepthStencilBuffer);
 	}
 
 	CD3D11RenderTexture::~CD3D11RenderTexture()
 	{
-		shared_ptr<CD3D11Texture> pD3DTexture = static_pointer_cast<CD3D11Texture>(GetTexture());
-		//pD3DTexture->GetD3DResource()->Release();
 
-		SLIM_SAFE_RELEASE(m_pRenderTargetView);
-		SLIM_SAFE_RELEASE(m_pDepthStencilView);
 	}
 
 	ID3D11DepthStencilView* CD3D11RenderTexture::GetDepthStencilView()
 	{
-		return m_pDepthStencilView;
+		return m_pDepthStencilView.Get();
 	}
 
 	ID3D11RenderTargetView* CD3D11RenderTexture::GetRenderTargetView()
 	{
-		return m_pRenderTargetView;
+		return m_pRenderTargetView.Get();
 	}
 
 }

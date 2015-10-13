@@ -39,21 +39,8 @@ namespace Slim {
 
 	CD3D10ShaderProgram::~CD3D10ShaderProgram()
 	{
-		SLIM_SAFE_RELEASE(m_pVertexShader);
-		SLIM_SAFE_RELEASE(m_pPixelShader);
-		SLIM_SAFE_RELEASE(m_pGeometryShader);
-		SLIM_SAFE_RELEASE(m_pShaderReflection);
-
 		// Release constant buffers.
 		m_NameToConstantBuffer.clear();
-
-		for (size_t i = 0; i < m_ConstantBuffers.size(); ++i) {
-			SLIM_SAFE_RELEASE(m_ConstantBuffers[i]);
-		}
-
-		for (auto iter = m_BoundVertexDeclarations.begin(); iter != m_BoundVertexDeclarations.end(); ++iter) {
-			SLIM_SAFE_RELEASE(iter->second);
-		}
 	}
 
 	bool CD3D10ShaderProgram::VLoad()
@@ -144,38 +131,6 @@ namespace Slim {
 		return m_pParams;
 	}
 
-
-	/*void CD3D10ShaderProgram::VBindVertexDeclaration(CVertexDeclaration* pVertexDeclaration)
-	{
-		assert(pVertexDeclaration);
-
-		ID3D10InputLayout* pLayout = nullptr;
-
-		TVertexDeclToInputLayout::iterator findIter = m_BoundVertexDeclarations.find(pVertexDeclaration);
-		if (findIter != m_BoundVertexDeclarations.end()) {
-		// Do we already have an input layout for this vertex declaration?
-			pLayout = findIter->second;
-
-			/ *if (pVertexDeclaration->NeedsRebuilding()) {
-			// Has the vertex declaration changed since the last binding?
-				// Release old layout.
-				SafeRelease(pLayout);
-
-				pLayout = CreateD3DInputLayout(pVertexDeclaration);
-
-				// Insert the new layout into the list of vertex declarations.
-				findIter->second = pLayout;
-			}* /
-		}
-		else {
-			pLayout = CreateD3DInputLayout(pVertexDeclaration);
-
-			if (pLayout) {
-				m_BoundVertexDeclarations[pVertexDeclaration] = pLayout;
-			}
-		}
-	}*/
-
 	const CD3D10ShaderProgram::TByteCode& CD3D10ShaderProgram::GetByteCode() const
 	{
 		assert(m_ByteCode.size() > 0);
@@ -184,17 +139,17 @@ namespace Slim {
 
 	ID3D10VertexShader* CD3D10ShaderProgram::GetD3DVertexShader()
 	{
-		return m_pVertexShader;
+		return m_pVertexShader.Get();
 	}
 
 	ID3D10PixelShader* CD3D10ShaderProgram::GetD3DPixelShader()
 	{
-		return m_pPixelShader;
+		return m_pPixelShader.Get();
 	}
 
 	ID3D10GeometryShader* CD3D10ShaderProgram::GetD3DGeometryShader()
 	{
-		return m_pGeometryShader;
+		return m_pGeometryShader.Get();
 	}
 
 	const CD3D10ShaderProgram::TConstantBufferList& CD3D10ShaderProgram::GetD3DConstantBuffers()
@@ -206,7 +161,7 @@ namespace Slim {
 	{
 		assert(pVertexDeclaration);
 
-		ID3D10InputLayout* pLayout = nullptr;
+		ComPtr<ID3D10InputLayout> pLayout = nullptr;
 
 		TVertexDeclToInputLayout::iterator findIter = m_BoundVertexDeclarations.find(pVertexDeclaration);
 		if (findIter != m_BoundVertexDeclarations.end()) {
@@ -218,12 +173,12 @@ namespace Slim {
 			m_BoundVertexDeclarations[pVertexDeclaration] = pLayout;
 		}
 
-		return pLayout;
+		return pLayout.Get();
 	}
 
 	bool CD3D10ShaderProgram::CompileShader()
 	{
-		ID3D10Blob* pCompilationErrors = nullptr;
+		ComPtr<ID3D10Blob> pCompilationErrors = nullptr;
 		D3D10_SHADER_MACRO* pDefines = nullptr;
 		UINT compileFlags = 0;
 
@@ -233,7 +188,7 @@ namespace Slim {
 #endif
 		//compileFlags |= D3D10_SHADER_PACK_MATRIX_COLUMN_MAJOR;
 
-		ID3D10Blob* pCompiledShader;
+		ComPtr<ID3D10Blob> pCompiledShader;
 
 		HRESULT hResult = D3DX10CompileFromFileA(
 			m_Name.c_str(),			// File name.
@@ -244,30 +199,23 @@ namespace Slim {
 			compileFlags,			// Compilation flags.
 			0,						// Effect file compilation flags (only used for effect file loading).
 			NULL,					// Thread pump. NULL specifies that the function should not return until it's completed.
-			&pCompiledShader,		// Pointer to the compiled shader.
-			&pCompilationErrors,	// Compilation errors.
+			pCompiledShader.GetAddressOf(),		// Pointer to the compiled shader.
+			pCompilationErrors.GetAddressOf(),	// Compilation errors.
 			NULL);					// HRESULT.
 
 		if (FAILED(hResult)) {
-			std::string errorMessage = "Failed to compile shader from file " + m_Name + " Errors:\n" + static_cast<const char*>(pCompilationErrors->GetBufferPointer());
-			SLIM_ERROR() << errorMessage;
-			// TODO: Display errorMessage.
-			SLIM_SAFE_RELEASE(pCompilationErrors);
-			SLIM_SAFE_RELEASE(pCompiledShader);
-
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to compile shader from file " << m_Name << " Errors:\n" << static_cast<const char*>(pCompilationErrors->GetBufferPointer());
 			return false;
 		}
 
 		m_ByteCode.resize(pCompiledShader->GetBufferSize());
 		memcpy(&m_ByteCode[0], pCompiledShader->GetBufferPointer(), m_ByteCode.size());
 
-		SLIM_SAFE_RELEASE(pCompiledShader);
-
 		// Create constant buffers.
 		hResult = D3DReflect(reinterpret_cast<void*>(&m_ByteCode[0]), 
 							 m_ByteCode.size(),
 							 IID_ID3D11ShaderReflection, 
-							 reinterpret_cast<void**>(&m_pShaderReflection));
+							 reinterpret_cast<void**>(m_pShaderReflection.GetAddressOf()));
 
 		if (SUCCEEDED(hResult)) {
 			hResult = m_pShaderReflection->GetDesc(&m_ShaderDesc);
@@ -309,10 +257,8 @@ namespace Slim {
 	{
 		assert(!m_ByteCode.empty());
 
-		HRESULT hResult = m_pD3DDevice->CreateVertexShader(&m_ByteCode[0], m_ByteCode.size(), &m_pVertexShader);
+		HRESULT hResult = m_pD3DDevice->CreateVertexShader(&m_ByteCode[0], m_ByteCode.size(), m_pVertexShader.GetAddressOf());
 		if (FAILED(hResult)) {
-			// TODO: Display an error.
-			SLIM_SAFE_RELEASE(m_pVertexShader);
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create vertex shader for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 		else {
@@ -324,10 +270,8 @@ namespace Slim {
 	{
 		assert(!m_ByteCode.empty());
 
-		HRESULT hResult = m_pD3DDevice->CreatePixelShader(&m_ByteCode[0], m_ByteCode.size(), &m_pPixelShader);
+		HRESULT hResult = m_pD3DDevice->CreatePixelShader(&m_ByteCode[0], m_ByteCode.size(), m_pPixelShader.GetAddressOf());
 		if (FAILED(hResult)) {
-			// TODO: Display an error.
-			SLIM_SAFE_RELEASE(m_pPixelShader);
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create pixel shader for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 		else {
@@ -381,17 +325,16 @@ namespace Slim {
 				&soDeclarations[0],				// Stream output declarations.
 				soDeclarations.size(),			// Number of output entries.
 				streamStride,					// Output stream stride.
-				&m_pGeometryShader);
+				m_pGeometryShader.GetAddressOf());
 		}
 		else {
 			hResult = m_pD3DDevice->CreateGeometryShader(
 				&m_ByteCode[0],
 				m_ByteCode.size(),
-				&m_pGeometryShader);
+				m_pGeometryShader.GetAddressOf());
 		}
 
 		if (FAILED(hResult)) {
-			SLIM_SAFE_RELEASE(m_pGeometryShader);
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create geometry shader for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 		else {
@@ -443,11 +386,10 @@ namespace Slim {
 		bufferDesc.BindFlags = D3D10_BIND_CONSTANT_BUFFER;
 		bufferDesc.CPUAccessFlags = D3D10_CPU_ACCESS_WRITE;
 
-		ID3D10Buffer* pBuffer;	// The actual buffer.
+		ComPtr<ID3D10Buffer> pBuffer;	// The actual buffer.
 
-		hResult = m_pD3DDevice->CreateBuffer(&bufferDesc, nullptr, &pBuffer);
+		hResult = m_pD3DDevice->CreateBuffer(&bufferDesc, nullptr, pBuffer.GetAddressOf());
 		if (FAILED(hResult)) {
-			SLIM_SAFE_RELEASE(pBuffer);
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create constant buffer " << shaderBufferDesc.Name << " for shader " << m_Name
 				<< " with error: " << GetErrorMessage(hResult);
 			return;
@@ -456,14 +398,14 @@ namespace Slim {
 		// m_ConstantBuffers owns the reference, whereas the m_NameToConstantBuffer map justs holds a reference to our ref.
 		// Both m_ConstantBuffers and m_NameToConstantBuffer go out of scope at the same time so adding a ref would be redundant.
 		m_ConstantBuffers.push_back(pBuffer);
-		constantBuffer.m_pBuffer = pBuffer;
+		constantBuffer.m_pBuffer = pBuffer.Get();
 
 		// Insert the buffer in the map so we can find it later.
 		std::string name = shaderBufferDesc.Name;
 		m_NameToConstantBuffer[name] = constantBuffer;
 	}
 
-	ID3D10InputLayout* CD3D10ShaderProgram::CreateD3DInputLayout(const CVertexDeclaration* pVertexDeclaration)
+	ComPtr<ID3D10InputLayout> CD3D10ShaderProgram::CreateD3DInputLayout(const CVertexDeclaration* pVertexDeclaration)
 	{
 		assert(pVertexDeclaration);
 
@@ -484,7 +426,7 @@ namespace Slim {
 			accumulativeOffset += element.GetSize();
 		}
 
-		ID3D10InputLayout* pLayout = nullptr;
+		ComPtr<ID3D10InputLayout> pLayout = nullptr;
 
 		// Create the layout, binding the shader to the vertex declaration.
 		HRESULT hResult = m_pD3DDevice->CreateInputLayout(
@@ -492,7 +434,7 @@ namespace Slim {
 			d3dInputElements.size(),			// Number of elements.
 			&m_ByteCode[0],						// Byte code.
 			m_ByteCode.size(),					// Length of byte code.
-			&pLayout);							// Output input layout.
+			pLayout.GetAddressOf());			// Output input layout.
 
 		if (FAILED(hResult)) {
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create input layout when binding vertex declaration to shader " << m_Name << " with error: " << GetErrorMessage(hResult);
