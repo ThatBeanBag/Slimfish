@@ -24,7 +24,7 @@
 #include "Link.h"
 
 
-CPointMass::CPointMass(CVector3 position)
+CPointMass::CPointMass(const CVector3& position)
 	:m_Position(position)
 {
 
@@ -67,19 +67,19 @@ void CPointMass::SolveConstraints()
 	}
 }
 
-void CPointMass::Attach(const CPointMass& pointMass, float restingDistance, float stiffness, float breakForce)
+void CPointMass::Attach(CPointMass* pointMass, float restingDistance, float stiffness, float breakForce)
 {
-	m_Links.emplace_back(this, &pointMass, restingDistance, stiffness, breakForce);
+	m_Links.emplace_back(this, pointMass, restingDistance, stiffness, breakForce);
 }
 
-void CPointMass::ApplyForce(CVector3 force)
+void CPointMass::ApplyForce(const CVector3& force)
 {
 	if (m_Mass > 0.0f) {
-		m_Acceleration += force / m_Mass;
+		m_Acceleration += force * (1.0f / m_Mass);
 	}
 }
 
-void CPointMass::Pin(CVector3 pinPosition)
+void CPointMass::Pin(const CVector3& pinPosition)
 {
 	m_IsPinned = true;
 	m_PinPosition = pinPosition;
@@ -103,4 +103,9 @@ void CPointMass::SetMass(float mass)
 const float CPointMass::GetMass() const
 {
 	return m_Mass;
+}
+
+const std::vector<CLink>& CPointMass::GetLinks() const
+{
+	return m_Links;
 }

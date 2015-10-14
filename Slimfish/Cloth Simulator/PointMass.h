@@ -29,16 +29,16 @@ class CLink;
 class CPointMass {
 	// Member Functions
 public:
-	CPointMass(CVector3 position);
+	CPointMass(const CVector3& position);
 	~CPointMass();
 
 	void Update(float timeStep);
 	void SolveConstraints();
 
-	void Attach(const CPointMass& pointMass, float restingDistance, float stiffness, float breakForce);
+	void Attach(CPointMass* pointMass, float restingDistance, float stiffness, float breakForce);
 
-	void ApplyForce(CVector3 force);
-	void Pin(CVector3 pinPosition);
+	void ApplyForce(const CVector3& force);
+	void Pin(const CVector3& pinPosition);
 
 	/** Set the position. @author Hayden Asplet */
 	void SetPosition(const CVector3& position);
@@ -48,6 +48,8 @@ public:
 	void SetMass(float mass);
 	/** Get the mass. @author Hayden Asplet */
 	const float GetMass() const;
+
+	const std::vector<CLink>& GetLinks() const;
 protected:
 private:
 	// Member Variables

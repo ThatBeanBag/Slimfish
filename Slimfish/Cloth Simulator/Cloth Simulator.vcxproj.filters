@@ -48,4 +48,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="ClothPS.hlsl" />
+    <FxCompile Include="ClothVS.hlsl" />
+  </ItemGroup>
 </Project>

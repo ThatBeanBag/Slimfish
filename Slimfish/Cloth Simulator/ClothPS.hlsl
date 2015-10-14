@@ -7,5 +7,5 @@ struct VSOutput {
 
 float4 main(VSOutput pIn) : SV_TARGET
 {
-	return float(1.0f, 0.0f, 0.0f, 0.0f);
+	return float4(1.0f, 0.0f, 0.0f, 0.0f);
 }

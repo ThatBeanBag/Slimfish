@@ -31,6 +31,15 @@ public:
 	~CLink();
 
 	void Solve();
+
+	/** Set the pointMassA. @author Hayden Asplet */
+	void SetPointMassA(CPointMass* pointMassA);
+	/** Get the pointMassA. @author Hayden Asplet */
+	const CPointMass* GetPointMassA() const;
+	/** Set the pointMassB. @author Hayden Asplet */
+	void SetPointMassB(CPointMass* pointMassB);
+	/** Get the pointMassB. @author Hayden Asplet */
+	const CPointMass* GetPointMassB() const;
 protected:
 private:
 	// Member Variables

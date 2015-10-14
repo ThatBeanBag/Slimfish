@@ -62,3 +62,23 @@ void CLink::Solve()
 	m_pPointMassA->SetPosition(newPositionA);
 	m_pPointMassB->SetPosition(newPositionB);
 }
+
+void CLink::SetPointMassA(CPointMass* pointMassA)
+{
+	m_pPointMassA = pointMassA;
+}
+
+const CPointMass* CLink::GetPointMassA() const
+{
+	return m_pPointMassA;
+}
+
+void CLink::SetPointMassB(CPointMass* pointMassB)
+{
+	m_pPointMassB = pointMassB;
+}
+
+const CPointMass* CLink::GetPointMassB() const
+{
+	return m_pPointMassB;
+}

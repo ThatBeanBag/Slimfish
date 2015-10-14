@@ -25,6 +25,8 @@
 #include <Graphics/SlimVertexGpuBuffer.h>
 #include <Graphics/SlimCamera.h>
 #include <Graphics/SlimShaderParams.h>
+#include "PointMass.h"
+#include "Link.h"
 
 class CClothSimulatorLogic : public CGameLogic {
 	// Member Functions
@@ -39,6 +41,8 @@ public:
 
 protected:
 private:
+	void CreateCloth(int width, int height, float restingDistance, float stiffness, float breakingForce);
+
 	// Member Variables
 public:
 protected:
@@ -52,6 +56,10 @@ private:
 	float m_CameraPitch;
 	CPoint m_lastMousePosition;
 	shared_ptr<CShaderParams> m_pVSParams;
+
+	// Physics.
+	std::vector<std::unique_ptr<CPointMass> > m_PointMasses;
+	float m_LeftOverDeltaTime;
 };
 
 #endif // __CLOTHSIMULATORLOGIC_H__
