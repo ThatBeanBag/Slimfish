@@ -171,7 +171,7 @@ private:
 	exception safe code. Therefore buffers should never be locked manually, instead creating a buffer lock
 	is always advised.
 */
-class CGPUBufferLock {
+class CGpuBufferLock {
 	// Member Functions
 public:
 	/** 
@@ -187,14 +187,14 @@ public:
 			LOCK_DISCARD (discard the current buffer's contents), LOCK_READ_ONLY and LOCK_NO_OVERWRITE.
 			See EGpuBufferLockType for more detials.
 	*/
-	CGPUBufferLock(const shared_ptr<AGpuBuffer>& pBuffer, size_t offset, size_t size, EGpuBufferLockType lockType);
+	CGpuBufferLock(const shared_ptr<AGpuBuffer>& pBuffer, size_t offset, size_t size, EGpuBufferLockType lockType);
 
 	/** Destructor
 		@remarks
 			Unlocks the buffer.
 	 	@author Hayden Asplet
 	*/
-	~CGPUBufferLock();
+	~CGpuBufferLock();
 
 	/** Get the contents of the buffer for potential reading/writing to.
 	 	@author Hayden Asplet

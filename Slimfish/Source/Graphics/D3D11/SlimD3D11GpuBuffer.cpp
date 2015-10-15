@@ -27,7 +27,9 @@ namespace Slim {
 	CD3D11GpuBuffer::CD3D11GpuBuffer(ID3D11Device* pDevice, ID3D11DeviceContext* pImmediateContext,
 									 EBufferType bufferType, size_t bufferSize, const void* pSource,
 									 EGpuBufferUsage usage, bool isInSystemMemory)
-		:AGpuBuffer(bufferSize, usage, isInSystemMemory)
+		:AGpuBuffer(bufferSize, usage, isInSystemMemory),
+		m_pD3DDevice(pDevice),
+		m_pD3DImmediateContext(pImmediateContext)
 	{
 		ZeroMemory(&m_desc, sizeof(D3D11_BUFFER_DESC));
 

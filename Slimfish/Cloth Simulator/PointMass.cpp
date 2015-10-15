@@ -24,8 +24,11 @@
 #include "Link.h"
 
 
-CPointMass::CPointMass(const CVector3& position)
-	:m_Position(position)
+CPointMass::CPointMass(const CVector3& position, float mass, float damping)
+	:m_Position(position),
+	m_LastPosition(position),
+	m_Mass(mass),
+	m_Damping(damping)
 {
 
 }
@@ -38,16 +41,11 @@ CPointMass::~CPointMass()
 void CPointMass::Update(float timeStep)
 {
 	// Add the effects of gravity.
-	m_Acceleration += CVector3(0.0f, g_GRAVITY, 0.0f);
-
-	// Calculate the velocity to apply.
-	CVector3 velocity = m_Position - m_LastPosition;
-	// Dampen velocity.
-	velocity *= 0.99f;
+	m_Acceleration -= CVector3(0.0f, g_GRAVITY, 0.0f);
 
 	float timeStepSquared = timeStep * timeStep;
 
-	CVector3 nextPosition = m_Position + velocity + 0.5f + m_Acceleration * timeStepSquared;
+	CVector3 nextPosition =  2.0f * m_Position - m_LastPosition + m_Acceleration * timeStepSquared;
 
 	// Update positions.
 	m_LastPosition = m_Position;

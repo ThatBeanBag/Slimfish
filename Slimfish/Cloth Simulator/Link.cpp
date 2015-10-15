@@ -52,11 +52,11 @@ void CLink::Solve()
 		difference = (m_RestingDistance - distance) / distance;
 	}
 
-	auto impulseA = 1 / m_pPointMassA->GetMass();
-	auto impulseB = 1 / m_pPointMassB->GetMass();
+	auto inverseMassA = 1.0f / m_pPointMassA->GetMass();
+	auto inverseMassB = 1.0f / m_pPointMassB->GetMass();
 
-	auto newPositionA = positionA + delta * (impulseA / (impulseA + impulseB)) * m_Stiffness * difference;
-	auto newPositionB = positionB - delta * (impulseB / (impulseA + impulseB)) * m_Stiffness * difference;
+	auto newPositionA = positionA + delta * (inverseMassA / (inverseMassA + inverseMassB)) * m_Stiffness * difference;
+	auto newPositionB = positionB - delta * (inverseMassB / (inverseMassA + inverseMassB)) * m_Stiffness * difference;
 
 	// Update the positions.
 	m_pPointMassA->SetPosition(newPositionA);

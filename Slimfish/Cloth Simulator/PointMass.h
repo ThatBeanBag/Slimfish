@@ -29,7 +29,7 @@ class CLink;
 class CPointMass {
 	// Member Functions
 public:
-	CPointMass(const CVector3& position);
+	CPointMass(const CVector3& position, float mass, float damping);
 	~CPointMass();
 
 	void Update(float timeStep);

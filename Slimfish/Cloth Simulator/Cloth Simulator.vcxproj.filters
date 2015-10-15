@@ -52,4 +52,7 @@
     <FxCompile Include="ClothPS.hlsl" />
     <FxCompile Include="ClothVS.hlsl" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="LightingHelper.hlsli" />
+  </ItemGroup>
 </Project>

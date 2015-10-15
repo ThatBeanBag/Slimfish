@@ -47,6 +47,7 @@ void* AGpuBuffer::Lock(size_t offset, size_t size, EGpuBufferLockType lockType)
 
 	m_lockOffset = offset;
 	m_lockSize = size;
+	m_isLocked = true;
 	
 	// Call the derived class's implementation to lock the buffer.
 	return VLock(offset, size, lockType);
@@ -58,6 +59,8 @@ void AGpuBuffer::Unlock()
 
 	// Call the derived class's implementation to unlock the buffer.
 	VUnlock();
+
+	m_isLocked = false;
 }
 
 const EGpuBufferUsage AGpuBuffer::GetUsage() const
@@ -79,7 +82,7 @@ const bool AGpuBuffer::IsInSystemMemory() const
 /* CGPUBufferLock implementation
 /************************************************************************/
 
-CGPUBufferLock::CGPUBufferLock(const shared_ptr<AGpuBuffer>& pBuffer, size_t offset, size_t size, EGpuBufferLockType lockType) 
+CGpuBufferLock::CGpuBufferLock(const shared_ptr<AGpuBuffer>& pBuffer, size_t offset, size_t size, EGpuBufferLockType lockType) 
 	:m_pBuffer(pBuffer),
 	m_pLockedData(nullptr)
 {
@@ -89,13 +92,13 @@ CGPUBufferLock::CGPUBufferLock(const shared_ptr<AGpuBuffer>& pBuffer, size_t off
 	m_pLockedData = pBuffer->Lock(offset, size, lockType);
 }
 
-CGPUBufferLock::~CGPUBufferLock()
+CGpuBufferLock::~CGpuBufferLock()
 {
 	assert(m_pBuffer);
 	m_pBuffer->Unlock();
 }
 
-void* CGPUBufferLock::GetLockedContents()
+void* CGpuBufferLock::GetLockedContents()
 {
 	return m_pLockedData;
 }

@@ -25,6 +25,7 @@
 #include <Graphics/SlimVertexGpuBuffer.h>
 #include <Graphics/SlimCamera.h>
 #include <Graphics/SlimShaderParams.h>
+#include <Graphics/SlimIndexGpuBuffer.h>
 #include "PointMass.h"
 #include "Link.h"
 
@@ -49,6 +50,7 @@ protected:
 private:
 	CVertexDeclaration m_VertexDeclaration;
 	std::shared_ptr<AVertexGpuBuffer> m_pClothVertexBuffer;
+	std::shared_ptr<AIndexGpuBuffer> m_pClothIndexBuffer;
 	CRenderPass m_ClothRenderPass;
 
 	CCamera m_Camera;
@@ -60,6 +62,9 @@ private:
 	// Physics.
 	std::vector<std::unique_ptr<CPointMass> > m_PointMasses;
 	float m_LeftOverDeltaTime;
+	unsigned int m_ClothWidth;
+	unsigned int m_ClothHeight;
+	shared_ptr<AVertexGpuBuffer> m_pGroundVertexBuffer;
 };
 
 #endif // __CLOTHSIMULATORLOGIC_H__
