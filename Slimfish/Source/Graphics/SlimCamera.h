@@ -22,6 +22,7 @@
 // Local Includes
 #include "SlimFrustum.h"
 #include "SlimSceneNode.h"
+#include "../Math/SlimRay.h"
 
 namespace Slim {
 
@@ -44,6 +45,44 @@ public:
 	 	@author Hayden Asplet
 	*/
 	~CCamera();
+
+	/** Convert a point on the screen to a ray in 3D space.
+	 	@author Hayden Asplet
+	*/
+	const CRay ScreenPointToRay(const CPoint& point) const;
+
+	/** Set the projection of the camera to perspective using the given properties.
+	 	@author Hayden Asplet
+		@param
+			radFieldOfView Field of view in radians.
+		@param 
+			aspectRatio Aspect ratio of the screen.
+		@param
+			nearClipDistance The distance the near clipping plane is from the camera.
+			Describes the distance in front of the camera in which geometry is drawn
+			and not clipped.
+		@param
+			farClipDistance The distance the far clipping plane is from the camera.
+			Describes the distance the camera can see before geometry gets clipped.
+	*/
+	void SetPerspective(float radFieldOfView, float aspectRatio, float nearClipDistance, float farClipDistance);
+
+	/** Set the projection of the camera to orthographic using the given properties.
+		@author Hayden Asplet
+		@param orthoSize 
+			The size of the orthographic projection. The largest this value is the more 
+			geometry that's captured in the view.
+		@param 
+			aspectRatio Aspect ratio of the screen.
+		@param 
+			nearClipDistance The distance the near clipping plane is from the camera.
+			Describes the distance in front of the camera in which geometry is drawn 
+			and not clipped.
+		@param 
+			farClipDistance The distance the far clipping plane is from the camera.
+			Describes the distance the camera can see before geometry gets clipped.
+	*/
+	void SetOrthographic(float orthoSize, float aspectRatio, float nearClipDistance, float farClipDistance);
 
 	/** Set a target for the camera to track.
 	 	@author Hayden Asplet
@@ -131,6 +170,11 @@ public:
 
 	/** Get the view matrix that transform vertices from world space to view space. @author Hayden Asplet */
 	const CMatrix4x4& GetViewMatrix() const;
+
+	/** Convenience method for getting the view and projection matrix concatenated together.
+	 	@author Hayden Asplet
+	*/
+	const CMatrix4x4 GetViewProjMatrix() const;
 protected:
 private:
 	// Member Variables

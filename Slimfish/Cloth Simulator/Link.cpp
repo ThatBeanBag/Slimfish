@@ -29,7 +29,7 @@ CLink::CLink(CPointMass* pPointMassA, CPointMass* pPointMassB, float restingDist
 	m_pPointMassB(pPointMassB),
 	m_RestingDistance(restingDistance),
 	m_Stiffness(stiffness),
-	m_BreakForce(breakForce)
+	m_TearDistance(breakForce)
 {
 
 }
@@ -39,12 +39,16 @@ CLink::~CLink()
 
 }
 
-void CLink::Solve()
+bool CLink::Solve()
 {
 	const auto& positionA = m_pPointMassA->GetPosition();
 	const auto& positionB = m_pPointMassB->GetPosition();
 	auto delta = positionA - positionB;
 	auto distance = delta.GetLength();
+
+	if (distance >= m_TearDistance) {
+		return false;
+	}
 
 	auto difference = 0.0f;
 
@@ -61,6 +65,8 @@ void CLink::Solve()
 	// Update the positions.
 	m_pPointMassA->SetPosition(newPositionA);
 	m_pPointMassB->SetPosition(newPositionB);
+
+	return true;
 }
 
 void CLink::SetPointMassA(CPointMass* pointMassA)

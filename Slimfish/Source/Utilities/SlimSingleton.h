@@ -32,40 +32,32 @@ namespace Slim {
 		// Member Functions
 	public:
 		/** Default constructor
-			@note 
-				This is made private as singletons cannot be instantiated.
-		 	@author
-		 		Hayden Asplet
+			@note This is made private as singletons cannot be instantiated.
+		 	@author Hayden Asplet
 		*/
 		ASingleton();
 
 		/** Destructor
-			@note
-				Pure virtual so that ASingleton can't be created.
-		 	@author
-		 		Hayden Asplet
+			@note Pure virtual so that ASingleton can't be created.
+		 	@author Hayden Asplet
 		*/
-		virtual  ~ASingleton() {}
+		virtual  ~ASingleton() = 0 {}
 
 		/** Get a pointer to the singleton
-			@remarks
-				Creates a single instance of the singleton if one is yet to be created.
-		 	@author
-		 		Hayden Asplet
+			@remarks Creates a single instance of the singleton if one is yet to be created.
+		 	@author Hayden Asplet
 		*/
 		static T* GetInstance();
 	protected:
 	private:
 
 		/** Deleted copy constructor.
-			@author
-				Hayden Asplet
+			@author Hayden Asplet
 		*/
 		ASingleton(const ASingleton<T>& _krOther) = delete;
 
-		/** Delete assignment operator.
-		 	@author
-		 		Hayden Asplet
+		/** Deleted assignment operator.
+		 	@author Hayden Asplet
 		*/
 		ASingleton& operator=(const ASingleton<T>& _krOther) = delete;
 

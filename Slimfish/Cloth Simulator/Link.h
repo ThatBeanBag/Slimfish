@@ -30,7 +30,7 @@ public:
 	CLink(CPointMass* pPointMassA, CPointMass* pPointMassB, float restingDistance, float stiffness, float breakForce);
 	~CLink();
 
-	void Solve();
+	bool Solve();
 
 	/** Set the pointMassA. @author Hayden Asplet */
 	void SetPointMassA(CPointMass* pointMassA);
@@ -48,7 +48,7 @@ protected:
 private:
 	float m_RestingDistance;
 	float m_Stiffness;
-	float m_BreakForce;
+	float m_TearDistance;
 	CPointMass* m_pPointMassA;
 	CPointMass* m_pPointMassB;
 };

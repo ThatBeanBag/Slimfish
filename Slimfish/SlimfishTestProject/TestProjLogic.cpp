@@ -58,7 +58,7 @@ CTestProjLogic::CTestProjLogic()
 	m_Camera.SetProjectionMode(EProjectionMode::PERSPECTIVE);
 	m_Camera.SetNearClipDistance(0.1f);
 	m_Camera.SetFarClipDistance(1000.0f);
-	m_Camera.SetFieldOfView(DegreesToRadians(90.0f));
+	m_Camera.SetFieldOfView(Math::DegreesToRadians(90.0f));
 }
 
 CTestProjLogic::~CTestProjLogic()
@@ -146,7 +146,7 @@ bool CTestProjLogic::Initialise()
 	// Create the light camera.
 	m_LightCamera.SetProjectionMode(EProjectionMode::ORTHOGRAPHIC);
 	m_LightCamera.SetPosition(-m_Light.GetDirection() * 300.0f);
-	m_LightCamera.SetRotation(CQuaternion(DegreesToRadians(10.0f), DegreesToRadians(45.0f), DegreesToRadians(10.0f)));
+	m_LightCamera.SetRotation(CQuaternion(Math::DegreesToRadians(10.0f), Math::DegreesToRadians(45.0f), Math::DegreesToRadians(10.0f)));
 	m_LightCamera.SetNearClipDistance(0.0f);
 	m_LightCamera.SetFarClipDistance(700.0f);
 	m_LightCamera.SetAspectRatio(static_cast<float>(s_SHADOW_MAP_WIDTH) / static_cast<float>(s_SHADOW_MAP_HEIGHT));

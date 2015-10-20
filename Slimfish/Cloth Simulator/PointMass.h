@@ -39,6 +39,8 @@ public:
 
 	void ApplyForce(const CVector3& force);
 	void Pin(const CVector3& pinPosition);
+	void DetachPin();
+	void RemoveLink(CLink* pLink);
 
 	/** Set the position. @author Hayden Asplet */
 	void SetPosition(const CVector3& position);

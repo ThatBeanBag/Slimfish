@@ -54,9 +54,11 @@
     <ClCompile Include="..\Logging\SlimExceptions.cpp" />
     <ClCompile Include="..\Logging\SlimLog.cpp" />
     <ClCompile Include="..\Logging\SlimLogger.cpp" />
+    <ClCompile Include="..\Math\SlimMath.cpp" />
     <ClCompile Include="..\Math\SlimMatrix4x4.cpp" />
     <ClCompile Include="..\Math\SlimPlane.cpp" />
     <ClCompile Include="..\Math\SlimQuaternion.cpp" />
+    <ClCompile Include="..\Math\SlimRay.cpp" />
     <ClCompile Include="..\Math\SlimVector.cpp" />
     <ClCompile Include="..\Utilities\SlimPoint.cpp" />
     <ClCompile Include="SlimStd.cpp">
@@ -119,12 +121,27 @@
     <ClInclude Include="..\Math\SlimMatrix4x4.h" />
     <ClInclude Include="..\Math\SlimPlane.h" />
     <ClInclude Include="..\Math\SlimQuaternion.h" />
+    <ClInclude Include="..\Math\SlimRay.h" />
     <ClInclude Include="..\Math\SlimVector.h" />
     <ClInclude Include="..\Utilities\SlimInline.h" />
     <ClInclude Include="..\Utilities\SlimObjectFactory.h" />
     <ClInclude Include="..\Utilities\SlimPoint.h" />
     <ClInclude Include="..\Utilities\SlimSingleton.h" />
     <ClInclude Include="SlimStd.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shaders\ScreenSpace_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\ScreenSpace_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7B57F944-4A3C-4BAD-839C-8E28BF1A4F88}</ProjectGuid>
