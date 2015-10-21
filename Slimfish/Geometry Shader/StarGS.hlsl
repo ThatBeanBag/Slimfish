@@ -21,7 +21,7 @@ float4 CreateColour(float r, float g, float b, float a)
 
 // Some useful constants.
 static const float gPI = 3.14159265359f;
-static const int gNumPoints = 5;
+static const uint gNumPoints = 5;
 
 // Some colours.
 static const float4 gWhite = float4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -54,28 +54,30 @@ void main(
 	float3 outerVerts[gNumPoints];
 
 	// Inner circle of points.
-	for (int i = 0; i < gNumPoints; ++i) {
+	for (uint i = 0; i < gNumPoints; ++i) {
 		innerVerts[i] = GetPointOnCircle(centrePos, 1.0f, (i * angleBetweenPoints) - (gPI / 2.0f));
 	}
 
 	// Outer circle of points.
-	for (int i = 0; i < gNumPoints; ++i) {
-		outerVerts[i] = GetPointOnCircle(centrePos, outerCircleRadius, (i * angleBetweenPoints) + (gPI / 2.0f));
+	for (uint j = 0; j < gNumPoints; ++j) {
+		outerVerts[j] = GetPointOnCircle(centrePos, outerCircleRadius, (j * angleBetweenPoints) + (gPI / 2.0f));
 	}
 
 	GSOutput centreOut = { mul(float4(centrePos, 1.0f), gWVP), gGold };
 
-	for (int i = 0; i < gNumPoints; ++i) {
-		GSOutput out1 = { mul(float4(outerVerts[i], 1.0f), gWVP), gGold };
-		GSOutput out2 = { mul(float4(innerVerts[(i + 3) % gNumPoints], 1.0f), gWVP), gGold };
+	for (uint k = 0; k < gNumPoints; ++k) {
+		// First triangle.
+		GSOutput out1 = { mul(float4(outerVerts[k], 1.0f), gWVP), gGold };
+		GSOutput out2 = { mul(float4(innerVerts[(k + 3) % gNumPoints], 1.0f), gWVP), gGold };
 
 		output.Append(out1);
 		output.Append(centreOut);
 		output.Append(out2);
 		output.RestartStrip();
 
-		GSOutput out3 = { mul(float4(outerVerts[(i + 1) % gNumPoints], 1.0f), gWVP), gDarkGold };
-		GSOutput out4 = { mul(float4(innerVerts[(i + 3) % gNumPoints], 1.0f), gWVP), gDarkGold };
+		// Second triangle.
+		GSOutput out3 = { mul(float4(outerVerts[(k + 1) % gNumPoints], 1.0f), gWVP), gDarkGold };
+		GSOutput out4 = { mul(float4(innerVerts[(k + 3) % gNumPoints], 1.0f), gWVP), gDarkGold };
 
 		output.Append(out3);
 		output.Append(out4);

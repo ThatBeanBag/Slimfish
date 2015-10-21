@@ -11,6 +11,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SlimfishTestProject", "..\.
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Geometry Shader", "..\..\Geometry Shader\Geometry Shader.vcxproj", "{49AABEA4-AE23-432E-BC3F-302815E6CDEE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7B57F944-4A3C-4BAD-839C-8E28BF1A4F88} = {7B57F944-4A3C-4BAD-839C-8E28BF1A4F88}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cloth Simulator", "..\..\Cloth Simulator\Cloth Simulator.vcxproj", "{3E746EF9-816A-4E79-993E-4DFEDC183A24}"
 	ProjectSection(ProjectDependencies) = postProject
