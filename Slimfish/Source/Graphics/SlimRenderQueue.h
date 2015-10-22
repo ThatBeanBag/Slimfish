@@ -24,7 +24,7 @@
 namespace Slim {
 
 // Forward Declaration.
-class CRenderPass;
+class CSceneNode;
 
 /** List of render queue group categories.
 	@remarks	
@@ -57,7 +57,7 @@ enum ERenderQueueGroupCategory : int {
 */
 class CRenderQueue {
 public:
-	using TRenderGroup = std::vector<CRenderPass*>;
+	using TRenderGroup = std::vector<CSceneNode*>;
 private:
 	using TRenderGroupMap = std::map<ERenderQueueGroupCategory, TRenderGroup>;
 
@@ -76,7 +76,7 @@ public:
 	/** Add a render pass to the queue.
 	 	@author Hayden Asplet
 	*/
-	void QueuePass(CRenderPass* pRenderPass);
+	void Queue(CSceneNode* pRenderPass);
 
 	/** Get a render group 
 	 	@author Hayden Asplet
@@ -93,7 +93,7 @@ public:
 	/** Get the next render pass in the queue.
 	 	@author Hayden Asplet
 	*/
-	const CRenderPass* GetNext();
+	const CSceneNode* GetNext();
 
 	/** Flush the queue removing all groups of render passes.
 	 	@author Hayden Asplet

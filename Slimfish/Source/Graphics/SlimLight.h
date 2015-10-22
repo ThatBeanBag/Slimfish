@@ -20,6 +20,7 @@
 // Library Includes
 
 // Local Includes
+#include "SlimSceneNode.h"
 
 namespace Slim {
 
@@ -38,8 +39,6 @@ struct TLightProperties {
 	ELightType type;
 	CColourValue diffuse;
 	CColourValue specular;
-	CVector3 position;
-	CVector3 direction;
 	float range;
 	float falloff;
 	float attenuationConst;
@@ -49,14 +48,15 @@ struct TLightProperties {
 	float spotPhi;
 };
 
-class CLight {
+class CLight : public CSceneNode {
 	// Member Functions
 public:
 	/** Default constructor.
 	 	@author Hayden Asplet 
 	*/
-	CLight();
-	/** Destruct
+	CLight(CScene* pCreatorScene);
+
+	/** Destructor
 	 	@author Hayden Asplet
 	*/
 	~CLight();
@@ -75,29 +75,6 @@ public:
 	void SetSpecular(const CColourValue& specular);
 	/** Get the specular colour of the light. @author Hayden Asplet */
 	const CColourValue& GetSpecular() const;
-
-	/** Set the position of the light in world space.
-		@note Only applicable for point and spot lights.
-	 	@author Hayden Asplet
-	*/
-	void SetPosition(const CVector3& position);
-	/** Get the position of the light in world space.
-		@note Only applicable for point and spot lights.
-		@author Hayden Asplet
-	*/
-	const CVector3& GetPosition() const;
-
-	/** Set the direction of the light in world space.
-		@note Only applicable for directional and spot lights.
-	 	@author Hayden Asplet
-	*/
-	void SetDirection(const CVector3& direction);
-
-	/** Get the direction of the light in world space.
-		@note Only applicable for directional and spot lights.
-		@author Hayden Asplet
-	*/
-	const CVector3& GetDirection() const;
 
 	/** Set the range of the light in world space.
 		@note Only applicable for point and spot lights.

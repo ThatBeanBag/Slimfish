@@ -44,6 +44,7 @@
     <ClCompile Include="..\Graphics\SlimRenderPass.cpp" />
     <ClCompile Include="..\Graphics\SlimRenderQueue.cpp" />
     <ClCompile Include="..\Graphics\SlimRenderTexture.cpp" />
+    <ClCompile Include="..\Graphics\SlimScene.cpp" />
     <ClCompile Include="..\Graphics\SlimSceneNode.cpp" />
     <ClCompile Include="..\Graphics\SlimShaderParams.cpp" />
     <ClCompile Include="..\Graphics\SlimShaderProgram.cpp" />

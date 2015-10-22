@@ -16,11 +16,13 @@
 #include "SlimStd.h"
 
 // Library Includes
+#include <functional>
 
 // This Include
 #include "SlimSceneNode.h"
 
 // Local Includes
+#include "SlimRenderQueue.h"
 
 namespace Slim {
 
@@ -38,24 +40,13 @@ namespace Slim {
 
 	}
 
-	bool CSceneNode::VPreRender()
+	void CSceneNode::Render(CRenderQueue* pQueue)
 	{
-		return true;
-	}
+		pQueue->Queue(this);
 
-	bool CSceneNode::VRender()
-	{
-		return true;
-	}
-
-	bool CSceneNode::VRenderChildren()
-	{
-		return true;
-	}
-
-	bool CSceneNode::VPostRender()
-	{
-		return true;
+		// Render children.
+		auto render = [&](const std::shared_ptr<CSceneNode>& pNode) { pNode->Render(pQueue); };
+		for_each(m_Children.begin(), m_Children.end(), render);
 	}
 
 	void CSceneNode::AddChild(std::shared_ptr<CSceneNode> pSceneNode)
@@ -65,11 +56,10 @@ namespace Slim {
 
 	void CSceneNode::RemoveChild(std::shared_ptr<CSceneNode> pSceneNode)
 	{
-		auto shouldbeRemoved = [&](const std::shared_ptr<CSceneNode>& pNode) {
-			return pNode == pSceneNode;
-		};
-
-		m_Children.erase(remove_if(m_Children.begin(), m_Children.end(), pSceneNode));
+		auto findIter = std::find(m_Children.begin(), m_Children.end(), pSceneNode);
+		if (findIter != m_Children.end()) {
+			m_Children.erase(findIter);
+		}
 	}
 
 	void CSceneNode::ClearChildren()

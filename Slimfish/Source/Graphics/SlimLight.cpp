@@ -24,7 +24,8 @@
 
 namespace Slim {
 
-CLight::CLight()
+CLight::CLight(CScene* pCreatorScene)
+	:CSceneNode(pCreatorScene)
 {
 
 }
@@ -62,26 +63,6 @@ void CLight::SetSpecular(const CColourValue& specular)
 const CColourValue& CLight::GetSpecular() const
 {
 	return m_LightProperties.specular;
-}
-
-void CLight::SetPosition(const CVector3& position)
-{
-	m_LightProperties.position = position;
-}
-
-const CVector3& CLight::GetPosition() const
-{
-	return m_LightProperties.position;
-}
-
-void CLight::SetDirection(const CVector3& direction)
-{
-	m_LightProperties.direction = direction;
-}
-
-const CVector3& CLight::GetDirection() const
-{
-	return m_LightProperties.direction;
 }
 
 void CLight::SetRange(float range)
