@@ -51,6 +51,8 @@
   <ItemGroup>
     <FxCompile Include="ClothPS.hlsl" />
     <FxCompile Include="ClothVS.hlsl" />
+    <FxCompile Include="DepthOnly_PS.hlsl" />
+    <FxCompile Include="DepthOnly_VS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LightingHelper.hlsli" />

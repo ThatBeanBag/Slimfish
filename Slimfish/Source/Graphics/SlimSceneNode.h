@@ -26,12 +26,12 @@ namespace Slim {
 // Forward Declaration.
 class CScene;
 
-/** 
+/** Class representing a node in a scene.
 @remarks
 	
 */
 class CSceneNode {
-	typedef std::vector<std::unique_ptr<CSceneNode> > TChildList;
+	typedef std::vector<std::shared_ptr<CSceneNode> > TChildList;
 
 	// Member Functions
 public:
@@ -51,6 +51,21 @@ public:
 	virtual bool VRender();
 	virtual bool VRenderChildren();
 	virtual bool VPostRender();
+
+	/** Add a node as a child to the node.
+	 	@author Hayden Asplet
+	*/
+	void AddChild(std::shared_ptr<CSceneNode> pSceneNode);
+
+	/** Remove a child from the node.
+	 	@author Hayden Asplet
+	*/
+	void RemoveChild(std::shared_ptr<CSceneNode> pSceneNode);
+
+	/** Remove all children from the node.
+	 	@author Hayden Asplet
+	*/
+	void ClearChildren();
 
 	/** Set the visibility of the node.
 	 	@author Hayden Asplet
@@ -113,6 +128,8 @@ private:
 	
 	// Describes the visibility of the node. True if the node should be rendered.
 	bool m_bIsVisible;
+
+
 };
 
 }

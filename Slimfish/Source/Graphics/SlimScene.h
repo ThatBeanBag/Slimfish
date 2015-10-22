@@ -36,6 +36,7 @@ private:
 public:
 protected:
 private:
+	std::unique_ptr<CSceneNode> m_pRootNode;
 };
 
 }

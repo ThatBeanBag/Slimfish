@@ -18,25 +18,91 @@
 #define __SLIMMATH_H__
 
 // Library Includes
+#include <random>
 
 // Local Includes
 
 namespace Slim {
-	const float g_PI = 3.141592653589793238462643383279f;
-	const float g_DEGREES_TO_RADIANS = g_PI / 180;
-	const float g_RADIANS_TO_DEGREES = 180 / g_PI;
+
+/** Class that defines many common math functions and constants.
+@remarks
+	This class is not intended to be used as a class at all. Instead it's
+	to be used like a namespace (hence the lack of proper naming conventions). 
+	The reason for the class is to encapsulate implementation detail that 
+	otherwise would be exposed had Math be a namespace. 
+*/
+class Math : private ASingleton<Math> {
+	// Member Functions
+public:
+	Math();
+
+	/** Destructor.
+	 	@author Hayden Asplet
+	*/
+	~Math() = default;
 
 	/** Convert from radians to degrees. @author Hayden Asplet */
-	inline float RadiansToDegrees(float radians) 
+	static inline float RadiansToDegrees(float radians)
 	{
-		return radians * g_RADIANS_TO_DEGREES;
+		return radians * s_RADIANS_TO_DEGREES;
 	}
 
 	/** Convert from degrees to radians. @author Hayden Asplet */
-	inline float DegreesToRadians(float degrees)
+	static inline float DegreesToRadians(float degrees)
 	{
-		return degrees * g_DEGREES_TO_RADIANS;
+		return degrees * s_DEGREES_TO_RADIANS;
 	}
+
+	/** Retrieve a random number in the range [0, 1]. @author Hayden Asplet */
+	static inline float Random() 
+	{
+		std::uniform_real_distribution<float> distribution(0, 1);
+		return distribution(ASingleton::GetInstance()->m_RandomGenerator);
+	}
+
+	/** Retrieve a random integer in the range [min,max).
+		@remarks
+			Returns the minimum value whenever the range is [min,min] (asin whenever min == max - 1).
+			In the case where the range is [min,min] the result is therefore not random.
+	 	@author Hayden Asplet
+		@param min The minimum value in the range (inclusive).
+		@param max The maximum value in the range (exclusive).
+	*/
+	static inline int Random(int min, int max) 
+	{
+		assert(min < max);
+		if (min == max - 1) {
+			// Only one value between [min,max) and that's min.
+			return min;
+		}
+		else {
+			std::uniform_int_distribution<int> distribution(min, max - 1);
+			return distribution(ASingleton::GetInstance()->m_RandomGenerator);
+		}
+	}
+
+	/** Retrieves a random floating-point number within the range [min, max].
+	 	@author Hayden Asplet
+	 	@param min The minimum value in the range (inclusive).
+		@param max The maximum value in the range (inclusive).
+	*/
+	static inline float Random(float min, float max) {
+		assert(min < max);
+		std::uniform_real_distribution<float> distribution(min, max);
+		return distribution(ASingleton::GetInstance()->m_RandomGenerator);
+	}
+protected:
+private:
+
+	// Member Variables
+public:
+	static const float s_PI;
+	static const float s_DEGREES_TO_RADIANS;
+	static const float s_RADIANS_TO_DEGREES;
+protected:
+private:
+	std::mt19937 m_RandomGenerator;
+};
 
 }
 

@@ -25,6 +25,9 @@
     <Filter Include="Graphics\D3D11">
       <UniqueIdentifier>{8b71fbbf-3813-445e-b158-a514abbc36fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{6c0f906b-348a-42f5-8e0d-ccee97d04709}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Math\SlimMatrix4x4.cpp">
@@ -170,6 +173,18 @@
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="..\Graphics\SlimTechnique.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Math\SlimRay.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Math\SlimMath.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimRenderQueue.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Graphics\SlimMaterial.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
   </ItemGroup>
@@ -352,5 +367,19 @@
     <ClInclude Include="..\Graphics\SlimTechnique.h">
       <Filter>Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="..\Math\SlimRay.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\SlimRenderable.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\Shaders\ScreenSpace_PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Shaders\ScreenSpace_VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

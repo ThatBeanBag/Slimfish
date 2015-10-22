@@ -24,12 +24,13 @@
 #include "PointMass.h"
 
 
-CLink::CLink(CPointMass* pPointMassA, CPointMass* pPointMassB, float restingDistance, float stiffness, float breakForce)
+CLink::CLink(CPointMass* pPointMassA, CPointMass* pPointMassB, float restingDistance, float stiffness, float breakForce, bool isVisible)
 	:m_pPointMassA(pPointMassA),
 	m_pPointMassB(pPointMassB),
 	m_RestingDistance(restingDistance),
 	m_Stiffness(stiffness),
-	m_BreakForce(breakForce)
+	m_TearDistance(breakForce),
+	m_bIsVisible(isVisible)
 {
 
 }
@@ -39,12 +40,16 @@ CLink::~CLink()
 
 }
 
-void CLink::Solve()
+bool CLink::Solve()
 {
 	const auto& positionA = m_pPointMassA->GetPosition();
 	const auto& positionB = m_pPointMassB->GetPosition();
 	auto delta = positionA - positionB;
 	auto distance = delta.GetLength();
+
+	if (distance >= m_TearDistance) {
+		return false;
+	}
 
 	auto difference = 0.0f;
 
@@ -61,6 +66,8 @@ void CLink::Solve()
 	// Update the positions.
 	m_pPointMassA->SetPosition(newPositionA);
 	m_pPointMassB->SetPosition(newPositionB);
+
+	return true;
 }
 
 void CLink::SetPointMassA(CPointMass* pointMassA)
@@ -81,4 +88,14 @@ void CLink::SetPointMassB(CPointMass* pointMassB)
 const CPointMass* CLink::GetPointMassB() const
 {
 	return m_pPointMassB;
+}
+
+void CLink::SetIsVisible(bool isVisible)
+{
+	m_bIsVisible = isVisible;
+}
+
+const bool CLink::GetIsVisible() const
+{
+	return m_bIsVisible;
 }

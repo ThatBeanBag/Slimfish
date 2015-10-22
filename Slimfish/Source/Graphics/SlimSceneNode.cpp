@@ -58,6 +58,25 @@ namespace Slim {
 		return true;
 	}
 
+	void CSceneNode::AddChild(std::shared_ptr<CSceneNode> pSceneNode)
+	{
+		m_Children.push_back(pSceneNode);
+	}
+
+	void CSceneNode::RemoveChild(std::shared_ptr<CSceneNode> pSceneNode)
+	{
+		auto shouldbeRemoved = [&](const std::shared_ptr<CSceneNode>& pNode) {
+			return pNode == pSceneNode;
+		};
+
+		m_Children.erase(remove_if(m_Children.begin(), m_Children.end(), pSceneNode));
+	}
+
+	void CSceneNode::ClearChildren()
+	{
+		m_Children.clear();
+	}
+
 	void CSceneNode::SetVisibility(bool isVisible, bool recursive /*= true*/)
 	{
 		m_bIsVisible = isVisible;

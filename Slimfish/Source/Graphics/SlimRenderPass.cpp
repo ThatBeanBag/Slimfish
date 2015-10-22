@@ -31,7 +31,8 @@ namespace Slim {
 		m_FillMode(EFillMode::SOLID),
 		m_DepthCheckEnabled(true),
 		m_DepthWriteEnabled(true),
-		m_DepthCompareFunction(EComparisonFunction::LESS)
+		m_DepthCompareFunction(EComparisonFunction::LESS),
+		m_RenderQueueGroupCategory(ERenderQueueGroupCategory::RQ_GROUP_GEOMETRY)
 	{
 
 	}
@@ -355,6 +356,16 @@ namespace Slim {
 		return m_FillMode;
 	}
 
+
+	void CRenderPass::SetRenderQueueGroupCategory(ERenderQueueGroupCategory renderQueueGroupCategory)
+	{
+		m_RenderQueueGroupCategory = renderQueueGroupCategory;
+	}
+
+	const ERenderQueueGroupCategory CRenderPass::GetRenderQueueGroupCategory() const
+	{
+		return m_RenderQueueGroupCategory;
+	}
 
 }
 

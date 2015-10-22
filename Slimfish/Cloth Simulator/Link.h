@@ -27,10 +27,10 @@ class CPointMass;
 class CLink {
 	// Member Functions
 public:
-	CLink(CPointMass* pPointMassA, CPointMass* pPointMassB, float restingDistance, float stiffness, float breakForce);
+	CLink(CPointMass* pPointMassA, CPointMass* pPointMassB, float restingDistance, float stiffness, float breakForce, bool isVisible = true);
 	~CLink();
 
-	void Solve();
+	bool Solve();
 
 	/** Set the pointMassA. @author Hayden Asplet */
 	void SetPointMassA(CPointMass* pointMassA);
@@ -40,6 +40,10 @@ public:
 	void SetPointMassB(CPointMass* pointMassB);
 	/** Get the pointMassB. @author Hayden Asplet */
 	const CPointMass* GetPointMassB() const;
+	/** Set the isVisible. @author Hayden Asplet */
+	void SetIsVisible(bool isVisible);
+	/** Get the isVisible. @author Hayden Asplet */
+	const bool GetIsVisible() const;
 protected:
 private:
 	// Member Variables
@@ -48,9 +52,10 @@ protected:
 private:
 	float m_RestingDistance;
 	float m_Stiffness;
-	float m_BreakForce;
+	float m_TearDistance;
 	CPointMass* m_pPointMassA;
 	CPointMass* m_pPointMassB;
+	bool m_bIsVisible;
 };
 
 #endif	// __LINK_H__

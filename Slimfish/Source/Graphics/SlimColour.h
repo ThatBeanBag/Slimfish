@@ -153,10 +153,10 @@ public:
 
 	// Member Variables
 public:
-	float m_a;
 	float m_r;
 	float m_g;
 	float m_b;
+	float m_a;
 protected:
 private:
 };

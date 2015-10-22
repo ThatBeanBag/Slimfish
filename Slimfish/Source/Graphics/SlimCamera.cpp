@@ -19,6 +19,7 @@
 
 // This Include
 #include "SlimCamera.h"
+#include "SlimRenderer.h"
 
 // Local Includes
 
@@ -37,6 +38,69 @@ namespace Slim {
 	CCamera::~CCamera()
 	{
 
+	}
+
+	const CRay CCamera::ScreenPointToRay(const CPoint& point) const
+	{
+		CPoint screenSize = g_pApp->GetRenderer()->GetWindowSize();
+		const CMatrix4x4& projectionMatrix = CFrustum::GetProjectionMatrix();
+
+		// Convert mouse cursor to normalised device coordinates (between -1, 1) and then to view space.
+		CVector3 viewMousePos;
+		viewMousePos.SetX((((2.0f * point.GetX()) / static_cast<float>(screenSize.GetX())) - 1) / projectionMatrix[0][0]);
+		viewMousePos.SetY(-(((2.0f * point.GetY()) / static_cast<float>(screenSize.GetY())) - 1) / projectionMatrix[1][1]);
+		viewMousePos.SetZ(-1.0f);
+
+		CMatrix4x4 inverseViewMatrix = GetWorldTransform();
+		inverseViewMatrix.GetInverse();
+
+		CVector3 rayOrigin;
+		CVector3 rayDirection;
+
+		if (CFrustum::GetProjectionMode() == EProjectionMode::ORTHOGRAPHIC) {
+			// Transform the mouse position to get into world space.
+			rayOrigin = inverseViewMatrix.Transform(viewMousePos);
+
+			// In orthographic the direction of the ray is always the camera's direction.
+			rayDirection = inverseViewMatrix.GetDirection();
+		}
+		else {	// Projection mode perspective.
+			// Project the world space mouse position onto the orthogonal basis of the inverse view matrix.
+			// To get the direction of the ray, then normalize the result.
+			rayDirection.SetX(viewMousePos.GetX() * inverseViewMatrix[0][0] + viewMousePos.GetY() * inverseViewMatrix[0][1] + viewMousePos.GetZ() * inverseViewMatrix[0][2]);
+			rayDirection.SetY(viewMousePos.GetX() * inverseViewMatrix[1][0] + viewMousePos.GetY() * inverseViewMatrix[1][1] + viewMousePos.GetZ() * inverseViewMatrix[1][2]);
+			rayDirection.SetZ(viewMousePos.GetX() * inverseViewMatrix[2][0] + viewMousePos.GetY() * inverseViewMatrix[2][1] + viewMousePos.GetZ() * inverseViewMatrix[2][2]);
+			rayDirection = CVector3::Normalise(rayDirection);
+			/*auto viewMatrix = inverseViewMatrix.GetTranspose();
+			viewMatrix.SetPosition(CVector3::s_ZERO);*/
+			/*rayDirection.SetX(CVector3::DotProduct(viewMousePos, inverseViewMatrix.GetRight()));
+			rayDirection.SetY(CVector3::DotProduct(viewMousePos, inverseViewMatrix.GetUp()));
+			rayDirection.SetZ(CVector3::DotProduct(viewMousePos, inverseViewMatrix.GetDirection()));
+			rayDirection = CVector3::Normalise(rayDirection);*/
+
+			// In perspective no matter where you click the origin of the ray is always the camera's position.
+			rayOrigin = inverseViewMatrix.GetPosition();
+		}
+
+		return CRay(rayOrigin, rayDirection);
+	}
+
+	void CCamera::SetPerspective(float radFieldOfView, float aspectRatio, float nearClipDistance, float farClipDistance)
+	{
+		CFrustum::SetFieldOfView(radFieldOfView);
+		CFrustum::SetAspectRatio(aspectRatio);
+		CFrustum::SetNearClipDistance(nearClipDistance);
+		CFrustum::SetFarClipDistance(farClipDistance);
+		CFrustum::SetProjectionMode(EProjectionMode::PERSPECTIVE);
+	}
+
+	void CCamera::SetOrthographic(float orthoSize, float aspectRatio, float nearClipDistance, float farClipDistance)
+	{
+		CFrustum::SetOrthographicSize(orthoSize);
+		CFrustum::SetAspectRatio(aspectRatio);
+		CFrustum::SetNearClipDistance(nearClipDistance);
+		CFrustum::SetFarClipDistance(farClipDistance);
+		CFrustum::SetProjectionMode(EProjectionMode::ORTHOGRAPHIC);
 	}
 
 	void CCamera::SetTarget(CSceneNode* pTarget, bool trackRotation /*= true*/, const CVector3& translationOffset /*= CVector3::s_ZERO*/, const CQuaternion& rotationOffset /*= CQuaternion::s_IDENTITY*/)
@@ -171,6 +235,11 @@ namespace Slim {
 	const CMatrix4x4& CCamera::GetViewMatrix() const
 	{
 		return CFrustum::GetViewMatrix();
+	}
+
+	const CMatrix4x4 CCamera::GetViewProjMatrix() const
+	{
+		return CFrustum::GetProjectionMatrix() * CFrustum::GetViewMatrix();
 	}
 
 }

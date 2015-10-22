@@ -61,25 +61,34 @@ public:
 	 	@author Hayden Asplet
 	*/
 	CTechnique* GetBestTechnique();
-	/** 
+
+	/** Get a technique at a specific level of detail.
+		@param 
+			lod Level of detail. Refers to the index of the technique in 
+			the list of techniques.
 	 	@author Hayden Asplet
-	 	@param size_t lod
-	 	@return
 	*/
 	CTechnique* GetTechnique(size_t lod);
-	/** 
-	 	@author Hayden Asplet
-	 	@return
-	*/
-	size_t GetNumTechniques() const { return m_Techniques.size(); }
 
+	/** Get the number of techniques this material has.
+	 	@author Hayden Asplet
+	*/
+	size_t GetNumTechniques() const;
+
+	/** Remove a specific technique at a given level of detail.
+	 	@author Hayden Asplet
+	*/
 	void RemoveTechnique(size_t lod);
+
+	/** Remove all techniques of the material.
+		@author Hayden Asplet
+	*/
 	void ClearTechniques();
 
 	/** Set the current level of detail. @author Hayden Asplet */
-	void SetLevelOfDetail(size_t lod) { m_CurrentLOD = lod; }
+	void SetLevelOfDetail(size_t lod);
 	/** Get the current level of detail. @author Hayden Asplet */
-	const size_t SetLevelOfDetail() const { return m_CurrentLOD; }
+	const size_t SetLevelOfDetail() const;
 protected:
 private:
 	// Member Variables
@@ -89,12 +98,12 @@ private:
 	TTechniques m_Techniques;
 
 	size_t m_CurrentLOD;
+/*
 	CColourValue m_Diffuse;
 	CColourValue m_Ambient;
 	CColourValue m_Specular;
 	CColourValue m_Emissive;
-	float m_Power;
-
+	float m_Power;*/
 };
 
 }

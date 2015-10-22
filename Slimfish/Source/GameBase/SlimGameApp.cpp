@@ -49,8 +49,7 @@ CGameApp::~CGameApp()
 
 bool CGameApp::VInitialise(HINSTANCE hInstance, LPSTR lpCmdLine, HWND hWnd, size_t screenHeight, size_t screenWidth)
 {
-	CLogger::GetInstance()->CreateLog("SLIM.log");
-	SLIM_INFO_IF(false) << "TestMessge";
+	CLogger::GetInstance()->CreateLog(VGetTitle() + ".log");
 
 	m_hInstance = hInstance;
 
@@ -183,7 +182,7 @@ LRESULT CALLBACK CGameApp::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 			break;
 		}
 		case WM_RBUTTONDOWN: {
-			g_pApp->m_Input.SetMouseButtonPress(EMouseButton::MIDDLE);
+			g_pApp->m_Input.SetMouseButtonPress(EMouseButton::RIGHT);
 			break;
 		}
 		case WM_XBUTTONDOWN: {
@@ -205,7 +204,7 @@ LRESULT CALLBACK CGameApp::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 			break;
 		}
 		case WM_RBUTTONUP: {
-			g_pApp->m_Input.SetMouseButtonRelease(EMouseButton::MIDDLE);
+			g_pApp->m_Input.SetMouseButtonRelease(EMouseButton::RIGHT);
 			break;
 		}
 		case WM_XBUTTONUP: {
@@ -222,7 +221,11 @@ LRESULT CALLBACK CGameApp::MsgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 			int xPos = GET_X_LPARAM(lParam);
 			int yPos = GET_Y_LPARAM(lParam);
 
-			g_pApp->m_Input.SetMousePosition(xPos, yPos);
+			POINT mousePosition;
+			GetCursorPos(&mousePosition);
+			ScreenToClient(hWnd, &mousePosition);
+
+			g_pApp->m_Input.SetMousePosition(mousePosition.x, mousePosition.y);
 			break;
 		}
 		default: {

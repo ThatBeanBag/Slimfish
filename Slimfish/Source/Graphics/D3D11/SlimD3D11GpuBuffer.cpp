@@ -25,8 +25,8 @@
 namespace Slim {
 
 	CD3D11GpuBuffer::CD3D11GpuBuffer(ID3D11Device* pDevice, ID3D11DeviceContext* pImmediateContext,
-									 EBufferType bufferType, size_t bufferSize, const void* pSource,
-									 EGpuBufferUsage usage, bool isInSystemMemory)
+		EBufferType bufferType, size_t bufferSize, const void* pSource,
+		EGpuBufferUsage usage, bool isInSystemMemory)
 		:AGpuBuffer(bufferSize, usage, isInSystemMemory),
 		m_pD3DDevice(pDevice),
 		m_pD3DImmediateContext(pImmediateContext)
@@ -56,12 +56,20 @@ namespace Slim {
 			m_desc.Usage = D3D11Conversions::GetUsage(usage);
 		}
 
-		D3D11_SUBRESOURCE_DATA initData;
-		initData.pSysMem = pSource;
+		HRESULT hResult = S_OK;
 
-		HRESULT hResult = pDevice->CreateBuffer(&m_desc, &initData, m_pBuffer.GetAddressOf());
+		if (pSource) {
+		// Is there initialisation data?
+			D3D11_SUBRESOURCE_DATA initData;
+			initData.pSysMem = pSource;
+			hResult = pDevice->CreateBuffer(&m_desc, &initData, m_pBuffer.GetAddressOf());
+		}
+		else {
+			hResult = pDevice->CreateBuffer(&m_desc, nullptr, m_pBuffer.GetAddressOf());
+		}
+
 		if(FAILED(hResult)) {
-			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create gpu buffer with error:" << GetErrorMessage(hResult);
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create gpu buffer with error: " << GetErrorMessage(hResult);
 			return;
 		}
 	}

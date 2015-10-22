@@ -22,6 +22,7 @@
 // Local Includes
 #include "SlimTypes.h"
 #include "SlimTextureLayer.h"
+#include "SlimRenderQueue.h"
 
 namespace Slim {
 
@@ -258,6 +259,11 @@ public:
 	/** Get the fill mode of the pass. @author Hayden Asplet */
 	const EFillMode GetFillMode() const;
 
+	/** Set the render queue group category. @author Hayden Asplet */
+	void SetRenderQueueGroupCategory(ERenderQueueGroupCategory renderQueueGroupCategory);
+	/** Get the render queue group category. @author Hayden Asplet */
+	const ERenderQueueGroupCategory GetRenderQueueGroupCategory() const;
+
 protected:
 private:
 
@@ -289,6 +295,8 @@ private:
 	// Rasterizer state descriptors.
 	ECullingMode m_CullingMode;
 	EFillMode m_FillMode;
+
+	ERenderQueueGroupCategory m_RenderQueueGroupCategory;
 };
 
 }

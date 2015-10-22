@@ -16,6 +16,7 @@
 #include "ClothSimulatorStd.h"
 
 // Library Includes
+#include <algorithm>
 
 // This Include
 #include "PointMass.h"
@@ -45,19 +46,27 @@ void CPointMass::Update(float timeStep)
 
 	float timeStepSquared = timeStep * timeStep;
 
-	CVector3 nextPosition =  2.0f * m_Position - m_LastPosition + m_Acceleration * timeStepSquared;
+	CVector3 velocity = m_Position - m_LastPosition;
 
-	// Update positions.
 	m_LastPosition = m_Position;
-	m_Position = nextPosition;
+	m_Position += velocity * (1.0f - m_Damping) + m_Acceleration * timeStepSquared;
+
+	if (m_Position.GetY() < 0.0f) {
+		m_Position.SetY(0.0f);
+	}
 
 	m_Acceleration = CVector3::s_ZERO;
 }
 
 void CPointMass::SolveConstraints()
 {
-	for (auto& link : m_Links) {
-		link.Solve();
+	for (auto iter = m_Links.begin(); iter != m_Links.end();) {
+		if (!(*iter).Solve()) {
+			iter = m_Links.erase(iter);
+		}
+		else {
+			++iter;
+		}
 	}
 
 	if (m_IsPinned) {
@@ -65,9 +74,9 @@ void CPointMass::SolveConstraints()
 	}
 }
 
-void CPointMass::Attach(CPointMass* pointMass, float restingDistance, float stiffness, float breakForce)
+void CPointMass::Attach(CPointMass* pointMass, float restingDistance, float stiffness, float breakForce, bool isVisible /*= true*/)
 {
-	m_Links.emplace_back(this, pointMass, restingDistance, stiffness, breakForce);
+	m_Links.emplace_back(this, pointMass, restingDistance, stiffness, breakForce, isVisible);
 }
 
 void CPointMass::ApplyForce(const CVector3& force)
@@ -81,6 +90,16 @@ void CPointMass::Pin(const CVector3& pinPosition)
 {
 	m_IsPinned = true;
 	m_PinPosition = pinPosition;
+}
+
+void CPointMass::DetachPin()
+{
+	m_IsPinned = false;
+}
+
+void CPointMass::RemoveLink(CLink* pLink)
+{
+	m_Links.erase(std::remove_if(m_Links.begin(), m_Links.end(), [&](const CLink& link){ return &link == pLink; }));
 }
 
 void CPointMass::SetPosition(const CVector3& position)
