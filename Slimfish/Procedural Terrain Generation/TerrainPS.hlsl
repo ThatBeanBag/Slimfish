@@ -77,7 +77,7 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 		sandBlend = saturate((pIn.positionWorld.y - gSandStart) / (gSandFull - gSandStart));
 
 		// Calculate normal for sand.
-		float3 sandNormal = gSandTexture.Sample(gSample5, pIn.texCoord);
+		float3 sandNormal = gSandTexture.Sample(gSample5, pIn.texCoord).xyz;
 		normalSample = lerp(normalSample, sandNormal, sandBlend);
 		//normalSample += sandNormal * sandBlend;
 	}
@@ -122,10 +122,10 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 	float3 finalNormal = pIn.normal;
 	//if (depthValue < gDetailStart) {
 	//}
-	float normalBlend = saturate((depthValue - gDetailStart) / (gDetailFull - gDetailStart));
-	float3 bumpedNormal = GetBumpedNormal(pIn.normal, normalSample, pIn.tangent);
-	finalNormal = lerp(pIn.normal, bumpedNormal, normalBlend);
-	finalNormal = bumpedNormal;
+	//float normalBlend = saturate((depthValue - gDetailStart) / (gDetailFull - gDetailStart));
+	//float3 bumpedNormal = GetBumpedNormal(pIn.normal, normalSample, pIn.tangent);
+	//finalNormal = lerp(pIn.normal, bumpedNormal, normalBlend);
+	//finalNormal = bumpedNormal;
 
 	// Lighting.
 	Material material = { diffuse, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 1.0f };
@@ -145,7 +145,7 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 
 	// Fog
 	float fogLerp = saturate((distanceToEye - gFogStart) / gFogRange);
-	lightColour = lerp(lightColour, gFogColour, fogLerp);
+	lightColour = lerp(lightColour.xyz, gFogColour.xyz, fogLerp);
 
 	return float4(lightColour, diffuse.a);
 }

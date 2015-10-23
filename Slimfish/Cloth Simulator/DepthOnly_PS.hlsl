@@ -7,6 +7,6 @@ struct PS_INPUT {
 
 float4 main(PS_INPUT pIn) : SV_TARGET
 {
-	float depth = pIn.positionCoord.z / pIn.positionCoord.w;
+	float depth = pIn.positionCoord.z;
 	return float4(depth,depth,depth, 1.0f);
 }

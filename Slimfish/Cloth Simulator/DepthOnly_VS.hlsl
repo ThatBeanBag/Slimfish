@@ -1,6 +1,7 @@
 
 cbuffer constantBuffer {
 	float4x4 gWorldViewProjMatrix;
+	float gZFar;
 };
 
 struct VS_IN {
@@ -18,6 +19,7 @@ PS_INPUT main(VS_IN vIn)
 
 	vOut.position = mul(float4(vIn.position, 1.0f), gWorldViewProjMatrix);
 	vOut.positionCoord = vOut.position;
+	vOut.positionCoord.z /= gZFar;
 
 	return vOut;
 }

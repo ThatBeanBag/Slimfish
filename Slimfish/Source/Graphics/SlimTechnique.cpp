@@ -55,6 +55,7 @@ namespace Slim {
 	CRenderPass* CTechnique::AddRenderPass(const CRenderPass& pass)
 	{
 		m_RenderPasses.push_back(std::make_unique<CRenderPass>(pass));
+		return m_RenderPasses.back().get();
 	}
 
 	CRenderPass* CTechnique::GetRenderPass(size_t index)
@@ -79,7 +80,7 @@ namespace Slim {
 
 	void CTechnique::Copy(const CTechnique& other)
 	{
-		m_RenderPasses = TRenderPasses(other.m_RenderPasses.size(), nullptr);
+		/*m_RenderPasses = TRenderPasses(other.m_RenderPasses.size(), nullptr);
 
 		auto copyPass = [](const std::unique_ptr<CRenderPass>& renderPass) {
 			std::unique_ptr<CRenderPass> copy;
@@ -90,11 +91,29 @@ namespace Slim {
 				copy = nullptr;
 			}
 
-			return copy;
+			return std::move(copy);
+
+		};
+		
+		std::transform(other.m_RenderPasses.begin(), other.m_RenderPasses.end(),
+						m_RenderPasses.begin(), copyPass);*/
+
+		
+
+		m_RenderPasses.reserve(other.m_RenderPasses.size());
+		auto copyPass = [&](const std::unique_ptr<CRenderPass>& renderPass) {
+			std::unique_ptr<CRenderPass> copy;
+			if (renderPass) {
+				copy = std::make_unique<CRenderPass>(*renderPass.get());
+			}
+			else {
+				copy = nullptr;
+			}
+
+			m_RenderPasses.push_back(std::move(copy));
 		};
 
-		std::transform(other.m_RenderPasses.begin(), other.m_RenderPasses.end(), 
-			m_RenderPasses.begin(), copyPass);
+		std::for_each(other.m_RenderPasses.begin(), other.m_RenderPasses.end(), copyPass);
 	}
 
 }

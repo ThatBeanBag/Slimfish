@@ -4,6 +4,7 @@
 cbuffer constantBuffer {
 	Light gLight;
 	float3 gAmbientLight;
+	float3 gEyePosition;
 };
 
 static const float bias = 0.1f;
@@ -15,30 +16,34 @@ SamplerState gSampleShadowMap;
 
 struct VSOutput {
 	float4 position : SV_POSITION;
+	float4 positionW : TEXCOORD0;
 	float3 normal : NORMAL;
-	float2 texCoord : TEXCOORD0;
-	float4 lightViewProjPosition : TEXCOORD1;
+	float2 texCoord : TEXCOORD1;
+	float4 lightViewProjPosition : TEXCOORD2;
 	float4 colour : COLOR;
 };
 
 float4 main(VSOutput pIn) : SV_TARGET
 {
-	float4 diffuse = gTextureDiffuse.Sample(gSampleDiffuse, texCoord);
-	float3 toEye = float3(0.0f, 1.0f, 0.0f);
-	float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	float3 toEye = gEyePosition - pIn.positionW.xyz;
+	float distanceToEye = length(toEye);
+	toEye /= distanceToEye;
 
-	Material material = { diffuse, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 133.0f };
+	float4 diffuse = gTextureDiffuse.Sample(gSampleDiffuse, pIn.texCoord);
+	float4 specular = float4(0.4f, 0.4f, 0.4f, 1.0f);
+
+	Material material = { diffuse, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 10.0f };
 
 	float3 lightColour = float3(0.0f, 0.0f, 0.0f);
 
 	float bCalculateLighting = true;
 	// Calculate shadow mapping coords.
-	/*float2 lightProjectTexCoords;
+	float2 lightProjectTexCoords;
 	lightProjectTexCoords.x = pIn.lightViewProjPosition.x / pIn.lightViewProjPosition.w / 2.0f + 0.5f;
 	lightProjectTexCoords.y = -pIn.lightViewProjPosition.y / pIn.lightViewProjPosition.w / 2.0f + 0.5f;
 	if (saturate(lightProjectTexCoords.x) == lightProjectTexCoords.x &&
 		saturate(lightProjectTexCoords.y) == lightProjectTexCoords.y) {
-		float shadowMapDepth = gShadowMap.Sample(gSampleShadowMap, lightProjectTexCoords).r;
+		float shadowMapDepth = gTextureShadowMap.Sample(gSampleShadowMap, lightProjectTexCoords).r;
 
 		float lightDepthValue = pIn.lightViewProjPosition.z / pIn.lightViewProjPosition.w;
 		lightDepthValue -= bias;
@@ -47,7 +52,7 @@ float4 main(VSOutput pIn) : SV_TARGET
 		if (shadowMapDepth < lightDepthValue) {
 			bCalculateLighting = false;
 		}
-	}*/
+	}
 
 	if (bCalculateLighting) {
 		float3 finalNormal = normalize(pIn.normal);

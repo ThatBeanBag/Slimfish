@@ -51,10 +51,6 @@ void CPointMass::Update(float timeStep)
 	m_LastPosition = m_Position;
 	m_Position += velocity * (1.0f - m_Damping) + m_Acceleration * timeStepSquared;
 
-	if (m_Position.GetY() < 0.0f) {
-		m_Position.SetY(0.0f);
-	}
-
 	m_Acceleration = CVector3::s_ZERO;
 }
 
@@ -102,6 +98,11 @@ void CPointMass::RemoveLink(CLink* pLink)
 	m_Links.erase(std::remove_if(m_Links.begin(), m_Links.end(), [&](const CLink& link){ return &link == pLink; }));
 }
 
+void CPointMass::ClearLinks()
+{
+	m_Links.clear();
+}
+
 void CPointMass::SetPosition(const CVector3& position)
 {
 	m_Position = position;
@@ -112,6 +113,16 @@ const CVector3& CPointMass::GetPosition() const
 	return m_Position;
 }
 
+void CPointMass::SetLastPosition(CVector3 lastPosition)
+{
+	m_LastPosition = lastPosition;
+}
+
+const CVector3 CPointMass::GetLastPosition() const
+{
+	return m_LastPosition;
+}
+
 void CPointMass::SetMass(float mass)
 {
 	m_Mass = mass;
@@ -120,6 +131,16 @@ void CPointMass::SetMass(float mass)
 const float CPointMass::GetMass() const
 {
 	return m_Mass;
+}
+
+const bool CPointMass::IsPinned() const
+{
+	return m_IsPinned;
+}
+
+const CVector3 CPointMass::GetTotalForce() const
+{
+	return m_Acceleration * m_Mass;
 }
 
 const std::vector<CLink>& CPointMass::GetLinks() const

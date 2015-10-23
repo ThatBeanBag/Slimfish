@@ -72,7 +72,7 @@ namespace Slim {
 		m_bIsVisible = isVisible;
 		if (recursive) {
 			// Set the visibility of the children nodes and their children nodes.
-			static auto setVisibility = [&](std::unique_ptr<CSceneNode>& pSceneNode) {
+			static auto setVisibility = [&](const std::shared_ptr<CSceneNode>& pSceneNode) {
 				pSceneNode->SetVisibility(isVisible, true);
 			};
 

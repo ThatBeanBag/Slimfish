@@ -33,6 +33,7 @@ struct TVertex {
 
 CProceduralTerrainGenerationLogic::CProceduralTerrainGenerationLogic()
 	:m_Camera(nullptr),
+	m_Light(nullptr),
 	m_Terrain(64, 0, 255)
 {
 	m_TerrainWorldTransform = CMatrix4x4::s_IDENTITY;
@@ -83,12 +84,12 @@ bool CProceduralTerrainGenerationLogic::Initialise()
 	m_Light.SetType(LIGHT_DIRECTIONAL);
 	m_Light.SetDiffuse(CColourValue(0.7f, 0.7f, 0.7f));
 	m_Light.SetSpecular(CColourValue(1.0f, 1.0f, 1.0f, 1.0f));
-	m_Light.SetDirection(CVector3::Normalise(CVector3(-1.0f, -0.8f, 1.0f)));
+	m_Light.SetRotation(CQuaternion(45, -45, 0));
 
 	m_pTerrainPSParams->SetConstant("gLight.type", m_Light.GetType());
 	m_pTerrainPSParams->SetConstant("gLight.diffuse", m_Light.GetDiffuse());
 	m_pTerrainPSParams->SetConstant("gLight.specular", m_Light.GetSpecular());
-	m_pTerrainPSParams->SetConstant("gLight.direction", m_Light.GetDirection());
+	m_pTerrainPSParams->SetConstant("gLight.direction", m_Light.GetRotation().GetDirection());
 	m_pTerrainPSParams->SetConstant("gLight.range", m_Light.GetRange());
 	m_pTerrainPSParams->SetConstant("gLight.attenuation", m_Light.GetAttenuation());
 	m_pTerrainPSParams->SetConstant("gFogStart", 200.0f);
@@ -98,12 +99,16 @@ bool CProceduralTerrainGenerationLogic::Initialise()
 	m_TerrainRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_pTerrainPSParams);
 
 	// Setup camera.
-	m_Camera.SetPosition(CVector3(0.0f, 0.0f, 10.0f));
+	m_Camera.SetPosition(CVector3(150.0f, 150.0f, 150.0f));
 	m_Camera.SetProjectionMode(EProjectionMode::PERSPECTIVE);
 	m_Camera.SetNearClipDistance(0.1f);
 	m_Camera.SetFarClipDistance(1000.0f);
 	m_Camera.SetFieldOfView(Math::DegreesToRadians(60.0f));
 	m_Camera.SetOrthographicSize(20.0f);
+
+	m_CameraYaw = Math::DegreesToRadians(45.0f);
+	m_CameraPitch = Math::DegreesToRadians(-45.0f);
+	m_Camera.SetRotation(CQuaternion(m_CameraYaw, m_CameraPitch, 0.0f));
 
 	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
 
@@ -132,9 +137,9 @@ void CProceduralTerrainGenerationLogic::Render()
 void CProceduralTerrainGenerationLogic::HandleInput(const CInput& input, float deltaTime)
 
 {
-	if (input.GetKeyPress(EKeyCode::G)) {
+	if (input.GetKeyPress(EKeyCode::NUM_1)) {
 		// Step the diamond square algorithm.
-		for (int i = 0; i < 5; ++i) {
+		for (int i = 0; i < 3; ++i) {
 			m_Terrain.Step();
 		}
 
@@ -142,7 +147,16 @@ void CProceduralTerrainGenerationLogic::HandleInput(const CInput& input, float d
 		CreateTerrainVertices({ 200.0f, 100.0f, 200.0f });
 	}
 
-	if (input.GetKeyPress(EKeyCode::P)) {
+	if (input.GetKeyPress(EKeyCode::NUM_4)) {
+		if (m_TerrainRenderPass.GetFillMode() == EFillMode::SOLID) {
+			m_TerrainRenderPass.SetFillMode(EFillMode::WIREFRAME);
+		}
+		else {
+			m_TerrainRenderPass.SetFillMode(EFillMode::SOLID);
+		}
+	}
+
+	if (input.GetKeyPress(EKeyCode::NUM_3)) {
 		if (m_Terrain.IsDone()) {
 			m_Terrain.Reset();
 		}
@@ -159,7 +173,7 @@ void CProceduralTerrainGenerationLogic::HandleInput(const CInput& input, float d
 		CreateTerrainVertices({ 200.0f, 100.0f, 200.0f });
 	}
 
-	if (input.GetKeyPress(EKeyCode::F)) {
+	if (input.GetKeyPress(EKeyCode::NUM_2)) {
 		CreateTerrainVertices({ 200.0f, 100.0f, 200.0f }, true);
 	}
 
@@ -177,11 +191,11 @@ void CProceduralTerrainGenerationLogic::HandleInput(const CInput& input, float d
 	m_lastMousePosition = mousePosition;
 
 	/*if (input.GetKeyRelease(EKeyCode::F1)) {
-	g_pApp->GetRenderer()->ToggleWindowed(); // If only :(
+		g_pApp->GetRenderer()->ToggleWindowed(); // If only :(
 	}*/
 
 	// Handle translation of camera.
-	static float speed = 5.0f;
+	static float speed = 50.0f;
 	if (input.IsKeyDown(EKeyCode::LEFT_SHIFT)) {
 		speed = 50.0f;
 	}
@@ -265,36 +279,6 @@ void CProceduralTerrainGenerationLogic::CreateTerrainVertices(const CVector3& sc
 	}
 
 	// Compute normals.
-	/*for (unsigned int z = 0; z < size; ++z) {
-		for (unsigned int x = 0; x < size; ++x) {
-			auto& currentVert = vertices[x + z * size];
-			auto averagedNormal = CVector3::s_ZERO;
-			auto lastLine = CVector3::s_ZERO;
-
-			// Start at the top right neighbour.
-			//int neighbourX = x + 1;
-			//int neighbourZ = z - 1;
-
-			for (auto neighbourZ = z - 1; neighbourZ <= z + 1; ++neighbourZ) {
-				for (auto neighbourX = x - 1; neighbourX <= x + 1; ++neighbourX) {
-					if (neighbourX < 0 || neighbourZ < 0 || neighbourX >= size || neighbourZ >= size) {
-						continue;
-					}
-
-					auto neighbourVert = vertices[neighbourX + neighbourZ * size];
-					auto currentLine = currentVert.position - neighbourVert.position;
-
-					auto currentNormal = CVector3::CrossProduct(lastLine, currentLine);
-					averagedNormal += currentNormal;
-					lastLine = currentLine;
-				}
-			}
-
-			currentVert.normal = CVector3::Normalise(averagedNormal);
-		}
-	}*/
-
-	// Compute normals.
 	for (unsigned int z = 0; z < size; ++z) {
 		for (unsigned int x = 0; x < size; ++x) {
 			TVertex& currentVert = pVertices[x + z * size];
@@ -369,8 +353,6 @@ void CProceduralTerrainGenerationLogic::CreateTerrainVertices(const CVector3& sc
 		vert2.tangent = tangent;
 		vert3.tangent = tangent;
 	}
-
-	//m_pTerrainVertices = g_pApp->GetRenderer()->CreateVertexBuffer(vertices);
 }
 
 void CProceduralTerrainGenerationLogic::CreateTerrainIndices()
