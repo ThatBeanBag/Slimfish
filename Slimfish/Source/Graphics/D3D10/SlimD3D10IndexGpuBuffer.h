@@ -47,12 +47,16 @@ public:
 	@param
 		usage Describes how the buffer is intended to be used.
 	@param
+		isOutput True if the buffer is to be used as output from a geometry shader. This specifies
+		that the buffer can be bound to the stream output stage of the pipeline and cannot be used
+		for drawing.
+	@param
 		isInSystemMemory True if the buffer should be stored in system memory
 		and not in video memory.
 	*/
 	CD3D10IndexGpuBuffer(ID3D10Device* pD3DDevice,
 						 size_t numIndices, EIndexType type, const void* pSource,
-						 EGpuBufferUsage usage, bool isInSystemMemory);
+						 EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory);
 	/** Destructor
 		@author Hayden Asplet
 	*/
@@ -89,7 +93,7 @@ public:
 protected:
 private:
 	// This class just takes the name vertex buffer; the actual implementation is in CD3D10GpuBuffer.
-	CD3D10GpuBuffer* m_pImpl;	// To avoid multiple inheritance and the dreaded diamond of death, use PIMPL (pointer to implementation).
+	std::unique_ptr<CD3D10GpuBuffer> m_pImpl;	// To avoid multiple inheritance and the dreaded diamond of death, use PIMPL (pointer to implementation).
 };
 
 }

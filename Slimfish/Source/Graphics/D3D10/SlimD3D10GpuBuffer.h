@@ -52,7 +52,7 @@ namespace Slim {
 		*/
 		CD3D10GpuBuffer(ID3D10Device* pD3DDevice, 
 						EBufferType bufferType, size_t bufferSize, const void* pSource,
-						EGpuBufferUsage usage, bool isInSystemMemory);
+						EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory);
 		/** Destructor
 		 	@author Hayden Asplet
 		*/
@@ -75,7 +75,7 @@ namespace Slim {
 	protected:
 	private:
 		ID3D10Device* m_pD3DDevice;	// Pointer to the device, owned by the renderer.
-		ID3D10Buffer* m_pBuffer;	// The buffer itself.
+		ComPtr<ID3D10Buffer> m_pBuffer;	// The buffer itself.
 		D3D10_BUFFER_DESC m_desc;	// Description of the buffer.
 	};
 

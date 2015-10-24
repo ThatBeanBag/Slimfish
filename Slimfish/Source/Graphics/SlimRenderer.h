@@ -120,23 +120,45 @@ namespace Slim {
 		 	@author Hayden Asplet
 		 	@param numVertices The number of vertices to stored in the buffer.
 		 	@param stride Stride or size of a single vertex.
-		 	@param usage Indicates how the buffer is going to be used for optimization purposes.
+			@param
+				usage How the buffer is intended to be used e.g. statically, dynamically, write only
+				etc. see EGpuBufferUsage.
+			@param
+				isOutput True if the buffer is to be used as output from a geometry shader. This specifies
+				that the buffer can be bound to the stream output stage of the pipeline and cannot be used
+				for drawing.
+			@param
+				isInSystemMemory True if the buffer should be stored in system memory and not in video
+				memory on the GPU. This is the least optimal for buffers that need to sent to the GPU
+				at some point, but can be used for heavily dynamic buffers that will be changed frequently
+				by the CPU.
 		 	@return 
 				A pointer to the buffer for reading/writing depending on intended 
 				usage of the buffer.
 		*/
-		virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory) = 0;
+		virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isOutput = false, bool isInSystemMemory = false) = 0;
 
 		/** Create a index buffer on the GPU.
 			@author Hayden Asplet
 			@param numIndices The number of indices to stored in the buffer.
 			@param indexSize Stride or size of a single index.
-			@param usage Indicates how the buffer is going to be used for optimization purposes.
+			@param
+				usage How the buffer is intended to be used e.g. statically, dynamically, write only
+				etc. see EGpuBufferUsage.
+			@param
+				isOutput True if the buffer is to be used as output from a geometry shader. This specifies
+				that the buffer can be bound to the stream output stage of the pipeline and cannot be used
+				for drawing.
+			@param
+				isInSystemMemory True if the buffer should be stored in system memory and not in video
+				memory on the GPU. This is the least optimal for buffers that need to sent to the GPU
+				at some point, but can be used for heavily dynamic buffers that will be changed frequently
+				by the CPU.
 			@return
 				A pointer to the buffer for reading/writing depending on intended
 				usage of the buffer.
 		*/
-		virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory) = 0;
+		virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isOutput = false, bool isInSystemMemory = false) = 0;
 
 		/** Create a shader from file.
 		 	@author Hayden Asplet
@@ -153,8 +175,21 @@ namespace Slim {
 		*/
 		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ETextureType type = ETextureType::TYPE_2D, ETextureUsage usage = ETextureUsage::STATIC) = 0;
 
-		virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(const std::string& name, size_t width, size_t height, 
-			size_t msaaCount = 1, size_t msaaQuality = 0, ETextureType textureType = ETextureType::TYPE_2D) = 0;
+		/** Create a render texture.
+		 	@author Hayden Asplet
+		 	@param name Name of the render target to identify it by.
+			@param width Width of the render target in pixels.
+			@param height Height of the render target in pixels.
+			@param depth Depth of the render target int pixels, only used if the render target is 3D.
+		 	@param textureType Type of texture e.g. TYPE_2D, TYPE_3D, TYPE_CUBEMAP etc.
+			@param msaaCount The number of multi-sampling samples.
+			@param msaaQuality The quality of the multi-sampling samples.
+		*/
+		virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t depth = 0,
+			ETextureType textureType = ETextureType::TYPE_2D, size_t msaaCount = 1, size_t msaaQuality = 0) = 0;
+		
+		/** Create a render texture from an existing texture. @author Hayden Asplet*/
+		virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(std::shared_ptr<ATexture> pTexture) = 0;
 
 		/** Perform a render operation, rendering a set of vertices.
 		 	@author Hayden Asplet
@@ -192,6 +227,18 @@ namespace Slim {
 		 	@param pRenderTarget Pointer to the render target to render to.
 		*/
 		virtual void VSetRenderTarget(ARenderTexture* pRenderTarget) = 0;
+
+		/** Set the target buffers to stream out to. 
+		 	@author Hayden Asplet
+		 	@param buffers List of buffers to stream out to during the stream output stage.
+		*/
+		virtual void VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpuBuffer> >& buffers) = 0;
+
+		/** Set the target buffer to stream out to.
+			@author Hayden Asplet
+			@param pBuffer Buffer to stream out to during the stream output stage.
+		*/
+		virtual void VSetStreamOutTarget(const std::shared_ptr<AGpuBuffer>& pBuffer) = 0;
 
 		/** Set the world transform. */
 		virtual void VSetWorldTransform(const CMatrix4x4& worldTransform) = 0;
@@ -341,8 +388,8 @@ namespace Slim {
 		virtual void VSetTextureBorderColour(size_t layer, const CColourValue& colour) = 0;
 
 		virtual void VSetVertexDeclaration(const CVertexDeclaration& vertexDeclaration) = 0;
-		virtual void VSetVertexBuffer(shared_ptr<AVertexGpuBuffer> pVertexBuffer) = 0;
-		virtual void VSetIndexBuffer(shared_ptr<AIndexGpuBuffer> pIndexBuffer) = 0;
+		virtual void VSetVertexBuffer(const shared_ptr<AVertexGpuBuffer>& pVertexBuffer) = 0;
+		virtual void VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBuffer) = 0;
 
 		// Member Variables
 	public:
@@ -358,7 +405,7 @@ namespace Slim {
 	template<typename TVertexType>
 	shared_ptr<AVertexGpuBuffer> ARenderer::CreateVertexBuffer(const std::vector<TVertexType>& verts, EGpuBufferUsage usage, bool isInSystemMemory)
 	{
-		return VCreateVertexBuffer(verts.size(), sizeof(TVertexType), reinterpret_cast<const void*>(&verts[0]), usage, isInSystemMemory);
+		return VCreateVertexBuffer(verts.size(), sizeof(TVertexType), reinterpret_cast<const void*>(&verts[0]), usage, false, isInSystemMemory);
 	}
 }
 #endif	// __SLIMRENDERER_H__

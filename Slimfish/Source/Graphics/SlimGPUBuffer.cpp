@@ -25,12 +25,12 @@
 namespace Slim {
 
 AGpuBuffer::AGpuBuffer(size_t size, EGpuBufferUsage usage, bool isInSystemMemory)
-	:m_usage(usage),
-	m_bufferSize(size),
-	m_isInSystemMemory(isInSystemMemory),
-	m_lockOffset(0),
-	m_lockSize(0),
-	m_isLocked(false)
+	:m_Usage(usage),
+	m_BufferSize(size),
+	m_IsInSystemMemory(isInSystemMemory),
+	m_LockOffset(0),
+	m_LockSize(0),
+	m_IsLocked(false)
 {
 
 }
@@ -42,12 +42,12 @@ AGpuBuffer::~AGpuBuffer()
 
 void* AGpuBuffer::Lock(size_t offset, size_t size, EGpuBufferLockType lockType)
 {
-	assert(offset + size <= m_bufferSize);	// Don't overrun the buffers.
-	assert(!m_isLocked);	// Locking the buffer twice without unlocking is invalid.
+	assert(offset + size <= m_BufferSize);	// Don't overrun the buffers.
+	assert(!m_IsLocked);	// Locking the buffer twice without unlocking is invalid.
 
-	m_lockOffset = offset;
-	m_lockSize = size;
-	m_isLocked = true;
+	m_LockOffset = offset;
+	m_LockSize = size;
+	m_IsLocked = true;
 	
 	// Call the derived class's implementation to lock the buffer.
 	return VLock(offset, size, lockType);
@@ -55,27 +55,32 @@ void* AGpuBuffer::Lock(size_t offset, size_t size, EGpuBufferLockType lockType)
 
 void AGpuBuffer::Unlock()
 {
-	assert(m_isLocked);	// Can't unlock if we haven't locked.
+	assert(m_IsLocked);	// Can't unlock if we haven't locked.
 
 	// Call the derived class's implementation to unlock the buffer.
 	VUnlock();
 
-	m_isLocked = false;
+	m_IsLocked = false;
 }
 
 const EGpuBufferUsage AGpuBuffer::GetUsage() const
 {
-	return m_usage;
+	return m_Usage;
 }
 
 const size_t AGpuBuffer::GetSize() const
 {
-	return m_bufferSize;
+	return m_BufferSize;
+}
+
+const bool AGpuBuffer::IsOutput() const
+{
+	return m_IsOutput;
 }
 
 const bool AGpuBuffer::IsInSystemMemory() const
 {
-	return m_isInSystemMemory;
+	return m_IsInSystemMemory;
 }
 
 /************************************************************************/

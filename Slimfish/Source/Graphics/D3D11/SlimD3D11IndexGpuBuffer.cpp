@@ -32,8 +32,9 @@ namespace Slim {
 		EIndexType type, 
 		const void* pSource,
 		EGpuBufferUsage usage, 
+		bool isOutput,
 		bool isInSystemMemory)
-		:AIndexGpuBuffer(numIndices, type, usage, isInSystemMemory)
+		:AIndexGpuBuffer(numIndices, type, usage, isOutput, isInSystemMemory)
 	{
 		m_pImpl = std::make_unique<CD3D11GpuBuffer>(
 			pD3DDevice,
@@ -42,6 +43,7 @@ namespace Slim {
 			GetSize(),
 			pSource,
 			usage, 
+			isOutput,
 			isInSystemMemory);
 	}
 

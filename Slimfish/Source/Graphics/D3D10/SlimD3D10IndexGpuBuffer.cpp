@@ -31,21 +31,23 @@ namespace Slim {
 		EIndexType type, 
 		const void* pSource,
 		EGpuBufferUsage usage, 
+		bool isOutput,
 		bool isInSystemMemory)
-		:AIndexGpuBuffer(numIndices, type, usage, isInSystemMemory)
+		:AIndexGpuBuffer(numIndices, type, usage, isOutput, isInSystemMemory)
 	{
-		m_pImpl = new CD3D10GpuBuffer(
+		m_pImpl = std::make_unique<CD3D10GpuBuffer>(
 			pD3DDevice,
 			CD3D10GpuBuffer::BUFFER_TYPE_INDEX,
 			GetSize(),
 			pSource,
 			usage, 
+			isOutput,
 			isInSystemMemory);
 	}
 
 	CD3D10IndexGpuBuffer::~CD3D10IndexGpuBuffer()
 	{
-		SLIM_SAFE_DELETE(m_pImpl);
+
 	}
 
 	ID3D10Buffer* CD3D10IndexGpuBuffer::GetD3DBuffer()

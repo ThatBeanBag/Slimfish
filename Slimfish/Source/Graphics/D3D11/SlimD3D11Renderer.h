@@ -51,9 +51,9 @@ public:
 	virtual void VPostRender() override;
 
 	/* @copydoc ARenderer::VCreateVertexBuffer */
-	virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory) override;
+	virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory) override;
 	/* @copydoc ARenderer::VCreateVertexBuffer */
-	virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory) override;
+	virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isOutput = false, bool isInSystemMemory = false) override;
 
 	/* @copydoc ARenderer::VCreateShaderProgram */
 	virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, EShaderProgramType type, const std::string& entry, const std::string& shaderModel);
@@ -62,7 +62,11 @@ public:
 	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ETextureType type, ETextureUsage usage) override;
 
 	/* @copydoc ARenderer::VCreateRenderTexture */
-	virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t msaaCount, size_t msaaQuality, ETextureType textureType /* = ETextureType::TYPE_2D */) override;
+	virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t depth,
+		ETextureType textureType, size_t msaaCount, size_t msaaQuality) override;
+
+	/* @copydoc ARenderer::VCreateRenderTexture */
+	virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(std::shared_ptr<ATexture> pTexture);
 
 	/* @copydoc ARenderer::VRender */
 	virtual void VRender(const CVertexDeclaration& vertexDeclaration,
@@ -77,6 +81,12 @@ public:
 
 	/* @copydoc ARenderer::VSetRenderTarget */
 	virtual void VSetRenderTarget(ARenderTexture* pRenderTarget) override;
+
+	/* @copydoc ARenderer::VSetStreamOutTargets */
+	virtual void VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpuBuffer> >& buffers) override;
+
+	/* @copydoc ARenderer::VSetStreamOutTarget */
+	virtual void VSetStreamOutTarget(const std::shared_ptr<AGpuBuffer>& pBuffer) override;
 
 	/* @copydoc ARenderer::VSetWorldTransform */
 	virtual void VSetWorldTransform(const CMatrix4x4& worldTransform) override;
@@ -132,9 +142,9 @@ private:
 	/* @copydoc ARenderer::VSetVertexDeclaration */
 	virtual void VSetVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
 	/* @copydoc ARenderer::VSetVertexBuffer */
-	virtual void VSetVertexBuffer(shared_ptr<AVertexGpuBuffer> pVertexBuffer);
+	virtual void VSetVertexBuffer(const shared_ptr<AVertexGpuBuffer>& pVertexBuffer);
 	/* @copydoc ARenderer::VSetIndexBuffer */
-	virtual void VSetIndexBuffer(shared_ptr<AIndexGpuBuffer> pIndexBuffer);
+	virtual void VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBuffer);
 
 	/** Internal helper method for creating a sampler state for a texture layer.
 	 	@author Hayden Asplet
@@ -146,6 +156,7 @@ private:
 	 	@author Hayden Asplet
 	*/
 	std::vector<D3D11_INPUT_ELEMENT_DESC> GetD3DVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
+
 
 
 	// Member Variables

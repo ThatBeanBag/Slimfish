@@ -27,8 +27,8 @@ namespace Slim {
 
 	CD3D11VertexGpuBuffer::CD3D11VertexGpuBuffer(ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext,
 												 size_t numVertices, size_t stride, const void* pSource, 
-												 EGpuBufferUsage usage, bool isInSystemMemory)
-		:AVertexGpuBuffer(numVertices, stride, usage, isInSystemMemory)
+												 EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory)
+		:AVertexGpuBuffer(numVertices, stride, usage, isOutput, isInSystemMemory)
 	{
 		m_pImpl = std::make_unique<CD3D11GpuBuffer>(
 			pD3DDevice, 
@@ -36,7 +36,9 @@ namespace Slim {
 			CD3D11GpuBuffer::BUFFER_TYPE_VERTEX,
 			numVertices * stride,
 			pSource,
-			usage, isInSystemMemory);
+			usage, 
+			isOutput, 
+			isInSystemMemory);
 	}
 
 	CD3D11VertexGpuBuffer::~CD3D11VertexGpuBuffer()

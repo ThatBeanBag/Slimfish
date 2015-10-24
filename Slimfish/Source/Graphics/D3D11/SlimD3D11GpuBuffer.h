@@ -46,13 +46,17 @@ namespace Slim {
 				bufferSize Size of the buffer in bytes.
 		 	@param 
 				usage Describes how the buffer is intended to be used.
+			@param
+				isOutput True if the buffer is to be used as output from a geometry shader. This specifies
+				that the buffer can be bound to the stream output stage of the pipeline and cannot be used
+				for drawing.
 		 	@param 
 				isInSystemMemory True if the buffer should be stored in system memory and not in video 
 				memory.
 		*/
 		CD3D11GpuBuffer(ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext,
 						EBufferType bufferType, size_t bufferSize, const void* pSource,
-						EGpuBufferUsage usage, bool isInSystemMemory);
+						EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory);
 		/** Destructor
 		 	@author Hayden Asplet
 		*/

@@ -26,8 +26,8 @@ namespace Slim {
 
 	CD3D11GpuBuffer::CD3D11GpuBuffer(ID3D11Device* pDevice, ID3D11DeviceContext* pImmediateContext,
 		EBufferType bufferType, size_t bufferSize, const void* pSource,
-		EGpuBufferUsage usage, bool isInSystemMemory)
-		:AGpuBuffer(bufferSize, usage, isInSystemMemory),
+		EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory)
+		:AGpuBuffer(bufferSize, usage, isOutput, isInSystemMemory),
 		m_pD3DDevice(pDevice),
 		m_pD3DImmediateContext(pImmediateContext)
 	{
@@ -45,6 +45,10 @@ namespace Slim {
 		}
 		else if (bufferType == BUFFER_TYPE_VERTEX) {
 			m_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		}
+
+		if (isOutput) {
+			m_desc.BindFlags = D3D11_BIND_STREAM_OUTPUT;
 		}
 
 		if (isInSystemMemory) {

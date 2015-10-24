@@ -59,6 +59,29 @@ enum class ETextureType {
 	TYPE_CUBIC
 };
 
+enum class ETexturePixelFormat {
+	UKNOWN,
+
+	// Four channels of 32 bits each as floating-point data.
+	FLOAT_32_RGBA,
+	// Four channels of 32 bits each as typeless data.
+	TYPELESS_32_RGBA,
+	// Four channels of 32 bits each as unsigned integral data.
+	UINT_32_RGBA,
+	// Four channels of 32 bits each as signed integral data.
+	INT_32_RGBA,
+
+	// Three channels of 32 bits each as floating-point data.
+	FLOAT_32_RGB,
+	// Three channels of 32 bits each as typeless data.
+	TYPELESS_32_RGB,
+	// Three channels of 32 bits each as unsigned integral data.
+	UINT_32_RGB,
+	// Three channels of 32 bits each as signed integral data.
+	INT_32_RGB,
+
+};
+
 /** Abstract class representing a texture resource.
 @remarks
 	A texture is a rendering resource that can be used by shaders to provide definition
@@ -258,6 +281,7 @@ private:
 	std::string m_Name;				// Name of the texture, also specifies the filename of the file to load.
 	ETextureType m_TextureType;		// The type of texture e.g. TYPE_1D, TYPE_2D etc.
 	ETextureUsage m_Usage;			// Describes how the texture is intended to be used.
+	ETexturePixelFormat m_Format;		// Describes the format of each pixel.
 
 	bool m_IsLoaded; // True if the texture resource has been loaded successfully.
 

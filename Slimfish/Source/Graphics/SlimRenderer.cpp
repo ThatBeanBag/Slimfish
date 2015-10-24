@@ -114,12 +114,12 @@ void ARenderer::SetRenderPass(CRenderPass* pPass)
 
 shared_ptr<AIndexGpuBuffer> ARenderer::CreateIndexBuffer(const std::vector<int>& indices, EGpuBufferUsage usage /*= EGpuBufferUsage::STATIC*/, bool isInSystemMemory /*= false*/)
 {
-	return VCreateIndexBuffer(indices.size(), AIndexGpuBuffer::INDEX_TYPE_32, reinterpret_cast<const void*>(&indices[0]), usage, isInSystemMemory);
+	return VCreateIndexBuffer(indices.size(), AIndexGpuBuffer::INDEX_TYPE_32, reinterpret_cast<const void*>(&indices[0]), usage, false, isInSystemMemory);
 }
 
 shared_ptr<AIndexGpuBuffer> ARenderer::CreateIndexBuffer(const std::vector<short>& indices, EGpuBufferUsage usage /*= EGpuBufferUsage::STATIC*/, bool isInSystemMemory /*= false*/)
 {
-	return VCreateIndexBuffer(indices.size(), AIndexGpuBuffer::INDEX_TYPE_16, reinterpret_cast<const void*>(&indices[0]), usage, isInSystemMemory);
+	return VCreateIndexBuffer(indices.size(), AIndexGpuBuffer::INDEX_TYPE_16, reinterpret_cast<const void*>(&indices[0]), usage, false, isInSystemMemory);
 }
 
 void ARenderer::SetTextureLayer(size_t layer, CTextureLayer& textureLayer)

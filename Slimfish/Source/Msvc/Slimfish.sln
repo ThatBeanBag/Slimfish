@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Slimfish", "Slimfish.vcxproj", "{7B57F944-4A3C-4BAD-839C-8E28BF1A4F88}"
 EndProject
@@ -26,6 +26,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Procedural Terrain Generati
 	EndProjectSection
 EndProject
 Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "ModelingProject1", "..\ModelingProject1\ModelingProject1.modelproj", "{3F325505-215A-4039-94A2-00C5F4EF8F2C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Marching Cubes", "..\..\Marching Cubes\Marching Cubes.vcxproj", "{4402D570-B022-491A-9B94-45BCCA08B017}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,6 +99,16 @@ Global
 		{3F325505-215A-4039-94A2-00C5F4EF8F2C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{3F325505-215A-4039-94A2-00C5F4EF8F2C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{3F325505-215A-4039-94A2-00C5F4EF8F2C}.Release|Win32.ActiveCfg = Release|Any CPU
+		{4402D570-B022-491A-9B94-45BCCA08B017}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{4402D570-B022-491A-9B94-45BCCA08B017}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{4402D570-B022-491A-9B94-45BCCA08B017}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{4402D570-B022-491A-9B94-45BCCA08B017}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4402D570-B022-491A-9B94-45BCCA08B017}.Debug|Win32.Build.0 = Debug|Win32
+		{4402D570-B022-491A-9B94-45BCCA08B017}.Release|Any CPU.ActiveCfg = Release|Win32
+		{4402D570-B022-491A-9B94-45BCCA08B017}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{4402D570-B022-491A-9B94-45BCCA08B017}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{4402D570-B022-491A-9B94-45BCCA08B017}.Release|Win32.ActiveCfg = Release|Win32
+		{4402D570-B022-491A-9B94-45BCCA08B017}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

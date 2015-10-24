@@ -27,6 +27,7 @@
 #include "SlimD3D11ShaderProgram.h"
 #include "SlimD3D11Texture.h"
 #include "SlimD3D11RenderTexture.h"
+#include "SlimD3D11GpuBuffer.h"
 
 namespace Slim {
 
@@ -51,28 +52,12 @@ CD3D11Renderer::~CD3D11Renderer()
 	m_pBoundPixelShader = nullptr;
 	m_pBoundVertexShader = nullptr;
 
-	/*SLIM_SAFE_RELEASE(m_pRenderTargetView);
-	SLIM_SAFE_RELEASE(m_pDepthStencilView);
-	SLIM_SAFE_RELEASE(m_pSwapChain);
-	SLIM_SAFE_RELEASE(m_pDepthStencilBuffer);
-	SLIM_SAFE_RELEASE(m_pBlendState);
-	SLIM_SAFE_RELEASE(m_pRasterizerState);
-	SLIM_SAFE_RELEASE(m_pDepthStencilState);
-
-	for (size_t i = 0; i < m_SamplerStates.size(); ++i) {
-		SLIM_SAFE_RELEASE(m_SamplerStates[i]);
-	}
-
-	SLIM_SAFE_RELEASE(m_pImmediateContext);*/
-
 #ifdef _DEBUG
 	// Report live objects.
 	ComPtr<ID3D11Debug> pDebug;
 	m_pD3DDevice.As(&pDebug);
 	pDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 #endif // _DEBUG
-
-	//SLIM_SAFE_RELEASE(m_pD3DDevice);
 }
 
 bool CD3D11Renderer::VInitialize()
@@ -245,14 +230,30 @@ void CD3D11Renderer::VPostRender()
 	m_pSwapChain->Present(0, 0);
 }
 
-shared_ptr<AVertexGpuBuffer> CD3D11Renderer::VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory)
+shared_ptr<AVertexGpuBuffer> CD3D11Renderer::VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory)
 {
-	return shared_ptr<AVertexGpuBuffer>(new CD3D11VertexGpuBuffer(m_pD3DDevice.Get(), m_pImmediateContext.Get(), numVertices, stride, pSource, usage, isInSystemMemory));
+	return std::make_shared<CD3D11VertexGpuBuffer>(
+		m_pD3DDevice.Get(), 
+		m_pImmediateContext.Get(), 
+		numVertices, 
+		stride, 
+		pSource, 
+		usage, 
+		isOutput, 
+		isInSystemMemory);
 }
 
-shared_ptr<AIndexGpuBuffer> CD3D11Renderer::VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory)
+shared_ptr<AIndexGpuBuffer> CD3D11Renderer::VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory)
 {
-	return shared_ptr<AIndexGpuBuffer>(new CD3D11IndexGpuBuffer(m_pD3DDevice.Get(), m_pImmediateContext.Get(), numIndices, indexType, pSource, usage, isInSystemMemory));
+	return std::make_shared<CD3D11IndexGpuBuffer>(
+		m_pD3DDevice.Get(), 
+		m_pImmediateContext.Get(), 
+		numIndices, 
+		indexType, 
+		pSource, 
+		usage, 
+		isOutput, 
+		isInSystemMemory);
 }
 
 shared_ptr<AShaderProgram> CD3D11Renderer::VCreateShaderProgram(const std::string& name, EShaderProgramType type, const std::string& entry, const std::string& shaderModel)
@@ -271,7 +272,12 @@ shared_ptr<AShaderProgram> CD3D11Renderer::VCreateShaderProgram(const std::strin
 
 shared_ptr<ATexture> CD3D11Renderer::VLoadTexture(const std::string& name, ETextureType type, ETextureUsage usage)
 {
-	shared_ptr<CD3D11Texture> pTexture(new CD3D11Texture(m_pD3DDevice.Get(), m_pImmediateContext.Get(), name, type, usage));
+	auto pTexture = std::make_shared<CD3D11Texture>(
+		m_pD3DDevice.Get(),
+		m_pImmediateContext.Get(), 
+		name, 
+		type, 
+		usage);
 
 	if (pTexture) {
 		pTexture->VLoad();
@@ -283,21 +289,33 @@ shared_ptr<ATexture> CD3D11Renderer::VLoadTexture(const std::string& name, EText
 	}
 }
 
-std::unique_ptr<ARenderTexture> CD3D11Renderer::VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t msaaCount, size_t msaaQuality, ETextureType textureType /* = ETextureType::TYPE_2D */)
+std::unique_ptr<ARenderTexture> CD3D11Renderer::VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t depth, ETextureType textureType, size_t msaaCount, size_t msaaQuality)
 {
 	// Create the texture as a render target.
-	std::shared_ptr<CD3D11Texture> pTexture(new CD3D11Texture(m_pD3DDevice.Get(), m_pImmediateContext.Get(), name, textureType, ETextureUsage::RENDER_TARGET));
+	auto pTexture = std::make_shared<CD3D11Texture>(
+		m_pD3DDevice.Get(), 
+		m_pImmediateContext.Get(), 
+		name, 
+		textureType, 
+		ETextureUsage::RENDER_TARGET);
 
 	pTexture->SetWidth(width);
 	pTexture->SetHeight(height);
+	pTexture->SetDepth(depth);
 	pTexture->SetMultiSampleCount(msaaCount);
 	pTexture->SetMultiSampleQuality(msaaQuality);
 
 	// Create the render target.
 	pTexture->VLoad();
 
-	return std::unique_ptr<ARenderTexture>(new CD3D11RenderTexture(m_pD3DDevice.Get(), pTexture));
+	return VCreateRenderTexture(pTexture);
 }
+
+std::unique_ptr<ARenderTexture> CD3D11Renderer::VCreateRenderTexture(std::shared_ptr<ATexture> pTexture)
+{
+	return std::make_unique<CD3D11RenderTexture>(m_pD3DDevice.Get(), pTexture);
+}
+
 
 void CD3D11Renderer::VSetWorldTransform(const CMatrix4x4& worldTransform)
 {
@@ -461,7 +479,32 @@ void CD3D11Renderer::VSetRenderTarget(ARenderTexture* pRenderTarget)
 	}
 }
 
-void CD3D11Renderer::VSetVertexBuffer(shared_ptr<AVertexGpuBuffer> pVertexBuffer)
+void CD3D11Renderer::VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpuBuffer> >& buffers)
+{
+	std::vector<ID3D11Buffer*> d3dBuffers;
+	std::vector<UINT> offsets;
+	d3dBuffers.reserve(buffers.size());
+	offsets.reserve(buffers.size());
+
+	UINT offset = 0;
+
+	for (auto& pBuffer : buffers) {
+		auto pD3DBuffer = std::static_pointer_cast<CD3D11GpuBuffer>(pBuffer);
+		d3dBuffers.push_back(pD3DBuffer->GetD3DBuffer());
+		offsets.push_back(offset);
+		offset += pD3DBuffer->GetSize();
+	}
+
+	m_pImmediateContext->SOSetTargets(buffers.size(), &d3dBuffers[0], &offsets[0]);
+}
+
+void CD3D11Renderer::VSetStreamOutTarget(const std::shared_ptr<AGpuBuffer>& pBuffer)
+{
+	auto pD3DBuffer = std::static_pointer_cast<CD3D11GpuBuffer>(pBuffer)->GetD3DBuffer();
+	m_pImmediateContext->SOSetTargets(1, &pD3DBuffer, nullptr);
+}
+
+void CD3D11Renderer::VSetVertexBuffer(const shared_ptr<AVertexGpuBuffer>& pVertexBuffer)
 {
 	shared_ptr<CD3D11VertexGpuBuffer> pD3DVertexBuffer = static_pointer_cast<CD3D11VertexGpuBuffer>(pVertexBuffer);
 	assert(pD3DVertexBuffer);
@@ -473,7 +516,7 @@ void CD3D11Renderer::VSetVertexBuffer(shared_ptr<AVertexGpuBuffer> pVertexBuffer
 	m_pImmediateContext->IASetVertexBuffers(0, 1, &pD3DBuffer, &stride, &offset);
 }
 
-void CD3D11Renderer::VSetIndexBuffer(shared_ptr<AIndexGpuBuffer> pIndexBuffer)
+void CD3D11Renderer::VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBuffer)
 {
 	shared_ptr<CD3D11IndexGpuBuffer> pD3DIndexBuffer = static_pointer_cast<CD3D11IndexGpuBuffer>(pIndexBuffer);
 	assert(pD3DIndexBuffer);

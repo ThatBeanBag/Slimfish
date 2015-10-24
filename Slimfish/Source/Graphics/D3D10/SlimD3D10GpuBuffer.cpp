@@ -26,8 +26,8 @@ namespace Slim {
 
 	CD3D10GpuBuffer::CD3D10GpuBuffer(ID3D10Device* pDevice,
 									 EBufferType bufferType, size_t bufferSize, const void* pSource,
-									 EGpuBufferUsage usage, bool isInSystemMemory)
-		:AGpuBuffer(bufferSize, usage, isInSystemMemory),
+									 EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory)
+		:AGpuBuffer(bufferSize, usage, isOutput, isInSystemMemory),
 		m_pD3DDevice(pDevice)
 	{
 		ZeroMemory(&m_desc, sizeof(D3D10_BUFFER_DESC));
@@ -46,6 +46,10 @@ namespace Slim {
 			m_desc.BindFlags = D3D10_BIND_VERTEX_BUFFER;
 		}
 
+		if (isOutput) {
+			m_desc.BindFlags = D3D10_BIND_STREAM_OUTPUT;
+		}
+
 		if (isInSystemMemory) {
 			m_desc.Usage = D3D10_USAGE_STAGING;
 			m_desc.BindFlags = 0;	// D3D10_USAGE_STAGING can't be bound to the graphics pipeline.
@@ -58,16 +62,16 @@ namespace Slim {
 		D3D10_SUBRESOURCE_DATA initData;
 		initData.pSysMem = pSource;
 
-		if (FAILED(pDevice->CreateBuffer(&m_desc, &initData, &m_pBuffer))) {
-			//throw CRenderingError();
-			// TODO: throw error.
-			return;
+		HRESULT hResult = pDevice->CreateBuffer(&m_desc, &initData, m_pBuffer.GetAddressOf());
+
+		if (FAILED(hResult)) {
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create vertex or index buffer with error: " << GetErrorMessage(hResult);
 		}
 	}
 
 	CD3D10GpuBuffer::~CD3D10GpuBuffer()
 	{
-		SLIM_SAFE_RELEASE(m_pBuffer);
+
 	}
 
 	void* CD3D10GpuBuffer::VLock(size_t offset, size_t size, EGpuBufferLockType lockType)
@@ -92,7 +96,7 @@ namespace Slim {
 
 	ID3D10Buffer* CD3D10GpuBuffer::GetD3DBuffer()
 	{
-		return m_pBuffer;
+		return m_pBuffer.Get();
 	}
 
 }

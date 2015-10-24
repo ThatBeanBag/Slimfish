@@ -137,6 +137,16 @@ const CVector3 operator/(float scalar, const CVector3& vec3)
 	return vec3 / scalar;
 }
 
+const CVector2 operator/(const CVector2& vec2, float scalar)
+{
+
+}
+
+const CVector2 operator/(float scalar, const CVector2& vec2)
+{
+
+}
+
 const CVector3 operator+(const CVector3& vec3A, const CVector3& vec3B)
 {
 	CVector3 addition = vec3A;
@@ -151,6 +161,16 @@ const CVector3 operator+(const CVector3& vec3, float scalar)
 	addition += scalar;
 
 	return addition;
+}
+
+const CVector2 operator+(const CVector2& vec2A, const CVector2& vec2B)
+{
+
+}
+
+const CVector2 operator+(const CVector2& vec2, float scalar)
+{
+
 }
 
 const CVector3 operator-(const CVector3& vec3A, const CVector3& vec3B)
@@ -204,5 +224,131 @@ const CVector3 operator*(float scalar, const CVector3& vec3)
 	return vec3 * scalar;
 }
 
+const CVector2 operator*(const CVector2& vec2, float scalar)
+{
+
+}
+
+const CVector2 operator*(float scalar, const CVector2& vec2)
+{
+
+}
+
+/************************************************************************/
+/* CVector2
+/************************************************************************/
+const CVector2 CVector2::s_RIGHT = { 1.0f, 0.0f };
+const CVector2 CVector2::s_UP = { 0.0f, 1.0f };
+const CVector2 CVector2::s_ZERO = { 0.0f, 0.0f };
+const CVector2 CVector2::s_ONE = { 1.0f, 1.0f };
+
+CVector2::CVector2()
+	:m_x(0.0f), m_y(0.0f)
+{
+
+}
+
+CVector2::CVector2(float x, float y)
+	: m_x(x), m_y(y)
+{
+
+}
+
+CVector2::~CVector2()
+{
+
+}
+
+const CVector2 CVector2::Normalise(const CVector2& vec2)
+{
+	float length = vec2.GetLength();
+	if (length != 0) {
+		return vec2 / length;
+	}
+
+	return vec2;
+}
+
+const float CVector2::DotProduct(const CVector2& vec2A, const CVector2& vec2B)
+{
+	return (vec2A.GetX() * vec2B.GetX() + vec2A.GetY() * vec2B.GetY());
+}
+
+
+CVector2& CVector2::operator-=(float scalar)
+{
+	m_x -= scalar;
+	m_y -= scalar;
+
+	return *this;
+}
+
+CVector2& CVector2::operator+=(float scalar)
+{
+	m_x += scalar;
+	m_y += scalar;
+
+	return *this;
+}
+
+CVector2& CVector2::operator/=(float scalar)
+{
+	m_x /= scalar;
+	m_y /= scalar;
+
+	return *this;
+}
+
+CVector2& CVector2::operator*=(float scalar)
+{
+	m_x *= scalar;
+	m_y *= scalar;
+
+	return *this;
+}
+
+CVector2& CVector2::operator-=(const CVector2& other)
+{
+	m_x -= other.GetX();
+	m_y -= other.GetY();
+
+	return *this;
+}
+
+CVector2& CVector2::operator+=(const CVector2& other)
+{
+	m_x += other.GetX();
+	m_y += other.GetY();
+
+	return *this;
+}
+
+const CVector2 operator-(const CVector2& vec2A, const CVector2& vec2B)
+{
+	CVector2 copy = vec2A;
+	return copy -= vec2B;
+}
+
+const CVector2 operator-(const CVector2& vec2, float scalar)
+{
+	CVector2 copy = vec2;
+	return copy += scalar;
+}
+
+const CVector2 operator-(const CVector2& vec2)
+{
+	return vec2 * -1;
+}
+
+bool operator!=(const CVector2& vectorA, const CVector2& vectorB)
+{
+	return !(vectorA == vectorB);
+}
+
+bool operator==(const CVector2& vectorA, const CVector2& vectorB)
+{
+	return (vectorA.GetX() == vectorB.GetX() &&
+		vectorA.GetY() == vectorB.GetY());
+}
 
 }

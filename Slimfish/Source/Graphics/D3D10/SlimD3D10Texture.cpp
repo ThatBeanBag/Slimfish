@@ -77,7 +77,7 @@ namespace Slim {
 		loadInfo.MipLevels = D3DX10_DEFAULT;
 		loadInfo.BindFlags = D3DX10_DEFAULT;
 		loadInfo.MiscFlags = D3DX10_DEFAULT;
-		loadInfo.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		loadInfo.Format = DXGI_FORMAT_UNKNOWN;
 		loadInfo.Filter = D3DX10_DEFAULT;
 		loadInfo.MipFilter = D3DX10_DEFAULT;
 		loadInfo.pSrcInfo = &imageInfo;

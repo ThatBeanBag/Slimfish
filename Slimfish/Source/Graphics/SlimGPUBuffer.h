@@ -58,7 +58,7 @@ enum class EGpuBufferLockType {
 	// Not allowed for buffers created with USAGE_WRITE_ONLY and is compulsory for buffers 
 	// created with USAGE_STATIC.
 	READ_ONLY,
-	// Same as USAGE_NORMAL except indicates the application will not overwrite any region of 
+	// Same as NORMAL except indicates the application will not overwrite any region of 
 	// the buffer that has been used this frame.
 	NO_OVERWRITE
 };
@@ -89,16 +89,20 @@ public:
 			usage How the buffer is intended to be used e.g. statically, dynamically, write only
 			etc. see EGpuBufferUsage.
 		@param
+			isOutput True if the buffer is to be used as output from a geometry shader. This specifies
+			that the buffer can be bound to the stream output stage of the pipeline and cannot be used
+			for drawing.
+		@param
 			isInSystemMemory True if the buffer should be stored in system memory and not in video
 			memory on the GPU. This is the least optimal for buffers that need to sent to the GPU
 			at some point, but can be used for heavily dynamic buffers that will be changed frequently
 			by the CPU.
-		*/
-	AGpuBuffer(size_t size, EGpuBufferUsage usage, bool isInSystemMemory);
+	*/
+	AGpuBuffer(size_t size, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory);
 
 	/** Destructor
 		@author Hayden Asplet
-		*/
+	*/
 	virtual ~AGpuBuffer();
 
 	/** Lock the buffer for potential reading/writing to.
@@ -114,7 +118,7 @@ public:
 		@return
 			A pointer to the contents of the buffer for both or either reading and writing to depending
 			on the lock type.
-		*/
+	*/
 	void* Lock(size_t offset, size_t size, EGpuBufferLockType lockType);
 
 	/** Unlock a the locked buffer. @author Hayden Asplet */
@@ -124,6 +128,8 @@ public:
 	const EGpuBufferUsage GetUsage() const;
 	/** Get the size of the buffer in bytes. @author Hayden Asplet */
 	const size_t GetSize() const;
+	/** Get if the buffer is to be used as output from a geometry shader and not for rendering. @author Hayden Asplet */
+	const bool IsOutput() const;
 	/** Get if the buffer is stored in system memory or not. @author Hayden Asplet */
 	const bool IsInSystemMemory() const;
 protected:
@@ -152,13 +158,14 @@ private:
 public:
 protected:
 private:
-	EGpuBufferUsage m_usage;// Usage 
-	size_t m_bufferSize;	// Size of the buffer in bytes.
-	bool m_isInSystemMemory;// True if the buffer is stored in system memory (CPU) and not on the GPU
+	EGpuBufferUsage m_Usage;// Usage 
+	size_t m_BufferSize;	// Size of the buffer in bytes.
+	bool m_IsOutput;
+	bool m_IsInSystemMemory;// True if the buffer is stored in system memory (CPU) and not on the GPU.
 
-	size_t m_lockOffset;	// Offset from the start of the buffer to the locked region (if locked at all).
-	size_t m_lockSize;		// Size of the region of the buffer currently locked (if locked at all).
-	bool m_isLocked;		// True if the buffer is currently locked.
+	size_t m_LockOffset;	// Offset from the start of the buffer to the locked region (if locked at all).
+	size_t m_LockSize;		// Size of the region of the buffer currently locked (if locked at all).
+	bool m_IsLocked;		// True if the buffer is currently locked.
 };
 
 /** Class implementing an RAII approach to locking GPU buffers.

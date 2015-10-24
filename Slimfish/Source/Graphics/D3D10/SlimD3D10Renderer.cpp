@@ -27,6 +27,7 @@
 #include "SlimD3D10ShaderProgram.h"
 #include "SlimD3D10Texture.h"
 #include "SlimD3D10RenderTexture.h"
+#include "SlimD3D10GpuBuffer.h"
 
 namespace Slim {
 
@@ -50,19 +51,6 @@ CD3D10Renderer::~CD3D10Renderer()
 	m_pBoundGeometryShader = nullptr;
 	m_pBoundPixelShader = nullptr;
 	m_pBoundVertexShader = nullptr;
-
-	/*SLIM_SAFE_RELEASE(m_pRenderTargetView);
-	SLIM_SAFE_RELEASE(m_pDepthStencilView);
-	SLIM_SAFE_RELEASE(m_pSwapChain);
-	SLIM_SAFE_RELEASE(m_pDepthStencilBuffer);
-	SLIM_SAFE_RELEASE(m_pBlendState);
-	SLIM_SAFE_RELEASE(m_pRasterizerState);
-	SLIM_SAFE_RELEASE(m_pDepthStencilState);
-	SLIM_SAFE_RELEASE(m_pFont);
-
-	for (size_t i = 0; i < m_SamplerStates.size(); ++i) {
-		SLIM_SAFE_RELEASE(m_SamplerStates[i]);
-	}*/
 
 #ifdef _DEBUG
 	// Report live objects.
@@ -238,14 +226,27 @@ void CD3D10Renderer::VPostRender()
 	m_pSwapChain->Present(0, 0);
 }
 
-shared_ptr<AVertexGpuBuffer> CD3D10Renderer::VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory)
+shared_ptr<AVertexGpuBuffer> CD3D10Renderer::VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory)
 {
-	return shared_ptr<AVertexGpuBuffer>(new CD3D10VertexGpuBuffer(m_pD3DDevice.Get(), numVertices, stride, pSource, usage, isInSystemMemory));
+	return std::make_shared<CD3D10VertexGpuBuffer>(
+		m_pD3DDevice.Get(), 
+		numVertices, 
+		stride, 
+		pSource, 
+		usage, 
+		isOutput,
+		isInSystemMemory);
 }
 
-shared_ptr<AIndexGpuBuffer> CD3D10Renderer::VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isInSystemMemory)
+shared_ptr<AIndexGpuBuffer> CD3D10Renderer::VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory)
 {
-	return shared_ptr<AIndexGpuBuffer>(new CD3D10IndexGpuBuffer(m_pD3DDevice.Get(), numIndices, indexType, pSource, usage, isInSystemMemory));
+	return std::make_shared<CD3D10IndexGpuBuffer>(m_pD3DDevice.Get(), 
+		numIndices, 
+		indexType, 
+		pSource, 
+		usage,
+		isOutput, 
+		isInSystemMemory);
 }
 
 shared_ptr<AShaderProgram> CD3D10Renderer::VCreateShaderProgram(const std::string& name, EShaderProgramType type, const std::string& entry, const std::string& shaderModel)
@@ -264,7 +265,7 @@ shared_ptr<AShaderProgram> CD3D10Renderer::VCreateShaderProgram(const std::strin
 
 shared_ptr<ATexture> CD3D10Renderer::VLoadTexture(const std::string& name, ETextureType type, ETextureUsage usage)
 {
-	shared_ptr<CD3D10Texture> pTexture(new CD3D10Texture(m_pD3DDevice.Get(), name, type, usage));
+	auto pTexture = std::make_shared<CD3D10Texture>(m_pD3DDevice.Get(), name, type, usage));
 
 	if (pTexture) {
 		pTexture->VLoad();
@@ -276,20 +277,26 @@ shared_ptr<ATexture> CD3D10Renderer::VLoadTexture(const std::string& name, EText
 	}
 }
 
-std::unique_ptr<ARenderTexture> CD3D10Renderer::VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t msaaCount, size_t msaaQuality, ETextureType textureType /* = ETextureType::TYPE_2D */)
+std::unique_ptr<ARenderTexture> CD3D10Renderer::VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t depth, ETextureType textureType, size_t msaaCount, size_t msaaQuality)
 {
 	// Create the texture as a render target.
-	std::shared_ptr<CD3D10Texture> pTexture(new CD3D10Texture(m_pD3DDevice.Get(), name, textureType, ETextureUsage::RENDER_TARGET));
+	auto pTexture = std::make_shared<CD3D10Texture>(m_pD3DDevice.Get(), name, textureType, ETextureUsage::RENDER_TARGET);
 
 	pTexture->SetWidth(width);
 	pTexture->SetHeight(height);
+	pTexture->SetDepth(depth);
 	pTexture->SetMultiSampleCount(msaaCount);
 	pTexture->SetMultiSampleQuality(msaaQuality);
 
 	// Create the render target.
 	pTexture->VLoad();
 
-	return std::unique_ptr<ARenderTexture>(new CD3D10RenderTexture(m_pD3DDevice.Get(), pTexture));
+	return VCreateRenderTexture(pTexture);
+}
+
+std::unique_ptr<ARenderTexture> CD3D10Renderer::VCreateRenderTexture(std::shared_ptr<ATexture> pTexture)
+{
+	return std::make_unique<CD3D10RenderTexture>(m_pD3DDevice.Get(), pTexture);
 }
 
 void CD3D10Renderer::VSetWorldTransform(const CMatrix4x4& worldTransform)
@@ -454,7 +461,32 @@ void CD3D10Renderer::VSetRenderTarget(ARenderTexture* pRenderTarget)
 	}
 }
 
-void CD3D10Renderer::VSetVertexBuffer(shared_ptr<AVertexGpuBuffer> pVertexBuffer)
+void CD3D10Renderer::VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpuBuffer> >& buffers)
+{
+	std::vector<ID3D10Buffer*> d3dBuffers;
+	std::vector<UINT> offsets;
+	d3dBuffers.reserve(buffers.size());
+	offsets.reserve(buffers.size());
+
+	UINT offset = 0;
+
+	for (auto& pBuffer : buffers) {
+		auto pD3DBuffer = std::static_pointer_cast<CD3D10GpuBuffer>(pBuffer);
+		d3dBuffers.push_back(pD3DBuffer->GetD3DBuffer());
+		offsets.push_back(offset);
+		offset += pD3DBuffer->GetSize();
+	}
+
+	m_pD3DDevice->SOSetTargets(buffers.size(), &d3dBuffers[0], &offsets[0]);
+}
+
+void CD3D10Renderer::VSetStreamOutTarget(const std::shared_ptr<AGpuBuffer>& pBuffer)
+{
+	auto pD3DBuffer = std::static_pointer_cast<CD3D10GpuBuffer>(pBuffer)->GetD3DBuffer();
+	m_pD3DDevice->SOSetTargets(1, &pD3DBuffer, nullptr);
+}
+
+void CD3D10Renderer::VSetVertexBuffer(const shared_ptr<AVertexGpuBuffer>& pVertexBuffer)
 {
 	shared_ptr<CD3D10VertexGpuBuffer> pD3DVertexBuffer = static_pointer_cast<CD3D10VertexGpuBuffer>(pVertexBuffer);
 	assert(pD3DVertexBuffer);
@@ -466,7 +498,7 @@ void CD3D10Renderer::VSetVertexBuffer(shared_ptr<AVertexGpuBuffer> pVertexBuffer
 	m_pD3DDevice->IASetVertexBuffers(0, 1, &pD3DBuffer, &stride, &offset);
 }
 
-void CD3D10Renderer::VSetIndexBuffer(shared_ptr<AIndexGpuBuffer> pIndexBuffer)
+void CD3D10Renderer::VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBuffer)
 {
 	shared_ptr<CD3D10IndexGpuBuffer> pD3DIndexBuffer = static_pointer_cast<CD3D10IndexGpuBuffer>(pIndexBuffer);
 	assert(pD3DIndexBuffer);
@@ -678,6 +710,7 @@ void CD3D10Renderer::VSetTexture(size_t layer, const shared_ptr<ATexture>& pText
 		assert(pD3DTexture);
 
 		m_Textures[layer] = pD3DTexture->GetD3DTexture();
+
 	}
 }
 
@@ -736,6 +769,12 @@ std::vector<D3D10_INPUT_ELEMENT_DESC> CD3D10Renderer::GetD3DVertexDeclaration(co
 	}
 
 	return std::move(d3dInputElements);
+}
+
+
+void CD3D10Renderer::VDrawText(const std::string text, const CPoint& position, const CColour& colour)
+{
+	throw std::logic_error("The method or operation is not implemented.");
 }
 
 void CD3D10Renderer::VSetWindowed(bool windowed)

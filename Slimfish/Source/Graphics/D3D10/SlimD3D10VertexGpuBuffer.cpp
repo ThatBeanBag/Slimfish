@@ -27,19 +27,22 @@ namespace Slim {
 
 	CD3D10VertexGpuBuffer::CD3D10VertexGpuBuffer(ID3D10Device* pD3DDevice, 
 												 size_t numVertices, size_t stride, const void* pSource, 
-												 EGpuBufferUsage usage, bool isInSystemMemory)
-		:AVertexGpuBuffer(numVertices, stride, usage, isInSystemMemory)
+												 EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory)
+		:AVertexGpuBuffer(numVertices, stride, usage, isOutput, isInSystemMemory)
 	{
-		m_pImpl = new CD3D10GpuBuffer(pD3DDevice, 
-									  CD3D10GpuBuffer::BUFFER_TYPE_VERTEX, 
-									  numVertices * stride, 
-									  pSource, 
-									  usage, isInSystemMemory);
+		m_pImpl = std::make_unique<CD3D10GpuBuffer>(
+			pD3DDevice, 
+			CD3D10GpuBuffer::BUFFER_TYPE_VERTEX,
+			numVertices * stride,
+			pSource,
+			usage, 
+			isOutput,
+			isInSystemMemory);
 	}
 
 	CD3D10VertexGpuBuffer::~CD3D10VertexGpuBuffer()
 	{
-		SLIM_SAFE_DELETE(m_pImpl);
+
 	}
 
 	ID3D10Buffer* CD3D10VertexGpuBuffer::GetD3DBuffer()

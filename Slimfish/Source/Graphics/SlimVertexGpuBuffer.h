@@ -40,6 +40,10 @@ namespace Slim {
 				stride Size in bytes of a single vertex.
 		 	@param 
 				usage Specifies how the buffer is intended to be used. See EGpuBufferUsage.
+			@param
+				isOutput True if the buffer is to be used as output from a geometry shader. This specifies
+				that the buffer can be bound to the stream output stage of the pipeline and cannot be used
+				for drawing.
 		 	@param 
 				isInSystemMemory True if the buffer should be stored in system memory and not
 				video memory.
@@ -47,6 +51,7 @@ namespace Slim {
 		AVertexGpuBuffer(size_t numVertices, 
 						 size_t stride,
 						 EGpuBufferUsage usage, 
+						 bool isOutput,
 						 bool isInSystemMemory);
 		/** Destructor
 			@author Hayden Asplet
