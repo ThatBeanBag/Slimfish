@@ -41,15 +41,24 @@ public:
 	void Pin(const CVector3& pinPosition);
 	void DetachPin();
 	void RemoveLink(CLink* pLink);
+	void ClearLinks();
 
 	/** Set the position. @author Hayden Asplet */
 	void SetPosition(const CVector3& position);
 	/** Get the position. @author Hayden Asplet */
 	const CVector3& GetPosition() const;
+	/** Set the lastPosition. @author Hayden Asplet */
+	void SetLastPosition(CVector3 lastPosition);
+	/** Get the lastPosition. @author Hayden Asplet */
+	const CVector3 GetLastPosition() const;
 	/** Set the mass. @author Hayden Asplet */
 	void SetMass(float mass);
 	/** Get the mass. @author Hayden Asplet */
 	const float GetMass() const;
+	/** Get the isPinned. @author Hayden Asplet */
+	const bool IsPinned() const;
+
+	const CVector3 GetTotalForce() const;
 
 	const std::vector<CLink>& GetLinks() const;
 protected:

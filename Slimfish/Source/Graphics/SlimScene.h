@@ -20,6 +20,7 @@
 // Library Includes
 
 // Local Includes
+#include "SlimTypes.h"
 #include "SlimRenderQueue.h"
 
 namespace Slim {
@@ -28,6 +29,7 @@ namespace Slim {
 class ARenderer;
 class CCamera;
 class CSceneNode;
+class CLight;
 	
 class CScene {
 	using TCameraList = std::vector<CCamera*>;

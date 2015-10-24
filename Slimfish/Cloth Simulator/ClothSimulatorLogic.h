@@ -84,6 +84,7 @@ private:
 
 	shared_ptr<AIndexGpuBuffer> m_pSphereIndices;
 	shared_ptr<AVertexGpuBuffer> m_pSphereVertices;
+	shared_ptr<CShaderParams> m_pPSParams;
 };
 
 #endif // __CLOTHSIMULATORLOGIC_H__

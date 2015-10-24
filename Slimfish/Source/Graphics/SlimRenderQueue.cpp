@@ -35,27 +35,25 @@ CRenderQueue::~CRenderQueue()
 
 }
 
-void CRenderQueue::QueuePass(CRenderPass* pRenderPass)
+void CRenderQueue::Queue(CSceneNode* pRenderable, int category)
 {
-	auto category = pRenderPass->GetRenderQueueGroupCategory();
-
 	// Check to see if there's a group for this category.
 	auto findIter = m_RenderGroups.find(category);
 	if (findIter != m_RenderGroups.end()) {
-		findIter->second.push_back(pRenderPass);
+		findIter->second.push_back(pRenderable);
 	}
 	else {
 		// Add a new render group for the category.
-		TRenderGroup group(1, pRenderPass);
+		TRenderGroup group(1, pRenderable);
 		m_RenderGroups.insert(std::make_pair(category, group));
 	}
 
 	// Update iterators.
 	m_CurrentGroupIterator = m_RenderGroups.begin();
-	m_CurrentPassIterator = m_CurrentGroupIterator->second.begin();
+	m_CurrentRenderableIterator = m_CurrentGroupIterator->second.begin();
 }
 
-const CRenderQueue::TRenderGroup& CRenderQueue::GetGroup(ERenderQueueGroupCategory category)
+const CRenderQueue::TRenderGroup& CRenderQueue::GetGroup(int category)
 {
 	auto findIter = m_RenderGroups.find(category);
 	if (findIter != m_RenderGroups.end()) {
@@ -72,18 +70,18 @@ const CRenderQueue::TRenderGroup& CRenderQueue::GetNextGroup()
 	return m_CurrentGroupIterator++->second;
 }
 
-const CRenderPass* CRenderQueue::GetNext()
+const CSceneNode* CRenderQueue::GetNext()
 {
 	while (m_CurrentGroupIterator != m_RenderGroups.end() &&
-		   m_CurrentPassIterator == m_CurrentGroupIterator->second.end()) {
-		m_CurrentPassIterator = ++m_CurrentGroupIterator->second.begin();
+		   m_CurrentRenderableIterator == m_CurrentGroupIterator->second.end()) {
+		m_CurrentRenderableIterator = ++m_CurrentGroupIterator->second.begin();
 	}
 
 	if (m_CurrentGroupIterator == m_RenderGroups.end()) {
 		return nullptr;
 	}
 
-	return (*m_CurrentPassIterator++);
+	return (*m_CurrentRenderableIterator++);
 }
 
 void CRenderQueue::Flush()

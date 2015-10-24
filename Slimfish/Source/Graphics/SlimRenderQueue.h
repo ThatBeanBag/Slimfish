@@ -59,7 +59,7 @@ class CRenderQueue {
 public:
 	using TRenderGroup = std::vector<CSceneNode*>;
 private:
-	using TRenderGroupMap = std::map<ERenderQueueGroupCategory, TRenderGroup>;
+	using TRenderGroupMap = std::map<int, TRenderGroup>;
 
 	// Member Functions
 public:
@@ -73,29 +73,28 @@ public:
 	*/
 	~CRenderQueue();
 
-	/** Add a render pass to the queue.
+	/** Add a renderable to the queue.
 	 	@author Hayden Asplet
 	*/
-	void Queue(CSceneNode* pRenderPass);
+	void Queue(CSceneNode* pRenderable, int category = ERenderQueueGroupCategory::RQ_GROUP_GEOMETRY);
 
 	/** Get a render group 
 	 	@author Hayden Asplet
 	 	@param ERenderQueueGroupCategory renderGroupTag
-	 	@return
 	*/
-	const TRenderGroup& GetGroup(ERenderQueueGroupCategory category);
+	const TRenderGroup& GetGroup(int category);
 
 	/** Get the next group to be evaluated in the rendering queue.
 	 	@author Hayden Asplet
 	*/
 	const TRenderGroup& GetNextGroup();
 
-	/** Get the next render pass in the queue.
+	/** Get the next renderable in the queue.
 	 	@author Hayden Asplet
 	*/
 	const CSceneNode* GetNext();
 
-	/** Flush the queue removing all groups of render passes.
+	/** Flush the queue removing all groups of renderables.
 	 	@author Hayden Asplet
 	*/
 	void Flush();
@@ -107,7 +106,7 @@ protected:
 private:
 	TRenderGroupMap m_RenderGroups;
 	TRenderGroupMap::iterator m_CurrentGroupIterator;
-	TRenderGroup::iterator m_CurrentPassIterator;
+	TRenderGroup::iterator m_CurrentRenderableIterator;
 };
 
 }
