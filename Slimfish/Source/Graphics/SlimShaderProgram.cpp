@@ -24,7 +24,8 @@
 
 namespace Slim {
 
-	AShaderProgram::AShaderProgram(const std::string& name, EShaderProgramType type) :m_Name(name),
+	AShaderProgram::AShaderProgram(const std::string& name, EShaderProgramType type) 
+		:m_Name(name),
 		m_ShaderType(type)
 	{
 
@@ -33,6 +34,42 @@ namespace Slim {
 	AShaderProgram::~AShaderProgram()
 	{
 
+	}
+
+	void AShaderProgram::UpdateShaderParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams)
+	{
+		if (pShaderParams) {
+			VUpdateShaderParams(constantBufferName, pShaderParams);
+		}
+		else {
+			auto findIter = m_Params.find(constantBufferName);
+			if (findIter != m_Params.end()) {
+				VUpdateShaderParams(constantBufferName, findIter->second);
+			}
+			else {
+				SLIM_THROW(EExceptionType::ENTRY_NOT_FOUND) << "Couldn't find parameters for " << constantBufferName << " to update.";
+			}
+		}
+	}
+
+	shared_ptr<CShaderParams> AShaderProgram::GetShaderParams(const std::string& constantBufferName)
+	{
+		// Try finding the parameters.
+		auto findIter = m_Params.find(constantBufferName);
+		if (findIter != m_Params.end()) {
+			return findIter->second;
+		}
+		else {
+			// Create the shader parameters.
+			auto pParams = VCreateShaderParams(constantBufferName);
+			if (pParams) {
+				// Add the parameters to the list.
+				m_Params.insert(std::make_pair(constantBufferName, pParams));
+				return pParams;
+			}
+		}
+
+		return nullptr;
 	}
 
 	void AShaderProgram::SetEntryPoint(const std::string& entryPoint)

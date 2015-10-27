@@ -79,23 +79,6 @@ namespace Slim {
 		return false;
 	}
 
-	bool CShaderConstant::IsSampler() const
-	{
-		switch (m_Type) {
-			case EShaderConstantType::SAMPLER1D:	// Fall through.
-			case EShaderConstantType::SAMPLER2D:	// Fall through.
-			case EShaderConstantType::SAMPLER3D:	// Fall through.
-			case EShaderConstantType::SAMPLERCUBE: {
-				return true;
-			}
-			default: {
-				return false;
-			}
-		}
-
-		return false;
-	}
-
 	const size_t CShaderConstant::GetSizeInBytes() const 
 	{
 		if (IsFloat()) {
@@ -110,11 +93,7 @@ namespace Slim {
 	{
 		switch (type) {
 			case EShaderConstantType::FLOAT:		// Fall through.
-			case EShaderConstantType::INT:			// Fall through.
-			case EShaderConstantType::SAMPLER1D:	// Fall through.
-			case EShaderConstantType::SAMPLER2D:	// Fall through.
-			case EShaderConstantType::SAMPLER3D:	// Fall through.
-			case EShaderConstantType::SAMPLERCUBE: {
+			case EShaderConstantType::INT: {
 				return 1;
 			}
 			case EShaderConstantType::INT2:			// Fall through.

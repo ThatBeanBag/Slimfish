@@ -41,6 +41,10 @@ class AShaderProgram;
 	settings etc.
 */
 class CRenderPass {
+public:
+	using TTextureLayerList = std::vector<std::unique_ptr<CTextureLayer>>;
+	using TSOTargetList = std::vector<std::shared_ptr<AGpuBuffer> >;
+
 	// Member Functions
 public:
 	/** Default constructor.
@@ -80,6 +84,16 @@ public:
 	 	@return Pointer to the new texture layer for modification.
 	*/
 	CTextureLayer* AddTextureLayer();
+
+	/** Add a new texture layer to the pass of an existing texture.
+		@remarks
+			The texture layer is added to the back of the existing texture layers.
+	 	@author Hayden Asplet
+	 	@param pTexture Texture of the texture layer to add.
+	 	@return 			
+			Reference to the created texture layer for further modification.
+	*/
+	CTextureLayer* AddTextureLayer(std::shared_ptr<ATexture> pTexture);
 
 	/** Retrieve a texture layer at the index specified.
 	 	@author Hayden Asplet
@@ -136,6 +150,15 @@ public:
 	const bool HasPixelShader() const;
 	/** Retrieves whether the pass has a geometry shader or not. @author Hayden Asplet */
 	const bool HasGeometryShader() const;
+
+	/** Set the stream output targets. @author Hayden Asplet */
+	void SetStreamOutputTargets(const TSOTargetList& streamOutputTargets);
+	/** Add a stream output target to the list of targets of the pass. @author Hayden Asplet */
+	void AddStreamOutputTarget(const std::shared_ptr<AGpuBuffer>& pTargetBuffer);
+	/** Remove all stream output targets. @author Hayden Asplet */
+	void ClearStreamOutputTargets();
+	/** Get the stream output targets. @author Hayden Asplet */
+	const TSOTargetList& GetStreamOutputTargets() const;
 
 	/** Set the blending mode of the pass (the blending factors and operations for colour and alpha).
 	 	@author Hayden Asplet
@@ -263,7 +286,6 @@ public:
 	void SetRenderQueueGroupCategory(ERenderQueueGroupCategory renderQueueGroupCategory);
 	/** Get the render queue group category. @author Hayden Asplet */
 	const ERenderQueueGroupCategory GetRenderQueueGroupCategory() const;
-
 protected:
 private:
 
@@ -272,13 +294,16 @@ public:
 protected:
 private:
 	// Texture layers.
-	std::vector<std::unique_ptr<CTextureLayer>> m_TextureLayers;
+	TTextureLayerList m_TextureLayers;
 
 	// Shader programs of the pass. 
 	// May not all be valid if the pass does not require the programmable pipeline.
 	shared_ptr<AShaderProgram> m_pVertexShader;
 	shared_ptr<AShaderProgram> m_pPixelShader;
 	shared_ptr<AShaderProgram> m_pGeometryShader;
+
+	// Stream output targets to stream out from the geometry shader if we have one.
+	TSOTargetList m_StreamOutputTargets;
 
 	// Blending and colour writes for the output merger stage.
 	TBlendingMode m_BlendingMode;

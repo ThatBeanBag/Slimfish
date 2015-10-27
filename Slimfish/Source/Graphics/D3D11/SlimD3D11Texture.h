@@ -25,13 +25,17 @@
 
 namespace Slim {
 
+/** Specialization of ATexture for DirectX 11.	
+*/
 class CD3D11Texture : public ATexture {
 	// Member Functions
 public:
-	CD3D11Texture(ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, const std::string& name, ETextureType textureType, ETextureUsage usage);
+	CD3D11Texture(ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, const std::string& name, 
+			ETextureType textureType = ETextureType::TYPE_2D, ETextureUsage usage = ETextureUsage::STATIC);
 	~CD3D11Texture();
 
 	virtual void VLoad() override;
+	virtual void VLoadRaw() override;
 	virtual void VUnload() override;
 
 	virtual const CImage VGetImage() const;
@@ -55,12 +59,12 @@ private:
 	ID3D11Device* m_pD3DDevice;		// The D3D Device.
 	ID3D11DeviceContext* m_pD3DImmediateContext;
 
-	ID3D11Texture1D* m_pTexture1D;	// DirectX 10 1D texture. Only valid if the texture is of type TEXTURE_TYPE_1D.
-	ID3D11Texture2D* m_pTexture2D;	// DirectX 10 2D texture. Only valid if the texture is of type TEXTURE_TYPE_2D.
-	ID3D11Texture3D* m_pTexture3D;	// DirectX 10 3D texture. Only valid if the texture is of type TEXTURE_TYPE_3D.
-	ID3D11Resource* m_pTexture;
+	ComPtr<ID3D11Texture1D> m_pTexture1D;	// DirectX 10 1D texture. Only valid if the texture is of type TEXTURE_TYPE_1D.
+	ComPtr<ID3D11Texture2D> m_pTexture2D;	// DirectX 10 2D texture. Only valid if the texture is of type TEXTURE_TYPE_2D.
+	ComPtr<ID3D11Texture3D> m_pTexture3D;	// DirectX 10 3D texture. Only valid if the texture is of type TEXTURE_TYPE_3D.
+	ComPtr<ID3D11Resource> m_pTexture;
 
-	ID3D11ShaderResourceView* m_pShaderResourceView;	// View for shaders.
+	ComPtr<ID3D11ShaderResourceView> m_pShaderResourceView;	// View for shaders.
 };
 
 }

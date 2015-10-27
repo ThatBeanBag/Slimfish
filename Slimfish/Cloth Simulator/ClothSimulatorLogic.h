@@ -42,7 +42,7 @@ public:
 	virtual void Render() override;
 	virtual void HandleInput(const CInput& input, float deltaTime) override;
 	void UpdateClothVertices();
-	void CreateSphereVertices(float rings, float segments);
+	void CreateSphereVertices(int rings, int segments);
 
 	void RenderToShadowMap();
 protected:

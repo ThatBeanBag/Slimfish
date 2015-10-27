@@ -48,7 +48,7 @@ namespace Slim {
 		}
 
 		if (isOutput) {
-			m_desc.BindFlags = D3D11_BIND_STREAM_OUTPUT;
+			m_desc.BindFlags |= D3D11_BIND_STREAM_OUTPUT;
 		}
 
 		if (isInSystemMemory) {

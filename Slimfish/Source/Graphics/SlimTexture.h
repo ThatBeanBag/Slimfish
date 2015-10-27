@@ -60,7 +60,7 @@ enum class ETextureType {
 };
 
 enum class ETexturePixelFormat {
-	UKNOWN,
+	UNKNOWN,
 
 	// Four channels of 32 bits each as floating-point data.
 	FLOAT_32_RGBA,
@@ -80,6 +80,95 @@ enum class ETexturePixelFormat {
 	// Three channels of 32 bits each as signed integral data.
 	INT_32_RGB,
 
+	// Two channels of 32 bits each as floating-point data.
+	FLOAT_32_RG,
+	// Two channels of 32 bits each as typeless data.
+	TYPELESS_32_RG,
+	// Two channels of 32 bits each as unsigned integral data.
+	UINT_32_RG,
+	// Two channels of 32 bits each as signed integral data.
+	INT_32_RG,
+
+	// One channel of 32 bits as floating-point data.
+	FLOAT_32_R,
+	// One channel of 32 bits as typeless data.
+	TYPELESS_32_R,
+	// One channel of 32 bits as unsigned integral data.
+	UINT_32_R,
+	// One channel of 32 bits as signed integral data.
+	INT_32_R,
+
+	// Four channels of 16 bits each as floating-point data.
+	FLOAT_16_RGBA, 
+	// Four channels of 16 bits each as typeless data.
+	TYPELESS_16_RGBA, 
+	// Four channels of 16 bits each as unsigned integral data.
+	UINT_16_RGBA, 
+	// Four channels of 16 bits each as signed integral data.
+	INT_16_RGBA,
+	// Four channels of 16 bits each as unsigned normalised data.
+	UNORM_16_RGBA,
+	// Four channels of 16 bits each as signed normalised data.
+	NORM_16_RGBA,
+
+	// Two channels of 16 bits each as floating-point data.
+	FLOAT_16_RG,
+	// Two channels of 16 bits each as typeless data.
+	TYPELESS_16_RG,
+	// Two channels of 16 bits each as unsigned integral data.
+	UINT_16_RG,
+	// Two channels of 16 bits each as signed integral data.
+	INT_16_RG,
+	// Two channels of 16 bits each as unsigned normalised data.
+	UNORM_16_RG,
+	// Two channels of 16 bits each as signed normalised data.
+	NORM_16_RG,
+
+	// One channel of 16 bits as floating-point data.
+	FLOAT_16_R,
+	// One channel of 16 bits as typeless data.
+	TYPELESS_16_R,
+	// One channel of 16 bits as unsigned integral data.
+	UINT_16_R,
+	// One channel of 16 bits as signed integral data.
+	INT_16_R,
+	// One channel of 16 bits as unsigned normalised data.
+	UNORM_16_R,
+	// One channel of 16 bits as signed normalised data.
+	NORM_16_R,
+
+	// Four channels of 8 bits each as typeless data.
+	TYPELESS_8_RGBA,
+	// Four channels of 8 bits each as unsigned integral data.
+	UINT_8_RGBA,
+	// Four channels of 8 bits each as signed integral data.
+	INT_8_RGBA,
+	// Four channels of 8 bits each as unsigned normalised data.
+	UNORM_8_RGBA,
+	// Four channels of 8 bits each as signed normalised data.
+	NORM_8_RGBA,
+
+	// Two channels of 8 bits each as typeless data.
+	TYPELESS_8_RG,
+	// Two channels of 8 bits each as unsigned integral data.
+	UINT_8_RG,
+	// Two channels of 8 bits each as signed integral data.
+	INT_8_RG,
+	// Two channels of 8 bits each as unsigned normalised data.
+	UNORM_8_RG,
+	// Two channels of 8 bits each as signed normalised data.
+	NORM_8_RG,
+
+	// One channel of 8 bits as typeless data.
+	TYPELESS_8_R,
+	// One channel of 8 bits as unsigned integral data.
+	UINT_8_R,
+	// One channel of 8 bits as signed integral data.
+	INT_8_R,
+	// One channel of 8 bits as unsigned normalised data.
+	UNORM_8_R,
+	// One channel of 8 bits as signed normalised data.
+	NORM_8_R,
 };
 
 /** Abstract class representing a texture resource.
@@ -111,7 +200,7 @@ public:
 			usage Describes how the texture is intended to be used e.g. USAGE_STATIC, 
 			USAGE_DYNAMIC, USAGE_WRITE_ONLY, USAGE_DISCARDBLE and USAGE_RENDER_TARGET.
 	*/
-	ATexture(const std::string& name, ETextureType textureType, ETextureUsage usage);
+	ATexture(const std::string& name, ETextureType textureType = ETextureType::TYPE_2D, ETextureUsage usage = ETextureUsage::STATIC);
 
 	/** Destructor.
 	 	@author Hayden Asplet
@@ -131,6 +220,8 @@ public:
 	*/
 	virtual void VLoad() = 0;
 
+	virtual void VLoadRaw() = 0;
+
 	/** Unload the texture.
 	 	@author Hayden Asplet
 	*/
@@ -146,7 +237,8 @@ public:
 	/** Get the name of the texture. @author Hayden Asplet */
 	const std::string& GetName() const;
 
-	/** Set the texture type e.g. 1D, 2D, 3D or cubic.
+	/** Set the texture type e.g. 1D, 2D, 3D or cubic
+		@note only useful prior to loading.
 	 	@author Hayden Asplet
 	*/
 	void SetType(ETextureType textureType);
@@ -156,7 +248,8 @@ public:
 	*/
 	ETextureType GetTextureType() const;
 
-	/** Set how the texture is intended to be used (only useful prior to loading).
+	/** Set how the texture is intended to be used.
+		@note only useful prior to loading.
 	 	@author Hayden Asplet
 	*/
 	void SetUsage(ETextureUsage usage);
@@ -165,6 +258,15 @@ public:
 	 	@author Hayden Asplet
 	*/
 	const ETextureUsage GetUsage() const;
+
+	/** Set the pixel format. 
+		@note only useful prior to loading.
+		@author Hayden Asplet 
+	*/
+	void SetPixelFormat(ETexturePixelFormat format);
+
+	/** Get the pixel format. @author Hayden Asplet */
+	const ETexturePixelFormat GetPixelFormat() const;
 
 	/** Return true if the texture resource has been loaded successfully.
 	 	@author Hayden Asplet
@@ -244,7 +346,6 @@ public:
 		@author Hayden Asplet
 	*/
 	const size_t GetMultiSampleQuality() const;
-
 protected:
 	/** Set the source width of the texture.
 		@note This should only be set internally by derived classes once the texture has been loaded.

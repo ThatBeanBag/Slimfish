@@ -32,7 +32,7 @@ namespace Slim {
 		m_pGeometryShader(nullptr),
 		m_pPixelShader(nullptr),
 		m_pShaderReflection(nullptr),
-		m_IsStreamingOutput(false)
+		m_IsStreamingOutput(true)
 	{
 
 	}
@@ -46,89 +46,6 @@ namespace Slim {
 	bool CD3D10ShaderProgram::VLoad()
 	{
 		return CompileShader();
-	}
-
-	void CD3D10ShaderProgram::VUpdateShaderParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams)
-	{
-		TConstantBufferMap::iterator findIter = m_NameToConstantBuffer.find(constantBufferName);
-		if (findIter == m_NameToConstantBuffer.end()) {
-			// TODO: throw exception.
-			return;
-		}
-
-		const TConstantBuffer& constantBuffer = findIter->second;
-
-		assert(constantBuffer.m_pBuffer);
-
-		void* pData = nullptr;
-
-		HRESULT hResult = constantBuffer.m_pBuffer->Map(D3D10_MAP_WRITE_DISCARD, NULL, &pData);
-		if (FAILED(hResult)) {
-			// TODO: throw exception.
-			return;
-		}
-
-		assert(pData);
-
-		for (size_t i = 0; i < constantBuffer.m_Variables.size(); ++i) {
-			// Use the name from the list of names in the constant buffer, if it exists.
-			// This is for variables that are structures, in which case the variable name alone
-			// will not suffice.
-			std::string variableName = constantBuffer.m_Variables[i].m_Name;
-
-			CShaderConstant shaderConstant = pShaderParams->GetConstant(variableName);
-
-			const void* pSource = nullptr;
-			size_t size = 0;
-
-			if (shaderConstant.IsFloat()) {
-				size = shaderConstant.m_Size * sizeof(float);
-				pSource = reinterpret_cast<const void*>(&pShaderParams->GetConstantFloatList()[shaderConstant.m_Index]);
-			}
-			else {
-				size = shaderConstant.m_Size * sizeof(int);
-				pSource = reinterpret_cast<const void*>(&pShaderParams->GetConstantIntList()[shaderConstant.m_Index]);
-			}
-
-			assert(constantBuffer.m_Variables[i].m_Size == size);
-
-			memcpy(reinterpret_cast<char*>(pData)+ constantBuffer.m_Variables[i].m_StartOffset, pSource, size);
-		}
-
-		constantBuffer.m_pBuffer->Unmap();
-	}
-
-	shared_ptr<CShaderParams> CD3D10ShaderProgram::VCreateShaderParams(const std::string& constantBufferName)
-	{
-		m_pParams.reset(new CShaderParams());
-
-		TConstantBufferMap::iterator findIter = m_NameToConstantBuffer.find(constantBufferName);
-		if (findIter == m_NameToConstantBuffer.end()) {
-			SLIM_WARNING() << "Failed to create shader params, couldn't find constant buffer " << constantBufferName;
-			return nullptr;
-		}
-
-		TConstantBuffer& constantBuffer = findIter->second;
-
-		// Clear current variables so we can overwrite them.
-		constantBuffer.m_Variables.clear();
-
-		ID3D11ShaderReflectionConstantBuffer* pReflectionConstantBuffer = constantBuffer.m_pReflectionConstantBuffer;
-		D3D11_SHADER_BUFFER_DESC shaderBufferDesc = constantBuffer.m_Desc;
-
-		// Get the variable's descriptions of the constant buffer.
-		for (size_t i = 0; i < shaderBufferDesc.Variables; ++i) {
-			ID3D11ShaderReflectionVariable* pVariable = pReflectionConstantBuffer->GetVariableByIndex(i);
-			ID3D11ShaderReflectionType* pVariableReflectionType = pVariable->GetType();
-
-			D3D11_SHADER_VARIABLE_DESC shaderVariableDesc;
-			HRESULT hResult = pVariable->GetDesc(&shaderVariableDesc);
-
-			// Recursively create the shader parameter as it might be a structure.
-			CreateShaderParam("", shaderVariableDesc.Name, i, shaderVariableDesc.StartOffset, pVariableReflectionType, constantBuffer);
-		}
-
-		return m_pParams;
 	}
 
 	const CD3D10ShaderProgram::TByteCode& CD3D10ShaderProgram::GetByteCode() const
@@ -174,6 +91,88 @@ namespace Slim {
 		}
 
 		return pLayout.Get();
+	}
+
+	void CD3D10ShaderProgram::VUpdateShaderParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams)
+	{
+		TConstantBufferMap::iterator findIter = m_NameToConstantBuffer.find(constantBufferName);
+		if (findIter == m_NameToConstantBuffer.end()) {
+			// TODO: throw exception.
+			return;
+		}
+
+		const TConstantBuffer& constantBuffer = findIter->second;
+
+		assert(constantBuffer.m_pBuffer);
+
+		void* pData = nullptr;
+
+		HRESULT hResult = constantBuffer.m_pBuffer->Map(D3D10_MAP_WRITE_DISCARD, NULL, &pData);
+		if (FAILED(hResult)) {
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to map constant buffer for writing to with error: " << GetErrorMessage(hResult);
+		}
+
+		assert(pData);
+
+		for (size_t i = 0; i < constantBuffer.m_Variables.size(); ++i) {
+			// Use the name from the list of names in the constant buffer, if it exists.
+			// This is for variables that are structures, in which case the variable name alone
+			// will not suffice.
+			std::string variableName = constantBuffer.m_Variables[i].m_Name;
+
+			CShaderConstant shaderConstant = pShaderParams->GetConstant(variableName);
+
+			const void* pSource = nullptr;
+			size_t size = 0;
+
+			if (shaderConstant.IsFloat()) {
+				size = shaderConstant.m_Size * sizeof(float);
+				pSource = reinterpret_cast<const void*>(&pShaderParams->GetConstantFloatList()[shaderConstant.m_Index]);
+			}
+			else {
+				size = shaderConstant.m_Size * sizeof(int);
+				pSource = reinterpret_cast<const void*>(&pShaderParams->GetConstantIntList()[shaderConstant.m_Index]);
+			}
+
+			assert(constantBuffer.m_Variables[i].m_Size == size);
+
+			memcpy(reinterpret_cast<char*>(pData) + constantBuffer.m_Variables[i].m_StartOffset, pSource, size);
+		}
+
+		constantBuffer.m_pBuffer->Unmap();
+	}
+
+	shared_ptr<CShaderParams> CD3D10ShaderProgram::VCreateShaderParams(const std::string& constantBufferName)
+	{
+		m_pParams.reset(new CShaderParams());
+
+		TConstantBufferMap::iterator findIter = m_NameToConstantBuffer.find(constantBufferName);
+		if (findIter == m_NameToConstantBuffer.end()) {
+			SLIM_WARNING() << "Failed to create shader params, couldn't find constant buffer " << constantBufferName;
+			return nullptr;
+		}
+
+		TConstantBuffer& constantBuffer = findIter->second;
+
+		// Clear current variables so we can overwrite them.
+		constantBuffer.m_Variables.clear();
+
+		ID3D11ShaderReflectionConstantBuffer* pReflectionConstantBuffer = constantBuffer.m_pReflectionConstantBuffer;
+		D3D11_SHADER_BUFFER_DESC shaderBufferDesc = constantBuffer.m_Desc;
+
+		// Get the variable's descriptions of the constant buffer.
+		for (size_t i = 0; i < shaderBufferDesc.Variables; ++i) {
+			ID3D11ShaderReflectionVariable* pVariable = pReflectionConstantBuffer->GetVariableByIndex(i);
+			ID3D11ShaderReflectionType* pVariableReflectionType = pVariable->GetType();
+
+			D3D11_SHADER_VARIABLE_DESC shaderVariableDesc;
+			HRESULT hResult = pVariable->GetDesc(&shaderVariableDesc);
+
+			// Recursively create the shader parameter as it might be a structure.
+			CreateShaderParam("", shaderVariableDesc.Name, i, shaderVariableDesc.StartOffset, pVariableReflectionType, constantBuffer);
+		}
+
+		return m_pParams;
 	}
 
 	bool CD3D10ShaderProgram::CompileShader()

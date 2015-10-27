@@ -54,9 +54,8 @@ public:
 	CD3D10ShaderProgram(ID3D10Device* pD3DDevice, const std::string& name, EShaderProgramType type);
 	~CD3D10ShaderProgram();
 
+	/** @copydoc AShaderProgram::VLoad */
 	virtual bool VLoad() override;
-	virtual void VUpdateShaderParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams);
-	virtual shared_ptr<CShaderParams> VCreateShaderParams(const std::string& constantBufferName);
 
 	const TByteCode& GetByteCode() const;
 
@@ -68,6 +67,11 @@ public:
 	ID3D10InputLayout* GetD3DInputLayout(const CVertexDeclaration* pVertexDeclaration);
 protected:
 private:
+	/** @copydoc AShaderProgram::VUpdateShaderParams */
+	virtual void VUpdateShaderParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams);
+	/** @copydoc AShaderProgram::VCreateShaderParams */
+	virtual shared_ptr<CShaderParams> VCreateShaderParams(const std::string& constantBufferName);
+
 	bool CompileShader();
 
 	void CreateVertexShader();

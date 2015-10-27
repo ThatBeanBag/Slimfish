@@ -28,6 +28,9 @@ EndProject
 Project("{F088123C-0E9E-452A-89E6-6BA2F21D5CAC}") = "ModelingProject1", "..\ModelingProject1\ModelingProject1.modelproj", "{3F325505-215A-4039-94A2-00C5F4EF8F2C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Marching Cubes", "..\..\Marching Cubes\Marching Cubes.vcxproj", "{4402D570-B022-491A-9B94-45BCCA08B017}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7B57F944-4A3C-4BAD-839C-8E28BF1A4F88} = {7B57F944-4A3C-4BAD-839C-8E28BF1A4F88}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

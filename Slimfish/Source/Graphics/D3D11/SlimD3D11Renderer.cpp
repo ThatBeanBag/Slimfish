@@ -289,6 +289,11 @@ shared_ptr<ATexture> CD3D11Renderer::VLoadTexture(const std::string& name, EText
 	}
 }
 
+shared_ptr<ATexture> CD3D11Renderer::VCreateTexture(const std::string& name)
+{
+	return std::make_shared<CD3D11Texture>(m_pD3DDevice.Get(), m_pImmediateContext.Get(), name);
+}
+
 std::unique_ptr<ARenderTexture> CD3D11Renderer::VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t depth, ETextureType textureType, size_t msaaCount, size_t msaaQuality)
 {
 	// Create the texture as a render target.
@@ -459,7 +464,7 @@ void CD3D11Renderer::VSetRenderTarget(ARenderTexture* pRenderTarget)
 		ID3D11DepthStencilView* pDepthStencilView = m_pBoundRenderTarget->GetDepthStencilView();
 		if (!pDepthStencilView) {
 			// Use the default depth stencil view if the render target does not have one.
-			pDepthStencilView = m_pDepthStencilView.Get();
+			//pDepthStencilView = m_pDepthStencilView.Get();
 		}
 		
 		// Clear the state, clearing everything back to the state at creation time.
@@ -481,21 +486,26 @@ void CD3D11Renderer::VSetRenderTarget(ARenderTexture* pRenderTarget)
 
 void CD3D11Renderer::VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpuBuffer> >& buffers)
 {
-	std::vector<ID3D11Buffer*> d3dBuffers;
-	std::vector<UINT> offsets;
-	d3dBuffers.reserve(buffers.size());
-	offsets.reserve(buffers.size());
-
-	UINT offset = 0;
-
-	for (auto& pBuffer : buffers) {
-		auto pD3DBuffer = std::static_pointer_cast<CD3D11GpuBuffer>(pBuffer);
-		d3dBuffers.push_back(pD3DBuffer->GetD3DBuffer());
-		offsets.push_back(offset);
-		offset += pD3DBuffer->GetSize();
+	if (buffers.empty()) {
+		m_pImmediateContext->SOSetTargets(0, nullptr, nullptr);
 	}
+	else {
+		std::vector<ID3D11Buffer*> d3dBuffers;
+		std::vector<UINT> offsets;
+		d3dBuffers.reserve(buffers.size());
+		offsets.reserve(buffers.size());
 
-	m_pImmediateContext->SOSetTargets(buffers.size(), &d3dBuffers[0], &offsets[0]);
+		UINT offset = 0;
+
+		for (auto& pBuffer : buffers) {
+			auto pD3DBuffer = std::static_pointer_cast<CD3D11GpuBuffer>(pBuffer);
+			d3dBuffers.push_back(pD3DBuffer->GetD3DBuffer());
+			offsets.push_back(offset);
+			offset += pD3DBuffer->GetSize();
+		}
+
+		m_pImmediateContext->SOSetTargets(buffers.size(), &d3dBuffers[0], &offsets[0]);
+	}
 }
 
 void CD3D11Renderer::VSetStreamOutTarget(const std::shared_ptr<AGpuBuffer>& pBuffer)

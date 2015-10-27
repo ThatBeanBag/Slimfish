@@ -68,6 +68,16 @@ namespace Slim {
 		return AddTextureLayer(CTextureLayer());
 	}
 
+	CTextureLayer* CRenderPass::AddTextureLayer(std::shared_ptr<ATexture> pTexture)
+	{
+		auto pTextureLayer = AddTextureLayer();
+		if (pTextureLayer) {
+			pTextureLayer->SetTexture(pTexture);
+		}
+
+		return pTextureLayer;
+	}
+
 	CTextureLayer* CRenderPass::GetTextureLayer(size_t layerIndex)
 	{
 		return m_TextureLayers[layerIndex].get();
@@ -136,6 +146,26 @@ namespace Slim {
 	const bool CRenderPass::HasGeometryShader() const
 	{
 		return m_pGeometryShader != nullptr;
+	}
+
+	void CRenderPass::SetStreamOutputTargets(const CRenderPass::TSOTargetList& streamOutputTargets)
+	{
+		m_StreamOutputTargets = streamOutputTargets;
+	}
+
+	void CRenderPass::AddStreamOutputTarget(const std::shared_ptr<AGpuBuffer>& pTargetBuffer)
+	{
+		m_StreamOutputTargets.push_back(pTargetBuffer);
+	}
+
+	void CRenderPass::ClearStreamOutputTargets()
+	{
+		m_StreamOutputTargets.clear();
+	}
+
+	const CRenderPass::TSOTargetList& CRenderPass::GetStreamOutputTargets() const
+	{
+		return m_StreamOutputTargets;
 	}
 
 	void CRenderPass::SetBlendingMode(TBlendingMode blendingMode)

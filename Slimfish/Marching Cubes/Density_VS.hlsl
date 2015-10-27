@@ -1,25 +1,20 @@
 
-cbuffer constantBuffer {
-	float4 gViewportDim = float4(8.0f, 6.0f, 1.0f / 8.0f, 1.0f / 6.0f);
-};
-
-cbuffer chunkConstantBuffer {
+cbuffer CBChunk {
 	float3 gWChunkPosition = float3(0.0f, 0.0f, 0.0f);
-	float gOpacity = 1.0f;
 };
 
-cbuffer lodCostantBuffer {
+cbuffer CBLod {
 	float gVoxelDim = 65;
 	float gVoxelDimMinusOne = 64;
-	float2 gWVoxelSize = float2(1.0f / 64.0f, 0.0f);
+	float gWVoxelSize = 1.0f / 64.0f;
 	float gWChunkSize = 4.0f;
-	float2 gInvVoxelDim = float2(1.0f / 65.0f, 0.0f);
-	float2 gInvVoxelDimMinusOne = float2(1.0f / 64.0f, 0.0f);
+	float gInvVoxelDim = 1.0f / 65.0f;
+	float gInvVoxelDimMinusOne = 1.0f / 64.0f;
 	float gMargin = 4.0f;
 	float gVoxelDimPlusMargins = 73.0f;
 	float gVoxelDimPlusMarginsMinusOne = 72.0f;
-	float2 gInvVoxelDimPlusMargins = float2(1.0f / 73.0f, 0.0f);
-	float2 gInvVoxelDimPlusMarginsMinusOne = float2(1.0f / 72.0f, 0.0f);
+	float gInvVoxelDimPlusMargins = 1.0f / 73.0f;
+	float gInvVoxelDimPlusMarginsMinusOne = 1.0f / 72.0f;
 };
 
 struct VSInput {

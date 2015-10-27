@@ -57,14 +57,14 @@ bool CGeometryShaderLogic::Initialise()
 	m_StarRenderPass.SetCullingMode(ECullingMode::NONE);
 	//m_StarRenderPass.SetFillMode(EFillMode::WIREFRAME);
 
-	m_pGSParams = m_StarRenderPass.GetGeometryShader()->VCreateShaderParams("constantBuffer");
+	m_pGSParams = m_StarRenderPass.GetGeometryShader()->GetShaderParams("constantBuffer");
 
 	// Setup camera.
 	m_Camera.SetPosition(CVector3(0.0f, 0.0f, 10.0f));
 	m_Camera.SetProjectionMode(EProjectionMode::PERSPECTIVE);
 	m_Camera.SetNearClipDistance(0.1f);
 	m_Camera.SetFarClipDistance(100.0f);
-	m_Camera.SetFieldOfView(DegreesToRadians(60.0f));
+	m_Camera.SetFieldOfView(Math::DegreesToRadians(60.0f));
 	m_Camera.SetOrthographicSize(20.0f);
 
 	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
@@ -83,7 +83,7 @@ void CGeometryShaderLogic::Render()
 	m_Camera.UpdateViewTransform();
 
 	m_pGSParams->SetConstant("gWVP", m_Camera.GetProjectionMatrix() * m_Camera.GetViewMatrix());
-	m_StarRenderPass.GetGeometryShader()->VUpdateShaderParams("constantBuffer", m_pGSParams);
+	m_StarRenderPass.GetGeometryShader()->UpdateShaderParams("constantBuffer", m_pGSParams);
 
 	g_pApp->GetRenderer()->SetRenderPass(&m_StarRenderPass);
 	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::POINTLIST, m_pStarVertexBuffer);

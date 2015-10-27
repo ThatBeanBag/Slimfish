@@ -61,6 +61,9 @@ public:
 	/* @copydoc ARenderer::VLoadTexture */
 	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ETextureType type, ETextureUsage usage) override;
 
+	/* @copydoc ARenderer::VCreateTexture */
+	virtual shared_ptr<ATexture> VCreateTexture(const std::string& name) override;
+
 	/* @copydoc ARenderer::VCreateRenderTexture */
 	virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t depth, ETextureType textureType, size_t msaaCount, size_t msaaQuality) override;
 
@@ -155,6 +158,7 @@ private:
 	 	@author Hayden Asplet
 	*/
 	std::vector<D3D10_INPUT_ELEMENT_DESC> GetD3DVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
+
 
 
 	// Member Variables

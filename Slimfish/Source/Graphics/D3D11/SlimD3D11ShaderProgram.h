@@ -54,9 +54,8 @@ public:
 	CD3D11ShaderProgram(ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext, const std::string& name, EShaderProgramType type);
 	~CD3D11ShaderProgram();
 
+	/** @copydoc AShaderProgram::VLoad */
 	virtual bool VLoad() override;
-	virtual void VUpdateShaderParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams);
-	virtual shared_ptr<CShaderParams> VCreateShaderParams(const std::string& constantBufferName);
 
 	const TByteCode& GetByteCode() const;
 
@@ -68,6 +67,11 @@ public:
 	ID3D11InputLayout* GetD3DInputLayout(const CVertexDeclaration* pVertexDeclaration);
 protected:
 private:
+	/** @copydoc AShaderProgram::VUpdateShaderParams */
+	virtual void VUpdateShaderParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams);
+	/** @copydoc AShaderProgram::VCreateShaderParams */
+	virtual shared_ptr<CShaderParams> VCreateShaderParams(const std::string& constantBufferName);
+
 	bool CompileShader();
 
 	void CreateVertexShader();

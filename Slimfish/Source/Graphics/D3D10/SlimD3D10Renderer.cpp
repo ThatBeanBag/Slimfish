@@ -265,7 +265,7 @@ shared_ptr<AShaderProgram> CD3D10Renderer::VCreateShaderProgram(const std::strin
 
 shared_ptr<ATexture> CD3D10Renderer::VLoadTexture(const std::string& name, ETextureType type, ETextureUsage usage)
 {
-	auto pTexture = std::make_shared<CD3D10Texture>(m_pD3DDevice.Get(), name, type, usage));
+	auto pTexture = std::make_shared<CD3D10Texture>(m_pD3DDevice.Get(), name, type, usage);
 
 	if (pTexture) {
 		pTexture->VLoad();
@@ -275,6 +275,11 @@ shared_ptr<ATexture> CD3D10Renderer::VLoadTexture(const std::string& name, EText
 	else {
 		return nullptr;
 	}
+}
+
+shared_ptr<ATexture> CD3D10Renderer::VCreateTexture(const std::string& name)
+{
+	return std::make_shared<CD3D10Texture>(m_pD3DDevice.Get(), name);
 }
 
 std::unique_ptr<ARenderTexture> CD3D10Renderer::VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t depth, ETextureType textureType, size_t msaaCount, size_t msaaQuality)
@@ -463,21 +468,26 @@ void CD3D10Renderer::VSetRenderTarget(ARenderTexture* pRenderTarget)
 
 void CD3D10Renderer::VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpuBuffer> >& buffers)
 {
-	std::vector<ID3D10Buffer*> d3dBuffers;
-	std::vector<UINT> offsets;
-	d3dBuffers.reserve(buffers.size());
-	offsets.reserve(buffers.size());
-
-	UINT offset = 0;
-
-	for (auto& pBuffer : buffers) {
-		auto pD3DBuffer = std::static_pointer_cast<CD3D10GpuBuffer>(pBuffer);
-		d3dBuffers.push_back(pD3DBuffer->GetD3DBuffer());
-		offsets.push_back(offset);
-		offset += pD3DBuffer->GetSize();
+	if (buffers.empty()) {
+		m_pD3DDevice->SOSetTargets(0, nullptr, nullptr);
 	}
+	else {
+		std::vector<ID3D10Buffer*> d3dBuffers;
+		std::vector<UINT> offsets;
+		d3dBuffers.reserve(buffers.size());
+		offsets.reserve(buffers.size());
 
-	m_pD3DDevice->SOSetTargets(buffers.size(), &d3dBuffers[0], &offsets[0]);
+		UINT offset = 0;
+
+		for (auto& pBuffer : buffers) {
+			auto pD3DBuffer = std::static_pointer_cast<CD3D10GpuBuffer>(pBuffer);
+			d3dBuffers.push_back(pD3DBuffer->GetD3DBuffer());
+			offsets.push_back(offset);
+			offset += pD3DBuffer->GetSize();
+		}
+
+		m_pD3DDevice->SOSetTargets(buffers.size(), &d3dBuffers[0], &offsets[0]);
+	}
 }
 
 void CD3D10Renderer::VSetStreamOutTarget(const std::shared_ptr<AGpuBuffer>& pBuffer)
@@ -511,25 +521,23 @@ void CD3D10Renderer::VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBu
 
 void CD3D10Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimitiveType primitiveType, shared_ptr<AVertexGpuBuffer> pVertexBuffer, shared_ptr<AIndexGpuBuffer> pIndexBuffer /* = nullptr */)
 {
-	m_pBlendState.Reset();
-	m_pRasterizerState.Reset();
-	m_pDepthStencilState.Reset();
-	
-	HRESULT hResult = m_pD3DDevice->CreateBlendState(&m_BlendDesc, &m_pBlendState);
+	// Recreate pipeline states.
+	HRESULT hResult = m_pD3DDevice->CreateBlendState(&m_BlendDesc, m_pBlendState.ReleaseAndGetAddressOf());
 	if (FAILED(hResult)) {
 		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create blend state with error: " << GetErrorMessage(hResult);
 	}
 
-	hResult = m_pD3DDevice->CreateRasterizerState(&m_RasterizerDesc, &m_pRasterizerState);
+	hResult = m_pD3DDevice->CreateRasterizerState(&m_RasterizerDesc, m_pRasterizerState.ReleaseAndGetAddressOf());
 	if (FAILED(hResult)) {
 		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create rasterizer state with error: " << GetErrorMessage(hResult);
 	}
 
-	hResult = m_pD3DDevice->CreateDepthStencilState(&m_DepthStencilDesc, &m_pDepthStencilState);
+	hResult = m_pD3DDevice->CreateDepthStencilState(&m_DepthStencilDesc, m_pDepthStencilState.ReleaseAndGetAddressOf());
 	if (FAILED(hResult)) {
 		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create depth-stencil state with error: " << GetErrorMessage(hResult);
 	}
 
+	// Set pipeline states.
 	m_pD3DDevice->RSSetState(m_pRasterizerState.Get());
 	m_pD3DDevice->OMSetDepthStencilState(m_pDepthStencilState.Get(), m_StencilReferenceValue);
 	m_pD3DDevice->OMSetBlendState(m_pBlendState.Get(), 0, 0xffffffff);
@@ -770,7 +778,6 @@ std::vector<D3D10_INPUT_ELEMENT_DESC> CD3D10Renderer::GetD3DVertexDeclaration(co
 
 	return std::move(d3dInputElements);
 }
-
 
 void CD3D10Renderer::VDrawText(const std::string text, const CPoint& position, const CColour& colour)
 {

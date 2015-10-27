@@ -43,6 +43,9 @@ namespace D3D11Conversions {
 	DXGI_FORMAT GetFormat(CInputElement::EFormat inputElementFormat);
 	DXGI_FORMAT GetFormat(AIndexGpuBuffer::EIndexType indexType);
 
+	DXGI_FORMAT GetPixelFormat(ETexturePixelFormat format);
+	ETexturePixelFormat GetPixelFormat(DXGI_FORMAT format);
+
 	D3D11_PRIMITIVE_TOPOLOGY GetPrimitiveType(EPrimitiveType primitiveType);
 	D3D11_TEXTURE_ADDRESS_MODE GetAddressMode(ETextureAddressMode addressMode);
 	D3D11_FILTER GetFilter(ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter);
@@ -57,6 +60,7 @@ namespace D3D11Conversions {
 
 	D3D11_COMPARISON_FUNC GetComparisonFunction(EComparisonFunction function);
 	D3D11_STENCIL_OP GetStencilOperation(EStencilOperation operation);
+
 }
 
 }

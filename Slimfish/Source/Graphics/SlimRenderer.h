@@ -162,33 +162,68 @@ namespace Slim {
 
 		/** Create a shader from file.
 		 	@author Hayden Asplet
-		 	@param name Name of the shader file.
-		 	@param type The type of shader e.g. vertex, pixel or geometry shader.
-			@param entry Name of the entry point to the program.
-			@param shaderModel Shader model of the program e.g. vs_4_0, ps_4_0 etc.
-		 	@return Pointer to the shader programs; not valid if creation failed.
+		 	@param 
+				name Name of the shader file.
+		 	@param
+				type The type of shader e.g. vertex, pixel or geometry shader.
+			@param
+				entry Name of the entry point to the program.
+			@param 
+				shaderModel Shader model of the program e.g. vs_4_0, ps_4_0 etc.
+			@param 
+				isStreamingOut True if the shader should be enabled to stream out to a buffer. Only
+				applicable for geometry shaders. 
+		 	@return
+				Pointer to the shader programs; not valid if creation failed.
 		*/
-		virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, EShaderProgramType type, const std::string& entry, const std::string& shaderModel) = 0;
+		virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, EShaderProgramType type, const std::string& entry, const std::string& shaderModel/*, bool isStreamingOut = false*/) = 0;
 
 		/** Loads a texture from file.
 		 	@author Hayden Asplet
 		*/
 		virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ETextureType type = ETextureType::TYPE_2D, ETextureUsage usage = ETextureUsage::STATIC) = 0;
 
+		/** Create a texture.
+			@remarks
+				Doesn't load or create the texture resource itself. This method is useful if
+				you want to set the parameters of the texture prior to creating the resource itself.
+		 	@author Hayden Asplet
+		 	@param 
+				name Name to give the texture. Purely a semantic unless you load the texture from disk
+				in which case the name of texture specifies the relative location of the texture to load.
+		 	@return Pointer the the newly created texture that is yet to be loaded.
+		*/
+		virtual shared_ptr<ATexture> VCreateTexture(const std::string& name) = 0;
+
 		/** Create a render texture.
 		 	@author Hayden Asplet
-		 	@param name Name of the render target to identify it by.
-			@param width Width of the render target in pixels.
-			@param height Height of the render target in pixels.
-			@param depth Depth of the render target int pixels, only used if the render target is 3D.
-		 	@param textureType Type of texture e.g. TYPE_2D, TYPE_3D, TYPE_CUBEMAP etc.
-			@param msaaCount The number of multi-sampling samples.
-			@param msaaQuality The quality of the multi-sampling samples.
+		 	@param 
+				name Name of the render target. Purely a semantic name for identification.
+			@param 
+				width Width of the render target in pixels.
+			@param 
+				height Height of the render target in pixels.
+			@param 
+				depth Depth of the render target int pixels, only used if the render target is 3D.
+		 	@param 
+				textureType Type of texture e.g. TYPE_2D, TYPE_3D, TYPE_CUBEMAP etc. 3D and 1D textures
+				can't use multi-sampling, thus any non-2D render targets will lack multi-sampling and 
+				the parameters will be discarded.
+			@param 
+				msaaCount The number of multi-sampling samples. Only applicable to 2D render targets.
+			@param 
+				msaaQuality The quality of the multi-sampling samples. Only applicable to 2D render
+				targets.
 		*/
 		virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t depth = 0,
 			ETextureType textureType = ETextureType::TYPE_2D, size_t msaaCount = 1, size_t msaaQuality = 0) = 0;
 		
-		/** Create a render texture from an existing texture. @author Hayden Asplet*/
+		/** Create a render texture from an existing texture. 
+			@remarks
+				The provided texture will be written to in any render calls with the render texture set 
+				as the target. If you don't want the texture to be written to, first make a copy of it.
+			@author Hayden Asplet
+		*/
 		virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(std::shared_ptr<ATexture> pTexture) = 0;
 
 		/** Perform a render operation, rendering a set of vertices.
@@ -387,8 +422,19 @@ namespace Slim {
 		*/
 		virtual void VSetTextureBorderColour(size_t layer, const CColourValue& colour) = 0;
 
+		/** Internal delegating method to set the vertex declaration to draw with.
+		 	@author Hayden Asplet
+		*/
 		virtual void VSetVertexDeclaration(const CVertexDeclaration& vertexDeclaration) = 0;
+
+		/** Internal delegating method to set the vertex buffer to use as input to the pipeline when drawing.
+		 	@author Hayden Asplet
+		*/
 		virtual void VSetVertexBuffer(const shared_ptr<AVertexGpuBuffer>& pVertexBuffer) = 0;
+
+		/** Internal delegating method to set the index buffer to use as input to the pipeline when drawing.
+		 	@author Hayden Asplet
+		*/
 		virtual void VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBuffer) = 0;
 
 		// Member Variables
@@ -401,6 +447,8 @@ namespace Slim {
 	private:
 		size_t m_disableTextureLayerFrom;	// Texture layer from this to g_MAX_TEXTURE_LAYERS are currently disabled.
 	};
+
+	// Implementation
 
 	template<typename TVertexType>
 	shared_ptr<AVertexGpuBuffer> ARenderer::CreateVertexBuffer(const std::vector<TVertexType>& verts, EGpuBufferUsage usage, bool isInSystemMemory)

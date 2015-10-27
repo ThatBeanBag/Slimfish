@@ -132,21 +132,6 @@ const CVector3 operator/(const CVector3& vec3, float scalar)
 	return division;
 }
 
-const CVector3 operator/(float scalar, const CVector3& vec3)
-{
-	return vec3 / scalar;
-}
-
-const CVector2 operator/(const CVector2& vec2, float scalar)
-{
-
-}
-
-const CVector2 operator/(float scalar, const CVector2& vec2)
-{
-
-}
-
 const CVector3 operator+(const CVector3& vec3A, const CVector3& vec3B)
 {
 	CVector3 addition = vec3A;
@@ -161,16 +146,6 @@ const CVector3 operator+(const CVector3& vec3, float scalar)
 	addition += scalar;
 
 	return addition;
-}
-
-const CVector2 operator+(const CVector2& vec2A, const CVector2& vec2B)
-{
-
-}
-
-const CVector2 operator+(const CVector2& vec2, float scalar)
-{
-
 }
 
 const CVector3 operator-(const CVector3& vec3A, const CVector3& vec3B)
@@ -222,16 +197,6 @@ const CVector3 operator*(const CVector3& vec3, float scalar)
 const CVector3 operator*(float scalar, const CVector3& vec3)
 {
 	return vec3 * scalar;
-}
-
-const CVector2 operator*(const CVector2& vec2, float scalar)
-{
-
-}
-
-const CVector2 operator*(float scalar, const CVector2& vec2)
-{
-
 }
 
 /************************************************************************/
@@ -323,6 +288,31 @@ CVector2& CVector2::operator+=(const CVector2& other)
 	return *this;
 }
 
+const CVector2 operator+(const CVector2& vec2A, const CVector2& vec2B)
+{
+	CVector2 copy = vec2A;
+	copy += vec2B;
+	return copy;
+}
+
+const CVector2 operator+(const CVector2& vec2, float scalar)
+{
+	CVector2 copy = vec2;
+	copy += scalar;
+	return copy;
+}
+
+const CVector2 operator*(const CVector2& vec2, float scalar)
+{
+	CVector2 copy = vec2;
+	return 	copy *= scalar;
+}
+
+const CVector2 operator*(float scalar, const CVector2& vec2)
+{
+	return vec2 * scalar;
+}
+
 const CVector2 operator-(const CVector2& vec2A, const CVector2& vec2B)
 {
 	CVector2 copy = vec2A;
@@ -338,6 +328,12 @@ const CVector2 operator-(const CVector2& vec2, float scalar)
 const CVector2 operator-(const CVector2& vec2)
 {
 	return vec2 * -1;
+}
+
+const CVector2 operator/(const CVector2& vec2, float scalar)
+{
+	CVector2 copy = vec2;
+	return copy / scalar;
 }
 
 bool operator!=(const CVector2& vectorA, const CVector2& vectorB)

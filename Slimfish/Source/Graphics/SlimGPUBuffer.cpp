@@ -24,10 +24,11 @@
 
 namespace Slim {
 
-AGpuBuffer::AGpuBuffer(size_t size, EGpuBufferUsage usage, bool isInSystemMemory)
+AGpuBuffer::AGpuBuffer(size_t size, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory)
 	:m_Usage(usage),
 	m_BufferSize(size),
 	m_IsInSystemMemory(isInSystemMemory),
+	m_IsOutput(isOutput),
 	m_LockOffset(0),
 	m_LockSize(0),
 	m_IsLocked(false)

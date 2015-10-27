@@ -37,10 +37,6 @@ enum class EShaderConstantType {
 	FLOAT3,
 	FLOAT4,
 	MATRIX4X4,
-	SAMPLER1D,
-	SAMPLER2D,
-	SAMPLER3D,
-	SAMPLERCUBE
 };
 
 /** Class representing a constant definition in a shader.
@@ -68,8 +64,6 @@ public:
 	bool IsFloat() const;
 	/** Return true if this constant is an int. @author Hayden Asplet */
 	bool IsInt() const;
-	/** Return true if this constant is a sampler. @author Hayden Asplet */
-	bool IsSampler() const;
 
 	const size_t GetSizeInBytes() const;
 
@@ -82,6 +76,7 @@ private:
 public:
 	EShaderConstantType m_Type;
 	size_t m_Index;
+	size_t m_OffsetInBuffer;
 	size_t m_Size;
 protected:
 private:

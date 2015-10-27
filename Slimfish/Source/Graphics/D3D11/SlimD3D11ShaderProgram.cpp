@@ -33,7 +33,7 @@ namespace Slim {
 		m_pGeometryShader(nullptr),
 		m_pPixelShader(nullptr),
 		m_pShaderReflection(nullptr),
-		m_IsStreamingOutput(false)
+		m_IsStreamingOutput(true)
 	{
 
 	}
@@ -47,6 +47,51 @@ namespace Slim {
 	bool CD3D11ShaderProgram::VLoad()
 	{
 		return CompileShader();
+	}
+
+	const CD3D11ShaderProgram::TByteCode& CD3D11ShaderProgram::GetByteCode() const
+	{
+		assert(m_ByteCode.size() > 0);
+		return m_ByteCode;
+	}
+
+	ID3D11VertexShader* CD3D11ShaderProgram::GetD3DVertexShader()
+	{
+		return m_pVertexShader.Get();
+	}
+
+	ID3D11PixelShader* CD3D11ShaderProgram::GetD3DPixelShader()
+	{
+		return m_pPixelShader.Get();
+	}
+
+	ID3D11GeometryShader* CD3D11ShaderProgram::GetD3DGeometryShader()
+	{
+		return m_pGeometryShader.Get();
+	}
+
+	const CD3D11ShaderProgram::TConstantBufferList& CD3D11ShaderProgram::GetD3DConstantBuffers()
+	{
+		return m_ConstantBuffers;
+	}
+
+	ID3D11InputLayout* CD3D11ShaderProgram::GetD3DInputLayout(const CVertexDeclaration* pVertexDeclaration)
+	{
+		assert(pVertexDeclaration);
+
+		ComPtr<ID3D11InputLayout> pLayout = nullptr;
+
+		TVertexDeclToInputLayout::iterator findIter = m_BoundVertexDeclarations.find(pVertexDeclaration);
+		if (findIter != m_BoundVertexDeclarations.end()) {
+			// Do we already have an input layout for this vertex declaration?
+			pLayout = findIter->second.Get();
+		}
+		else {
+			pLayout = CreateD3DInputLayout(pVertexDeclaration);
+			m_BoundVertexDeclarations[pVertexDeclaration] = pLayout;
+		}
+
+		return pLayout.Get();
 	}
 
 	void CD3D11ShaderProgram::VUpdateShaderParams(std::string constantBufferName, shared_ptr<CShaderParams> pShaderParams)
@@ -94,7 +139,7 @@ namespace Slim {
 
 			assert(constantBuffer.m_Variables[i].m_Size == size);
 
-			memcpy(reinterpret_cast<char*>(pData)+ constantBuffer.m_Variables[i].m_StartOffset, pSource, size);
+			memcpy(reinterpret_cast<char*>(pData) + constantBuffer.m_Variables[i].m_StartOffset, pSource, size);
 		}
 
 		m_pImmediateContext->Unmap(constantBuffer.m_pBuffer, 0);
@@ -131,51 +176,6 @@ namespace Slim {
 		}
 
 		return m_pParams;
-	}
-
-	const CD3D11ShaderProgram::TByteCode& CD3D11ShaderProgram::GetByteCode() const
-	{
-		assert(m_ByteCode.size() > 0);
-		return m_ByteCode;
-	}
-
-	ID3D11VertexShader* CD3D11ShaderProgram::GetD3DVertexShader()
-	{
-		return m_pVertexShader.Get();
-	}
-
-	ID3D11PixelShader* CD3D11ShaderProgram::GetD3DPixelShader()
-	{
-		return m_pPixelShader.Get();
-	}
-
-	ID3D11GeometryShader* CD3D11ShaderProgram::GetD3DGeometryShader()
-	{
-		return m_pGeometryShader.Get();
-	}
-
-	const CD3D11ShaderProgram::TConstantBufferList& CD3D11ShaderProgram::GetD3DConstantBuffers()
-	{
-		return m_ConstantBuffers;
-	}
-
-	ID3D11InputLayout* CD3D11ShaderProgram::GetD3DInputLayout(const CVertexDeclaration* pVertexDeclaration)
-	{
-		assert(pVertexDeclaration);
-
-		ComPtr<ID3D11InputLayout> pLayout = nullptr;
-
-		TVertexDeclToInputLayout::iterator findIter = m_BoundVertexDeclarations.find(pVertexDeclaration);
-		if (findIter != m_BoundVertexDeclarations.end()) {
-			// Do we already have an input layout for this vertex declaration?
-			pLayout = findIter->second.Get();
-		}
-		else {
-			pLayout = CreateD3DInputLayout(pVertexDeclaration);
-			m_BoundVertexDeclarations[pVertexDeclaration] = pLayout;
-		}
-
-		return pLayout.Get();
 	}
 
 	bool CD3D11ShaderProgram::CompileShader()

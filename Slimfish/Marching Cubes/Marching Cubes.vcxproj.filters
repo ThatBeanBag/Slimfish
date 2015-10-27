@@ -24,6 +24,9 @@
     <ClInclude Include="MarchingCubesApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TriTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MarchingCubesLogic.cpp">
@@ -35,6 +38,9 @@
     <ClCompile Include="MarchingCubesApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TriTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Density_GS.hlsl" />
@@ -42,8 +48,10 @@
     <FxCompile Include="Density_VS.hlsl" />
     <FxCompile Include="MarchingCubes_VS.hlsl" />
     <FxCompile Include="MarchingCubes_GS.hlsl" />
+    <FxCompile Include="MarchingCubes_PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Density.hlsli" />
+    <None Include="LightingHelper.hlsli" />
   </ItemGroup>
 </Project>

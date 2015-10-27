@@ -28,6 +28,7 @@ namespace Slim {
 		:m_Name(name),
 		m_TextureType(textureType),
 		m_Usage(usage),
+		m_Format(ETexturePixelFormat::UNORM_8_RGBA),
 		m_Width(0),
 		m_Height(0),
 		m_Depth(0),
@@ -66,6 +67,16 @@ namespace Slim {
 	const ETextureUsage ATexture::GetUsage() const
 	{
 		return m_Usage;
+	}
+
+	void ATexture::SetPixelFormat(ETexturePixelFormat format)
+	{
+		m_Format = format;
+	}
+
+	const ETexturePixelFormat ATexture::GetPixelFormat() const
+	{
+		return m_Format;
 	}
 
 	const bool ATexture::IsLoaded() const

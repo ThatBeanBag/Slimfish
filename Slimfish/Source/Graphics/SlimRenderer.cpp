@@ -110,6 +110,8 @@ void ARenderer::SetRenderPass(CRenderPass* pPass)
 	else {
 		VDisableShaderProgram(EShaderProgramType::GEOMETRY);
 	}
+
+	VSetStreamOutTargets(pPass->GetStreamOutputTargets());
 }
 
 shared_ptr<AIndexGpuBuffer> ARenderer::CreateIndexBuffer(const std::vector<int>& indices, EGpuBufferUsage usage /*= EGpuBufferUsage::STATIC*/, bool isInSystemMemory /*= false*/)

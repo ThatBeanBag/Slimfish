@@ -163,6 +163,11 @@ namespace Slim {
 		}
 	}
 
+	void CD3D10Texture::VLoadRaw()
+	{
+
+	}
+
 	void CD3D10Texture::VUnload()
 	{
 		SLIM_SAFE_RELEASE(m_pTexture);

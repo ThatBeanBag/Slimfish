@@ -83,8 +83,8 @@ bool CClothSimulatorLogic::Initialise()
 
 	// Generate vertices.
 	std::vector<TVertex> vertices(n * m);
-	for (unsigned int z = 0; z < m; ++z) {
-		for (unsigned int x = 0; x < n; ++x) {
+	for (int z = 0; z < m; ++z) {
+		for (int x = 0; x < n; ++x) {
 			TVertex vert;
 			vert.position = m_PointMasses[(z * n) + x]->GetPosition();
 			vert.normal = CVector3::s_FORWARD;
@@ -95,14 +95,14 @@ bool CClothSimulatorLogic::Initialise()
 		}
 	}
 
-	m_pClothVertexBuffer = g_pApp->GetRenderer()->CreateVertexBuffer(vertices, EGpuBufferUsage::WRITE_ONLY, false);
-	int numIndices = ((n * 2) * (m - 1) + (m - 2)) + m_PointMasses.size();
+	m_pClothVertexBuffer = g_pApp->GetRenderer()->CreateVertexBuffer(vertices, EGpuBufferUsage::WRITE_ONLY);
+	int numIndices = ((n * 2) * (m - 1) + (m - 2)) /*+ m_PointMasses.size()*/;
 
 	// Generate indices
 	std::vector<int> indices(numIndices);
 	int index = 0;
 
-	for (unsigned int z = 0; z < m - 1; ++z) {
+	for (int z = 0; z < m - 1; ++z) {
 		// Even rows move left to right, odd rows move right to left.
 		if (z % 2 == 0) {
 			// Is this an even row?
@@ -130,7 +130,7 @@ bool CClothSimulatorLogic::Initialise()
 		}
 	}
 
-	m_pClothIndexBuffer = g_pApp->GetRenderer()->CreateIndexBuffer(indices, EGpuBufferUsage::WRITE_ONLY);
+	m_pClothIndexBuffer = g_pApp->GetRenderer()->CreateIndexBuffer(indices);
 
 	if (!m_pClothVertexBuffer) {
 		return false;
@@ -215,7 +215,7 @@ void CClothSimulatorLogic::Update(float deltaTime)
 
 	m_AccumulatedTime = 0.0f;*/
 
-	static const float minClothDistance = 0.05f;
+	static const float minClothDistance = 0.1f;
 	static const float minClothDistanceSqr = minClothDistance * minClothDistance;
 
 	CVector3 sphereOrigin(0.0f, 4.0f, -2.0f);
@@ -250,15 +250,15 @@ void CClothSimulatorLogic::Update(float deltaTime)
 		m_pGrabbedMass->ApplyForce((intersectionPoint - m_pGrabbedMass->GetPosition()) * 500.0f);
 	}
 
-	/*for (int i = 0; i < m_PointMasses.size(); ++i) {
-		for (int j = i + 1; j < m_PointMasses.size(); ++j) {
+	for (unsigned int i = 0; i < m_PointMasses.size(); ++i) {
+		for (unsigned int j = i + 1; j < m_PointMasses.size(); ++j) {
 			auto toPointMass = m_PointMasses[j]->GetPosition() - m_PointMasses[i]->GetPosition();
 			if (toPointMass.GetLengthSquared() < minClothDistanceSqr) {
 				toPointMass = CVector3::Normalise(toPointMass);
-				/ *m_PointMasses[i]->SetPosition(m_PointMasses[j]->GetPosition() - (toPointMass * minClothDistance));
-				m_PointMasses[j]->SetPosition(m_PointMasses[i]->GetPosition() + (toPointMass * minClothDistance));* /
-				/ *m_PointMasses[i]->SetPosition(m_PointMasses[i]->GetLastPosition());
-				m_PointMasses[j]->SetPosition(m_PointMasses[j]->GetLastPosition());* /
+				m_PointMasses[i]->SetPosition(m_PointMasses[j]->GetPosition() - (toPointMass * minClothDistance));
+				m_PointMasses[j]->SetPosition(m_PointMasses[i]->GetPosition() + (toPointMass * minClothDistance));
+				/*m_PointMasses[i]->SetPosition(m_PointMasses[i]->GetLastPosition());
+				m_PointMasses[j]->SetPosition(m_PointMasses[j]->GetLastPosition());*/
 			}
 		}
 
@@ -270,7 +270,6 @@ void CClothSimulatorLogic::Update(float deltaTime)
 			m_PointMasses[i]->SetPosition(sphereOrigin + toSphere * sphereRadius);
 		}
 
-
 		if (position.GetY() < 0.5f) {
 			position.SetY(0.5f);
 			m_PointMasses[i]->SetPosition(position);
@@ -279,7 +278,7 @@ void CClothSimulatorLogic::Update(float deltaTime)
 
 			//m_PointMasses[i]->ApplyForce(-force * 0.0f);
 		}
-	}*/
+	}
 
 	UpdateClothVertices();
 }
@@ -337,7 +336,7 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 		int m = 40;
 		m_ClothWidth = n;
 		m_ClothHeight = m;
-		CreateCloth(n, m, 0.5f, 0.9f, 4.0f);
+		CreateCloth(n, m, 0.3f, 0.9f, 50.0f);
 		m_pGrabbedMass = nullptr;
 	}
 
@@ -562,7 +561,7 @@ void CClothSimulatorLogic::UpdateClothVertices()
 		}
 	}
 
-	CGpuBufferLock indexLock(m_pClothIndexBuffer, 0, m_pClothIndexBuffer->GetSize(), EGpuBufferLockType::DISCARD);
+	/*CGpuBufferLock indexLock(m_pClothIndexBuffer, 0, m_pClothIndexBuffer->GetSize(), EGpuBufferLockType::DISCARD);
 	int* pIndices = reinterpret_cast<int*>(indexLock.GetLockedContents());
 
 	auto index = 0;
@@ -602,10 +601,10 @@ void CClothSimulatorLogic::UpdateClothVertices()
 				pIndices[index++] = z * n;
 			}
 		}
-	}
+	}*/
 }
 
-void CClothSimulatorLogic::CreateSphereVertices(float rings, float segments)
+void CClothSimulatorLogic::CreateSphereVertices(int rings, int segments)
 {
 	std::vector<TVertex> vertices((rings + 1) * (segments + 1));
 	std::vector<short> indices(6 * rings * (segments + 1));
