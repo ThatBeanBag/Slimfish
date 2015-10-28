@@ -34,12 +34,11 @@ namespace Slim {
 		assert(GetTexture());
 		assert(GetTexture()->GetUsage() == ETextureUsage::RENDER_TARGET);
 
-
 		shared_ptr<CD3D11Texture> pD3DTexture = static_pointer_cast<CD3D11Texture>(GetTexture());
 
 		D3D11_RENDER_TARGET_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
-		desc.Format = DXGI_FORMAT_R32_FLOAT;	// TODO: this is a hack constructor should really take this as a parameter.
+		desc.Format = D3D11Conversions::GetPixelFormat(pTexture->GetPixelFormat());
 
 		HRESULT hResult = S_OK;
 		ComPtr<ID3D11Resource> pDepthStencilBuffer = nullptr;
@@ -228,11 +227,6 @@ namespace Slim {
 	ID3D11RenderTargetView* CD3D11RenderTexture::GetRenderTargetView()
 	{
 		return m_pRenderTargetView.Get();
-	}
-
-	void CD3D11RenderTexture::CreateDepthStencilBuffer1D()
-	{
-
 	}
 
 }
