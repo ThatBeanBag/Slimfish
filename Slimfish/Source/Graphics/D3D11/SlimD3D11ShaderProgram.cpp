@@ -129,11 +129,11 @@ namespace Slim {
 			size_t size = 0;
 
 			if (shaderConstant.IsFloat()) {
-				size = shaderConstant.m_Size * sizeof(float);
+				size = shaderConstant.m_Size * shaderConstant.m_NumElements * sizeof(float);
 				pSource = reinterpret_cast<const void*>(&pShaderParams->GetConstantFloatList()[shaderConstant.m_Index]);
 			}
 			else {
-				size = shaderConstant.m_Size * sizeof(int);
+				size = shaderConstant.m_Size * shaderConstant.m_NumElements * sizeof(int);
 				pSource = reinterpret_cast<const void*>(&pShaderParams->GetConstantIntList()[shaderConstant.m_Index]);
 			}
 
@@ -491,13 +491,14 @@ namespace Slim {
 			paramName = prefix + paramName;
 
 			EShaderConstantType type = D3D11Conversions::GetShaderConstantType(variableTypeDesc);
-			m_pParams->AddConstant(paramName, type);
+			size_t elements = variableTypeDesc.Elements > 1 ? variableTypeDesc.Elements : 1;
+			m_pParams->AddConstant(paramName, type, elements);
 
 			// Save the constant variable details for when we update shader params in the buffer.
 			TConstantVariable constantVariable;
 			constantVariable.m_Name = paramName;
 			constantVariable.m_StartOffset = variableTypeDesc.Offset + offset;
-			constantVariable.m_Size = CShaderConstant(type).GetSizeInBytes();
+			constantVariable.m_Size = CShaderConstant(type).GetSizeInBytes() * elements;
 			constantBuffer.m_Variables.push_back(constantVariable);
 		}
 	}

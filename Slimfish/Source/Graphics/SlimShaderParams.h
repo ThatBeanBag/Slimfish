@@ -78,6 +78,7 @@ public:
 	size_t m_Index;
 	size_t m_OffsetInBuffer;
 	size_t m_Size;
+	size_t m_NumElements;
 protected:
 private:
 };
@@ -112,7 +113,7 @@ public:
 	 	@param name The name of the constant definition.
 	 	@param type The type of constant definition e.g. INT, INT2, FLOAT, MATRI4X4 etc.
 	*/
-	void AddConstant(const std::string& name, EShaderConstantType type);
+	void AddConstant(const std::string& name, EShaderConstantType type, size_t numElements = 1);
 
 	/** Clears all the constant definitions. @author Hayden Asplet */
 	void ClearConstants();

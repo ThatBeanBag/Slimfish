@@ -36,9 +36,6 @@ public:
 	ID3D11RenderTargetView* GetRenderTargetView();
 protected:
 private:
-	void CreateDepthStencilBuffer1D();
-	void CreateDepthStencilBuffer2D();
-	void CreateDepthStencilBuffer3D();
 
 	// Member Variables
 public:

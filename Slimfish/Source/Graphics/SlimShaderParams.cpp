@@ -28,7 +28,8 @@ namespace Slim {
 	CShaderConstant::CShaderConstant() 
 		:m_Type(EShaderConstantType::INT),
 		m_Index(0), 
-		m_Size(0)
+		m_Size(0),
+		m_NumElements(1)
 	{
 
 	}
@@ -129,22 +130,23 @@ namespace Slim {
 
 	}
 
-	void CShaderParams::AddConstant(const std::string& name, EShaderConstantType type)
+	void CShaderParams::AddConstant(const std::string& name, EShaderConstantType type, size_t numElements)
 	{
 		if (m_NamedConstantMap.find(name) != m_NamedConstantMap.end()) {
-			// TODO: throw up and error.
+			SLIM_THROW(EExceptionType::DUPLICATE_ENTRY) << "Attempting to add two constants of the same name " << name << " to the shader params list.";
 		}
 
 		CShaderConstant shaderConstant(type);
+		shaderConstant.m_NumElements = numElements;
 
 		// Insert the constant by saving the index and resizing the list of constants to make room for the new constant.
 		if (shaderConstant.IsFloat()) {
 			shaderConstant.m_Index = m_ConstantFloats.size();
-			m_ConstantFloats.resize(m_ConstantFloats.size() + shaderConstant.m_Size);
+			m_ConstantFloats.resize(m_ConstantFloats.size() + shaderConstant.m_Size * numElements);
 		}
 		else {
 			shaderConstant.m_Index = m_ConstantInts.size();
-			m_ConstantInts.resize(m_ConstantInts.size() + shaderConstant.m_Size);
+			m_ConstantInts.resize(m_ConstantInts.size() + shaderConstant.m_Size * numElements);
 		}
 
 		// Add the constant to the map, so we can find it later.

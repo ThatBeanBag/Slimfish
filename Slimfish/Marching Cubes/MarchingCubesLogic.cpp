@@ -107,9 +107,9 @@ bool CMarchingCubesLogic::Initialise()
 
 	// Create the render texture for building and storing the densities.
 	auto pDensityTexture = g_pApp->GetRenderer()->VCreateTexture("DensityTexture");
-	pDensityTexture->SetWidth(m_VoxelDimPlusMargins);
-	pDensityTexture->SetHeight(m_VoxelDimPlusMargins);
-	pDensityTexture->SetDepth(m_VoxelDimPlusMargins);
+	pDensityTexture->SetWidth(m_VoxelDim);
+	pDensityTexture->SetHeight(m_VoxelDim);
+	pDensityTexture->SetDepth(m_VoxelDim);
 	pDensityTexture->SetType(ETextureType::TYPE_3D);
 	pDensityTexture->SetUsage(ETextureUsage::RENDER_TARGET);
 	pDensityTexture->SetPixelFormat(ETexturePixelFormat::FLOAT_32_R);
@@ -146,6 +146,7 @@ bool CMarchingCubesLogic::Initialise()
 	m_BuildDensitiesPass.GetPixelShader()->UpdateShaderParams("CBLod", m_pLodParams);
 	m_GenerateVerticesPass.GetGeometryShader()->UpdateShaderParams("CBLod", m_pLodParams);
 	m_GenerateVerticesPass.GetPixelShader()->UpdateShaderParams("CBLod", m_pLodParams);
+	m_GenerateVerticesPass.SetCullingMode(ECullingMode::NONE);
 
 	m_pChunkParams = m_BuildDensitiesPass.GetVertexShader()->GetShaderParams("CBChunk");
 	m_pWVPParams = m_GenerateVerticesPass.GetGeometryShader()->GetShaderParams("CBPerFrame");

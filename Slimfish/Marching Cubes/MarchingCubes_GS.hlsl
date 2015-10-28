@@ -74,7 +74,7 @@ void main(point GSInput input[1], inout TriangleStream<GSOutput> triStream)
 	float3 cubePoses[8];
 	float cubeVals[8];
 	for (int i = 0; i < 8; ++i) {
-		cubePoses[i] = input[0].position.xyz + (gCorners[i] /** gWVoxelSize*/);
+		cubePoses[i] = input[0].position.xyz + (gCorners[i] * (2.0f / gVoxelDim));
 		cubeVals[i] = gTexture3DDensity.SampleLevel(gSamplerPoint, (cubePoses[i] + 1.0f) / 2.0f, 0);
 		cubePoses[i] += gWChunkPosition;
 	}
