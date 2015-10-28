@@ -71,17 +71,19 @@ bool CClothSimulatorLogic::Initialise()
 	m_pGroundVertexBuffer = g_pApp->GetRenderer()->CreateVertexBuffer(groundVertices);
 
 	// Create vertex buffer.
-	/*std::vector<TVertex> vertices;
+	std::vector<TVertex> vertices;
 	for (auto& pointMass : m_PointMasses) {
 		for (const auto& link : pointMass->GetLinks()) {
 			if (link.GetIsVisible()) {
-				vertices.push_back({ pointMass->GetPosition(), CVector3::s_FORWARD, CColourValue::s_RED });
-				vertices.push_back({ link.GetPointMassB()->GetPosition(), CVector3::s_FORWARD, CColourValue::s_RED });
+				vertices.push_back({ pointMass->GetPosition(), CVector3::s_FORWARD, 0, 0, CColourValue::s_RED });
+				vertices.push_back({ link.GetPointMassB()->GetPosition(), CVector3::s_FORWARD, 0, 0, CColourValue::s_RED });
 			}
 		}
-	}*/
+	}
 
-	// Generate vertices.
+	m_pClothVertexBuffer = g_pApp->GetRenderer()->CreateVertexBuffer(vertices, EGpuBufferUsage::WRITE_ONLY);
+
+	/*// Generate vertices.
 	std::vector<TVertex> vertices(n * m);
 	for (int z = 0; z < m; ++z) {
 		for (int x = 0; x < n; ++x) {
@@ -96,7 +98,7 @@ bool CClothSimulatorLogic::Initialise()
 	}
 
 	m_pClothVertexBuffer = g_pApp->GetRenderer()->CreateVertexBuffer(vertices, EGpuBufferUsage::WRITE_ONLY);
-	int numIndices = ((n * 2) * (m - 1) + (m - 2)) /*+ m_PointMasses.size()*/;
+	int numIndices = ((n * 2) * (m - 1) + (m - 2));
 
 	// Generate indices
 	std::vector<int> indices(numIndices);
@@ -130,7 +132,7 @@ bool CClothSimulatorLogic::Initialise()
 		}
 	}
 
-	m_pClothIndexBuffer = g_pApp->GetRenderer()->CreateIndexBuffer(indices);
+	m_pClothIndexBuffer = g_pApp->GetRenderer()->CreateIndexBuffer(indices);*/
 
 	if (!m_pClothVertexBuffer) {
 		return false;
@@ -143,7 +145,7 @@ bool CClothSimulatorLogic::Initialise()
 	m_ClothRenderPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("ClothPS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
 	m_ClothRenderPass.SetCullingMode(ECullingMode::NONE);
 
-	m_pVSParams = m_ClothRenderPass.GetVertexShader()->VCreateShaderParams("constantBuffer");
+	m_pVSParams = m_ClothRenderPass.GetVertexShader()->GetShaderParams("constantBuffer");
 
 	// Setup lighting.
 	m_Light.SetType(LIGHT_DIRECTIONAL);
@@ -162,7 +164,7 @@ bool CClothSimulatorLogic::Initialise()
 	m_LightCamera.SetOrthographicSize(1.0f);
 	m_LightCamera.UpdateViewTransform();
 
-	m_pPSParams = m_ClothRenderPass.GetPixelShader()->VCreateShaderParams("constantBuffer");
+	m_pPSParams = m_ClothRenderPass.GetPixelShader()->GetShaderParams("constantBuffer");
 	m_pPSParams->SetConstant("gLight.type", m_Light.GetType());
 	m_pPSParams->SetConstant("gLight.diffuse", m_Light.GetDiffuse());
 	m_pPSParams->SetConstant("gLight.specular", m_Light.GetSpecular());
@@ -171,7 +173,7 @@ bool CClothSimulatorLogic::Initialise()
 	m_pPSParams->SetConstant("gLight.attenuation", m_Light.GetAttenuation());
 	m_pPSParams->SetConstant("gAmbientLight", CColourValue(0.3f, 0.3f, 0.3f));
 
-	m_ClothRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_pPSParams);
+	m_ClothRenderPass.GetPixelShader()->UpdateShaderParams("constantBuffer", m_pPSParams);
 	m_ClothRenderPass.AddTextureLayer("Textures/Cloth.jpg");
 
 	// Setup camera.
@@ -187,10 +189,10 @@ bool CClothSimulatorLogic::Initialise()
 	// Setup shadow map.
 	m_DepthRenderPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("DepthOnly_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
 	m_DepthRenderPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("DepthOnly_PS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
-	auto pRenderDepthShaderParams = m_DepthRenderPass.GetVertexShader()->VCreateShaderParams("constantBuffer");
+	auto pRenderDepthShaderParams = m_DepthRenderPass.GetVertexShader()->GetShaderParams("constantBuffer");
 	pRenderDepthShaderParams->SetConstant("gWorldViewProjMatrix", m_LightCamera.GetViewProjMatrix());
 	pRenderDepthShaderParams->SetConstant("gZFar", m_LightCamera.GetFarClipDistance());
-	m_DepthRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", pRenderDepthShaderParams);
+	m_DepthRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", pRenderDepthShaderParams);
 
 	// Create the shadow map.
 	m_pShadowMap = g_pApp->GetRenderer()->VCreateRenderTexture("ShadowMap", s_SHADOW_MAP_WIDTH, s_SHADOW_MAP_HEIGHT);
@@ -251,16 +253,16 @@ void CClothSimulatorLogic::Update(float deltaTime)
 	}
 
 	for (unsigned int i = 0; i < m_PointMasses.size(); ++i) {
-		for (unsigned int j = i + 1; j < m_PointMasses.size(); ++j) {
+		/*for (unsigned int j = i + 1; j < m_PointMasses.size(); ++j) {
 			auto toPointMass = m_PointMasses[j]->GetPosition() - m_PointMasses[i]->GetPosition();
 			if (toPointMass.GetLengthSquared() < minClothDistanceSqr) {
 				toPointMass = CVector3::Normalise(toPointMass);
 				m_PointMasses[i]->SetPosition(m_PointMasses[j]->GetPosition() - (toPointMass * minClothDistance));
 				m_PointMasses[j]->SetPosition(m_PointMasses[i]->GetPosition() + (toPointMass * minClothDistance));
 				/*m_PointMasses[i]->SetPosition(m_PointMasses[i]->GetLastPosition());
-				m_PointMasses[j]->SetPosition(m_PointMasses[j]->GetLastPosition());*/
+				m_PointMasses[j]->SetPosition(m_PointMasses[j]->GetLastPosition()); * /
 			}
-		}
+		}*/
 
 		auto position = m_PointMasses[i]->GetPosition();
 
@@ -302,22 +304,22 @@ void CClothSimulatorLogic::Render()
 	m_pVSParams->SetConstant("gWorldViewProjMatrix", m_Camera.GetViewProjMatrix());
 	m_pVSParams->SetConstant("gWorldMatrix", CMatrix4x4::s_IDENTITY);
 	m_pVSParams->SetConstant("gLightViewProjMatrix", m_LightCamera.GetViewProjMatrix());
-	m_ClothRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pVSParams);
+	m_ClothRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_pVSParams);
 
 	m_pPSParams->SetConstant("gEyePosition", m_Camera.GetPosition());
-	m_ClothRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_pPSParams);
+	m_ClothRenderPass.GetPixelShader()->UpdateShaderParams("constantBuffer", m_pPSParams);
 
 	RenderToShadowMap();
 
 	g_pApp->GetRenderer()->SetRenderPass(&m_ClothRenderPass);
-	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pClothVertexBuffer, m_pClothIndexBuffer);
+	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::LINELIST, m_pClothVertexBuffer, m_pClothIndexBuffer);
 	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pGroundVertexBuffer);
 
 	CMatrix4x4 spherePosition = CMatrix4x4::BuildTranslation(0.0f, 4.0f, -2.0f) * CMatrix4x4::BuildScale(3.0f, 3.0f, 3.0f);
 	m_pVSParams->SetConstant("gWorldViewProjMatrix", m_Camera.GetViewProjMatrix() * spherePosition);
 	m_pVSParams->SetConstant("gWorldMatrix", spherePosition);
 	m_pVSParams->SetConstant("gLightViewProjMatrix", m_LightCamera.GetViewProjMatrix());
-	m_ClothRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pVSParams);
+	m_ClothRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_pVSParams);
 
 	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pSphereVertices, m_pSphereIndices);
 }
@@ -477,7 +479,7 @@ void CClothSimulatorLogic::UpdateClothVertices()
 	CGpuBufferLock lock(m_pClothVertexBuffer, 0, m_pClothVertexBuffer->GetSize(), EGpuBufferLockType::DISCARD);
 	TVertex* pVertices = reinterpret_cast<TVertex*>(lock.GetLockedContents());
 
-	/*std::vector<TVertex> vertices;
+	std::vector<TVertex> vertices;
 	int iIndex = 0;
 	for (auto& pointMass : m_PointMasses) {
 		for (const auto& link : pointMass->GetLinks()) {
@@ -490,17 +492,17 @@ void CClothSimulatorLogic::UpdateClothVertices()
 				pVertices[iIndex].normal = CVector3::s_FORWARD;
 				pVertices[iIndex].colour = CColourValue::s_RED;
 				++iIndex;
-				/ * vertices.push_back({ pointMass->GetPosition(), CVector3::s_FORWARD });
-				vertices.push_back({ link.GetPointMassB()->GetPosition(), CVector3::s_FORWARD }); * /
+				/* vertices.push_back({ pointMass->GetPosition(), CVector3::s_FORWARD });
+				vertices.push_back({ link.GetPointMassB()->GetPosition(), CVector3::s_FORWARD }); */
 			}
 		}
 	}
 
 	for (int i = iIndex; i < m_pClothVertexBuffer->GetSize() / m_pClothVertexBuffer->GetStride(); ++i) {
 		pVertices[i].position = CVector3(1000, 1000, 1000);
-	}*/
+	}
 
-	for (unsigned int z = 0; z < m_ClothWidth; ++z) {
+	/*for (unsigned int z = 0; z < m_ClothWidth; ++z) {
 		for (unsigned int x = 0; x < m_ClothHeight; ++x) {
 			TVertex vert;
 			vert.position = m_PointMasses[(z * m_ClothWidth) + x]->GetPosition();
@@ -559,7 +561,7 @@ void CClothSimulatorLogic::UpdateClothVertices()
 
 			pVertices[x + (z * m_ClothWidth)] = vert;
 		}
-	}
+	}*/
 
 	/*CGpuBufferLock indexLock(m_pClothIndexBuffer, 0, m_pClothIndexBuffer->GetSize(), EGpuBufferLockType::DISCARD);
 	int* pIndices = reinterpret_cast<int*>(indexLock.GetLockedContents());
