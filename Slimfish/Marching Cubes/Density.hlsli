@@ -26,6 +26,7 @@ float Density(float3 wsCoord) {
 	density += gTexture3DNoise1.Sample(gSamplerTrilinearWrap, wsCoord * 4.03).x * 0.25f;
 	density += gTexture3DNoise2.Sample(gSamplerTrilinearWrap, wsCoord * 1.96).x * 0.5f;
 	density += gTexture3DNoise3.Sample(gSamplerTrilinearWrap, wsCoord * 1.01).x * 1.0f;
+	//density += 0.34f;
 
 	density -= gWChunkSize * 0.009f;
 

@@ -22,7 +22,7 @@
 // Local Includes
 
 namespace TriTable {
-	extern const int g_VALUES[][16];
+	extern const int g_VALUES[256][16];
 	extern const int g_SIZE;
 }
 

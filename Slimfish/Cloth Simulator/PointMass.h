@@ -60,7 +60,10 @@ public:
 
 	const CVector3 GetTotalForce() const;
 
+	bool HasLinkTo(CPointMass* pPointMass);
+
 	const std::vector<CLink>& GetLinks() const;
+	const std::vector<CLink>& GetBrokenLinks() const;
 protected:
 private:
 	// Member Variables
@@ -71,6 +74,7 @@ private:
 	CVector3 m_LastPosition;
 	CVector3 m_Acceleration;
 	std::vector<CLink> m_Links;
+	std::vector<CLink> m_BrokenLinks;
 
 	float m_Mass;
 	float m_Damping;

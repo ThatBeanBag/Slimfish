@@ -95,7 +95,12 @@ void CPointMass::DetachPin()
 
 void CPointMass::RemoveLink(CLink* pLink)
 {
-	m_Links.erase(std::remove_if(m_Links.begin(), m_Links.end(), [&](const CLink& link){ return &link == pLink; }));
+	auto iter = std::remove_if(m_Links.begin(), m_Links.end(), [&](const CLink& link){ return &link == pLink; });
+	if (iter != m_Links.end()) {
+		m_BrokenLinks.push_back((*iter));
+	}
+
+	m_Links.erase(iter);
 }
 
 void CPointMass::ClearLinks()
@@ -143,7 +148,18 @@ const CVector3 CPointMass::GetTotalForce() const
 	return m_Acceleration * m_Mass;
 }
 
+bool CPointMass::HasLinkTo(CPointMass* pPointMass)
+{
+	auto isLinkedToMass = [&](const CLink& link) { return link.GetPointMassB() == pPointMass; };
+	return std::find_if(m_Links.begin(), m_Links.end(), isLinkedToMass) != m_Links.end();
+}
+
 const std::vector<CLink>& CPointMass::GetLinks() const
 {
 	return m_Links;
+}
+
+const std::vector<CLink>& CPointMass::GetBrokenLinks() const
+{
+	return m_BrokenLinks;
 }

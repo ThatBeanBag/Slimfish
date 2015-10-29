@@ -54,6 +54,11 @@ public:
 	*/
 	~CPlane();
 
+	/** Find if a point is inside the plane. Is on the side of the plane the normal is not facing.
+	 	@author Hayden Asplet
+	*/
+	const bool IsInside(const CVector3& point);
+
 	/** Get the normal of the plane.
 	 	@author Hayden Asplet
 	*/

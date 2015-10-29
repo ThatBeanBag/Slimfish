@@ -61,6 +61,11 @@ namespace Slim {
 
 	}
 
+	const bool CPlane::IsInside(const CVector3& point)
+	{
+		return CVector3::DotProduct(point, CVector3(m_A, m_B, m_C)) > m_D;
+	}
+
 	const CVector3 CPlane::GetNormal() const
 	{
 		return CVector3(m_A, m_B, m_C);

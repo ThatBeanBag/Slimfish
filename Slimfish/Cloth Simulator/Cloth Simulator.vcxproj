@@ -94,6 +94,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="CollisionShape.cpp" />
     <ClCompile Include="Link.cpp" />
     <ClCompile Include="PointMass.cpp" />
   </ItemGroup>
@@ -101,6 +102,7 @@
     <ClInclude Include="ClothSimulatorApp.h" />
     <ClInclude Include="ClothSimulatorLogic.h" />
     <ClInclude Include="ClothSimulatorStd.h" />
+    <ClInclude Include="CollisionShape.h" />
     <ClInclude Include="Link.h" />
     <ClInclude Include="PointMass.h" />
   </ItemGroup>

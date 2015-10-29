@@ -81,6 +81,7 @@ private:
 	shared_ptr<AVertexGpuBuffer> m_pGroundVertexBuffer;
 	CPointMass* m_pGrabbedMass;
 	float m_AccumulatedTime;
+	float m_fTimeScale;
 
 	shared_ptr<AIndexGpuBuffer> m_pSphereIndices;
 	shared_ptr<AVertexGpuBuffer> m_pSphereVertices;

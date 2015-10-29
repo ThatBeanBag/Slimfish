@@ -41,6 +41,21 @@ namespace Slim {
 
 	}
 
+	bool CFrustum::IsInside(const CVector3& vertex) const
+	{
+		// Calculate the frustums in case they are invalid.
+		CalculateFrustumSides();
+
+		for (int i = 0; i < static_cast<int>(ESide::FS_MAX); ++i) {
+			// If the point is outside any one of the planes then it's outside the frustum.
+			if (!m_Sides[i].IsInside(vertex)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	void CFrustum::SetFieldOfView(float radFieldOfView)
 	{
 		m_radFieldOfView = radFieldOfView;

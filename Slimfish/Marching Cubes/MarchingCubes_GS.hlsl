@@ -31,7 +31,7 @@ cbuffer CBPerFrame {
 };
 
 cbuffer CBTriTable {
-	int gTriTable[4096]; // The triangle table for lookup when create polys.
+	int4 gTriTable[4096 / 4 + !!(4096%4)]; // The triangle table for lookup when create polys.
 };
 
 Texture3D gTexture3DDensity;
@@ -63,18 +63,27 @@ int GetTriTableValue(int i, int j)
 		return -1;
 	}
 
-	return gTriTable[(i * 16) + j];
+	int index = (i * 16) + j;
+
+	return gTriTable[index/4][index%4];
 }
 
 [maxvertexcount(18)]
-void main(point GSInput input[1], inout TriangleStream<GSOutput> triStream)
+void main(point GSInput input[1], inout PointStream<GSOutput> triStream)
 {
-	float isoLevel = 0.5f;
+	GSOutput output;
+	output.position = mul(float4(input[0].position.xyz, 1.0f), gWorldViewProjectionMatrix);
+	output.wPosition = input[0].position;
+	output.colour = float4(GetTriTableValue(0, 0), gVoxelDim, gWChunkPosition.x, 1.0f);
+	triStream.Append(output);
+	triStream.RestartStrip();
+
+	/*float isoLevel = 0.5f;
 
 	float3 cubePoses[8];
 	float cubeVals[8];
 	for (int i = 0; i < 8; ++i) {
-		cubePoses[i] = input[0].position.xyz + (gCorners[i] * (2.0f / gVoxelDim));
+		cubePoses[i] = input[0].position.xyz + (gCorners[i] * (2.0f / gVoxelDimMinusOne));
 		cubeVals[i] = gTexture3DDensity.SampleLevel(gSamplerPoint, (cubePoses[i] + 1.0f) / 2.0f, 0);
 		cubePoses[i] += gWChunkPosition;
 	}
@@ -143,5 +152,5 @@ void main(point GSInput input[1], inout TriangleStream<GSOutput> triStream)
 			triStream.Append(point3);
 			triStream.RestartStrip();
 		}
-	}
+	}*/
 }

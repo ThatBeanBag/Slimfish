@@ -38,7 +38,8 @@ struct TVertex {
 CClothSimulatorLogic::CClothSimulatorLogic()
 	:m_Camera(nullptr),
 	m_LightCamera(nullptr),
-	m_Light(nullptr)
+	m_Light(nullptr),
+	m_fTimeScale(1.0f)
 {
 
 }
@@ -55,11 +56,9 @@ bool CClothSimulatorLogic::Initialise()
 	m_VertexDeclaration.AddElement("TEXCOORD", CInputElement::FORMAT_FLOAT2);
 	m_VertexDeclaration.AddElement("COLOR", CInputElement::FORMAT_FLOAT4);
 
-	int n = 40;
-	int m = 40;
-	m_ClothWidth = n;
-	m_ClothHeight = m;
-	CreateCloth(n, m, 0.3f, 0.9f, 50.0f);
+	m_ClothWidth = 50;
+	m_ClothHeight = 50;
+	CreateCloth(m_ClothWidth, m_ClothHeight, 0.3f, 0.9f, 50.0f);
 
 	std::vector<TVertex> groundVertices = {
 			{ CVector3(-100.0f, 0.0f, -100.0f), CVector3::s_UP, 0.0f, 0.0f, CColourValue::s_GREEN },
@@ -71,7 +70,7 @@ bool CClothSimulatorLogic::Initialise()
 	m_pGroundVertexBuffer = g_pApp->GetRenderer()->CreateVertexBuffer(groundVertices);
 
 	// Create vertex buffer.
-	std::vector<TVertex> vertices;
+	/*std::vector<TVertex> vertices;
 	for (auto& pointMass : m_PointMasses) {
 		for (const auto& link : pointMass->GetLinks()) {
 			if (link.GetIsVisible()) {
@@ -81,62 +80,17 @@ bool CClothSimulatorLogic::Initialise()
 		}
 	}
 
-	m_pClothVertexBuffer = g_pApp->GetRenderer()->CreateVertexBuffer(vertices, EGpuBufferUsage::WRITE_ONLY);
+	m_pClothVertexBuffer = g_pApp->GetRenderer()->CreateVertexBuffer(vertices, EGpuBufferUsage::WRITE_ONLY);*/
 
-	/*// Generate vertices.
-	std::vector<TVertex> vertices(n * m);
-	for (int z = 0; z < m; ++z) {
-		for (int x = 0; x < n; ++x) {
-			TVertex vert;
-			vert.position = m_PointMasses[(z * n) + x]->GetPosition();
-			vert.normal = CVector3::s_FORWARD;
-			//vert.u = (static_cast<float>(x) / static_cast<float>(iWidth - 1));
-			//vert.v = (static_cast<float>(z) / static_cast<float>(iHeight - 1));
-
-			vertices[x + (z * n)] = vert;
-		}
-	}
-
-	m_pClothVertexBuffer = g_pApp->GetRenderer()->CreateVertexBuffer(vertices, EGpuBufferUsage::WRITE_ONLY);
-	int numIndices = ((n * 2) * (m - 1) + (m - 2));
+	// Generate vertices.
+	int numVertices = m_ClothWidth * m_ClothHeight;
+	m_pClothVertexBuffer = g_pApp->GetRenderer()->VCreateVertexBuffer(numVertices, sizeof(TVertex), nullptr, EGpuBufferUsage::WRITE_ONLY);
 
 	// Generate indices
-	std::vector<int> indices(numIndices);
-	int index = 0;
+	int numIndices = ((m_ClothWidth * 2) * (m_ClothHeight - 1) + (m_ClothHeight - 2)) + m_pClothVertexBuffer->GetNumVertices();
+	m_pClothIndexBuffer = g_pApp->GetRenderer()->VCreateIndexBuffer(numIndices, AIndexGpuBuffer::INDEX_TYPE_32, nullptr, EGpuBufferUsage::WRITE_ONLY);
 
-	for (int z = 0; z < m - 1; ++z) {
-		// Even rows move left to right, odd rows move right to left.
-		if (z % 2 == 0) {
-			// Is this an even row?
-			for (int x = 0; x < static_cast<int>(n); ++x) {
-				indices[index++] = x + z * n;
-				indices[index++] = x + z * n + n;	// Next row.
-			}
-
-			// Insert degenerate vertex, if this isn't the last row.
-			if (z != m - 2) {
-				indices[index++] = n - 1 + (z * n);
-			}
-		}
-		else {
-			// This is an odd row.
-			for (int x = static_cast<int>(n)-1; x >= 0; --x) {
-				indices[index++] = x + z * n;
-				indices[index++] = x + z * n + n;	// Next row.
-			}
-
-			// Insert degenerate vertex, if this isn't the last row.
-			if (z != m - 2) {
-				indices[index++] = z * n;
-			}
-		}
-	}
-
-	m_pClothIndexBuffer = g_pApp->GetRenderer()->CreateIndexBuffer(indices);*/
-
-	if (!m_pClothVertexBuffer) {
-		return false;
-	}
+	UpdateClothVertices();
 
 	CreateSphereVertices(10, 10);
 
@@ -217,7 +171,7 @@ void CClothSimulatorLogic::Update(float deltaTime)
 
 	m_AccumulatedTime = 0.0f;*/
 
-	static const float minClothDistance = 0.1f;
+	static const float minClothDistance = 0.05f;
 	static const float minClothDistanceSqr = minClothDistance * minClothDistance;
 
 	CVector3 sphereOrigin(0.0f, 4.0f, -2.0f);
@@ -238,7 +192,7 @@ void CClothSimulatorLogic::Update(float deltaTime)
 	}*/
 
 	for (auto& pointMass : m_PointMasses) {
-		pointMass->Update(deltaTime);
+		pointMass->Update(deltaTime * m_fTimeScale);
 	}
 
 	/*for (auto& pointMass : m_PointMasses) {
@@ -257,10 +211,12 @@ void CClothSimulatorLogic::Update(float deltaTime)
 			auto toPointMass = m_PointMasses[j]->GetPosition() - m_PointMasses[i]->GetPosition();
 			if (toPointMass.GetLengthSquared() < minClothDistanceSqr) {
 				toPointMass = CVector3::Normalise(toPointMass);
-				m_PointMasses[i]->SetPosition(m_PointMasses[j]->GetPosition() - (toPointMass * minClothDistance));
-				m_PointMasses[j]->SetPosition(m_PointMasses[i]->GetPosition() + (toPointMass * minClothDistance));
-				/*m_PointMasses[i]->SetPosition(m_PointMasses[i]->GetLastPosition());
+				m_PointMasses[i]->SetPosition(m_PointMasses[j]->GetPosition() - (toPointMass * (minClothDistance + 0.1f)));
+				m_PointMasses[j]->SetPosition(m_PointMasses[i]->GetPosition() + (toPointMass * (minClothDistance + 0.1f)));
+				/ *m_PointMasses[i]->SetPosition(m_PointMasses[i]->GetLastPosition());
 				m_PointMasses[j]->SetPosition(m_PointMasses[j]->GetLastPosition()); * /
+				//m_PointMasses[i]->ApplyForce(-toPointMass * (minClothDistance + 0.1f));
+				//m_PointMasses[j]->ApplyForce(toPointMass * (minClothDistance + 0.1f));
 			}
 		}*/
 
@@ -312,7 +268,7 @@ void CClothSimulatorLogic::Render()
 	RenderToShadowMap();
 
 	g_pApp->GetRenderer()->SetRenderPass(&m_ClothRenderPass);
-	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::LINELIST, m_pClothVertexBuffer, m_pClothIndexBuffer);
+	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pClothVertexBuffer, m_pClothIndexBuffer);
 	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pGroundVertexBuffer);
 
 	CMatrix4x4 spherePosition = CMatrix4x4::BuildTranslation(0.0f, 4.0f, -2.0f) * CMatrix4x4::BuildScale(3.0f, 3.0f, 3.0f);
@@ -326,19 +282,15 @@ void CClothSimulatorLogic::Render()
 
 void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 {
-	/*if (input.GetKeyRelease(EKeyCode::F1)) {
-	g_pApp->GetRenderer()->ToggleWindowed(); // If only :(
-	}*/
+	if (input.GetKeyRelease(EKeyCode::F1)) {
+		g_pApp->GetRenderer()->ToggleWindowed(); // If only :(
+	}
 
 	CPoint mousePosition = input.GetMousePosition();
 
 	if (input.GetKeyRelease(EKeyCode::R)) {
 		m_PointMasses.clear();
-		int n = 40;
-		int m = 40;
-		m_ClothWidth = n;
-		m_ClothHeight = m;
-		CreateCloth(n, m, 0.3f, 0.9f, 50.0f);
+		CreateCloth(m_ClothWidth, m_ClothHeight, 0.3f, 0.9f, 50.0f);
 		m_pGrabbedMass = nullptr;
 	}
 
@@ -395,7 +347,24 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 		}
 	}*/
 
+	if (input.GetMouseButtonRelease(EMouseButton::LEFT)) {
+		if (m_pGrabbedMass) {
+			m_pGrabbedMass->DetachPin();
+			m_pGrabbedMass = nullptr;
+		}
+	}
+
+	if (input.GetKeyPress(EKeyCode::P)) {
+		if (m_fTimeScale != 0.0f) {
+			m_fTimeScale = 0.0f;
+		}
+		else {
+			m_fTimeScale = 1.0f;
+		}
+	}
+
 	if (input.IsMouseButtonDown(EMouseButton::RIGHT)) {
+		// Push the point masses around.
 		CPoint deltaPosition = mousePosition - m_lastMousePosition;
 
 		CRay ray = m_Camera.ScreenPointToRay(mousePosition);
@@ -415,12 +384,6 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 		}
 	}
 
-	if (input.GetMouseButtonRelease(EMouseButton::LEFT)) {
-		if (m_pGrabbedMass) {
-			m_pGrabbedMass->DetachPin();
-			m_pGrabbedMass = nullptr;
-		}
-	}
 
 	// Handle rotation of camera.
 	if (input.IsMouseButtonDown(EMouseButton::MIDDLE)) {
@@ -479,7 +442,7 @@ void CClothSimulatorLogic::UpdateClothVertices()
 	CGpuBufferLock lock(m_pClothVertexBuffer, 0, m_pClothVertexBuffer->GetSize(), EGpuBufferLockType::DISCARD);
 	TVertex* pVertices = reinterpret_cast<TVertex*>(lock.GetLockedContents());
 
-	std::vector<TVertex> vertices;
+	/*std::vector<TVertex> vertices;
 	int iIndex = 0;
 	for (auto& pointMass : m_PointMasses) {
 		for (const auto& link : pointMass->GetLinks()) {
@@ -492,23 +455,30 @@ void CClothSimulatorLogic::UpdateClothVertices()
 				pVertices[iIndex].normal = CVector3::s_FORWARD;
 				pVertices[iIndex].colour = CColourValue::s_RED;
 				++iIndex;
-				/* vertices.push_back({ pointMass->GetPosition(), CVector3::s_FORWARD });
-				vertices.push_back({ link.GetPointMassB()->GetPosition(), CVector3::s_FORWARD }); */
+				/ * vertices.push_back({ pointMass->GetPosition(), CVector3::s_FORWARD });
+				vertices.push_back({ link.GetPointMassB()->GetPosition(), CVector3::s_FORWARD }); * /
 			}
 		}
 	}
 
 	for (int i = iIndex; i < m_pClothVertexBuffer->GetSize() / m_pClothVertexBuffer->GetStride(); ++i) {
 		pVertices[i].position = CVector3(1000, 1000, 1000);
-	}
+	}*/
 
-	/*for (unsigned int z = 0; z < m_ClothWidth; ++z) {
-		for (unsigned int x = 0; x < m_ClothHeight; ++x) {
+	for (unsigned int z = 0; z < m_ClothHeight; ++z) {
+		for (unsigned int x = 0; x < m_ClothWidth; ++x) {
 			TVertex vert;
 			vert.position = m_PointMasses[(z * m_ClothWidth) + x]->GetPosition();
 			vert.u = x / static_cast<float>(m_ClothWidth);
 			vert.v = z / static_cast<float>(m_ClothHeight);
 
+			pVertices[x + (z * m_ClothWidth)] = vert;
+		}
+	}
+
+	for (unsigned int z = 0; z < m_ClothHeight; ++z) {
+		for (unsigned int x = 0; x < m_ClothWidth; ++x) {
+			TVertex& vert = pVertices[(z * m_ClothWidth) + x];
 			// Calculate normal.
 			CVector3 averagedNormal(0, 0, 0);
 			CVector3 lastLine(0, 0, 0);
@@ -545,7 +515,7 @@ void CClothSimulatorLogic::UpdateClothVertices()
 					continue;
 				}
 
-				CVector3 neighbourPosition = m_PointMasses[neighbourX + neighbourZ * m_ClothWidth]->GetPosition();
+				CVector3 neighbourPosition = pVertices[neighbourX + neighbourZ * m_ClothWidth].position;
 				CVector3 currentNormal(0, 0, 0);
 				CVector3 currentLine = vert.position - neighbourPosition;
 
@@ -557,59 +527,133 @@ void CClothSimulatorLogic::UpdateClothVertices()
 			}
 
 			vert.normal = CVector3::Normalise(averagedNormal);
-			vert.colour = CColourValue::s_RED;
-
-			pVertices[x + (z * m_ClothWidth)] = vert;
 		}
-	}*/
+	}
 
-	/*CGpuBufferLock indexLock(m_pClothIndexBuffer, 0, m_pClothIndexBuffer->GetSize(), EGpuBufferLockType::DISCARD);
+	CGpuBufferLock indexLock(m_pClothIndexBuffer, 0, m_pClothIndexBuffer->GetSize(), EGpuBufferLockType::DISCARD);
 	int* pIndices = reinterpret_cast<int*>(indexLock.GetLockedContents());
 
 	auto index = 0;
 	auto n = m_ClothWidth;
 	auto m = m_ClothHeight;
 
+	auto GetPointMass = [this](unsigned int x, unsigned int z) {
+		return m_PointMasses[x + z * m_ClothWidth].get();
+	};
+
+	auto insertDegeneratesEven = [&](unsigned int x, unsigned int z) {
+		auto pointMass = GetPointMass(x, z);
+		// ^
+		// |
+		if (z < m - 1 && !GetPointMass(x, z + 1)->HasLinkTo(pointMass)) {
+			pIndices[index++] = x + z * n;	// Insert degenerate triangle.
+			return true;
+		}
+		// <--
+		else if (x > 0 && z < m - 1 && !GetPointMass(x , z + 1)->HasLinkTo(GetPointMass(x - 1, z + 1))) {
+			pIndices[index++] = x + z * n;	// Insert degenerate triangle.
+			return true;
+		}
+
+		return false;
+	};
+
+	auto insertDegeneratesEven2 = [&](unsigned int x, unsigned int z) {
+		auto pointMass = GetPointMass(x, z);
+		// ^
+		// |
+		if (z < m - 1 && !GetPointMass(x, z + 1)->HasLinkTo(pointMass)) {
+			pIndices[index++] = x + (z + 1) * n;	// Insert degenerate triangle.
+			return true;
+		}
+		// <--
+		else if (x < n - 1 && !GetPointMass(x + 1, z)->HasLinkTo(pointMass)) {
+			pIndices[index++] = x + (z + 1) * n;	// Insert degenerate triangle.
+			return true;
+		}
+
+		return false;
+	};
+
+	auto insertDegeneratesOdd = [&](unsigned int x, unsigned int z) {
+		auto pointMass = GetPointMass(x, z);
+		// ^
+		// |
+		if (z < m - 1 && !GetPointMass(x, z + 1)->HasLinkTo(pointMass)) {
+			pIndices[index++] = x + z * n;	// Insert degenerate triangle.
+			return true;
+		}
+		// <--
+		else if (x < n - 1 && z < m - 1 && !GetPointMass(x + 1, z + 1)->HasLinkTo(GetPointMass(x , z + 1))) {
+			pIndices[index++] = x + z * n;	// Insert degenerate triangle.
+			return true;
+		}
+
+		return false;
+	};
+
+	auto insertDegeneratesOdd2 = [&](unsigned int x, unsigned int z) {
+		auto pointMass = GetPointMass(x, z);
+		// ^
+		// |
+		if (z < m - 1 && !GetPointMass(x, z + 1)->HasLinkTo(pointMass)) {
+			pIndices[index++] = x + (z + 1) * n;	// Insert degenerate triangle.
+			return true;
+		}
+		// <--
+		else if (x > 0 && !pointMass->HasLinkTo(GetPointMass(x - 1, z))) {
+			pIndices[index++] = x + (z + 1) * n;	// Insert degenerate triangle.
+			return true;
+		}
+
+		return false;
+	};
+
 	for (unsigned int z = 0; z < m - 1; ++z) {
 		// Even rows move left to right, odd rows move right to left.
 		if (z % 2 == 0) {
+			bool alreadyGenerate = false;
+
 			// Is this an even row?
 			for (int x = 0; x < static_cast<int>(n); ++x) {
 				pIndices[index++] = x + z * n;
-				if (m_PointMasses[x + z * n]->GetLinks().size() < 2) {
-					pIndices[index++] = x + z * n;	// Insert degenerate triangle.
-				}
-
+				insertDegeneratesEven(x, z);
 				pIndices[index++] = x + z * n + n;	// Next row.
+				alreadyGenerate = insertDegeneratesEven2(x, z);
 			}
 
 			// Insert degenerate vertex, if this isn't the last row.
-			if (z != m - 2) {
+			if (z != m - 2 && !alreadyGenerate) {
 				pIndices[index++] = n - 1 + (z * n);
 			}
 		}
 		else {
+			bool alreadyGenerate = false;
+
 			// This is an odd row.
 			for (int x = static_cast<int>(n)-1; x >= 0; --x) {
 				pIndices[index++] = x + z * n;
-				if (m_PointMasses[x + z * n]->GetLinks().size() < 2) {
-					pIndices[index++] = x + z * n;	// Insert degenerate triangle.
-				}
+				insertDegeneratesOdd(x, z);
 				pIndices[index++] = x + z * n + n;	// Next row.
+				alreadyGenerate = insertDegeneratesOdd2(x, z);
 			}
 
 			// Insert degenerate vertex, if this isn't the last row.
-			if (z != m - 2) {
+			if (z != m - 2 && !alreadyGenerate) {
 				pIndices[index++] = z * n;
 			}
 		}
-	}*/
+	}
+
+	for (int i = index; i < m_pClothIndexBuffer->GetNumIndices(); ++i) {
+		pIndices[i] = pIndices[index - 1];
+	}
 }
 
 void CClothSimulatorLogic::CreateSphereVertices(int rings, int segments)
 {
 	std::vector<TVertex> vertices((rings + 1) * (segments + 1));
-	std::vector<short> indices(6 * rings * (segments + 1));
+	std::vector<int> indices(6 * rings * (segments + 1));
 	int index = 0;
 	int vertexIndex = 0;
 
@@ -617,16 +661,19 @@ void CClothSimulatorLogic::CreateSphereVertices(int rings, int segments)
 	float fDeltaSegAngle = 2 * Math::s_PI / segments;
 
 	for (int ring = 0; ring <= rings; ++ring) {
-		float r0 = 1.0f * std::sinf(ring * fDeltaRingAngle);
-		float y0 = 1.0f * std::cosf(ring * fDeltaRingAngle);
+		float r0 = std::sinf(ring * fDeltaRingAngle);
+		float y0 = std::cosf(ring * fDeltaRingAngle);
 
 		for (int seg = 0; seg <= segments; ++seg) {
 			float x0 = r0 * std::sinf(seg * fDeltaSegAngle);
 			float z0 = r0 * std::cosf(seg * fDeltaSegAngle);
 
-			vertices[ring * segments + seg].position = CVector3(x0, y0, z0);
-			vertices[ring * segments + seg].u = static_cast<float>(seg) / static_cast<float>(segments);
-			vertices[ring * segments + seg].v = static_cast<float>(ring) / static_cast<float>(rings);
+			auto& vertex = vertices[ring * segments + seg];
+
+			vertex.position = CVector3(x0, y0, z0);
+			vertex.u = static_cast<float>(seg) / static_cast<float>(segments);
+			vertex.v = static_cast<float>(ring) / static_cast<float>(rings);
+			vertex.normal = CVector3::Normalise(r0 * vertex.position);
 
 			if (ring != rings) {
 				indices[index++] = vertexIndex + segments + 1;
@@ -671,19 +718,20 @@ void CClothSimulatorLogic::CreateCloth(int width, int height, float restingDista
 			CVector3 position(restingDistance * x - midWidth, ((height - y) * restingDistance) + 5.0f, 0.0f);
 
 			auto pPointMass = std::make_unique<CPointMass>(position, 1.0f, 0.01f);
+			float diagonalRestingDistance = sqrt( 2 * (restingDistance * restingDistance));
 
 			if (x != 0) {
 				pPointMass->Attach(m_PointMasses.back().get(), restingDistance, stiffness, breakingForce);
 
 				if (y != 0) {
-					//pPointMass->Attach(m_PointMasses[(y - 1) * width + (x - 1)].get(), restingDistance, stiffness, breakingForce, false);
+					//pPointMass->Attach(m_PointMasses[(y - 1) * width + (x - 1)].get(), diagonalRestingDistance, stiffness, breakingForce, false);
 				}
 			}
 
 			if (y != 0) {
 				pPointMass->Attach(m_PointMasses[(y - 1) * (width) + x].get(), restingDistance, stiffness, breakingForce);
 				if (x < width - 1) {
-					//pPointMass->Attach(m_PointMasses[(y - 1) * width + (x + 1)].get(), restingDistance, stiffness, breakingForce, false);
+					//pPointMass->Attach(m_PointMasses[(y - 1) * width + (x + 1)].get(), diagonalRestingDistance, stiffness, breakingForce, false);
 				}
 			}
 

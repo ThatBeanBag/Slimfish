@@ -130,7 +130,11 @@ bool CMarchingCubesLogic::Initialise()
 	pTriTableBuffer->SetConstant("gTriTable", TriTable::g_VALUES[0], TriTable::g_SIZE);
 	m_GenerateVerticesPass.GetGeometryShader()->UpdateShaderParams("CBTriTable", pTriTableBuffer);
 
-	m_pLodParams = m_BuildDensitiesPass.GetVertexShader()->GetShaderParams("CBLod");
+	m_pLodParams = m_GenerateVerticesPass.GetGeometryShader()->GetShaderParams("CBLod");
+	m_BuildDensitiesPass.GetVertexShader()->GetShaderParams("CBLod");
+	m_BuildDensitiesPass.GetPixelShader()->GetShaderParams("CBLod");
+	m_GenerateVerticesPass.GetPixelShader()->GetShaderParams("CBLod");
+
 	m_pLodParams->SetConstant("gVoxelDim", static_cast<float>(m_VoxelDim));
 	m_pLodParams->SetConstant("gVoxelDimMinusOne", static_cast<float>(m_VoxelDim) - 1.0f);
 	m_pLodParams->SetConstant("gWVoxelSize", static_cast<float>(m_ChunkSize) / (static_cast<float>(m_VoxelDim) - 1.0f));
@@ -159,10 +163,10 @@ bool CMarchingCubesLogic::Initialise()
 	m_pLightingParams->SetConstant("gLight.range", m_Light.GetRange());
 	m_pLightingParams->SetConstant("gLight.attenuation", m_Light.GetAttenuation());
 	m_pLightingParams->SetConstant("gAmbientLight", CColourValue(0.3f, 0.3f, 0.3f));
-	m_GenerateVerticesPass.GetVertexShader()->UpdateShaderParams("CBLighting", m_pLightingParams);
+	m_GenerateVerticesPass.GetPixelShader()->UpdateShaderParams("CBLighting", m_pLightingParams);
 
 	// Setup camera.
-	m_Camera.SetPosition(CVector3(0.0f, 2.0f, 10.0f));
+	m_Camera.SetPosition(CVector3(2.0f, 2.0f, 2.0f));
 	m_Camera.SetPerspective(Math::DegreesToRadians(60.0f), 1.0f, 0.1f, 100.0f);
 
 	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
