@@ -49,9 +49,16 @@
     <FxCompile Include="MarchingCubes_VS.hlsl" />
     <FxCompile Include="MarchingCubes_GS.hlsl" />
     <FxCompile Include="MarchingCubes_PS.hlsl" />
+    <FxCompile Include="ListNonEmptyCells_VS.hlsl" />
+    <FxCompile Include="ListNonEmptyCells_GS.hlsl" />
+    <FxCompile Include="GenerateVertices_VS.hlsl" />
+    <FxCompile Include="GenerateVertices_GS.hlsl" />
+    <FxCompile Include="ListVertices_GS.hlsl" />
+    <FxCompile Include="ListVertices_VS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Density.hlsli" />
     <None Include="LightingHelper.hlsli" />
+    <None Include="Chunk.hlsli" />
   </ItemGroup>
 </Project>
