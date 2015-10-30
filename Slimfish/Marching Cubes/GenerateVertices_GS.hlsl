@@ -1,18 +1,22 @@
-struct GSOutput
-{
-	float4 pos : SV_POSITION;
+// This geometry shader is only for streaming out, it's effectively a pass through.
+
+struct GSInput {
+	float4 wPositionAmbOcc : TEXCOORD;
+	float3 wNormal : NORMAL;
 };
 
-[maxvertexcount(3)]
-void main(
-	triangle float4 input[3] : SV_POSITION, 
-	inout TriangleStream< GSOutput > output
-)
+struct GSOutput
 {
-	for (uint i = 0; i < 3; i++)
-	{
-		GSOutput element;
-		element.pos = input[i];
-		output.Append(element);
-	}
+	float4 wPositionAmbOcc : POSITION;
+	float4 wNormal : NORMAL;
+};
+
+[maxvertexcount(1)]
+void main(point GSInput input[1], inout PointStream< GSOutput > outputStream)
+{
+	// Just pass through.
+	GSOutput gOut;
+	gOut.wPositionAmbOcc = input[0].wPositionAmbOcc;
+	gOut.wNormal = float4(input[0].wNormal, 0.0f);
+	outputStream.Append(gOut);
 }

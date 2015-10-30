@@ -33,14 +33,47 @@ struct TQuadVertex {
 	CVector2 texCoords;
 };
 
+struct TDummyCornerVertex {
+	CVector2 writeUV;
+	CVector2 readUV;
+};
+
+void AddPointsSwizzled(std::vector<CVector2>& points, int x0, int x1, int y0, int y1, int spanX, int spanY)
+{
+	int xm = (x0 + x1) / 2.0f;
+	int ym = (y0 + y1) / 2.0f;
+	if (x0 == x1) {
+		if (y0 == y1) {
+			float x = x0 / static_cast<float>(spanX - 1);
+			float y = y0 / static_cast<float>(spanY - 1);
+			points.push_back(CVector2(x, y));
+		}
+		else { // 1 x spanY.
+			AddPointsSwizzled(points, x0, x1, y0, ym, spanX, spanY);
+			AddPointsSwizzled(points, x0, x1, y0 + 1, y1, spanX, spanY);
+		}
+	}
+	else if (y0 == y1) {	// spanX x 1.
+		AddPointsSwizzled(points, x0, xm, y0, y1, spanX, spanY);
+		AddPointsSwizzled(points, xm + 1, x1, y0, y1, spanX, spanY);
+	}
+	else {	// 2 x 2 or greater.
+		AddPointsSwizzled(points, x0, xm, y0, ym, spanX, spanY);
+		AddPointsSwizzled(points, xm + 1, x1, y0, ym, spanX, spanY);
+		AddPointsSwizzled(points, x0, xm, ym + 1, y1, spanX, spanY);
+		AddPointsSwizzled(points, xm + 1, x1, ym + 1, y1, spanX, spanY);
+	}
+}
+
 CMarchingCubesLogic::CMarchingCubesLogic()
 	:m_Camera(nullptr),
 	m_Light(nullptr),
 	m_VoxelDim(33),
 	m_VoxelMargins(4),
-	m_VoxelDimPlusMargins(m_VoxelDim + m_VoxelMargins),
 	m_ChunkSize(4)
 {
+	m_VoxelDimPlusMargins = m_VoxelDim + m_VoxelMargins;
+
 	m_Light.SetType(LIGHT_DIRECTIONAL);
 	m_Light.SetDiffuse(CColourValue(0.7f, 0.7f, 0.7f));
 	m_Light.SetSpecular(CColourValue(1.0f, 1.0f, 1.0f));
@@ -54,76 +87,34 @@ CMarchingCubesLogic::~CMarchingCubesLogic()
 
 bool CMarchingCubesLogic::Initialise()
 {
+	// Build vertex declarations.
 	m_QuadVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT3);
 	m_QuadVertexDeclaration.AddElement("TEXCOORD", CInputElement::FORMAT_FLOAT2);
-
-	m_VoxelVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT3);
 	
+	m_DummyCornersVertexDeclaration.AddElement("POSITION0", CInputElement::FORMAT_FLOAT2);
+	m_DummyCornersVertexDeclaration.AddElement("POSITION1", CInputElement::FORMAT_FLOAT2);
+
+	m_NonEmptyCellListVertexDeclaration.AddElement("TEXCOORD", CInputElement::FORMAT_FLOAT);
+	m_VertexListVertexDeclaration.AddElement("TEXCOORD", CInputElement::FORMAT_FLOAT);
+
+	m_ChunkVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT4);
+	m_ChunkVertexDeclaration.AddElement("NORMAL", CInputElement::FORMAT_FLOAT4);
+
 	// Create geometry.
 	BuildQuad();
-	BuildVolume();
+
+	CreateRenderTextures();
 
 	// Create render passes.
-	m_BuildDensitiesPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("Density_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
-	m_BuildDensitiesPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("Density_PS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
-	m_BuildDensitiesPass.SetGeometryShader(g_pApp->GetRenderer()->VCreateShaderProgram("Density_GS.hlsl", EShaderProgramType::GEOMETRY, "main", "gs_4_0"));
+	CreateBuildDensitiesPass();
+	CreateListNonEmptyCellsPass();
+	CreateListVerticesPass();
+	CreateSplatVertexIDsPass();
+	CreateGenerateVerticesPass();
+	CreateGenerateIndicesPass();
+	CreateDrawChunkPass();
 
-	auto pNoiseTexture0 = g_pApp->GetRenderer()->VCreateTexture("Textures/noise_0.vol");
-	pNoiseTexture0->SetPixelFormat(ETexturePixelFormat::FLOAT_32_R);
-	pNoiseTexture0->SetWidth(16);
-	pNoiseTexture0->SetDepth(16);
-	pNoiseTexture0->SetHeight(16);
-	pNoiseTexture0->SetType(ETextureType::TYPE_3D);
-	pNoiseTexture0->VLoadRaw();
-
-	auto pNoiseTexture1 = g_pApp->GetRenderer()->VCreateTexture("Textures/noise_1.vol");
-	pNoiseTexture1->SetPixelFormat(ETexturePixelFormat::FLOAT_32_R);
-	pNoiseTexture1->SetWidth(16);
-	pNoiseTexture1->SetDepth(16);
-	pNoiseTexture1->SetHeight(16);
-	pNoiseTexture1->SetType(ETextureType::TYPE_3D);
-	pNoiseTexture1->VLoadRaw();
-
-	auto pNoiseTexture2 = g_pApp->GetRenderer()->VCreateTexture("Textures/noise_2.vol");
-	pNoiseTexture2->SetPixelFormat(ETexturePixelFormat::FLOAT_32_R);
-	pNoiseTexture2->SetWidth(16);
-	pNoiseTexture2->SetDepth(16);
-	pNoiseTexture2->SetHeight(16);
-	pNoiseTexture2->SetType(ETextureType::TYPE_3D);
-	pNoiseTexture2->VLoadRaw();
-
-	auto pNoiseTexture3 = g_pApp->GetRenderer()->VCreateTexture("Textures/noise_3.vol");
-	pNoiseTexture3->SetPixelFormat(ETexturePixelFormat::FLOAT_32_R);
-	pNoiseTexture3->SetWidth(16);
-	pNoiseTexture3->SetDepth(16);
-	pNoiseTexture3->SetHeight(16);
-	pNoiseTexture3->SetType(ETextureType::TYPE_3D);
-	pNoiseTexture3->VLoadRaw();
-
-	m_BuildDensitiesPass.AddTextureLayer(pNoiseTexture0/*"Textures/noise_vol_0.dds"*/)->SetTextureFilter(ETextureFilterTypeBroad::TRILINEAR);
-	m_BuildDensitiesPass.AddTextureLayer(pNoiseTexture1/*"Textures/noise_vol_1.dds"*/)->SetTextureFilter(ETextureFilterTypeBroad::TRILINEAR);
-	m_BuildDensitiesPass.AddTextureLayer(pNoiseTexture2/*"Textures/noise_vol_2.dds"*/)->SetTextureFilter(ETextureFilterTypeBroad::TRILINEAR);
-	m_BuildDensitiesPass.AddTextureLayer(pNoiseTexture3/*"Textures/noise_vol_3.dds"*/)->SetTextureFilter(ETextureFilterTypeBroad::TRILINEAR);
-
-	// Create the render texture for building and storing the densities.
-	auto pDensityTexture = g_pApp->GetRenderer()->VCreateTexture("DensityTexture");
-	pDensityTexture->SetWidth(m_VoxelDim);
-	pDensityTexture->SetHeight(m_VoxelDim);
-	pDensityTexture->SetDepth(m_VoxelDim);
-	pDensityTexture->SetType(ETextureType::TYPE_3D);
-	pDensityTexture->SetUsage(ETextureUsage::RENDER_TARGET);
-	pDensityTexture->SetPixelFormat(ETexturePixelFormat::FLOAT_32_R);
-	pDensityTexture->VLoad();
-	m_pDensityRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture(pDensityTexture);
-
-	m_GenerateVerticesPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("MarchingCubes_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
-	m_GenerateVerticesPass.SetGeometryShader(g_pApp->GetRenderer()->VCreateShaderProgram("MarchingCubes_GS.hlsl", EShaderProgramType::GEOMETRY, "main", "gs_4_0"));
-	m_GenerateVerticesPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("MarchingCubes_PS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
-
-	auto pDensityTextureLayer = m_GenerateVerticesPass.AddTextureLayer();
-	pDensityTextureLayer->SetTexture(m_pDensityRenderTarget->GetTexture());
-	pDensityTextureLayer->SetTextureFilter(ETextureFilterType::POINT);
-	pDensityTextureLayer->SetTextureAddressModes(ETextureAddressMode::CLAMP);
+	// Setup shader parameters.
 
 	// Set the tri-table on the geometry shader.
 	auto pTriTableBuffer = m_GenerateVerticesPass.GetGeometryShader()->GetShaderParams("CBTriTable");
@@ -189,26 +180,221 @@ void CMarchingCubesLogic::BuildQuad()
 	m_pQuadIndices = g_pApp->GetRenderer()->CreateIndexBuffer(indices);
 }
 
-void CMarchingCubesLogic::BuildVolume()
+void CMarchingCubesLogic::BuildDummyCorners()
 {
-	std::vector<CVector3> vertices;
-	vertices.reserve(m_VoxelDim * m_VoxelDim * m_VoxelDim);
+	std::vector<CVector2> writeUVs;
+	std::vector<CVector2> readUVs;
 
-	for (int z = 0; z < m_VoxelDim; ++z) {
-		float zVal = z / static_cast<float>(m_VoxelDim);
+	AddPointsSwizzled(writeUVs,
+		0, 
+		m_VoxelDim - 1, 
+		0, 
+		m_VoxelDim - 1, 
+		m_VoxelDim, 
+		m_VoxelDim);
+	AddPointsSwizzled(readUVs, 
+		m_VoxelMargins, 
+		m_VoxelDimPlusMargins - 1, 
+		m_VoxelMargins, 
+		m_VoxelDimPlusMargins - 1, 
+		m_VoxelDim + m_VoxelMargins * 2, 
+		m_VoxelDim + m_VoxelMargins * 2);
 
-		for (int y = 0; y < m_VoxelDim; ++y) {
-			float yVal = y / static_cast<float>(m_VoxelDim);
-
-			for (int x = 0; x < m_VoxelDim; ++x) {
-				float xVal = x / static_cast<float>(m_VoxelDim);
-				vertices.emplace_back(xVal, yVal, zVal);
-			}
-		}
+	std::vector<TDummyCornerVertex> dummyCorners(writeUVs.size());
+	for (int i = 0; i < dummyCorners.size(); ++i) {
+		dummyCorners[i].writeUV = writeUVs[i];
+		dummyCorners[i].readUV = readUVs[i];
 	}
 
-	m_pVolumeVertices = g_pApp->GetRenderer()->CreateVertexBuffer(vertices);
-	m_pVolumeIndices = nullptr;
+	m_pDummyCornersVertices = g_pApp->GetRenderer()->CreateVertexBuffer(dummyCorners);
+}
+
+void CMarchingCubesLogic::CreateRenderTextures()
+{
+	auto pDensityTexture = g_pApp->GetRenderer()->VCreateTexture("DensityTexture");
+	pDensityTexture->SetWidth(m_VoxelDimPlusMargins);
+	pDensityTexture->SetHeight(m_VoxelDimPlusMargins);
+	pDensityTexture->SetDepth(m_VoxelDimPlusMargins);
+	pDensityTexture->SetType(ETextureType::TYPE_3D);
+	pDensityTexture->SetUsage(ETextureUsage::RENDER_TARGET);
+	pDensityTexture->SetPixelFormat(ETexturePixelFormat::FLOAT_32_R);
+	pDensityTexture->VLoad();
+	m_pDensityRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture(pDensityTexture);
+
+	auto pVertexIDsTexture = g_pApp->GetRenderer()->VCreateTexture("VertexIDsTextures");
+	pVertexIDsTexture->SetWidth(m_VoxelDimPlusMargins);
+	pVertexIDsTexture->SetHeight(m_VoxelDimPlusMargins);
+	pVertexIDsTexture->SetDepth(m_VoxelDimPlusMargins);
+	pVertexIDsTexture->SetType(ETextureType::TYPE_3D);
+	pVertexIDsTexture->SetUsage(ETextureUsage::RENDER_TARGET);
+	pVertexIDsTexture->SetPixelFormat(ETexturePixelFormat::FLOAT_32_R);
+	pVertexIDsTexture->VLoad();
+	m_pDensityRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture(pDensityTexture);
+}
+
+void CMarchingCubesLogic::CreateBuildDensitiesPass()
+{
+	m_BuildDensitiesPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("Density_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
+	m_BuildDensitiesPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("Density_PS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
+	m_BuildDensitiesPass.SetGeometryShader(g_pApp->GetRenderer()->VCreateShaderProgram("Density_GS.hlsl", EShaderProgramType::GEOMETRY, "main", "gs_4_0"));
+
+	auto pNoiseTexture0 = g_pApp->GetRenderer()->VCreateTexture("Textures/noise_0.vol");
+	pNoiseTexture0->SetPixelFormat(ETexturePixelFormat::FLOAT_32_R);
+	pNoiseTexture0->SetWidth(16);
+	pNoiseTexture0->SetDepth(16);
+	pNoiseTexture0->SetHeight(16);
+	pNoiseTexture0->SetType(ETextureType::TYPE_3D);
+	pNoiseTexture0->VLoadRaw();
+
+	auto pNoiseTexture1 = g_pApp->GetRenderer()->VCreateTexture("Textures/noise_1.vol");
+	pNoiseTexture1->SetPixelFormat(ETexturePixelFormat::FLOAT_32_R);
+	pNoiseTexture1->SetWidth(16);
+	pNoiseTexture1->SetDepth(16);
+	pNoiseTexture1->SetHeight(16);
+	pNoiseTexture1->SetType(ETextureType::TYPE_3D);
+	pNoiseTexture1->VLoadRaw();
+
+	auto pNoiseTexture2 = g_pApp->GetRenderer()->VCreateTexture("Textures/noise_2.vol");
+	pNoiseTexture2->SetPixelFormat(ETexturePixelFormat::FLOAT_32_R);
+	pNoiseTexture2->SetWidth(16);
+	pNoiseTexture2->SetDepth(16);
+	pNoiseTexture2->SetHeight(16);
+	pNoiseTexture2->SetType(ETextureType::TYPE_3D);
+	pNoiseTexture2->VLoadRaw();
+
+	auto pNoiseTexture3 = g_pApp->GetRenderer()->VCreateTexture("Textures/noise_3.vol");
+	pNoiseTexture3->SetPixelFormat(ETexturePixelFormat::FLOAT_32_R);
+	pNoiseTexture3->SetWidth(16);
+	pNoiseTexture3->SetDepth(16);
+	pNoiseTexture3->SetHeight(16);
+	pNoiseTexture3->SetType(ETextureType::TYPE_3D);
+	pNoiseTexture3->VLoadRaw();
+
+	m_BuildDensitiesPass.AddTextureLayer(pNoiseTexture0/*"Textures/noise_vol_0.dds"*/)->SetTextureFilter(ETextureFilterTypeBroad::TRILINEAR);
+	m_BuildDensitiesPass.AddTextureLayer(pNoiseTexture1/*"Textures/noise_vol_1.dds"*/)->SetTextureFilter(ETextureFilterTypeBroad::TRILINEAR);
+	m_BuildDensitiesPass.AddTextureLayer(pNoiseTexture2/*"Textures/noise_vol_2.dds"*/)->SetTextureFilter(ETextureFilterTypeBroad::TRILINEAR);
+	m_BuildDensitiesPass.AddTextureLayer(pNoiseTexture3/*"Textures/noise_vol_3.dds"*/)->SetTextureFilter(ETextureFilterTypeBroad::TRILINEAR);
+}
+
+void CMarchingCubesLogic::CreateListNonEmptyCellsPass()
+{
+	// Set shaders.
+	m_ListNonEmptyCellsPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("ListNonEmptyCells_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
+	m_ListNonEmptyCellsPass.SetGeometryShader(g_pApp->GetRenderer()->VCreateShaderProgram("ListNonEmptyCells_GS.hlsl", EShaderProgramType::GEOMETRY, "main", "gs_4_0"));
+
+	// Add texture layers.
+	auto pDensityTextureLayer = m_ListNonEmptyCellsPass.AddTextureLayer();
+	pDensityTextureLayer->SetTexture(m_pDensityRenderTarget->GetTexture());
+	pDensityTextureLayer->SetTextureFilter(ETextureFilterType::POINT);
+	pDensityTextureLayer->SetTextureAddressModes(ETextureAddressMode::CLAMP);
+
+	// Set stream output targets.
+	m_ListNonEmptyCellsPass.AddStreamOutputTarget(m_pNonEmptyCellListVertices);
+
+	// Set states.
+	m_ListNonEmptyCellsPass.SetCullingMode(ECullingMode::NONE);
+	// Disable depth checks and writes for stream output only.
+	m_ListNonEmptyCellsPass.SetDepthWriteEnabled(false);
+	m_ListNonEmptyCellsPass.SetDepthCheckEnabled(false);
+}
+
+void CMarchingCubesLogic::CreateListVerticesPass()
+{
+	// Set shaders.
+	m_ListVerticesPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("ListVertices_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
+	m_ListVerticesPass.SetGeometryShader(g_pApp->GetRenderer()->VCreateShaderProgram("ListVertices_GS.hlsl", EShaderProgramType::GEOMETRY, "main", "gs_4_0"));
+
+	// Add texture layers.
+	// No texture layers to add.
+
+	// Set stream output targets.
+	m_ListVerticesPass.AddStreamOutputTarget(m_pVertexListVertices);
+
+	// Set states.
+	m_ListVerticesPass.SetCullingMode(ECullingMode::NONE);
+	// Disable depth checks and writes for stream output only.
+	m_ListVerticesPass.SetDepthWriteEnabled(false);
+	m_ListVerticesPass.SetDepthCheckEnabled(false);
+}
+
+void CMarchingCubesLogic::CreateSplatVertexIDsPass()
+{
+	// Set shaders.
+	m_SplatVertexIDsPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("SplatVertexIDs_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
+	m_SplatVertexIDsPass.SetGeometryShader(g_pApp->GetRenderer()->VCreateShaderProgram("SplatVertexIDs_GS.hlsl", EShaderProgramType::GEOMETRY, "main", "gs_4_0"));
+	m_SplatVertexIDsPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("SplatVertexIDs_PS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
+
+	// Set the render target.
+	m_SplatVertexIDsPass.AddRenderTarget(m_pVertexIDRenderTarget.get());
+
+	// Add texture layers.
+	// No texture layers to add.
+
+	// Set stream output targets.
+	// This pass renders to a volume instead of streaming out.
+
+	// Set states.
+	// No states to set, defaults are fine.
+}
+
+void CMarchingCubesLogic::CreateGenerateVerticesPass()
+{
+	// Set shaders.
+	m_GenerateVerticesPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("GenerateVertices_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
+	m_GenerateVerticesPass.SetGeometryShader(g_pApp->GetRenderer()->VCreateShaderProgram("GenerateVertices_GS.hlsl", EShaderProgramType::GEOMETRY, "main", "gs_4_0"));
+
+	// Add texture layers.
+	auto pDensityTextureLayer = m_GenerateVerticesPass.AddTextureLayer();
+	pDensityTextureLayer->SetTexture(m_pDensityRenderTarget->GetTexture());
+	pDensityTextureLayer->SetTextureFilter(ETextureFilterType::POINT);
+	pDensityTextureLayer->SetTextureAddressModes(ETextureAddressMode::CLAMP);
+
+	// Set stream output targets.
+	// This will be done later as each chunk has vertices that are generated.
+
+	// Set states.
+	m_GenerateVerticesPass.SetCullingMode(ECullingMode::NONE);
+	// Disable depth checks and writes for stream output only.
+	m_GenerateVerticesPass.SetDepthWriteEnabled(false);
+	m_GenerateVerticesPass.SetDepthCheckEnabled(false);
+}
+
+void CMarchingCubesLogic::CreateGenerateIndicesPass()
+{
+	// Set shaders.
+	m_GenerateIndicesPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("GenerateIndices_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
+	m_GenerateIndicesPass.SetGeometryShader(g_pApp->GetRenderer()->VCreateShaderProgram("GenerateIndices_GS.hlsl", EShaderProgramType::GEOMETRY, "main", "gs_4_0"));
+
+	// Add texture layers.
+	auto pDensityTextureLayer = m_GenerateIndicesPass.AddTextureLayer();
+	pDensityTextureLayer->SetTexture(m_pVertexIDRenderTarget->GetTexture());
+	pDensityTextureLayer->SetTextureFilter(ETextureFilterType::POINT);
+	pDensityTextureLayer->SetTextureAddressModes(ETextureAddressMode::CLAMP);
+
+	// Set stream output targets.
+	// This will be done later as each chunk has indices that are generated.
+
+	// Set states.
+	m_GenerateIndicesPass.SetCullingMode(ECullingMode::NONE);
+	// Disable depth checks and writes for stream output only.
+	m_GenerateIndicesPass.SetDepthWriteEnabled(false);
+	m_GenerateIndicesPass.SetDepthCheckEnabled(false);
+}
+
+void CMarchingCubesLogic::CreateDrawChunkPass()
+{
+	// Set shaders.
+	m_DrawChunkPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("DrawChunk_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
+	m_DrawChunkPass.SetGeometryShader(g_pApp->GetRenderer()->VCreateShaderProgram("DrawChunk_GS.hlsl", EShaderProgramType::GEOMETRY, "main", "gs_4_0"));
+	m_DrawChunkPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("DrawChunk_PS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
+
+	// Add texture layers.
+
+	// Set stream output targets.
+	// This the final pass it only uses output from previous passes.
+
+	// Set states.
+	// No states to set, defaults are fine.
 }
 
 void CMarchingCubesLogic::Update(float deltaTime)
@@ -226,11 +412,12 @@ void CMarchingCubesLogic::Render()
 	m_GenerateVerticesPass.GetGeometryShader()->UpdateShaderParams("CBPerFrame", m_pWVPParams);
 
 	// Create densities.
-	BuildChunk(CVector3::s_ZERO, 0);
+	BuildChunk(CVector3::s_ZERO, 0, 0);
 }
 
-void CMarchingCubesLogic::BuildChunk(const CVector3& chunkPosition, int lod)
+void CMarchingCubesLogic::BuildChunk(const CVector3& chunkPosition, size_t lod, size_t chunkBufferID)
 {
+	auto pRenderer = g_pApp->GetRenderer();
 	// Update shader parameters
 	m_pChunkParams->SetConstant("gWChunkPosition", chunkPosition);
 
@@ -239,9 +426,38 @@ void CMarchingCubesLogic::BuildChunk(const CVector3& chunkPosition, int lod)
 	m_GenerateVerticesPass.GetGeometryShader()->UpdateShaderParams("CBChunk", m_pChunkParams);
 	m_GenerateVerticesPass.GetPixelShader()->UpdateShaderParams("CBChunk", m_pChunkParams);
 
-	auto pRenderer = g_pApp->GetRenderer();
+	// Set the stream output buffers.
+	auto& pVertexBuffer = m_pChunkVertexBuffers[chunkBufferID];
+	auto& pIndexBuffer = m_pChunkIndexBuffers[chunkBufferID];
+	m_GenerateVerticesPass.ClearStreamOutputTargets();
+	m_GenerateIndicesPass.ClearStreamOutputTargets();
+	m_GenerateVerticesPass.AddStreamOutputTarget(pVertexBuffer);
+	m_GenerateIndicesPass.AddStreamOutputTarget(pIndexBuffer);
+
+	// List non empty cells.
+	pRenderer->SetRenderPass(&m_ListNonEmptyCellsPass);
+	pRenderer->VRender(m_DummyCornersVertexDeclaration, EPrimitiveType::POINTLIST, m_pDummyCornersVertices);
+
+	// List vertices.
+	pRenderer->SetRenderPass(&m_ListVerticesPass);
+	pRenderer->VRender(m_NonEmptyCellListVertexDeclaration, EPrimitiveType::POINTLIST, m_pNonEmptyCellListVertices);
+
+	// Splat vertex IDs.
+	pRenderer->SetRenderPass(&m_SplatVertexIDsPass);
+	pRenderer->VRender(m_VertexListVertexDeclaration, EPrimitiveType::POINTLIST, m_pVertexListVertices);
+
+	// Generate vertices
 	pRenderer->SetRenderPass(&m_GenerateVerticesPass);
-	pRenderer->VRender(m_VoxelVertexDeclaration, EPrimitiveType::POINTLIST, m_pVolumeVertices, m_pVolumeIndices);
+	pRenderer->VRender(m_VertexListVertexDeclaration, EPrimitiveType::POINTLIST, m_pVertexListVertices);
+
+	// Generate indices.
+	pRenderer->SetRenderPass(&m_GenerateIndicesPass);
+	pRenderer->VRender(m_NonEmptyCellListVertexDeclaration, EPrimitiveType::POINTLIST, m_pNonEmptyCellListVertices);
+
+	// Draw the final geometry.
+	pRenderer->SetRenderPass(&m_DrawChunkPass);
+	pRenderer->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, pVertexBuffer, pIndexBuffer);
+	// TODO: the final geometry shouldn't be drawn here once, we've made a chunk we don't need to make it again.
 }
 
 void CMarchingCubesLogic::BuildDensities()
@@ -257,7 +473,9 @@ void CMarchingCubesLogic::BuildDensities()
 
 	// Draw the quad.
 	pRenderer->SetRenderPass(&m_BuildDensitiesPass);
-	pRenderer->VRender(m_QuadVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pQuadVertices, m_pQuadIndices);
+	for (int i = 0; i < m_VoxelDimPlusMargins; ++i) {
+		pRenderer->VRender(m_QuadVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pQuadVertices, m_pQuadIndices);
+	}
 
 	// Set render target back.
 	pRenderer->VSetRenderTarget(nullptr);

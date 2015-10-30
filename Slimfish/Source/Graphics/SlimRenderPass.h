@@ -28,6 +28,7 @@ namespace Slim {
 
 // Forward Declaration.
 class AShaderProgram;
+class ARenderTexture;
 
 /** Class representing a single render pass of a material.
 @remarks
@@ -44,6 +45,7 @@ class CRenderPass {
 public:
 	using TTextureLayerList = std::vector<std::unique_ptr<CTextureLayer>>;
 	using TSOTargetList = std::vector<std::shared_ptr<AGpuBuffer> >;
+	using TRenderTargetList = std::vector<ARenderTexture*>;
 
 	// Member Functions
 public:
@@ -159,6 +161,15 @@ public:
 	void ClearStreamOutputTargets();
 	/** Get the stream output targets. @author Hayden Asplet */
 	const TSOTargetList& GetStreamOutputTargets() const;
+
+	/** Set the render targets. @author Hayden Asplet */
+	void SetRenderTargets(const TRenderTargetList& renderTargets);
+	/** Add a render target to the list of targets of the pass. @author Hayden Asplet */
+	void AddRenderTarget(ARenderTexture* pRenderTarget);
+	/** Remove all render targets. @author Hayden Asplet */
+	void ClearRenderTargets();
+	/** Get the render targets. @author Hayden Asplet */
+	const TRenderTargetList& GetRenderTargets() const;
 
 	/** Set the blending mode of the pass (the blending factors and operations for colour and alpha).
 	 	@author Hayden Asplet
@@ -304,6 +315,9 @@ private:
 
 	// Stream output targets to stream out from the geometry shader if we have one.
 	TSOTargetList m_StreamOutputTargets;
+	
+	// Render target this pass renders to. If there is none the pass will render to the back buffer.
+	TRenderTargetList m_RenderTargets;
 
 	// Blending and colour writes for the output merger stage.
 	TBlendingMode m_BlendingMode;

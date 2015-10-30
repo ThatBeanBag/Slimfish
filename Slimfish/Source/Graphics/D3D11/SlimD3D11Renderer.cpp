@@ -16,6 +16,7 @@
 #include "SlimStd.h"
 
 // Library Includes
+#include <functional>
 #include <D3D11SDKLayers.h>
 
 // This Include
@@ -205,22 +206,23 @@ bool CD3D11Renderer::VInitialize()
 
 void CD3D11Renderer::VPreRender()
 {
-	if (m_pBoundRenderTarget) {
-		ID3D11DepthStencilView* pDepthStencilView = m_pBoundRenderTarget->GetDepthStencilView();
-		if (!pDepthStencilView) {
-			pDepthStencilView = m_pDepthStencilView.Get();
-		}
+	if (!m_BoundRenderTargets.empty()) {
+		for (auto& renderTarget : m_BoundRenderTargets) {
+			ID3D11DepthStencilView* pDepthStencilView = renderTarget->GetDepthStencilView();
+			if (!pDepthStencilView) {
+				pDepthStencilView = m_pDepthStencilView.Get();
+			}
 
-		m_pImmediateContext->ClearRenderTargetView(m_pBoundRenderTarget->GetRenderTargetView(), m_pBackgroundColour);
-		m_pImmediateContext->ClearDepthStencilView(pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		m_pImmediateContext->OMSetDepthStencilState(0, 0);
+			m_pImmediateContext->ClearRenderTargetView(renderTarget->GetRenderTargetView(), m_pBackgroundColour);
+			m_pImmediateContext->ClearDepthStencilView(pDepthStencilView, D3D10_CLEAR_DEPTH | D3D10_CLEAR_STENCIL, 1.0f, 0);
+		}
 	}
 	else {
 		m_pImmediateContext->ClearRenderTargetView(m_pRenderTargetView.Get(), m_pBackgroundColour);
 		m_pImmediateContext->ClearDepthStencilView(m_pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-		m_pImmediateContext->OMSetDepthStencilState(0, 0);
 	}
 
+	m_pImmediateContext->OMSetDepthStencilState(0, 0);
 	//m_pD3DDevice->OMSetRenderTargets(1, &m_pRenderTargetView, m_pDepthStencilView);
 	m_pImmediateContext->RSSetViewports(1, &m_ViewPort);
 }
@@ -455,32 +457,46 @@ void CD3D11Renderer::VDisableShaderProgram(EShaderProgramType programType)
 	}
 }
 
-void CD3D11Renderer::VSetRenderTarget(ARenderTexture* pRenderTarget)
+void CD3D11Renderer::VSetRenderTargets(std::vector<ARenderTexture*> renderTargets)
 {
-	if (pRenderTarget) {
-		m_pBoundRenderTarget = static_cast<CD3D11RenderTexture*>(pRenderTarget);
+	if (!renderTargets.empty()) {
+		// Clear existing bound render targets and make room for new targets.
+		m_BoundRenderTargets.clear();
+		m_BoundRenderTargets.resize(renderTargets.size());
 
-		ID3D11RenderTargetView* pRenderTargetView = m_pBoundRenderTarget->GetRenderTargetView();
-		ID3D11DepthStencilView* pDepthStencilView = m_pBoundRenderTarget->GetDepthStencilView();
+		// Cast the render targets to their actual type and store in the bound targets.
+		auto castToDerived = [](ARenderTexture* pRenderTarget) { return static_cast<CD3D11RenderTexture*>(pRenderTarget); };
+		std::transform(renderTargets.begin(), renderTargets.end(),
+			m_BoundRenderTargets.begin(), castToDerived);
+
+		std::vector<ID3D11RenderTargetView*> renderTargetViews(renderTargets.size(), nullptr);	// List of views.
+
+		// Get the render target view of each of the render targets and store them in renderTargetViews.
+		std::transform(m_BoundRenderTargets.begin(), m_BoundRenderTargets.end(),
+			renderTargetViews.begin(), std::mem_fun(&CD3D11RenderTexture::GetRenderTargetView));
+
+		ID3D11DepthStencilView* pDepthStencilView = m_BoundRenderTargets[0]->GetDepthStencilView();
 		if (!pDepthStencilView) {
 			// Use the default depth stencil view if the render target does not have one.
-			//pDepthStencilView = m_pDepthStencilView.Get();
+			pDepthStencilView = m_pDepthStencilView.Get();
 		}
-		
+
 		// Clear the state, clearing everything back to the state at creation time.
 		m_pImmediateContext->ClearState();
 
 		// Set the render target.
-		m_pImmediateContext->OMSetRenderTargets(1, &pRenderTargetView, pDepthStencilView);
+		m_pImmediateContext->OMSetRenderTargets(1, &renderTargetViews[0], pDepthStencilView);
 	}
 	else {
-		m_pBoundRenderTarget = nullptr;
+		if (!m_BoundRenderTargets.empty()) {
+			m_BoundRenderTargets.clear();
 
-		// Clear the state, clearing everything back to the state at creation time.
-		m_pImmediateContext->ClearState();
+			// Clear the state, clearing everything back to the state at creation time.
+			m_pImmediateContext->ClearState();
 
-		// Set the render target.
-		m_pImmediateContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
+			// Set the render target.
+			m_pImmediateContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
+		}
 	}
 }
 

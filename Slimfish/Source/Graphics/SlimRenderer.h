@@ -261,7 +261,7 @@ namespace Slim {
 		 	@author Hayden Asplet
 		 	@param pRenderTarget Pointer to the render target to render to.
 		*/
-		virtual void VSetRenderTarget(ARenderTexture* pRenderTarget) = 0;
+		virtual void VSetRenderTargets(std::vector<ARenderTexture*> renderTargets) = 0;
 
 		/** Set the target buffers to stream out to. 
 		 	@author Hayden Asplet

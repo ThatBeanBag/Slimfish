@@ -83,7 +83,7 @@ public:
 	virtual void VDisableShaderProgram(EShaderProgramType programType) override;
 
 	/* @copydoc ARenderer::VSetRenderTarget */
-	virtual void VSetRenderTarget(ARenderTexture* pRenderTarget) override;
+	virtual void VSetRenderTargets(std::vector<ARenderTexture*> renderTargets) override;
 
 	/* @copydoc ARenderer::VSetStreamOutTargets */
 	virtual void VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpuBuffer> >& buffers) override;
@@ -203,7 +203,7 @@ private:
 	shared_ptr<CD3D11ShaderProgram> m_pBoundPixelShader;
 	shared_ptr<CD3D11ShaderProgram> m_pBoundGeometryShader;
 
-	CD3D11RenderTexture* m_pBoundRenderTarget;
+	std::vector<CD3D11RenderTexture*> m_BoundRenderTargets;
 };
 
 }

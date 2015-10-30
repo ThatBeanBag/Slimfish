@@ -23,6 +23,7 @@
 // Local Includes
 #include "..\GameBase\SlimGameApp.h"
 #include "SlimRenderer.h"
+#include "SlimRenderTexture.h"
 
 namespace Slim {
 
@@ -166,6 +167,27 @@ namespace Slim {
 	const CRenderPass::TSOTargetList& CRenderPass::GetStreamOutputTargets() const
 	{
 		return m_StreamOutputTargets;
+	}
+
+	void CRenderPass::SetRenderTargets(const TRenderTargetList& renderTargets)
+	{
+		m_RenderTargets = renderTargets;
+	}
+
+	void CRenderPass::AddRenderTarget(ARenderTexture* pRenderTarget)
+	{
+		assert(pRenderTarget);
+		m_RenderTargets.push_back(pRenderTarget);
+	}
+
+	void CRenderPass::ClearRenderTargets()
+	{
+		m_RenderTargets.clear();
+	}
+
+	const CRenderPass::TRenderTargetList& CRenderPass::GetRenderTargets() const
+	{
+		return m_RenderTargets;
 	}
 
 	void CRenderPass::SetBlendingMode(TBlendingMode blendingMode)

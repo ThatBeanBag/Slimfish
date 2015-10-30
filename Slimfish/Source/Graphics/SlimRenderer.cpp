@@ -111,6 +111,11 @@ void ARenderer::SetRenderPass(CRenderPass* pPass)
 		VDisableShaderProgram(EShaderProgramType::GEOMETRY);
 	}
 
+	const auto& renderTargets = pPass->GetRenderTargets();
+	if (!renderTargets.empty()) {
+		VSetRenderTargets(renderTargets);
+	}
+
 	VSetStreamOutTargets(pPass->GetStreamOutputTargets());
 }
 

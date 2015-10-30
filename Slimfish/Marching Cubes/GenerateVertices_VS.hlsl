@@ -13,10 +13,10 @@ Texture3D gTexture3DDensity;
 SamplerState gSamplerPoint;
 
 cbuffer gTriTable {
-	uint gCaseToNumPolys[256];
-	float3 gEdgeStart[12];
-	float3 gEdgeDirection[12];
-	float3 gEdgeEnd[12];
+	//uint gCaseToNumPolys[256];
+	float4 gEdgeStart[12];
+	float4 gEdgeDirection[12];
+	float4 gEdgeEnd[12];
 	uint gEdgeAxis[12];
 };
 
@@ -25,12 +25,12 @@ VSOutput PlaceVertexOnEdge(float3 wPosition, float3 uvw, int edgeNum)
 	VSOuput vOut;
 	
 	// Get the density values at the ends of the edge.
-	float density0 = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + gInvVoxelDimPlusMarginsMinusOne * gEdgeStart[edgeNum], 0);
-	float density1 = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + gInvVoxelDimPlusMarginsMinusOne * gEdgeEnd[edgeNum], 0);
+	float density0 = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + gInvVoxelDimPlusMarginsMinusOne * gEdgeStart[edgeNum].xyz, 0);
+	float density1 = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + gInvVoxelDimPlusMarginsMinusOne * gEdgeEnd[edgeNum].xyz, 0);
 	// interpolate between the the densities to find the point at which the density is 0.
 	float t = saturate(density0 / (density0 - density1));
 
-	float3 position = gEdgeStart[edgeNum] + t * gEdgeDirection[edgeNum];
+	float3 position = gEdgeStart[edgeNum].xyz + t * gEdgeDirection[edgeNum].xyz;
 	vOut.wPositionAmbOcc = wPosition + position * gWVoxelSize;
 	uvw = uvw + position * gInvVoxelDimPlusMarginsMinusOne;
 

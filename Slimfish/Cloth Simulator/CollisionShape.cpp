@@ -163,13 +163,15 @@ const bool CCollisionBox::IsInside(const CVector3& point)
 	float halfLength = m_fLength / 2.0f;
 
 	CPlane s_Plane[] = {
-			{ 0.0f, 1.0f, 0.0f, halfHeight },
-			{ 0.0f, -1.0f, 0.0f, -halfHeight },
-			{ 0.0f, 1.0f, 0.0f,  },
-			{ 0.0f, 1.0f, 0.0f, m_fHeight },
-			{ 0.0f, 1.0f, 0.0f, m_fHeight },
-			{ 0.0f, 1.0f, 0.0f, m_fHeight },
-	}
+			{ 0.0f, 1.0f, 0.0f, halfHeight	},
+			{ 0.0f, -1.0f, 0.0f, -halfHeight},
+			{ 1.0f, 0.0f, 0.0f,  halfWidth	},
+			{ -1.0f, 0.0f, 0.0f, -halfWidth },
+			{ 0.0f, 0.0f, 1.0f, -halfHeight },
+			{ 0.0f, 0.0f, -1.0f, halfHeight }
+	};
+
+
 }
 
 const ACollisionShape::EType CCollisionBox::VGetType() const

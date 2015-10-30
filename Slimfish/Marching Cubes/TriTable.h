@@ -22,6 +22,11 @@
 // Local Includes
 
 namespace TriTable {
+	extern const float g_EDGE_START[12][4];
+	extern const float g_EDGE_DIRECTION[12][4];
+	extern const float g_EDGE_END[12][4];
+	extern const unsigned int g_EDGE_AXIS[12][4];
+
 	extern const int g_VALUES[256][16];
 	extern const int g_SIZE;
 }
