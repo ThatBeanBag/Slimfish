@@ -37,7 +37,7 @@ namespace Slim {
 	{
 		m_pImpl = std::make_unique<CD3D10GpuBuffer>(
 			pD3DDevice,
-			CD3D10GpuBuffer::BUFFER_TYPE_INDEX,
+			EGpuBufferType::INDEX,
 			GetSize(),
 			pSource,
 			usage, 
@@ -48,6 +48,11 @@ namespace Slim {
 	CD3D10IndexGpuBuffer::~CD3D10IndexGpuBuffer()
 	{
 
+	}
+
+	void CD3D10IndexGpuBuffer::VCopy(const std::shared_ptr<AGpuBuffer>& pBuffer, size_t size, size_t sourceOffset, size_t destinationOffset)
+	{
+		m_pImpl->VCopy(pBuffer, size, sourceOffset, destinationOffset);
 	}
 
 	ID3D10Buffer* CD3D10IndexGpuBuffer::GetD3DBuffer()

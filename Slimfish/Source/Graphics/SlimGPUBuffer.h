@@ -46,6 +46,12 @@ enum class EGpuBufferUsage : int {
 	DISCARDABLE = 16
 };
 
+enum class EGpuBufferType {
+	UNKNOWN,
+	VERTEX,
+	INDEX
+};
+
 /** List of locking options that describe a type of lock to perform when locking a buffer.
 */
 enum class EGpuBufferLockType {
@@ -89,6 +95,8 @@ public:
 			usage How the buffer is intended to be used e.g. statically, dynamically, write only
 			etc. see EGpuBufferUsage.
 		@param
+			type Type of buffer e.g. VERTEX or INDEX buffer.
+		@param
 			isOutput True if the buffer is to be used as output from a geometry shader. This specifies
 			that the buffer can be bound to the stream output stage of the pipeline and cannot be used
 			for drawing.
@@ -98,7 +106,7 @@ public:
 			at some point, but can be used for heavily dynamic buffers that will be changed frequently
 			by the CPU.
 	*/
-	AGpuBuffer(size_t size, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory);
+	AGpuBuffer(size_t size, EGpuBufferUsage usage, EGpuBufferType type, bool isOutput, bool isInSystemMemory);
 
 	/** Destructor
 		@author Hayden Asplet
@@ -124,10 +132,29 @@ public:
 	/** Unlock a the locked buffer. @author Hayden Asplet */
 	void Unlock();
 
+	/** Copy the contents of a buffer into this one.
+	 	@author Hayden Asplet
+	 	@param 
+			prhsBuffer Pointer to the right hand side source buffer to copy from.
+		@param 
+			sourceOffset Offset in bytes to the beginning of the region to copy from this buffer.
+		@param 
+			destinationOffset Offset in bytes to the starting location to put the copied 
+			contents in the destination buffer.
+		@param 
+			size Size in bytes of the region in the buffer to copy.
+	*/
+	virtual void VCopy(const std::shared_ptr<AGpuBuffer>& prhsBuffer, size_t size,
+		size_t sourceOffset = 0, size_t destinationOffset = 0) = 0;
+
 	/** Get how the buffer is intended to be used. @author Hayden Asplet */
 	const EGpuBufferUsage GetUsage() const;
 	/** Get the size of the buffer in bytes. @author Hayden Asplet */
 	const size_t GetSize() const;
+	/** Set the type. @author Hayden Asplet */
+	void SetType(EGpuBufferType type);
+	/** Get the type. @author Hayden Asplet */
+	const EGpuBufferType GetType() const;
 	/** Get if the buffer is to be used as output from a geometry shader and not for rendering. @author Hayden Asplet */
 	const bool IsOutput() const;
 	/** Get if the buffer is stored in system memory or not. @author Hayden Asplet */
@@ -159,6 +186,7 @@ public:
 protected:
 private:
 	EGpuBufferUsage m_Usage;// Usage 
+	EGpuBufferType m_Type;	// Type of buffer e.g. VERTEX or INDEX buffer.
 	size_t m_BufferSize;	// Size of the buffer in bytes.
 	bool m_IsOutput;
 	bool m_IsInSystemMemory;// True if the buffer is stored in system memory (CPU) and not on the GPU.

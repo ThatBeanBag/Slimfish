@@ -42,14 +42,22 @@ public:
 		FORMAT_FLOAT3,
 		// Combination of 4 32-bit floating-point values format.
 		FORMAT_FLOAT4,
-		// Single 16 bit short format.
-		FORMAT_SHORT,
-		// Combination of 2 16-bit short values format.
-		FORMAT_SHORT2,
-		// Combination of 2 16-bit short values format.
-		FORMAT_SHORT3,
-		// Combination of 2 16-bit short values format.
-		FORMAT_SHORT4,
+		// Single 32 bit short format.
+		FORMAT_INT,
+		// Combination of 2 32-bit signed integer values format.
+		FORMAT_INT2,
+		// Combination of 3 32-bit signed integer values format.
+		FORMAT_INT3,
+		// Combination of 4 32-bit signed integer values format.
+		FORMAT_INT4,
+		// Single 32 bit short format.
+		FORMAT_UINT,
+		// Combination of 2 32-bit unsigned integer values format.
+		FORMAT_UINT2,
+		// Combination of 3 32-bit unsigned integer values format.
+		FORMAT_UINT3,
+		// Combination of 4 32-bit unsigned integer values format.
+		FORMAT_UINT4,
 		// Standard colour format.
 		FORMAT_COLOUR_RGBA
 	};
@@ -72,6 +80,11 @@ public:
 	/** Get the name of the semantic @author Hayden Asplet */
 	const std::string& GetSemanticName() const;
 
+	/** Set the semantic index. @author Hayden Asplet */
+	void SetSemanticIndex(size_t semanticIndex);
+	/** Get the semantic index. @author Hayden Asplet */
+	const size_t GetSemanticIndex() const;
+
 	/** Get the offset in bytes of the element in the buffer. @author Hayden Asplet */
 	const size_t GetSize() const;
 
@@ -86,6 +99,7 @@ public:
 protected:
 private:
 	std::string m_SemanticName;	// The literal string of the name of the semantic.
+	size_t m_SemanticIndex;		// The semantic index, used if theres multiple elements with the same semantic name.
 	size_t m_Size;				// The size in bytes of the element.
 	EFormat m_Format;			// The format or type of the element.
 };

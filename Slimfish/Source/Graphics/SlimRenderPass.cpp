@@ -38,6 +38,17 @@ namespace Slim {
 
 	}
 
+	CRenderPass::CRenderPass(const CRenderPass& other)
+	{
+		Copy(other);
+	}
+
+	CRenderPass& CRenderPass::operator=(const CRenderPass& other)
+	{
+		Copy(other);
+		return *this;
+	}
+
 	CRenderPass::~CRenderPass()
 	{
 
@@ -417,6 +428,41 @@ namespace Slim {
 	const ERenderQueueGroupCategory CRenderPass::GetRenderQueueGroupCategory() const
 	{
 		return m_RenderQueueGroupCategory;
+	}
+
+	void CRenderPass::Copy(const CRenderPass& rhs)
+	{
+		// Create new memory for texture layers.
+		m_TextureLayers.reserve(rhs.m_TextureLayers.size());
+		auto copyPass = [&](const std::unique_ptr<CTextureLayer>& textureLayer) {
+			std::unique_ptr<CTextureLayer> copy;
+			if (textureLayer) {
+				copy = std::make_unique<CTextureLayer>(*textureLayer.get());
+			}
+			else {
+				copy = nullptr;
+			}
+
+			m_TextureLayers.push_back(std::move(copy));
+		};
+
+		std::for_each(rhs.m_TextureLayers.begin(), rhs.m_TextureLayers.end(), copyPass);
+
+		// Copy everything else.
+		m_pVertexShader = rhs.m_pVertexShader;
+		m_pPixelShader = rhs.m_pPixelShader;
+		m_pGeometryShader = rhs.m_pGeometryShader;
+		m_StreamOutputTargets = rhs.m_StreamOutputTargets;
+		m_RenderTargets = rhs.m_RenderTargets;
+		m_BlendingMode = rhs.m_BlendingMode;
+		m_ColourWrites = rhs.m_ColourWrites;
+		m_DepthCheckEnabled = rhs.m_DepthCheckEnabled;
+		m_DepthWriteEnabled = rhs.m_DepthWriteEnabled;
+		m_DepthCompareFunction = rhs.m_DepthCompareFunction;
+		m_StencilBufferSettings = rhs.m_StencilBufferSettings;
+		m_CullingMode = rhs.m_CullingMode;
+		m_FillMode = rhs.m_FillMode;
+		m_RenderQueueGroupCategory = rhs.m_RenderQueueGroupCategory;
 	}
 
 }

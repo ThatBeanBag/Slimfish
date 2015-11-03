@@ -22,6 +22,7 @@
 
 // Local Includes
 #include "SlimD3D11GpuBuffer.h"
+#include "SlimD3D11VertexGpuBuffer.h"
 
 namespace Slim {
 
@@ -39,7 +40,7 @@ namespace Slim {
 		m_pImpl = std::make_unique<CD3D11GpuBuffer>(
 			pD3DDevice,
 			pImmediateContext,
-			CD3D11GpuBuffer::BUFFER_TYPE_INDEX,
+			EGpuBufferType::INDEX,
 			GetSize(),
 			pSource,
 			usage, 
@@ -50,6 +51,12 @@ namespace Slim {
 	CD3D11IndexGpuBuffer::~CD3D11IndexGpuBuffer()
 	{
 
+	}
+
+	void CD3D11IndexGpuBuffer::VCopy(const std::shared_ptr<AGpuBuffer>& pBuffer, 
+		size_t size, size_t sourceOffset, size_t destinationOffset)
+	{
+		m_pImpl->VCopy(pBuffer, size, sourceOffset, destinationOffset);
 	}
 
 	ID3D11Buffer* CD3D11IndexGpuBuffer::GetD3DBuffer()

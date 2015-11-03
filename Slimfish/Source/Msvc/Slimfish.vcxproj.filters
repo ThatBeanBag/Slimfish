@@ -190,6 +190,9 @@
     <ClCompile Include="..\Graphics\SlimScene.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\Utilities\SlimRect.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -375,6 +378,9 @@
     </ClInclude>
     <ClInclude Include="..\Graphics\SlimRenderable.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\SlimRect.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

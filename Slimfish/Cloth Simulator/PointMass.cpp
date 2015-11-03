@@ -143,6 +143,11 @@ const bool CPointMass::IsPinned() const
 	return m_IsPinned;
 }
 
+Slim::CVector3 CPointMass::GetVelocity() const
+{
+	return m_Position - m_LastPosition;
+}
+
 const CVector3 CPointMass::GetTotalForce() const
 {
 	return m_Acceleration * m_Mass;

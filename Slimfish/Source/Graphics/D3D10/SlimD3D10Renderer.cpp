@@ -422,14 +422,17 @@ void CD3D10Renderer::VDisableShaderProgram(EShaderProgramType programType)
 	switch (programType) {
 		case EShaderProgramType::VERTEX: {
 			m_pBoundVertexShader = nullptr;
+			m_pD3DDevice->VSSetShader(nullptr);
 			break;
 		}
 		case EShaderProgramType::PIXEL: {
 			m_pBoundPixelShader = nullptr;
+			m_pD3DDevice->PSSetShader(nullptr);
 			break;
 		}
 		case EShaderProgramType::GEOMETRY: {
 			m_pBoundGeometryShader = nullptr;
+			m_pD3DDevice->GSSetShader(nullptr);
 			break;
 		}
 		default: {
@@ -459,7 +462,7 @@ void CD3D10Renderer::VSetRenderTargets(std::vector<ARenderTexture*> renderTarget
 		ID3D10DepthStencilView* pDepthStencilView = m_BoundRenderTargets[0]->GetDepthStencilView();
 		if (!pDepthStencilView) {
 			// Use the default depth stencil view if the render target does not have one.
-			pDepthStencilView = m_pDepthStencilView.Get();
+			pDepthStencilView = nullptr;
 		}
 		
 		// Clear the state, clearing everything back to the state at creation time.
@@ -467,6 +470,9 @@ void CD3D10Renderer::VSetRenderTargets(std::vector<ARenderTexture*> renderTarget
 
 		// Set the render target.
 		m_pD3DDevice->OMSetRenderTargets(1, &renderTargetViews[0], pDepthStencilView);
+
+		// Prepare for rendering.
+		VPreRender();
 	}
 	else {
 		if (!m_BoundRenderTargets.empty()) {
@@ -477,6 +483,9 @@ void CD3D10Renderer::VSetRenderTargets(std::vector<ARenderTexture*> renderTarget
 
 			// Set the render target.
 			m_pD3DDevice->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
+
+			// Prepare for rendering.
+			VPreRender();
 		}
 	}
 }
@@ -511,6 +520,46 @@ void CD3D10Renderer::VSetStreamOutTarget(const std::shared_ptr<AGpuBuffer>& pBuf
 	m_pD3DDevice->SOSetTargets(1, &pD3DBuffer, nullptr);
 }
 
+void CD3D10Renderer::VBeginStreamOutQuery()
+{
+	D3D10_QUERY_DESC queryDesc;
+	queryDesc.Query = D3D10_QUERY_SO_STATISTICS;
+	queryDesc.MiscFlags = 0;
+
+	HRESULT hResult = m_pD3DDevice->CreateQuery(&queryDesc, m_pQuery.ReleaseAndGetAddressOf());
+	if (FAILED(hResult)) {
+		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create query for stream out statistics with error: " << GetErrorMessage(hResult);
+	}
+
+	m_pQuery->Begin();
+}
+
+size_t CD3D10Renderer::VEndStreamOutQuery()
+{
+	// End the query.
+	m_pQuery->End();
+
+	// Get the so statistics for the period governed by Begin() and End().
+	D3D10_QUERY_DATA_SO_STATISTICS soStats;
+	ZeroMemory(&soStats, sizeof(D3D11_QUERY_DATA_SO_STATISTICS));
+
+	HRESULT hResult = S_FALSE;
+	while (hResult != S_OK) {
+		hResult = m_pQuery->GetData(
+			reinterpret_cast<void*>(&soStats),
+			m_pQuery->GetDataSize(),
+			0);
+	}
+
+	if (FAILED(hResult)) {
+		SLIM_THROW(EExceptionType::RENDERING) << "Failed to query stream out statistics with error: " << GetErrorMessage(hResult);
+	}
+
+	// Retrieve the num primitives written.
+	return static_cast<size_t>(soStats.NumPrimitivesWritten);
+}
+
+
 void CD3D10Renderer::VSetVertexBuffer(const shared_ptr<AVertexGpuBuffer>& pVertexBuffer)
 {
 	shared_ptr<CD3D10VertexGpuBuffer> pD3DVertexBuffer = static_pointer_cast<CD3D10VertexGpuBuffer>(pVertexBuffer);
@@ -534,7 +583,7 @@ void CD3D10Renderer::VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBu
 }
 
 
-void CD3D10Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimitiveType primitiveType, shared_ptr<AVertexGpuBuffer> pVertexBuffer, shared_ptr<AIndexGpuBuffer> pIndexBuffer /* = nullptr */)
+void CD3D10Renderer::VRender( const CVertexDeclaration& vertexDeclaration, EPrimitiveType primitiveType, shared_ptr<AVertexGpuBuffer> pVertexBuffer, shared_ptr<AIndexGpuBuffer> pIndexBuffer /*= nullptr*/, size_t countOverride /*= 0*/, size_t instances /*= 1*/ )
 {
 	// Recreate pipeline states.
 	HRESULT hResult = m_pD3DDevice->CreateBlendState(&m_BlendDesc, m_pBlendState.ReleaseAndGetAddressOf());
@@ -585,21 +634,42 @@ void CD3D10Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimi
 		m_pD3DDevice->PSSetShaderResources(0, numLayers, &m_Textures[0]);
 	}
 
-	bool isUsingIndices = pIndexBuffer != nullptr;
-
 	VSetVertexDeclaration(vertexDeclaration);
 	m_pD3DDevice->IASetPrimitiveTopology(D3D10Conversions::GetPrimitiveType(primitiveType));
 
 	// Set buffers.
 	VSetVertexBuffer(pVertexBuffer);
 
+	bool isUsingIndices = pIndexBuffer != nullptr;
 	if (isUsingIndices) {
 		VSetIndexBuffer(pIndexBuffer);
 
-		m_pD3DDevice->DrawIndexed(pIndexBuffer->GetNumIndices(), 0, 0);
+		// Get the index count, if the override is 0 then use the number of indices in the buffer.
+		auto indexCount = countOverride;
+		if (indexCount == 0) {
+			indexCount = pIndexBuffer->GetNumIndices();
+		}
+
+		if (instances > 1) {
+			m_pD3DDevice->DrawIndexedInstanced(indexCount, instances, 0, 0, 0);
+		}
+		else {
+			m_pD3DDevice->DrawIndexed(indexCount, 0, 0);
+		}
 	}
 	else {
-		m_pD3DDevice->Draw(pVertexBuffer->GetNumVertices(), 0);
+		// Get the vertex count, if the override is 0 then use the number of vertices in the buffer.
+		auto vertexCount = countOverride;
+		if (vertexCount == 0) {
+			vertexCount = pVertexBuffer->GetNumVertices();
+		}
+
+		if (instances > 1) {
+			m_pD3DDevice->DrawInstanced(vertexCount, instances, 0, 0);
+		}
+		else {
+			m_pD3DDevice->Draw(vertexCount, 0);
+		}
 	}
 }
 

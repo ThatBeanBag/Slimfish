@@ -151,7 +151,7 @@ namespace Slim {
 
 		TConstantBufferMap::iterator findIter = m_NameToConstantBuffer.find(constantBufferName);
 		if (findIter == m_NameToConstantBuffer.end()) {
-			SLIM_WARNING() << "Failed to create shader params, couldn't find constant buffer " << constantBufferName;
+			SLIM_ERROR() << "Failed to create shader params for " << m_Name << ", couldn't find constant buffer " << constantBufferName;
 			return nullptr;
 		}
 
@@ -432,6 +432,7 @@ namespace Slim {
 			d3dInputElements[i].AlignedByteOffset = accumulativeOffset;
 			d3dInputElements[i].Format = D3D11Conversions::GetFormat(element.GetFormat());
 			d3dInputElements[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+			d3dInputElements[i].SemanticIndex = element.GetSemanticIndex();
 
 			accumulativeOffset += element.GetSize();
 		}

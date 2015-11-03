@@ -91,7 +91,7 @@
     <ClInclude Include="MarchingCubesApp.h" />
     <ClInclude Include="MarchingCubesLogic.h" />
     <ClInclude Include="MarchingCubesStd.h" />
-    <ClInclude Include="TriTable.h" />
+    <ClInclude Include="Tables.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MarchingCubesApp.cpp" />
@@ -100,30 +100,49 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TriTable.cpp" />
+    <ClCompile Include="Tables.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Chunk.hlsli" />
     <None Include="Density.hlsli" />
-    <None Include="LightingHelper.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Density_GS.hlsl" />
-    <FxCompile Include="Density_PS.hlsl" />
-    <FxCompile Include="Density_VS.hlsl" />
-    <FxCompile Include="DrawTerrain_PS.hlsl" />
-    <FxCompile Include="DrawTerrain_VS.hlsl" />
-    <FxCompile Include="GenerateIndices_GS.hlsl" />
-    <FxCompile Include="GenerateIndices_VS.hlsl" />
-    <FxCompile Include="GenerateVertices_GS.hlsl" />
-    <FxCompile Include="GenerateVertices_VS.hlsl" />
-    <FxCompile Include="ListNonEmptyCells_GS.hlsl" />
-    <FxCompile Include="ListNonEmptyCells_VS.hlsl" />
-    <FxCompile Include="ListVertices_GS.hlsl" />
-    <FxCompile Include="ListVertices_VS.hlsl" />
-    <FxCompile Include="SplatVertexIDs_GS.hlsl" />
-    <FxCompile Include="SplatVertexIDs_PS.hlsl" />
-    <FxCompile Include="SplatVertexIDs_VS.hlsl" />
+    <FxCompile Include="Density_GS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Density_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Density_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="SplatVertexIDs_GS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="SplatVertexIDs_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="SplatVertexIDs_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

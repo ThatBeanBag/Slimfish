@@ -58,6 +58,8 @@ public:
 	/** Get the isPinned. @author Hayden Asplet */
 	const bool IsPinned() const;
 
+	CVector3 GetVelocity() const;
+
 	const CVector3 GetTotalForce() const;
 
 	bool HasLinkTo(CPointMass* pPointMass);

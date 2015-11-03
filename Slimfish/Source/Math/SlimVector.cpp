@@ -176,7 +176,7 @@ const CVector3 operator-(const CVector3& vec3)
 
 bool operator==(const CVector3& vectorA, const CVector3& vectorB)
 {
-	return (vectorA.GetX() == vectorB.GetY() &&
+	return (vectorA.GetX() == vectorB.GetX() &&
 		vectorA.GetY() == vectorB.GetY() &&
 		vectorA.GetZ() == vectorB.GetZ());
 }
@@ -332,8 +332,7 @@ const CVector2 operator-(const CVector2& vec2)
 
 const CVector2 operator/(const CVector2& vec2, float scalar)
 {
-	CVector2 copy = vec2;
-	return copy / scalar;
+	return vec2 * (1.0f / scalar);
 }
 
 bool operator!=(const CVector2& vectorA, const CVector2& vectorB)

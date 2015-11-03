@@ -18,6 +18,7 @@
 #define __COLLISION_SHAPE_H__
 
 // Library Includes
+#include <array>
 
 // Local Includes
 #include <Math\SlimPlane.h>
@@ -57,7 +58,7 @@ public:
 	/** Check to see if a point is inside the shape.
 	 	@author Hayden Asplet
 	*/
-	virtual const bool IsInside(const CVector3& point) = 0;
+	virtual const bool IsInside(const CVector3& point, CVector3& intersectionPoint) = 0;
 
 	/** Get the type of the collision shape.
 		@note Sub classes should override this and return their type.
@@ -77,6 +78,7 @@ private:
 	// Member Variables
 public:
 protected:
+	mutable bool m_NeedsRebuilding;	// This is used for any shape with complex shape building.
 private:
 	CMatrix4x4 m_Transform;
 };
@@ -95,7 +97,7 @@ public:
 	*/
 	virtual ~CCollisionSphere();
 
-	virtual const bool IsInside(const CVector3& point);
+	virtual const bool IsInside(const CVector3& point, CVector3& intersectionPoint);
 	virtual const EType VGetType() const override;
 	virtual const float VGetVolume() const override;
 
@@ -126,7 +128,7 @@ public:
 	*/
 	virtual ~CCollisionPyramid();
 
-	virtual const bool IsInside(const CVector3& point);
+	virtual const bool IsInside(const CVector3& point, CVector3& intersectionPoint);
 	virtual const EType VGetType() const override;
 	virtual const float VGetVolume() const override;
 
@@ -152,6 +154,8 @@ private:
 	float m_Width;
 	float m_Height;
 	float m_Length;
+
+	mutable std::array<CPlane, 5> m_Planes;
 };
 
 class CCollisionCapsule : public ACollisionShape {
@@ -169,7 +173,7 @@ public:
 	*/
 	virtual ~CCollisionCapsule();
 
-	virtual const bool IsInside(const CVector3& point);
+	virtual const bool IsInside(const CVector3& point, CVector3& intersectionPoint);
 	virtual const EType VGetType() const override;
 	virtual const float VGetVolume() const override;
 
@@ -210,7 +214,7 @@ public:
 	*/
 	virtual ~CCollisionBox();
 
-	virtual const bool IsInside(const CVector3& point);
+	virtual const bool IsInside(const CVector3& point, CVector3& intersectionPoint);
 	virtual const EType VGetType() const override;
 	virtual const float VGetVolume() const override;
 	
@@ -253,7 +257,7 @@ public:
 	*/
 	virtual ~CCollisionCylinder();
 
-	virtual const bool IsInside(const CVector3& point);
+	virtual const bool IsInside(const CVector3& point, CVector3& intersectionPoint);
 	virtual const EType VGetType() const override;
 	virtual const float VGetVolume() const override;
 
@@ -291,7 +295,7 @@ public:
 	*/
 	virtual ~CCollisionPlane();
 	
-	virtual const bool IsInside(const CVector3& point);
+	virtual const bool IsInside(const CVector3& point, CVector3& intersectionPoint);
 	virtual const EType VGetType() const override;
 	virtual const float VGetVolume() const override;
 

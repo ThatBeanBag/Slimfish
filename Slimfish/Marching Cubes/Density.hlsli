@@ -19,16 +19,22 @@ float Density(float3 wsCoord) {
 	// Take a copy of the world-space coordinate.
 	float3 wsCoordCopy = wsCoord;
 
+	//float maxDistance = 0.2f;
+	//float density = 1.0f - (length(wsCoord) / maxDistance);
+
 	// The density value of this world-space coordinate to calculate.
 	float density = -wsCoord.y;
+	//density = wsCoord.z;
 
-	density += gTexture3DNoise0.Sample(gSamplerTrilinearWrap, wsCoord * 2.0f).x * 0.5f;
-	density += gTexture3DNoise1.Sample(gSamplerTrilinearWrap, wsCoord * 4.03).x * 0.25f;
-	density += gTexture3DNoise2.Sample(gSamplerTrilinearWrap, wsCoord * 1.96).x * 0.5f;
-	density += gTexture3DNoise3.Sample(gSamplerTrilinearWrap, wsCoord * 1.01).x * 1.0f;
+	density += sin(wsCoord.x * 2.0f);
+
+	//density += gTexture3DNoise0.Sample(gSamplerTrilinearWrap, wsCoord * 2.0f).x * 10.0f;
+	//density += gTexture3DNoise1.Sample(gSamplerTrilinearWrap, wsCoord * 4.03).x * 0.25f;
+	//density += gTexture3DNoise2.Sample(gSamplerTrilinearWrap, wsCoord * 1.96).x * 0.5f;
+	//density += gTexture3DNoise3.Sample(gSamplerTrilinearWrap, wsCoord * 1.01).x * 1.0f;
 	//density += 0.34f;
 
-	density -= gWChunkSize * 0.009f;
+	density -= gWChunkSize * 0.0000001f;
 
 	return density;
 }

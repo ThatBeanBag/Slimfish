@@ -1,10 +1,10 @@
 
 struct VSInput {
-	uint z8_y8_x8_case8 : TEXCOORD;
+	uint z8_y8_x8_case8 : POSITION;
 };
 
 struct VSOutput {
-	uint z8_y8_x8_case8 : TEXCOORD;
+	uint z8_y8_x8_case8 : POSITION;
 };
 
 VSOutput main(VSInput vIn) {

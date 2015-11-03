@@ -54,7 +54,14 @@ public:
 	*/
 	CRenderPass();
 
+	/** Copy constructor.
+	 	@author Hayden Asplet
+	*/
 	CRenderPass(const CRenderPass& other);
+
+	/** Assignment operator.
+	 	@author Hayden Asplet
+	*/
 	CRenderPass& operator=(const CRenderPass& other);
 
 	/** Destructor.
@@ -299,6 +306,7 @@ public:
 	const ERenderQueueGroupCategory GetRenderQueueGroupCategory() const;
 protected:
 private:
+	void Copy(const CRenderPass& rhs);
 
 	// Member Variables
 public:

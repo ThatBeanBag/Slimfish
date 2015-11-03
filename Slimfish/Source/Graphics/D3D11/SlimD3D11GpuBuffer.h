@@ -26,14 +26,6 @@
 namespace Slim {
 
 	class CD3D11GpuBuffer : public AGpuBuffer {
-	public:
-		/** List of D3D11 buffer types.
-		*/
-		enum EBufferType {
-			BUFFER_TYPE_VERTEX,
-			BUFFER_TYPE_INDEX
-		};
-
 		// Member Functions
 	public:
 		/** Construct a D3D11 buffer on the gpu (can also be stored in system memory see isInSystemMemory).
@@ -55,12 +47,15 @@ namespace Slim {
 				memory.
 		*/
 		CD3D11GpuBuffer(ID3D11Device* pD3DDevice, ID3D11DeviceContext* pImmediateContext,
-						EBufferType bufferType, size_t bufferSize, const void* pSource,
+						EGpuBufferType bufferType, size_t bufferSize, const void* pSource,
 						EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory);
 		/** Destructor
 		 	@author Hayden Asplet
 		*/
 		~CD3D11GpuBuffer();
+
+		virtual void VCopy(const std::shared_ptr<AGpuBuffer>& pBuffer, size_t size,
+			size_t sourceOffset, size_t destinationOffset) override;
 
 		/** Get the directX 10 specific buffer.
 			@remarks

@@ -201,6 +201,16 @@ bool CD3D11Renderer::VInitialize()
 	m_pD3DDevice->CreateRasterizerState(&m_RasterizerDesc, m_pRasterizerState.GetAddressOf());
 	m_pImmediateContext->RSSetState(m_pRasterizerState.Get());
 
+	// Create the stream output query.
+	D3D11_QUERY_DESC queryDesc;
+	queryDesc.Query = D3D11_QUERY_SO_STATISTICS;
+	queryDesc.MiscFlags = 0;
+
+	hResult = m_pD3DDevice->CreateQuery(&queryDesc, m_pSOQuery.GetAddressOf());
+	if (FAILED(hResult)) {
+		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create query for stream out statistics with error: " << GetErrorMessage(hResult);
+	}
+
 	return true;
 }
 
@@ -441,14 +451,17 @@ void CD3D11Renderer::VDisableShaderProgram(EShaderProgramType programType)
 	switch (programType) {
 		case EShaderProgramType::VERTEX: {
 			m_pBoundVertexShader = nullptr;
+			m_pImmediateContext->VSSetShader(nullptr, nullptr, 0);
 			break;
 		}
 		case EShaderProgramType::PIXEL: {
 			m_pBoundPixelShader = nullptr;
+			m_pImmediateContext->PSSetShader(nullptr, nullptr, 0);
 			break;
 		}
 		case EShaderProgramType::GEOMETRY: {
 			m_pBoundGeometryShader = nullptr;
+			m_pImmediateContext->GSSetShader(nullptr, nullptr, 0);
 			break;
 		}
 		default: {
@@ -478,7 +491,7 @@ void CD3D11Renderer::VSetRenderTargets(std::vector<ARenderTexture*> renderTarget
 		ID3D11DepthStencilView* pDepthStencilView = m_BoundRenderTargets[0]->GetDepthStencilView();
 		if (!pDepthStencilView) {
 			// Use the default depth stencil view if the render target does not have one.
-			pDepthStencilView = m_pDepthStencilView.Get();
+			pDepthStencilView = nullptr;
 		}
 
 		// Clear the state, clearing everything back to the state at creation time.
@@ -486,6 +499,17 @@ void CD3D11Renderer::VSetRenderTargets(std::vector<ARenderTexture*> renderTarget
 
 		// Set the render target.
 		m_pImmediateContext->OMSetRenderTargets(1, &renderTargetViews[0], pDepthStencilView);
+
+		ZeroMemory(&m_ViewPort, sizeof(D3D11_VIEWPORT));
+		m_ViewPort.TopLeftX = 0;
+		m_ViewPort.TopLeftY = 0;
+		m_ViewPort.Width = static_cast<float>(renderTargets[0]->GetTexture()->GetWidth());
+		m_ViewPort.Height = static_cast<float>(renderTargets[0]->GetTexture()->GetHeight());
+		m_ViewPort.MinDepth = 0.0f;
+		m_ViewPort.MaxDepth = 1.0f;
+
+		// Prepare for rendering.
+		VPreRender();
 	}
 	else {
 		if (!m_BoundRenderTargets.empty()) {
@@ -496,16 +520,30 @@ void CD3D11Renderer::VSetRenderTargets(std::vector<ARenderTexture*> renderTarget
 
 			// Set the render target.
 			m_pImmediateContext->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
+
+			ZeroMemory(&m_ViewPort, sizeof(D3D11_VIEWPORT));
+			m_ViewPort.TopLeftX = 0;
+			m_ViewPort.TopLeftY = 0;
+			m_ViewPort.Width = static_cast<float>(m_Width);
+			m_ViewPort.Height = static_cast<float>(m_Height);
+			m_ViewPort.MinDepth = 0.0f;
+			m_ViewPort.MaxDepth = 1.0f;
+
+			// Prepare for rendering.
+			VPreRender();
 		}
 	}
 }
 
 void CD3D11Renderer::VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpuBuffer> >& buffers)
 {
-	if (buffers.empty()) {
-		m_pImmediateContext->SOSetTargets(0, nullptr, nullptr);
-	}
-	else {
+	UINT offset[1] = { 0 };
+	ID3D11Buffer* iBuffer[1];
+	iBuffer[0] = NULL;
+	m_pImmediateContext->SOSetTargets(1, iBuffer, offset);
+
+	if (!buffers.empty()) {
+		// Create the list of buffers and offsets for streaming out.
 		std::vector<ID3D11Buffer*> d3dBuffers;
 		std::vector<UINT> offsets;
 		d3dBuffers.reserve(buffers.size());
@@ -514,10 +552,32 @@ void CD3D11Renderer::VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpu
 		UINT offset = 0;
 
 		for (auto& pBuffer : buffers) {
-			auto pD3DBuffer = std::static_pointer_cast<CD3D11GpuBuffer>(pBuffer);
-			d3dBuffers.push_back(pD3DBuffer->GetD3DBuffer());
+			// Cast the buffer so that we can get the actual directX buffer.
+			// Can't cast directly to CD3D11GpuBuffer as vertex and index buffers don't derive from CD3D11GpuBuffer.
+			ID3D11Buffer* pD3DBuffer = nullptr;
+			switch (pBuffer->GetType()){
+				case EGpuBufferType::VERTEX: {
+					pD3DBuffer = static_pointer_cast<CD3D11VertexGpuBuffer>(pBuffer)->GetD3DBuffer();
+					break;
+				}
+				case EGpuBufferType::INDEX: {
+					pD3DBuffer = static_pointer_cast<CD3D11IndexGpuBuffer>(pBuffer)->GetD3DBuffer();
+					break;
+				}
+				case EGpuBufferType::UNKNOWN: {
+					pD3DBuffer = static_pointer_cast<CD3D11GpuBuffer>(pBuffer)->GetD3DBuffer();
+					break;
+				}
+				default: {
+					break;
+				}
+			}
+
+			assert(pD3DBuffer);
+
+			d3dBuffers.push_back(pD3DBuffer);
 			offsets.push_back(offset);
-			offset += pD3DBuffer->GetSize();
+			offset += pBuffer->GetSize();
 		}
 
 		m_pImmediateContext->SOSetTargets(buffers.size(), &d3dBuffers[0], &offsets[0]);
@@ -526,8 +586,60 @@ void CD3D11Renderer::VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpu
 
 void CD3D11Renderer::VSetStreamOutTarget(const std::shared_ptr<AGpuBuffer>& pBuffer)
 {
-	auto pD3DBuffer = std::static_pointer_cast<CD3D11GpuBuffer>(pBuffer)->GetD3DBuffer();
+	ID3D11Buffer* pD3DBuffer = nullptr;
+	switch (pBuffer->GetType()){
+		case EGpuBufferType::VERTEX: {
+			pD3DBuffer = static_pointer_cast<CD3D11VertexGpuBuffer>(pBuffer)->GetD3DBuffer();
+			break;
+		}
+		case EGpuBufferType::INDEX: {
+			pD3DBuffer = static_pointer_cast<CD3D11IndexGpuBuffer>(pBuffer)->GetD3DBuffer();
+			break;
+		}
+		case EGpuBufferType::UNKNOWN: {
+			pD3DBuffer = static_pointer_cast<CD3D11GpuBuffer>(pBuffer)->GetD3DBuffer();
+			break;
+		}
+		default: {
+			break;
+		}
+	}
+
+	assert(pD3DBuffer);
 	m_pImmediateContext->SOSetTargets(1, &pD3DBuffer, nullptr);
+}
+
+void CD3D11Renderer::VBeginStreamOutQuery()
+{
+	m_pImmediateContext->Begin(m_pSOQuery.Get());
+}
+
+size_t CD3D11Renderer::VEndStreamOutQuery()
+{
+	// End the query.
+	m_pImmediateContext->End(m_pSOQuery.Get());
+
+	// Get the so statistics for the period governed by Begin() and End().
+	D3D11_QUERY_DATA_SO_STATISTICS soStats;
+	ZeroMemory(&soStats, sizeof(D3D11_QUERY_DATA_SO_STATISTICS));
+
+	auto size = m_pSOQuery->GetDataSize();
+	auto adf = sizeof(D3D11_QUERY_DATA_SO_STATISTICS);
+
+	while (true) {
+		HRESULT hResult = m_pImmediateContext->GetData(
+			m_pSOQuery.Get(),
+			reinterpret_cast<void*>(&soStats),
+			size,
+			0);
+
+		if (hResult == S_OK) {
+			break;
+		}
+	}
+
+	// Retrieve the number of primitives written.
+	return static_cast<size_t>(soStats.NumPrimitivesWritten);
 }
 
 void CD3D11Renderer::VSetVertexBuffer(const shared_ptr<AVertexGpuBuffer>& pVertexBuffer)
@@ -553,7 +665,7 @@ void CD3D11Renderer::VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBu
 }
 
 
-void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimitiveType primitiveType, shared_ptr<AVertexGpuBuffer> pVertexBuffer, shared_ptr<AIndexGpuBuffer> pIndexBuffer /* = nullptr */)
+void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimitiveType primitiveType, shared_ptr<AVertexGpuBuffer> pVertexBuffer, shared_ptr<AIndexGpuBuffer> pIndexBuffer /*= nullptr*/, size_t countOverride /*= 0*/, size_t instances /*= 1*/)
 {
 	m_pBlendState.Reset();
 	m_pRasterizerState.Reset();
@@ -601,6 +713,9 @@ void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimi
 			m_pImmediateContext->GSSetShaderResources(0, numLayers, &m_Textures[0]);
 		}
 
+		m_pImmediateContext->VSSetSamplers(0, samplerStates.size(), &samplerStates[0]);
+		m_pImmediateContext->VSSetShaderResources(0, numLayers, &m_Textures[0]);
+
 		m_pImmediateContext->PSSetSamplers(0, samplerStates.size(), &samplerStates[0]);
 		m_pImmediateContext->PSSetShaderResources(0, numLayers, &m_Textures[0]);
 	}
@@ -616,11 +731,36 @@ void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimi
 	if (isUsingIndices) {
 		VSetIndexBuffer(pIndexBuffer);
 
-		m_pImmediateContext->DrawIndexed(pIndexBuffer->GetNumIndices(), 0, 0);
+		// Get the index count, if the override is 0 then use the number of indices in the buffer.
+		auto indexCount = countOverride;
+		if (countOverride == 0) {
+			indexCount = pIndexBuffer->GetNumIndices();
+		}
+
+		if (instances > 1) {
+			m_pImmediateContext->DrawIndexedInstanced(indexCount, instances, 0, 0, 0);
+		}
+		else {
+			m_pImmediateContext->DrawIndexed(indexCount, 0, 0);
+		}
 	}
 	else {
-		m_pImmediateContext->Draw(pVertexBuffer->GetNumVertices(), 0);
+		// Get the vertex count, if the override is 0 then use the number of vertices in the buffer.
+		auto vertexCount = countOverride;
+		if (countOverride == 0) {
+			vertexCount = pVertexBuffer->GetNumVertices();
+		}
+
+		if(instances > 1) {
+			m_pImmediateContext->DrawInstanced(vertexCount, instances, 0, 0);
+		}
+		else {
+			m_pImmediateContext->Draw(vertexCount, 0);
+		}
 	}
+
+	m_pImmediateContext->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
+	m_pImmediateContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
 }
 
 void CD3D11Renderer::VSetColourWritesEnabled(const TColourWritesEnabled& colourWritesEnabled)

@@ -2,7 +2,7 @@
 struct VSInput
 {
 	float4 wPositionAmbOcc : POSITION;
-	float4 wNormal : NORMAL;
+	float3 wNormal : NORMAL;
 };
 
 struct VSOutput {

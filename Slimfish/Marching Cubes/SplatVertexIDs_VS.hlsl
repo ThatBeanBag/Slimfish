@@ -2,22 +2,25 @@
 #include "Chunk.hlsli"
 
 struct VSInput {
-	uint z8_y8_x8_null4_edgeNum4 : TEXCOORD;
+	uint z8_y8_x8_null4_edgeNum4: POSITION;
 	uint nVertexID : SV_VertexID;
 };
 
 struct VSOutput {
-	float4 projCoord : POSITION;
-	uint nVertexID : TEXCOORD0;
-	uint slice : TEXCOORD1;
+	float4 projCoord : SV_POSITION;
+	uint2 vertexID : VERTEXID;
+	uint slice : SLICE;
 };
 
 VSOutput main(VSInput vIn) {
-	VSOuput vOut;
+	VSOutput vOut;
 
 	// Unpack the position and edge number.
+	uint3 position;
+	position.x = (vIn.z8_y8_x8_null4_edgeNum4 >> 8) & 0xff;
+	position.y = (vIn.z8_y8_x8_null4_edgeNum4 >> 16) & 0xff;
+	position.z = (vIn.z8_y8_x8_null4_edgeNum4 >> 24) & 0xff;
 	uint edgeNum = vIn.z8_y8_x8_null4_edgeNum4 & 0x0f;
-	int3 position = (int3)((vIn.z8_y8_x8_null4_edgeNum4.xxx >> uint3(8, 16, 24)) & 0xff);
 
 	// Vertices are on either edge 3, 0, or 8.
 	position.x *= 3;
@@ -30,17 +33,19 @@ VSOutput main(VSInput vIn) {
 
 	float2 uv = (float2)position.xy;
 	// Fix the alignment for point sampling.
-	uv.x += position.x + 0.5f * gInvVoxelDim / 3.0f;
-	uv.y += position.y + 0.5f * gInvVoxelDim;
+	uv.x += 0.5f * gInvVoxelDim / 3.0f;
+	uv.y += 0.5f * gInvVoxelDim;
 
 	// Get the projected coordinates in the range [-1, 1] and flip the y component.
-	vOut.projCoord.x = (uv.x * gInvVoxelDim / 3.0f) * 2 - 1;
-	vOut.projCoord.y = -((uv.y * gInvVoxelDim) * 2 - 1);
-	vOut.projCoord.z = 0;
-	vOut.projCoord.w = 1;
+	vOut.projCoord = float4(
+		(uv.x * gInvVoxelDim / 3.0f) * 2 - 1,
+		(uv.y * gInvVoxelDim) * 2 - 1,
+		0.0f,
+		1.0f);
+	vOut.projCoord.y *= -1;
 
 	// Get the vertex ID and slice.
-	vOut.nVertexID = vIn.nVertexID;
+	vOut.vertexID = vIn.nVertexID;
 	vOut.slice = position.z;
 
 	return vOut;

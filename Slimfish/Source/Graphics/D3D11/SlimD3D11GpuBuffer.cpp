@@ -21,13 +21,15 @@
 #include "SlimD3D11GpuBuffer.h"
 
 // Local Includes
+#include "SlimD3D11VertexGpuBuffer.h"
+#include "SlimD3D11IndexGpuBuffer.h"
 
 namespace Slim {
 
 	CD3D11GpuBuffer::CD3D11GpuBuffer(ID3D11Device* pDevice, ID3D11DeviceContext* pImmediateContext,
-		EBufferType bufferType, size_t bufferSize, const void* pSource,
+		EGpuBufferType bufferType, size_t bufferSize, const void* pSource,
 		EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory)
-		:AGpuBuffer(bufferSize, usage, isOutput, isInSystemMemory),
+		:AGpuBuffer(bufferSize, usage, bufferType, isOutput, isInSystemMemory),
 		m_pD3DDevice(pDevice),
 		m_pD3DImmediateContext(pImmediateContext)
 	{
@@ -40,10 +42,14 @@ namespace Slim {
 			m_desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		}
 
-		if (bufferType == BUFFER_TYPE_INDEX) {
+		if (usage == EGpuBufferUsage::READ_ONLY) {
+			m_desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+		}
+
+		if (bufferType == EGpuBufferType::INDEX) {
 			m_desc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 		}
-		else if (bufferType == BUFFER_TYPE_VERTEX) {
+		else if (bufferType == EGpuBufferType::VERTEX) {
 			m_desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		}
 
@@ -81,6 +87,62 @@ namespace Slim {
 	CD3D11GpuBuffer::~CD3D11GpuBuffer()
 	{
 
+	}
+
+	void CD3D11GpuBuffer::VCopy(const std::shared_ptr<AGpuBuffer>& pBuffer, 
+		size_t size, size_t sourceOffset, size_t destinationOffset)
+	{
+		// Cast the buffer so that we can get the actual directX buffer.
+		// Can't cast directly to CD3D11GpuBuffer as vertex and index buffers don't derive from CD3D11GpuBuffer.
+		ID3D11Buffer* pD3DBuffer = nullptr;
+		switch (pBuffer->GetType()){
+			case EGpuBufferType::VERTEX: {
+				pD3DBuffer = static_pointer_cast<CD3D11VertexGpuBuffer>(pBuffer)->GetD3DBuffer();
+				break;
+			}
+			case EGpuBufferType::INDEX: {
+				pD3DBuffer = static_pointer_cast<CD3D11IndexGpuBuffer>(pBuffer)->GetD3DBuffer();
+				break;
+			}
+			case EGpuBufferType::UNKNOWN: {
+				pD3DBuffer = static_pointer_cast<CD3D11GpuBuffer>(pBuffer)->GetD3DBuffer();
+				break;
+			}
+			default: {
+				break;
+			}
+		}
+
+		assert(pBuffer);
+
+		// Check to see if we are copying the entire buffer.
+		if (size == this->GetSize() &&
+			size == pBuffer->GetSize() &&
+			sourceOffset == 0 &&
+			destinationOffset == 0) {
+
+			m_pD3DImmediateContext->CopyResource(m_pBuffer.Get(), pD3DBuffer);
+		}
+		else {
+			// Copy only a sub region.
+			D3D11_BOX sourceRegion;
+			sourceRegion.left = sourceOffset;
+			sourceRegion.right = sourceOffset + size;
+			sourceRegion.top = 0;
+			sourceRegion.bottom = 1;
+			sourceRegion.front = 0;
+			sourceRegion.back = 1;
+
+			m_pD3DImmediateContext->CopySubresourceRegion(
+				m_pBuffer.Get(),	// Destination buffer.
+				0,					// DstSubtesource.
+				destinationOffset,	// DstX
+				0,					// DstY
+				0,					// DstZ
+				pD3DBuffer,	// SrcResource
+				0,					// SrcSubresource
+				&sourceRegion);		// SrcRegion.
+		}
 	}
 
 	void* CD3D11GpuBuffer::VLock(size_t offset, size_t size, EGpuBufferLockType lockType)

@@ -32,7 +32,7 @@ namespace Slim {
 	{
 		m_pImpl = std::make_unique<CD3D10GpuBuffer>(
 			pD3DDevice, 
-			CD3D10GpuBuffer::BUFFER_TYPE_VERTEX,
+			EGpuBufferType::VERTEX,
 			numVertices * stride,
 			pSource,
 			usage, 
@@ -43,6 +43,11 @@ namespace Slim {
 	CD3D10VertexGpuBuffer::~CD3D10VertexGpuBuffer()
 	{
 
+	}
+
+	void CD3D10VertexGpuBuffer::VCopy(const std::shared_ptr<AGpuBuffer>& pBuffer, size_t size, size_t sourceOffset, size_t destinationOffset)
+	{
+		m_pImpl->VCopy(pBuffer, size, sourceOffset, destinationOffset);
 	}
 
 	ID3D10Buffer* CD3D10VertexGpuBuffer::GetD3DBuffer()

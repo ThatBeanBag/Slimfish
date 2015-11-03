@@ -65,6 +65,9 @@ void ARenderer::Resize(size_t width, size_t height)
 void ARenderer::SetRenderPass(CRenderPass* pPass)
 {
 	assert(pPass);
+	// Set the render targets.
+	const auto& renderTargets = pPass->GetRenderTargets();
+	VSetRenderTargets(renderTargets);
 
 	// Set the texture layers from the pass.
 	for (unsigned int i = 0; i < pPass->GetNumTextureLayers(); ++i) {
@@ -109,11 +112,6 @@ void ARenderer::SetRenderPass(CRenderPass* pPass)
 	}
 	else {
 		VDisableShaderProgram(EShaderProgramType::GEOMETRY);
-	}
-
-	const auto& renderTargets = pPass->GetRenderTargets();
-	if (!renderTargets.empty()) {
-		VSetRenderTargets(renderTargets);
 	}
 
 	VSetStreamOutTargets(pPass->GetStreamOutputTargets());

@@ -34,7 +34,9 @@ namespace Slim {
 		m_Depth(0),
 		m_SourceWidth(0),
 		m_SourceHeight(0),
-		m_SourceDepth(0)
+		m_SourceDepth(0),
+		m_MSAACount(1),
+		m_MSAAQuality(0)
 	{
 
 	}

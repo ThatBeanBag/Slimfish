@@ -43,53 +43,61 @@ public:
 	*/
 	virtual ~CD3D11Renderer();
 
-	/* @copydoc ARenderer::VInitialize */
+	/** @copydoc ARenderer::VInitialize */
 	virtual bool VInitialize() override;
-	/* @copydoc ARenderer::VPreRender */
+	/** @copydoc ARenderer::VPreRender */
 	virtual void VPreRender() override;
-	/* @copydoc ARenderer::VPostRender */
+	/** @copydoc ARenderer::VPostRender */
 	virtual void VPostRender() override;
 
-	/* @copydoc ARenderer::VCreateVertexBuffer */
+	/** @copydoc ARenderer::VCreateVertexBuffer */
 	virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory) override;
-	/* @copydoc ARenderer::VCreateVertexBuffer */
+	/** @copydoc ARenderer::VCreateVertexBuffer */
 	virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isOutput = false, bool isInSystemMemory = false) override;
 
-	/* @copydoc ARenderer::VCreateShaderProgram */
+	/** @copydoc ARenderer::VCreateShaderProgram */
 	virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, EShaderProgramType type, const std::string& entry, const std::string& shaderModel);
 
-	/* @copydoc ARenderer::VLoadTexture */
+	/** @copydoc ARenderer::VLoadTexture */
 	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ETextureType type, ETextureUsage usage) override;
 
-	/* @copydoc ARenderer::VCreateTexture */
+	/** @copydoc ARenderer::VCreateTexture */
 	virtual shared_ptr<ATexture> VCreateTexture(const std::string& name) override;
 
-	/* @copydoc ARenderer::VCreateRenderTexture */
+	/** @copydoc ARenderer::VCreateRenderTexture */
 	virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t depth,
 		ETextureType textureType, size_t msaaCount, size_t msaaQuality) override;
 
-	/* @copydoc ARenderer::VCreateRenderTexture */
+	/** @copydoc ARenderer::VCreateRenderTexture */
 	virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(std::shared_ptr<ATexture> pTexture);
 
-	/* @copydoc ARenderer::VRender */
+	/** @copydoc ARenderer::VRender */
 	virtual void VRender(const CVertexDeclaration& vertexDeclaration,
 						 EPrimitiveType primitiveType, 
 						 shared_ptr<AVertexGpuBuffer> pVertexBuffer,
-						 shared_ptr<AIndexGpuBuffer> pIndexBuffer = nullptr);
+						 shared_ptr<AIndexGpuBuffer> pIndexBuffer = nullptr,
+						 size_t countOverride = 0,
+						 size_t instances = 1);
 
-	/* @copydoc ARenderer::VSetShaderProgram */
+	/** @copydoc ARenderer::VSetShaderProgram */
 	virtual void VSetShaderProgram(shared_ptr<AShaderProgram> pShader);
-	/* @copydoc ARenderer::VDisableShaderProgram */
+	/** @copydoc ARenderer::VDisableShaderProgram */
 	virtual void VDisableShaderProgram(EShaderProgramType programType) override;
 
-	/* @copydoc ARenderer::VSetRenderTarget */
+	/** @copydoc ARenderer::VSetRenderTarget */
 	virtual void VSetRenderTargets(std::vector<ARenderTexture*> renderTargets) override;
 
-	/* @copydoc ARenderer::VSetStreamOutTargets */
+	/** @copydoc ARenderer::VSetStreamOutTargets */
 	virtual void VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpuBuffer> >& buffers) override;
 
-	/* @copydoc ARenderer::VSetStreamOutTarget */
+	/** @copydoc ARenderer::VSetStreamOutTarget */
 	virtual void VSetStreamOutTarget(const std::shared_ptr<AGpuBuffer>& pBuffer) override;
+
+	/** @copydoc ARenderer::VBeginStreamOutQuery */
+	virtual void VBeginStreamOutQuery() override;
+
+	/** @copydoc ARenderer::VEndStreamOutQuery */
+	virtual size_t VEndStreamOutQuery() override;
 
 	/* @copydoc ARenderer::VSetWorldTransform */
 	virtual void VSetWorldTransform(const CMatrix4x4& worldTransform) override;
@@ -160,15 +168,13 @@ private:
 	*/
 	std::vector<D3D11_INPUT_ELEMENT_DESC> GetD3DVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
 
-
-
-
 	// Member Variables
 public:
 protected:
 private:
 	ComPtr<ID3D11Device> m_pD3DDevice;
 	ComPtr<ID3D11DeviceContext> m_pImmediateContext;
+	ComPtr<ID3D11Query> m_pSOQuery;
 	ComPtr<IDXGISwapChain> m_pSwapChain;
 	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
 	ComPtr<ID3D11Texture2D> m_pDepthStencilBuffer;

@@ -24,7 +24,7 @@
     <ClInclude Include="MarchingCubesApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TriTable.h">
+    <ClInclude Include="Tables.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,29 +38,18 @@
     <ClCompile Include="MarchingCubesApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TriTable.cpp">
+    <ClCompile Include="Tables.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Density.hlsli" />
     <None Include="Chunk.hlsli" />
-    <None Include="LightingHelper.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Density_GS.hlsl" />
     <FxCompile Include="Density_PS.hlsl" />
     <FxCompile Include="Density_VS.hlsl" />
-    <FxCompile Include="DrawTerrain_PS.hlsl" />
-    <FxCompile Include="DrawTerrain_VS.hlsl" />
-    <FxCompile Include="GenerateIndices_GS.hlsl" />
-    <FxCompile Include="GenerateIndices_VS.hlsl" />
-    <FxCompile Include="GenerateVertices_GS.hlsl" />
-    <FxCompile Include="GenerateVertices_VS.hlsl" />
-    <FxCompile Include="ListNonEmptyCells_GS.hlsl" />
-    <FxCompile Include="ListNonEmptyCells_VS.hlsl" />
-    <FxCompile Include="ListVertices_GS.hlsl" />
-    <FxCompile Include="ListVertices_VS.hlsl" />
     <FxCompile Include="SplatVertexIDs_GS.hlsl" />
     <FxCompile Include="SplatVertexIDs_PS.hlsl" />
     <FxCompile Include="SplatVertexIDs_VS.hlsl" />

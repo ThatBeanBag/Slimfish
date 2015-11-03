@@ -23,58 +23,58 @@
 
 namespace Slim {
 
-	/** Simple class for representing a point on the screen.
+/** Simple class for representing a point on the screen.
+*/
+class CPoint {
+	// Member Functions
+public:
+	/** Default constructor.
+		@author Hayden Asplet
 	*/
-	class CPoint {
-		// Member Functions
-	public:
-		/** Default constructor.
-			@author Hayden Asplet
-		*/
-		CPoint();
+	CPoint();
 
-		/** Construct a point from a position on the screen defined by x, y coordinates.
-			@author Hayden Asplet
-		*/
-		CPoint(int x, int y);
+	/** Construct a point from a position on the screen defined by x, y coordinates.
+		@author Hayden Asplet
+	*/
+	CPoint(int x, int y);
 
-		/** Destructor.
-		 	@author Hayden Asplet
-		*/
-		~CPoint();
+	/** Destructor.
+		@author Hayden Asplet
+	*/
+	~CPoint();
 
-		/** Add two points together and assign the result. @author Hayden Asplet */
-		CPoint& operator+=(const CPoint& other);
-		/** Subtract a point from another and assign the result. @author Hayden Asplet */
-		CPoint& operator-=(const CPoint& other);
+	/** Add two points together and assign the result. @author Hayden Asplet */
+	CPoint& operator+=(const CPoint& other);
+	/** Subtract a point from another and assign the result. @author Hayden Asplet */
+	CPoint& operator-=(const CPoint& other);
 
-		/** Set the x component of the point. @author Hayden Asplet */
-		void SetX(int x);
-		/** Get the x component of the point. @author Hayden Asplet */
-		const int GetX() const;
-		/** Set the y component of the point. @author Hayden Asplet */
-		void SetY(int y);
-		/** Get the y component of the point. @author Hayden Asplet */
-		const int GetY() const;
-	protected:
-	private:
-		// Member Variables
-	public:
-	protected:
-	private:
-		int m_X;
-		int m_Y;
-	};
+	/** Set the x component of the point. @author Hayden Asplet */
+	void SetX(int x);
+	/** Get the x component of the point. @author Hayden Asplet */
+	const int GetX() const;
+	/** Set the y component of the point. @author Hayden Asplet */
+	void SetY(int y);
+	/** Get the y component of the point. @author Hayden Asplet */
+	const int GetY() const;
+protected:
+private:
+	// Member Variables
+public:
+protected:
+private:
+	int m_X;
+	int m_Y;
+};
 
-	/** Add two points together. @author Hayden Asplet */
-	CPoint operator+(const CPoint& pointA, const CPoint& pointB);
+/** Add two points together. @author Hayden Asplet */
+CPoint operator+(const CPoint& pointA, const CPoint& pointB);
 
-	/** Subtract a point from another. @author Hayden Asplet */
-	CPoint operator-(const CPoint& pointA, const CPoint& pointB);
+/** Subtract a point from another. @author Hayden Asplet */
+CPoint operator-(const CPoint& pointA, const CPoint& pointB);
 
-	/** Compares a point with another. @author Hayden Asplet */
-	bool operator==(const CPoint& pointA, const CPoint& pointB);
-	bool operator!=(const CPoint& pointA, const CPoint& pointB);
+/** Compares a point with another. @author Hayden Asplet */
+bool operator==(const CPoint& pointA, const CPoint& pointB);
+bool operator!=(const CPoint& pointA, const CPoint& pointB);
 
 }
 

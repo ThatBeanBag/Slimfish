@@ -25,7 +25,7 @@
 namespace Slim {
 
 	AIndexGpuBuffer::AIndexGpuBuffer(size_t numIndices, EIndexType type, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory)
-		:AGpuBuffer(numIndices * type, usage, isOutput, isInSystemMemory),
+		:AGpuBuffer(numIndices * type, usage, EGpuBufferType::INDEX, isOutput, isInSystemMemory),
 		m_NumIndices(numIndices),
 		m_Type(type)
 	{

@@ -64,6 +64,7 @@
     <ClCompile Include="..\Math\SlimRay.cpp" />
     <ClCompile Include="..\Math\SlimVector.cpp" />
     <ClCompile Include="..\Utilities\SlimPoint.cpp" />
+    <ClCompile Include="..\Utilities\SlimRect.cpp" />
     <ClCompile Include="SlimStd.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -130,6 +131,7 @@
     <ClInclude Include="..\Utilities\SlimInline.h" />
     <ClInclude Include="..\Utilities\SlimObjectFactory.h" />
     <ClInclude Include="..\Utilities\SlimPoint.h" />
+    <ClInclude Include="..\Utilities\SlimRect.h" />
     <ClInclude Include="..\Utilities\SlimSingleton.h" />
     <ClInclude Include="SlimStd.h" />
   </ItemGroup>

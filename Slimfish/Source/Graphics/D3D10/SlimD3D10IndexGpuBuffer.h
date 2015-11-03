@@ -62,6 +62,9 @@ public:
 	*/
 	~CD3D10IndexGpuBuffer();
 
+	virtual void VCopy(const std::shared_ptr<AGpuBuffer>& pBuffer, size_t size,
+		size_t sourceOffset, size_t destinationOffset) override;
+
 	/** Get the directX 10 specific buffer.
 		@remarks
 			This is to be used by the directX 10 renderer only.

@@ -1,22 +1,22 @@
 struct GSInput {
-	uint z8_y8_x8_case8 : TEXCOORD;
+	uint z8_y8_x8_case8 : POSITION;
 };
 
-struct GSOuput {
-	uint z8_y8_x8_case8 : TEXCOORD;
+struct GSOutput {
+	uint z8_y8_x8_case8 : POSITION;
 };
 
 [maxvertexcount(1)]
-void main(point GSInput input[1], inout PointStream< GSOutput > output)
+void main(point GSInput gIn[1], inout PointStream< GSOutput > outputStream)
 {
 	// Get the cube case.
-	uint cubeCase = GSInput.z8_y8_x8_case8 & 0xff;
+	uint cubeCase = gIn[0].z8_y8_x8_case8 & 0xff;
 
 	// Check if the cell is non-empty.
 	if (cubeCase * (255 - cubeCase) > 0) {
 		// List the cell as it's not empty.
-		GSOutput output;
-		ouput.z8_y8_x8_case8 = input[0].z8_y8_x8_case8;
-		Stream.Append(output);
+		GSOutput gOut;
+		gOut.z8_y8_x8_case8 = gIn[0].z8_y8_x8_case8;
+		outputStream.Append(gOut);
 	}
 }

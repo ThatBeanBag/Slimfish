@@ -1,7 +1,7 @@
 
 struct PSInput {
-	float4 projCoord : POSITION;
-	uint nVertexID : TEXCOORD;
+	float4 projCoord : SV_POSITION;
+	uint nVertexID : VERTEXID;
 	uint renderTargetIndex : SV_RenderTargetArrayIndex;
 };
 

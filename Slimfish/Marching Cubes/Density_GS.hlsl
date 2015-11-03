@@ -1,6 +1,6 @@
 
 struct GSInput {
-	float4 position : SV_POSITION;
+	float4 position : POSITION;
 	float4 wPosition : TEXCOORD0;
 	float3 chunkPosition : TEXCOORD1;
 	uint nInstanceID : BLAH;
@@ -15,8 +15,7 @@ struct GSOutput
 };
 
 [maxvertexcount(3)]
-void main( triangle GSInput gIn[3], 
-	inout TriangleStream< GSOutput > gOut)
+void main( triangle GSInput gIn[3], inout TriangleStream< GSOutput > gOut)
 {
 	for (uint i = 0; i < 3; i++)
 	{

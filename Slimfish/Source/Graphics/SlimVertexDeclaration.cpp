@@ -16,6 +16,7 @@
 #include "SlimStd.h"
 
 // Library Includes
+#include <algorithm>
 
 // This Include
 #include "SlimVertexDeclaration.h"
@@ -26,6 +27,7 @@ namespace Slim {
 
 CInputElement::CInputElement(const std::string& semanticName, EFormat format)
 	:m_SemanticName(semanticName),
+	m_SemanticIndex(0),
 	m_Size(GetSizeFromFormat(format)),
 	m_Format(format)
 {
@@ -39,6 +41,16 @@ CInputElement::~CInputElement()
 const std::string& CInputElement::GetSemanticName() const
 {
 	return m_SemanticName;
+}
+
+void CInputElement::SetSemanticIndex(size_t semanticIndex)
+{
+	m_SemanticIndex = semanticIndex;
+}
+
+const size_t CInputElement::GetSemanticIndex() const
+{
+	return m_SemanticIndex;
 }
 
 const size_t CInputElement::GetSize() const
@@ -66,17 +78,21 @@ const size_t CInputElement::GetSizeFromFormat(EFormat format)
 		case Slim::CInputElement::FORMAT_FLOAT4: {
 			return sizeof(float) * 4;
 		}
-		case Slim::CInputElement::FORMAT_SHORT: {
-			return sizeof(short);
+		case Slim::CInputElement::FORMAT_INT: // Fall through. 
+		case Slim::CInputElement::FORMAT_UINT: {
+			return sizeof(int);
 		}
-		case Slim::CInputElement::FORMAT_SHORT2: {
-			return sizeof(short) * 2;
+		case Slim::CInputElement::FORMAT_INT2: // Fall through. 
+		case Slim::CInputElement::FORMAT_UINT2: {
+			return sizeof(int) * 2;
 		}
-		case Slim::CInputElement::FORMAT_SHORT3: {
-			return sizeof(short) * 3;
+		case Slim::CInputElement::FORMAT_INT3: // Fall through. 
+		case Slim::CInputElement::FORMAT_UINT3: {
+			return sizeof(int) * 3;
 		}
-		case Slim::CInputElement::FORMAT_SHORT4: {
-			return sizeof(short) * 4;
+		case Slim::CInputElement::FORMAT_INT4: // Fall through. 
+		case Slim::CInputElement::FORMAT_UINT4: {
+			return sizeof(int) * 4;
 		}
 		case Slim::CInputElement::FORMAT_COLOUR_RGBA: {
 			return sizeof(float) * 4;
@@ -107,7 +123,16 @@ void CVertexDeclaration::AddElement(const std::string& semanticName, CInputEleme
 
 void CVertexDeclaration::AddElement(const CInputElement& inputElement)
 {
+	// Count all elements with the same semantic name to get the index.
+	auto hasSameName = [&](const CInputElement& element) {
+		return element.GetSemanticName() == inputElement.GetSemanticName();
+	};
+
+	auto semanticIndex = std::count_if(m_ElementList.begin(), m_ElementList.end(), hasSameName);
+
 	m_ElementList.push_back(inputElement);
+	m_ElementList.back().SetSemanticIndex(semanticIndex);
+
 	m_NeedsRebuilding = true;
 }
 

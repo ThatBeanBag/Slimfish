@@ -122,6 +122,7 @@ namespace Slim {
 				m_pTexture1D->GetDesc(&desc);
 
 				SetSourceWidth(desc.Width);
+				SetWidth(desc.Width);
 
 				if (GetUsage() == ETextureUsage::STATIC) {
 					CreateShaderResourceView1D(desc);
@@ -139,6 +140,8 @@ namespace Slim {
 
 				SetSourceWidth(desc.Width);
 				SetSourceHeight(desc.Height);
+				SetWidth(desc.Width);
+				SetHeight(desc.Height);
 
 				if (GetUsage() == ETextureUsage::STATIC) {
 					CreateShaderResourceView2D(desc);
@@ -157,6 +160,9 @@ namespace Slim {
 				SetSourceWidth(desc.Width);
 				SetSourceHeight(desc.Height);
 				SetSourceDepth(desc.Depth);
+				SetWidth(desc.Width);
+				SetHeight(desc.Height);
+				SetDepth(desc.Depth);
 
 				if (GetUsage() == ETextureUsage::STATIC) {
 					CreateShaderResourceView3D(desc);
@@ -190,69 +196,6 @@ namespace Slim {
 				break;
 			}
 		}
-
-		/*D3D11_RESOURCE_DIMENSION resourceType;
-		m_pTexture->GetType(&resourceType);
-
-		switch (resourceType) {
-			case D3D11_RESOURCE_DIMENSION_BUFFER: {
-				break;
-			}
-			case D3D11_RESOURCE_DIMENSION_TEXTURE1D: {
-				m_pTexture1D = static_cast<ID3D11Texture1D*>(m_pTexture.Get());
-				//m_pTexture1D->AddRef();
-
-				// Get the texture description.
-				D3D11_TEXTURE1D_DESC desc;
-				m_pTexture1D->GetDesc(&desc);
-
-				SetSourceWidth(desc.Width);
-
-				if (GetUsage() == ETextureUsage::STATIC) {
-					CreateShaderResourceView1D(desc);
-				}
-
-				break;
-			}
-			case D3D11_RESOURCE_DIMENSION_TEXTURE2D: {
-				m_pTexture2D = static_cast<ID3D11Texture2D*>(m_pTexture.Get());
-				//m_pTexture2D->AddRef();
-
-				// Get the texture description.
-				D3D11_TEXTURE2D_DESC desc;
-				m_pTexture2D->GetDesc(&desc);
-
-				SetSourceWidth(desc.Width);
-				SetSourceHeight(desc.Height);
-
-				if (GetUsage() == ETextureUsage::STATIC) {
-					CreateShaderResourceView2D(desc);
-				}
-
-				break;
-			}
-			case D3D11_RESOURCE_DIMENSION_TEXTURE3D: {
-				m_pTexture3D = static_cast<ID3D11Texture3D*>(m_pTexture.Get());
-				//m_pTexture3D->AddRef();
-
-				// Get the texture description.
-				D3D11_TEXTURE3D_DESC desc;
-				m_pTexture3D->GetDesc(&desc);
-
-				SetSourceWidth(desc.Width);
-				SetSourceHeight(desc.Height);
-				SetSourceDepth(desc.Depth);
-
-				if (GetUsage() == ETextureUsage::STATIC) {
-					CreateShaderResourceView3D(desc);
-				}
-
-				break;
-			}
-			default: {
-				break;
-			}
-		}*/
 	}
 
 	void CD3D11Texture::VUnload()
@@ -395,7 +338,7 @@ namespace Slim {
 
 		desc.Width = GetWidth();
 		desc.Height = GetHeight();
-		desc.Depth = GetWidth();
+		desc.Depth = GetDepth();
 		desc.Format = D3D11Conversions::GetPixelFormat(GetPixelFormat());
 		desc.Usage = D3D11Conversions::GetUsage(GetUsage());
 		desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
@@ -412,10 +355,10 @@ namespace Slim {
 		std::ifstream ifs(GetName().c_str());
 		if (ifs.is_open() && GetUsage() != ETextureUsage::RENDER_TARGET) {
 			ifs.seekg(0, ifs.end);
-			int length = ifs.tellg();
+			auto length = ifs.tellg();
 			ifs.seekg(0, ifs.beg);
 
-			std::vector<char> byteCode(length);
+			std::vector<char> byteCode(static_cast<size_t>(length));
 			ifs.read(&byteCode[0], length);
 
 			D3D11_SUBRESOURCE_DATA data;
@@ -483,7 +426,7 @@ namespace Slim {
 		}
 
 		// Handle multi-sampled render target.
-		if (GetUsage() == ETextureUsage::RENDER_TARGET && GetMultiSampleCount() > 1 || GetMultiSampleQuality() > 0) {
+		if (GetUsage() == ETextureUsage::RENDER_TARGET && (GetMultiSampleCount() > 1 || GetMultiSampleQuality() > 0)) {
 			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 		}
 

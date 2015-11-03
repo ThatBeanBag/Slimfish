@@ -240,7 +240,9 @@ namespace Slim {
 		virtual void VRender(const CVertexDeclaration& vertexDeclaration, 
 							 EPrimitiveType primitiveType, 
 							 shared_ptr<AVertexGpuBuffer> pVertexBuffer, 
-							 shared_ptr<AIndexGpuBuffer> pIndexBuffer = nullptr) = 0;
+							 shared_ptr<AIndexGpuBuffer> pIndexBuffer = nullptr, 
+							 size_t countOverride = 0, 
+							 size_t instances = 1) = 0;
 
 		/** Bind either a vertex, pixel or geometry shader program to the renderer.
 			@remarks
@@ -274,6 +276,22 @@ namespace Slim {
 			@param pBuffer Buffer to stream out to during the stream output stage.
 		*/
 		virtual void VSetStreamOutTarget(const std::shared_ptr<AGpuBuffer>& pBuffer) = 0;
+
+		/** Begin a stream output query.
+			@remarks
+				This should be called before streaming out data in order to retrieve the
+				number of primitives streamed out with a call to VEndStreamOutputQuery().
+		 	@author Hayden Asplet
+		*/
+		virtual void VBeginStreamOutQuery() = 0;
+
+		/** End the stream output query and retrieve the number of primitives streamed out.
+		 	@author Hayden Asplet
+		 	@return 
+				Number of primitives streamed out between the call to VBeginStreamOutputQuery()
+				and this call.
+		*/
+		virtual size_t VEndStreamOutQuery() = 0;
 
 		/** Set the world transform. */
 		virtual void VSetWorldTransform(const CMatrix4x4& worldTransform) = 0;

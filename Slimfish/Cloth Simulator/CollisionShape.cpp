@@ -16,6 +16,7 @@
 #include "ClothSimulatorStd.h"
 
 // Library Includes
+#include <limits>
 
 // This Include
 #include "CollisionShape.h"
@@ -23,6 +24,8 @@
 // Local Includes
 
 ACollisionShape::ACollisionShape()
+	:m_NeedsRebuilding(true),
+	m_Transform(CMatrix4x4::s_IDENTITY)
 {
 
 }
@@ -38,6 +41,7 @@ ACollisionShape::~ACollisionShape()
 void ACollisionShape::SetTransform(const CMatrix4x4& transform)
 {
 	m_Transform = transform;
+	m_NeedsRebuilding = true;
 }
 
 const CMatrix4x4& ACollisionShape::GetTransform() const
@@ -60,11 +64,30 @@ CCollisionSphere::~CCollisionSphere()
 
 }
 
-const bool CCollisionSphere::IsInside(const CVector3& point)
+const bool CCollisionSphere::IsInside(const CVector3& point, CVector3& intersectionPoint)
 {
 	const CMatrix4x4& transform = GetTransform();
-	CVector3 toPoint = transform.GetPosition() - point;
-	return point.GetLengthSquared() <= m_fRadius * m_fRadius;
+
+	// Calculate the distance between the point and the sphere.
+	CVector3 toPoint = point - transform.GetPosition();
+	auto distanceSqr = toPoint.GetLengthSquared();
+
+	// Is the point within the radius of the sphere.
+	if (distanceSqr <= m_fRadius * m_fRadius) {
+		// Get point outside of the sphere.
+		if (distanceSqr != 0.0f) {
+			auto distance = sqrt(distanceSqr);
+			toPoint /= distance;
+			intersectionPoint = transform.GetPosition() + toPoint * m_fRadius;
+		}
+		else {
+			intersectionPoint = CVector3::s_FORWARD * m_fRadius;
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 const ACollisionShape::EType CCollisionSphere::VGetType() const
@@ -80,6 +103,7 @@ const float CCollisionSphere::VGetVolume() const
 void CCollisionSphere::SetRadius(float radius)
 {
 	m_fRadius = radius;
+	m_NeedsRebuilding = true;
 }
 
 const float CCollisionSphere::GetRadius() const
@@ -104,8 +128,46 @@ CCollisionCapsule::~CCollisionCapsule()
 
 }
 
-const bool CCollisionCapsule::IsInside(const CVector3& point)
+const bool CCollisionCapsule::IsInside(const CVector3& point, CVector3& intersectionPoint)
 {
+	const auto& transform = GetTransform();
+	auto lineNormal = transform.GetUp();
+
+	// Project the point onto the line.
+	float projection = CVector3::DotProduct(point, lineNormal);
+	float centre = CVector3::DotProduct(transform.GetPosition(), lineNormal);
+
+	projection -= centre;
+
+	float halfHeight = m_fHeight / 2.0f;
+
+	if (projection > halfHeight) {
+		projection = halfHeight;
+	}
+	else if (projection < -halfHeight) {
+		projection = -halfHeight;
+	}
+
+	auto pointOnLine = transform.GetPosition() + (lineNormal * projection);
+	auto toPoint = point - pointOnLine;
+	auto distanceSqr = toPoint.GetLengthSquared();
+
+	// Is the point within the radius of the capsule.
+	if (distanceSqr <= m_fRadius * m_fRadius) {
+		// Get point outside of the capsule.
+		if (distanceSqr != 0.0f) {
+			auto distance = sqrt(distanceSqr);
+			toPoint /= distance;
+			intersectionPoint = pointOnLine + toPoint * m_fRadius;
+		}
+		else {
+			intersectionPoint = CVector3::s_FORWARD * m_fRadius;
+		}
+
+		return true;
+	}
+
+
 	return false;
 }
 
@@ -117,6 +179,7 @@ const ACollisionShape::EType CCollisionCapsule::VGetType() const
 void CCollisionCapsule::SetRadius(float radius)
 {
 	m_fRadius = radius;
+	m_NeedsRebuilding = true;
 }
 
 const float CCollisionCapsule::GetRadius() const
@@ -127,6 +190,7 @@ const float CCollisionCapsule::GetRadius() const
 void CCollisionCapsule::SetHeight(float height)
 {
 	m_fHeight = height;
+	m_NeedsRebuilding = true;
 }
 
 const float CCollisionCapsule::GetHeight() const
@@ -156,22 +220,9 @@ CCollisionBox::~CCollisionBox()
 
 }
 
-const bool CCollisionBox::IsInside(const CVector3& point)
+const bool CCollisionBox::IsInside(const CVector3& point, CVector3& intersectionPoint)
 {
-	float halfHeight = m_fHeight / 2.0f;
-	float halfWidth = m_fWidth / 2.0f;
-	float halfLength = m_fLength / 2.0f;
-
-	CPlane s_Plane[] = {
-			{ 0.0f, 1.0f, 0.0f, halfHeight	},
-			{ 0.0f, -1.0f, 0.0f, -halfHeight},
-			{ 1.0f, 0.0f, 0.0f,  halfWidth	},
-			{ -1.0f, 0.0f, 0.0f, -halfWidth },
-			{ 0.0f, 0.0f, 1.0f, -halfHeight },
-			{ 0.0f, 0.0f, -1.0f, halfHeight }
-	};
-
-
+	return false;
 }
 
 const ACollisionShape::EType CCollisionBox::VGetType() const
@@ -187,6 +238,7 @@ const float CCollisionBox::VGetVolume() const
 void CCollisionBox::SetWidth(float width)
 {
 	m_fWidth = width;
+	m_NeedsRebuilding = true;
 }
 
 const float CCollisionBox::GetWidth() const
@@ -197,6 +249,7 @@ const float CCollisionBox::GetWidth() const
 void CCollisionBox::SetHeight(float height)
 {
 	m_fHeight = height;
+	m_NeedsRebuilding = true;
 }
 
 const float CCollisionBox::GetHeight() const
@@ -207,6 +260,7 @@ const float CCollisionBox::GetHeight() const
 void CCollisionBox::SetLength(float length)
 {
 	m_fLength = length;
+	m_NeedsRebuilding = true;
 }
 
 const float CCollisionBox::GetLength() const
@@ -231,7 +285,7 @@ CCollisionCylinder::~CCollisionCylinder()
 
 }
 
-const bool CCollisionCylinder::IsInside(const CVector3& point)
+const bool CCollisionCylinder::IsInside(const CVector3& point, CVector3& intersectionPoint)
 {
 	return false;
 }
@@ -281,9 +335,19 @@ CCollisionPlane::~CCollisionPlane()
 
 }
 
-const bool CCollisionPlane::IsInside(const CVector3& point)
+const bool CCollisionPlane::IsInside(const CVector3& point, CVector3& intersectionPoint)
 {
-	//return m_Plane.IsInside(point);
+	if (m_Plane.IsInside(point)) {
+		// Get the collision point
+		auto planeNormal = m_Plane.GetNormal();
+		auto pointOnPlane = planeNormal * -m_Plane.GetD();
+
+		// Project the point onto the plane.
+		intersectionPoint = point - (planeNormal * CVector3::DotProduct(point - pointOnPlane, planeNormal));
+
+		return true;
+	}
+
 	return false;
 }
 
@@ -308,6 +372,7 @@ const CPlane& CCollisionPlane::GetPlane() const
 }
 
 CCollisionPyramid::CCollisionPyramid(float width, float height, float length)
+	:m_Width(width), m_Height(height), m_Length(length)
 {
 
 }
@@ -317,9 +382,61 @@ CCollisionPyramid::~CCollisionPyramid()
 
 }
 
-const bool CCollisionPyramid::IsInside(const CVector3& point)
+const bool CCollisionPyramid::IsInside(const CVector3& point, CVector3& intersectionPoint)
 {
+	// Rebuild the planes if necessary.
+	if (m_NeedsRebuilding) {
+		const auto& transform = GetTransform();
 
+		auto halfHeight = (m_Height / 2.0f) * transform.GetUp();
+		auto halfWidth = (m_Width / 2.0f) * transform.GetRight();
+		auto halfLength = (m_Length / 2.0f) * transform.GetDirection();
+
+		CVector3 topPoint = transform.GetPosition() + halfHeight;
+		CVector3 bottomCentre = transform.GetPosition() - halfHeight;
+
+		CVector3 cornerLeftFront = bottomCentre - halfWidth + halfLength;
+		CVector3 cornerLeftBack = bottomCentre - halfWidth - halfLength;
+		CVector3 cornerRightFront = bottomCentre + halfWidth + halfLength;
+		CVector3 cornerRightBack = bottomCentre + halfWidth - halfLength;
+
+		// Create the planes.
+		m_Planes[0] = CPlane(topPoint, cornerLeftFront, cornerLeftBack );		// Left side.
+		m_Planes[1] = CPlane(topPoint, cornerRightFront,cornerLeftFront );		// Front side.
+		m_Planes[2] = CPlane(topPoint, cornerRightBack ,cornerRightFront );	// Right side.
+		m_Planes[3] = CPlane(topPoint, cornerLeftBack, cornerRightBack) ;	// Back side.
+		m_Planes[4] = CPlane(cornerLeftFront, cornerRightFront, cornerLeftBack); // Bottom.
+
+		m_NeedsRebuilding = false;
+	}
+
+	// Check to see if the point is outside any one of the planes.
+	for (const auto& plane : m_Planes) {
+		if (!plane.IsInside(point)) {
+			return false;
+		}
+	}
+
+	// If we get here the point is inside each plane.
+	// Calculate the intersection point.
+	CVector3 closestPlaneNormal = m_Planes[0].GetNormal();
+	float distance = std::numeric_limits<float>::max();
+
+	// Find the closest plane to the point.
+	for (const auto& plane : m_Planes) {
+		auto planeNormal = plane.GetNormal();
+		auto pointOnPlane = planeNormal * -plane.GetD();
+		auto currentDistance = CVector3::DotProduct(point - pointOnPlane, planeNormal);
+		if (abs(currentDistance) < abs(distance)) {
+			distance = currentDistance;
+			closestPlaneNormal = planeNormal;
+		}
+	}
+
+	// Project the point onto the closest plane.
+	intersectionPoint = point - (closestPlaneNormal * distance);
+
+	return true;
 }
 
 const ACollisionShape::EType CCollisionPyramid::VGetType() const
@@ -335,6 +452,7 @@ const float CCollisionPyramid::VGetVolume() const
 void CCollisionPyramid::SetWidth(float width)
 {
 	m_Width = width;
+	m_NeedsRebuilding = true;
 }
 
 const float CCollisionPyramid::GetWidth() const
@@ -345,6 +463,7 @@ const float CCollisionPyramid::GetWidth() const
 void CCollisionPyramid::SetHeight(float height)
 {
 	m_Height = height;
+	m_NeedsRebuilding = true;
 }
 
 const float CCollisionPyramid::GetHeight() const
@@ -355,6 +474,7 @@ const float CCollisionPyramid::GetHeight() const
 void CCollisionPyramid::SetLength(float length)
 {
 	m_Length = length;
+	m_NeedsRebuilding = true;
 }
 
 const float CCollisionPyramid::GetLength() const

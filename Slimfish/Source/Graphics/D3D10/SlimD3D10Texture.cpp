@@ -307,6 +307,8 @@ namespace Slim {
 		ZeroMemory(&desc, sizeof(D3D10_TEXTURE3D_DESC));
 
 		desc.Width = GetWidth();
+		desc.Height = GetHeight();
+		desc.Depth = GetDepth();
 		desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM; // TODO: this is a hack, should be equivalent to back buffer format.
 		desc.Usage = D3D10Conversions::GetUsage(GetUsage());
 		desc.BindFlags = D3D10_BIND_SHADER_RESOURCE | D3D10_BIND_RENDER_TARGET;

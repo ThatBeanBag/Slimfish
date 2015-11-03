@@ -89,7 +89,8 @@ CColourValue D3D11Conversions::GetColour(const D3DXCOLOR& colour)
 
 D3D11_USAGE D3D11Conversions::GetUsage(EGpuBufferUsage usage)
 {
-	if (usage == EGpuBufferUsage::DYNAMIC || usage == EGpuBufferUsage::WRITE_ONLY) {
+	if (usage == EGpuBufferUsage::DYNAMIC || 
+		usage == EGpuBufferUsage::WRITE_ONLY) {
 		return D3D11_USAGE_DYNAMIC;
 	}
 	else {
@@ -170,17 +171,29 @@ DXGI_FORMAT D3D11Conversions::GetFormat(CInputElement::EFormat inputElementForma
 		case CInputElement::FORMAT_FLOAT4: {
 			return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		}
-		case CInputElement::FORMAT_SHORT: {
+		case CInputElement::FORMAT_INT: {
 			return DXGI_FORMAT_R32_SINT;
 		}
-		case CInputElement::FORMAT_SHORT2: {
+		case CInputElement::FORMAT_INT2: {
 			return DXGI_FORMAT_R32G32_SINT;
 		}
-		case CInputElement::FORMAT_SHORT3: {
+		case CInputElement::FORMAT_INT3: {
 			return DXGI_FORMAT_R32G32B32_SINT;
 		}
-		case CInputElement::FORMAT_SHORT4: {
+		case CInputElement::FORMAT_INT4: {
 			return DXGI_FORMAT_R32G32B32A32_SINT;
+		}
+		case CInputElement::FORMAT_UINT: {
+			return DXGI_FORMAT_R32_UINT;
+		}
+		case CInputElement::FORMAT_UINT2: {
+			return DXGI_FORMAT_R32G32_UINT;
+		}
+		case CInputElement::FORMAT_UINT3: {
+			return DXGI_FORMAT_R32G32B32_UINT;
+		}
+		case CInputElement::FORMAT_UINT4: {
+			return DXGI_FORMAT_R32G32B32A32_UINT;
 		}
 		case CInputElement::FORMAT_COLOUR_RGBA: {
 			return DXGI_FORMAT_R32G32B32A32_FLOAT;

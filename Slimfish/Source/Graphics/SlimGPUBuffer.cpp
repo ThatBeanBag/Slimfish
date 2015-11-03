@@ -24,8 +24,9 @@
 
 namespace Slim {
 
-AGpuBuffer::AGpuBuffer(size_t size, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory)
+	AGpuBuffer::AGpuBuffer(size_t size, EGpuBufferUsage usage, EGpuBufferType type, bool isOutput, bool isInSystemMemory)
 	:m_Usage(usage),
+	m_Type(type),
 	m_BufferSize(size),
 	m_IsInSystemMemory(isInSystemMemory),
 	m_IsOutput(isOutput),
@@ -74,6 +75,16 @@ const size_t AGpuBuffer::GetSize() const
 	return m_BufferSize;
 }
 
+void AGpuBuffer::SetType(EGpuBufferType type)
+{
+	m_Type = type;
+}
+
+const EGpuBufferType AGpuBuffer::GetType() const
+{
+	return m_Type;
+}
+
 const bool AGpuBuffer::IsOutput() const
 {
 	return m_IsOutput;
@@ -84,9 +95,9 @@ const bool AGpuBuffer::IsInSystemMemory() const
 	return m_IsInSystemMemory;
 }
 
-/************************************************************************/
-/* CGPUBufferLock implementation
-/************************************************************************/
+//
+// CGpuBufferLock implementation
+//
 
 CGpuBufferLock::CGpuBufferLock(const shared_ptr<AGpuBuffer>& pBuffer, size_t offset, size_t size, EGpuBufferLockType lockType) 
 	:m_pBuffer(pBuffer),

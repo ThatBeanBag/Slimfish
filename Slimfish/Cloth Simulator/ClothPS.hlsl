@@ -30,15 +30,15 @@ float4 main(VSOutput pIn) : SV_TARGET
 	toEye /= distanceToEye;
 
 	float4 diffuse = gTextureDiffuse.Sample(gSampleDiffuse, pIn.texCoord);
-	float4 specular = float4(0.4f, 0.4f, 0.4f, 1.0f);
+	float4 specular = float4(0.2f, 0.2f, 0.2f, 1.0f);
 
-	Material material = { diffuse, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 10.0f };
+	Material material = { diffuse, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 20.0f };
 
 	float3 lightColour = float3(0.0f, 0.0f, 0.0f);
 
 	float bCalculateLighting = true;
 	// Calculate shadow mapping coords.
-	float2 lightProjectTexCoords;
+	/*float2 lightProjectTexCoords;
 	lightProjectTexCoords.x = pIn.lightViewProjPosition.x / pIn.lightViewProjPosition.w / 2.0f + 0.5f;
 	lightProjectTexCoords.y = -pIn.lightViewProjPosition.y / pIn.lightViewProjPosition.w / 2.0f + 0.5f;
 	if (saturate(lightProjectTexCoords.x) == lightProjectTexCoords.x &&
@@ -52,7 +52,7 @@ float4 main(VSOutput pIn) : SV_TARGET
 		if (shadowMapDepth < lightDepthValue) {
 			bCalculateLighting = false;
 		}
-	}
+	}*/
 
 	if (bCalculateLighting) {
 		float3 finalNormal = normalize(pIn.normal);

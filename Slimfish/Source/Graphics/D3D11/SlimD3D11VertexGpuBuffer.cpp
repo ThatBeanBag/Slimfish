@@ -33,7 +33,7 @@ namespace Slim {
 		m_pImpl = std::make_unique<CD3D11GpuBuffer>(
 			pD3DDevice, 
 			pImmediateContext,
-			CD3D11GpuBuffer::BUFFER_TYPE_VERTEX,
+			EGpuBufferType::VERTEX,
 			numVertices * stride,
 			pSource,
 			usage, 
@@ -46,6 +46,11 @@ namespace Slim {
 
 	}
 
+	void CD3D11VertexGpuBuffer::VCopy(const std::shared_ptr<AGpuBuffer>& pBuffer, size_t size, size_t sourceOffset, size_t destinationOffset)
+	{
+		m_pImpl->VCopy(pBuffer, size, sourceOffset, destinationOffset);
+	}
+
 	ID3D11Buffer* CD3D11VertexGpuBuffer::GetD3DBuffer()
 	{
 		return m_pImpl->GetD3DBuffer();
@@ -53,18 +58,12 @@ namespace Slim {
 
 	void* CD3D11VertexGpuBuffer::VLock(size_t offset, size_t size, EGpuBufferLockType lockType)
 	{
-		if (m_pImpl) {
-			return m_pImpl->Lock(offset, size, lockType);
-		}
-
-		return nullptr;
+		return m_pImpl->Lock(offset, size, lockType);
 	}
 
 	void CD3D11VertexGpuBuffer::VUnlock()
 	{
-		if (m_pImpl) {
-			m_pImpl->Unlock();
-		}
+		m_pImpl->Unlock();
 	}
 
 }

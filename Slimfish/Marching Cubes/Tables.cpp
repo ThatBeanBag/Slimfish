@@ -6,8 +6,8 @@
 //
 // (c) 2005 - 2015 Media Design School
 //
-// File Name	: TriTable.cpp
-// Description	: CTriTable implementation file.
+// File Name	: Tables.cpp
+// Description	: Tables implementation file.
 // Author		: Hayden Asplet.
 // Mail			: hayden.asplet@mediadesignschool.com
 //
@@ -18,11 +18,11 @@
 // Library Includes
 
 // This Include
-#include "TriTable.h"
+#include "Tables.h"
 
 // Local Includes
 
-namespace TriTable {
+namespace Tables {
 	const float g_EDGE_START[12][4] = {
 			{ 0, 0, 0, 0 }, { 0, 1, 0, 0 }, { 1, 0, 0, 0 }, { 0, 0, 0, 0 },
 			{ 0, 0, 1, 0 }, { 0, 1, 1, 0 }, { 1, 0, 1, 0 }, { 0, 0, 1, 0 },
@@ -41,13 +41,13 @@ namespace TriTable {
 			{ 0, 0, 1, 0 }, { 0, 1, 1, 0 }, { 1, 1, 1, 0 }, { 1, 0, 1, 0 }
 	};
 
-	const unsigned int g_EDGE_AXIS[12][4] = {
+	const int g_EDGE_AXIS[12][4] = {
 			{ 1, 0, 0, 0 }, { 0, 0, 0, 0 }, { 1, 0, 0, 0 }, { 0, 0, 0, 0 },
 			{ 1, 0, 0, 0 }, { 0, 0, 0, 0 }, { 1, 0, 0, 0 }, { 0, 0, 0, 0 },
 			{ 2, 0, 0, 0 }, { 2, 0, 0, 0 }, { 2, 0, 0, 0 }, { 2, 0, 0, 0 }
 	};
 
-	const int g_VALUES[256][16] = {
+	const int g_TRI_TABLE[256][16] = {
 		{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 		{ 0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 		{ 0, 1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
@@ -306,6 +306,5 @@ namespace TriTable {
 		{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
 	};
 
-	const int g_SIZE = sizeof(g_VALUES) / sizeof(int);
 }
 

@@ -88,6 +88,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="2DDrawer.cpp" />
+    <ClCompile Include="Cloth.cpp" />
     <ClCompile Include="ClothSimulatorApp.cpp" />
     <ClCompile Include="ClothSimulatorLogic.cpp" />
     <ClCompile Include="ClothSimulatorStd.cpp">
@@ -96,14 +98,18 @@
     </ClCompile>
     <ClCompile Include="CollisionShape.cpp" />
     <ClCompile Include="Link.cpp" />
+    <ClCompile Include="Meshes.cpp" />
     <ClCompile Include="PointMass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="2DDrawer.h" />
+    <ClInclude Include="Cloth.h" />
     <ClInclude Include="ClothSimulatorApp.h" />
     <ClInclude Include="ClothSimulatorLogic.h" />
     <ClInclude Include="ClothSimulatorStd.h" />
     <ClInclude Include="CollisionShape.h" />
     <ClInclude Include="Link.h" />
+    <ClInclude Include="Meshes.h" />
     <ClInclude Include="PointMass.h" />
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +135,16 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="QuadTex_PS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="QuadTex_VS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
     </FxCompile>
   </ItemGroup>

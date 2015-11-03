@@ -18,6 +18,7 @@
 #define __MARCHINGCUBESLOGIC_H__
 
 // Library Includes
+#include <array>
 
 // Local Includes
 #include <GameBase/SlimGameLogic.h>
@@ -29,15 +30,48 @@
 #include <Graphics/SlimRenderTexture.h>
 #include <Graphics/SlimLight.h>
 
+/**  Small meta program for making multi-dimensional std::arrays a little more readable.
+@remarks
+	Declare an array like so: TMultiDimArray<int, 50, 30, 50> ints;
+	This creates a 50 x 30 x 50 array of integers.
+*/
+
+/*
+template<typename T, size_t I, size_t... J>
+struct TGetMultiDimArray {
+	using TNested = typename TGetMultiDimArray<T, J...>::TType;
+	using TType = std::array<TNested, I>; 
+};
+
+template<typename T, size_t I>
+struct TGetMultiDimArray {
+	using TType = std::array <T, I>;
+};
+
+template<typename T, size_t I, size_t... J>
+using TMultiDimArray = typename TGetMultiDimArray<T, I, J...>::TType;*/
+
 class CMarchingCubesLogic : public CGameLogic {
+	struct TChunkInfo {
+		CVector3 position;
+		int bufferID;
+		float distanceFromCameraSqr;
+		bool hasPolys;
+		int lod;
+		size_t numCells;
+	};
+
 	// Member Functions
 public:
 	CMarchingCubesLogic();
 	~CMarchingCubesLogic();
 
 	virtual bool Initialise() override;
+
 	void BuildQuad();
 	void BuildDummyCorners();
+	void BuildStreamOutputBuffers();
+
 	void CreateRenderTextures();
 	void CreateBuildDensitiesPass();
 	void CreateListNonEmptyCellsPass();
@@ -50,14 +84,34 @@ public:
 	virtual void Update(float deltaTime) override;
 	virtual void Render() override;
 
-	void BuildChunk(const CVector3& chunkPosition, size_t lod, size_t chunkBufferID);
+	void DrawChunks();
+
+	size_t BuildChunk(const CVector3& chunkPosition, size_t lod, size_t chunkBufferID);
 	void BuildDensities();
 
 	virtual void HandleInput(const CInput& input, float deltaTime) override;
+
+	void ClearChunk(TChunkInfo& chunk);
+	CVector3 GetChunkPosition(int i, int j, int k, const CVector3& centreChunkPosition, int chunkSize, int ib, int jb, int kb);
 protected:
 private:
 	// Member Variables
 public:
+	static const int s_NUM_BUFFERS = 300;
+	static const int s_NUM_LOD = 3;
+	static const int s_NUM_CHUNKS_PER_DIM = 13;
+
+	using TChunks = std::array<std::array<std::array<
+		std::array<TChunkInfo, s_NUM_CHUNKS_PER_DIM>, 
+		s_NUM_CHUNKS_PER_DIM>, 
+		s_NUM_CHUNKS_PER_DIM>, 
+		s_NUM_LOD>;
+
+	/*using TChunks = TMultiDimArray<TChunkInfo,
+		s_NUM_LOD,
+		s_NUM_CHUNKS_PER_DIM,
+		s_NUM_CHUNKS_PER_DIM,
+		s_NUM_CHUNKS_PER_DIM>;*/
 protected:
 private:
 	// Declarations
@@ -76,8 +130,8 @@ private:
 	std::shared_ptr<AVertexGpuBuffer> m_pNonEmptyCellListVertices;	// Stream out from list non-empty cells
 	std::shared_ptr<AVertexGpuBuffer> m_pVertexListVertices;	// Stream out from list vertices.
 
-	std::vector<std::shared_ptr<AVertexGpuBuffer>> m_pChunkVertexBuffers;
-	std::vector<std::shared_ptr<AIndexGpuBuffer>> m_pChunkIndexBuffers;
+	std::array<std::shared_ptr<AVertexGpuBuffer>, s_NUM_BUFFERS> m_ChunkVertexBuffers;
+	std::array<std::shared_ptr<AIndexGpuBuffer>, s_NUM_BUFFERS> m_ChunkIndexBuffers;
 	
 	// Shader params.
 	std::shared_ptr<CShaderParams> m_pChunkParams;
@@ -102,7 +156,12 @@ private:
 	int m_VoxelDim;
 	int m_VoxelDimPlusMargins;
 	int m_VoxelMargins;
-	int m_ChunkSize;
+	std::array<int, s_NUM_LOD> m_ChunkSizes;
+
+	TChunks m_Chunks;
+	std::vector<int> m_FreeBufferIDs;
+
+	std::vector<TChunkInfo*> m_SortedChunks;
 
 	CCamera m_Camera;
 	float m_CameraYaw;

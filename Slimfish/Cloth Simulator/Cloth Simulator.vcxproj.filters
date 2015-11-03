@@ -33,6 +33,15 @@
     <ClCompile Include="CollisionShape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="2DDrawer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Meshes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cloth.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClothSimulatorApp.h">
@@ -53,12 +62,23 @@
     <ClInclude Include="CollisionShape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="2DDrawer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Meshes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cloth.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="ClothPS.hlsl" />
     <FxCompile Include="ClothVS.hlsl" />
     <FxCompile Include="DepthOnly_PS.hlsl" />
     <FxCompile Include="DepthOnly_VS.hlsl" />
+    <FxCompile Include="QuadTex_VS.hlsl" />
+    <FxCompile Include="QuadTex_PS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LightingHelper.hlsli" />

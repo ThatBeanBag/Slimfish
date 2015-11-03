@@ -43,79 +43,82 @@ public:
 	*/
 	virtual ~CD3D10Renderer();
 
-	/* @copydoc ARenderer::VInitialize */
+	/** @copydoc ARenderer::VInitialize */
 	virtual bool VInitialize() override;
-	/* @copydoc ARenderer::VPreRender */
+	/** @copydoc ARenderer::VPreRender */
 	virtual void VPreRender() override;
-	/* @copydoc ARenderer::VPostRender */
+	/** @copydoc ARenderer::VPostRender */
 	virtual void VPostRender() override;
 
-	/* @copydoc ARenderer::VCreateVertexBuffer */
+	/** @copydoc ARenderer::VCreateVertexBuffer */
 	virtual shared_ptr<AVertexGpuBuffer> VCreateVertexBuffer(size_t numVertices, size_t stride, const void* pSource, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory) override;
-	/* @copydoc ARenderer::VCreateVertexBuffer */
+	/** @copydoc ARenderer::VCreateVertexBuffer */
 	virtual shared_ptr<AIndexGpuBuffer> VCreateIndexBuffer(size_t numIndices, AIndexGpuBuffer::EIndexType indexType, const void* pSource, EGpuBufferUsage usage, bool isOutput, bool isInSystemMemory) override;
 
-	/* @copydoc ARenderer::VCreateShaderProgram */
+	/** @copydoc ARenderer::VCreateShaderProgram */
 	virtual shared_ptr<AShaderProgram> VCreateShaderProgram(const std::string& name, EShaderProgramType type, const std::string& entry, const std::string& shaderModel);
 
-	/* @copydoc ARenderer::VLoadTexture */
+	/** @copydoc ARenderer::VLoadTexture */
 	virtual shared_ptr<ATexture> VLoadTexture(const std::string& name, ETextureType type, ETextureUsage usage) override;
 
-	/* @copydoc ARenderer::VCreateTexture */
+	/** @copydoc ARenderer::VCreateTexture */
 	virtual shared_ptr<ATexture> VCreateTexture(const std::string& name) override;
 
-	/* @copydoc ARenderer::VCreateRenderTexture */
+	/** @copydoc ARenderer::VCreateRenderTexture */
 	virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(const std::string& name, size_t width, size_t height, size_t depth, ETextureType textureType, size_t msaaCount, size_t msaaQuality) override;
 
-	/* @copydoc ARenderer::VCreateRenderTexture */
+	/** @copydoc ARenderer::VCreateRenderTexture */
 	virtual std::unique_ptr<ARenderTexture> VCreateRenderTexture(std::shared_ptr<ATexture> pTexture);
 
-	/* @copydoc ARenderer::VRender */
-	virtual void VRender(const CVertexDeclaration& vertexDeclaration,
-						 EPrimitiveType primitiveType, 
-						 shared_ptr<AVertexGpuBuffer> pVertexBuffer,
-						 shared_ptr<AIndexGpuBuffer> pIndexBuffer = nullptr);
+	/** @copydoc ARenderer::VRender */
+	virtual void VRender(const CVertexDeclaration& vertexDeclaration, EPrimitiveType primitiveType, shared_ptr<AVertexGpuBuffer> pVertexBuffer, shared_ptr<AIndexGpuBuffer> pIndexBuffer = nullptr, size_t countOverride = 0, size_t instances = 1);
 
-	/* @copydoc ARenderer::VSetShaderProgram */
+	/** @copydoc ARenderer::VSetShaderProgram */
 	virtual void VSetShaderProgram(shared_ptr<AShaderProgram> pShader);
-	/* @copydoc ARenderer::VDisableShaderProgram */
+	/** @copydoc ARenderer::VDisableShaderProgram */
 	virtual void VDisableShaderProgram(EShaderProgramType programType) override;
 
-	/* @copydoc ARenderer::VSetRenderTarget */
+	/** @copydoc ARenderer::VSetRenderTarget */
 	virtual void VSetRenderTargets(std::vector<ARenderTexture*> renderTargets) override;
 
-	/* @copydoc ARenderer::VSetStreamOutTargets */
+	/** @copydoc ARenderer::VSetStreamOutTargets */
 	virtual void VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpuBuffer> >& buffers) override;
 
-	/* @copydoc ARenderer::VSetStreamOutTarget */
+	/** @copydoc ARenderer::VSetStreamOutTarget */
 	virtual void VSetStreamOutTarget(const std::shared_ptr<AGpuBuffer>& pBuffer) override;
 
-	/* @copydoc ARenderer::VSetWorldTransform */
+	/** @copydoc ARenderer::VBeginStreamOutQuery */
+	virtual void VBeginStreamOutQuery() override;
+
+	/** @copydoc ARenderer::VEndStreamOutQuery */
+	virtual size_t VEndStreamOutQuery() override;
+
+	/** @copydoc ARenderer::VSetWorldTransform */
 	virtual void VSetWorldTransform(const CMatrix4x4& worldTransform) override;
-	/* @copydoc ARenderer::VSetViewTransform */
+	/** @copydoc ARenderer::VSetViewTransform */
 	virtual void VSetViewTransform(const CMatrix4x4& viewTransform) override;
-	/* @copydoc ARenderer::VSetProjectionTransform */
+	/** @copydoc ARenderer::VSetProjectionTransform */
 	virtual void VSetProjectionTransform(const CMatrix4x4& projectionTransform) override;
 
-	/* @copydoc ARenderer::VSetAmbientColour */
+	/** @copydoc ARenderer::VSetAmbientColour */
 	virtual void VSetAmbientColour(const CColour& colour) override;
-	/* @copydoc ARenderer::VSetBackgroundColour */
+	/** @copydoc ARenderer::VSetBackgroundColour */
 	virtual void VSetBackgroundColour(const CColourValue& colour) override;
 
-	/* @copydoc ARenderer::VSetFog */
+	/** @copydoc ARenderer::VSetFog */
 	virtual void VSetFog(EFogType fogType, const CColourValue& colour = CColourValue::s_BLACK, float start = 0.0f, float end = 1.0f, float exponentialDensity = 1.0f) override;
-	/* @copydoc ARenderer::VSetBlending */
+	/** @copydoc ARenderer::VSetBlending */
 	virtual void VSetBlendingMode(const TBlendingMode& blendingMode) override;
 
-	/* @copydoc ARenderer::VSetColourWritesEnabled */
+	/** @copydoc ARenderer::VSetColourWritesEnabled */
 	virtual void VSetColourWritesEnabled(const TColourWritesEnabled& colourWritesEnabled) override;
-	/* @copydoc ARenderer::VSetStencilBufferSettings */
+	/** @copydoc ARenderer::VSetStencilBufferSettings */
 	virtual void VSetStencilBufferSettings(const TStencilBufferSettings& settings) override;
-	/* @copydoc ARenderer::VSetDepthBufferSettings */
+	/** @copydoc ARenderer::VSetDepthBufferSettings */
 	virtual void VSetDepthBufferSettings(bool enabled, bool writeEnabled, EComparisonFunction compareFunction) override;
-	/* @copydoc ARenderer::VSetCullingMode */
+	/** @copydoc ARenderer::VSetCullingMode */
 	virtual void VSetCullingMode(ECullingMode cullingMode) override;
-	/* @copydoc ARenderer::VSetFillMode */
+	/** @copydoc ARenderer::VSetFillMode */
 	virtual void VSetFillMode(EFillMode fillMode) override;
 
 	virtual void VDrawText(const std::string text, const CPoint& position, const CColour& colour) override;
@@ -130,22 +133,22 @@ private:
 	*/
 	DXGI_SAMPLE_DESC DetermineMultiSampleLevels();
 
-	/* @copydoc ARenderer::VSetTextureLayerFiltering */
+	/** @copydoc ARenderer::VSetTextureLayerFiltering */
 	virtual void VSetTextureLayerFiltering(size_t layer, ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter);
-	/* @copydoc ARenderer::VSetTextureLayerFiltering */
+	/** @copydoc ARenderer::VSetTextureLayerFiltering */
 	virtual void VSetTexture(size_t layer, const shared_ptr<ATexture>& pTexture, bool disable = false) override;
-	/* @copydoc ARenderer::VSetTextureBlendState */
+	/** @copydoc ARenderer::VSetTextureBlendState */
 	virtual void VSetTextureLayerBlendState(size_t layer, const TTextureLayerBlendState& blendState) override;
-	/* @copydoc ARenderer::VSetTextureAddressModes */
+	/** @copydoc ARenderer::VSetTextureAddressModes */
 	virtual void VSetTextureAddressModes(size_t layer, const TTextureUVWAddressModes& addressModes) override;
-	/* @copydoc ARenderer::VSetTextureBorderColour */
+	/** @copydoc ARenderer::VSetTextureBorderColour */
 	virtual void VSetTextureBorderColour(size_t layer, const CColourValue& colour) override;
 
-	/* @copydoc ARenderer::VSetVertexDeclaration */
+	/** @copydoc ARenderer::VSetVertexDeclaration */
 	virtual void VSetVertexDeclaration(const CVertexDeclaration& vertexDeclaration) override;
-	/* @copydoc ARenderer::VSetVertexBuffer */
+	/** @copydoc ARenderer::VSetVertexBuffer */
 	virtual void VSetVertexBuffer(const shared_ptr<AVertexGpuBuffer>& pVertexBuffer) override;
-	/* @copydoc ARenderer::VSetIndexBuffer */
+	/** @copydoc ARenderer::VSetIndexBuffer */
 	virtual void VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBuffer) override;
 
 	/** Internal helper method for creating a sampler state for a texture layer.
@@ -159,14 +162,13 @@ private:
 	*/
 	std::vector<D3D10_INPUT_ELEMENT_DESC> GetD3DVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
 
-
-
 	// Member Variables
 public:
 protected:
 private:
 	ComPtr<ID3D10Device> m_pD3DDevice;
 	ComPtr<IDXGISwapChain> m_pSwapChain;
+	ComPtr<ID3D10Query> m_pQuery;
 	ComPtr<ID3D10RenderTargetView> m_pRenderTargetView;
 	ComPtr<ID3D10Texture2D> m_pDepthStencilBuffer;
 	ComPtr<ID3D10DepthStencilView> m_pDepthStencilView;
