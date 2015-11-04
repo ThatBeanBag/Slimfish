@@ -63,17 +63,19 @@ void main(point GSInput gIn[1], inout TriangleStream< GSOutput > outputStream)
 			indices.z = gTexture3DVertexID.Load(int4(edgePosition, 0)).x;
 
 			// Add the indices of this triangle to the stream.
-			GSOutput gOut;
-			gOut.index = indices.x;
-			outputStream.Append(gOut);
+			if (indices.x * indices.y * indices.z != 0) {
+				GSOutput gOut;
+				gOut.index = indices.x;
+				outputStream.Append(gOut);
 
-			gOut.index = indices.y;
-			outputStream.Append(gOut);
+				gOut.index = indices.y;
+				outputStream.Append(gOut);
 
-			gOut.index = indices.z;
-			outputStream.Append(gOut);
+				gOut.index = indices.z;
+				outputStream.Append(gOut);
 
-			outputStream.RestartStrip();
+				outputStream.RestartStrip();
+			}
 		}
 	}
 }

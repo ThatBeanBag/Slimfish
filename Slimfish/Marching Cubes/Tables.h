@@ -28,11 +28,18 @@ namespace Tables {
 	extern const int g_EDGE_AXIS[12][4];
 
 	extern const int g_TRI_TABLE[256][16];
+	extern const int g_TRI_TABLE2[5120];
 
 	template <typename T, std::size_t N, std::size_t M>
 	std::size_t GetSize(T(&)[N][M])
 	{
 		return N * M;
+	}
+
+	template <typename T, std::size_t N>
+	std::size_t GetSize(T(&)[N])
+	{
+		return N;
 	}
 }
 

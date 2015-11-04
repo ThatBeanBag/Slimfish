@@ -519,7 +519,7 @@ void CMarchingCubesLogic::Render()
 	m_pWVPParams->SetConstant("gViewProjectionMatrix", m_Camera.GetViewProjMatrix());
 	m_DrawChunkPass.GetVertexShader()->UpdateShaderParams("CBPerFrame", m_pWVPParams);
 
-	//BuildChunk(CVector3(0, 0, 0), 0, 0);
+	//BuildChunk(CVector3(1, -3, 0), 0, 0);
 	//g_pApp->GetRenderer()->SetRenderPass(&m_DrawChunkPass);
 	//g_pApp->GetRenderer()->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, m_ChunkVertexBuffers[0], m_ChunkIndexBuffers[0]);
 	//return;
@@ -535,16 +535,16 @@ void CMarchingCubesLogic::Render()
 		// Get the centre of the array of chunks for this lod that we are interested in.
 		// This is so that the centre of the chunks is in front of the camera and not behind
 		// where they wouldn't be seen.
-		auto chunkCentre = cameraPosition + (cameraDirection * static_cast<float>(chunkSize * s_NUM_CHUNKS_PER_DIM) * 0.5f);
+		auto chunkCentre = cameraPosition /*+ (cameraDirection * static_cast<float>(chunkSize * s_NUM_CHUNKS_PER_DIM) * 0.5f)*/;
 		CVector3 chunkCentreInt(
 			static_cast<float>(SmartDivision(RoundUp(chunkCentre.GetX()), chunkSize)),
 			static_cast<float>(SmartDivision(RoundUp(chunkCentre.GetY()), chunkSize)),
 			static_cast<float>(SmartDivision(RoundUp(chunkCentre.GetZ()), chunkSize))
 		);
 
-		int ib = /*SmartDivision(static_cast<int>(*/static_cast<int>(-s_NUM_CHUNKS_PER_DIM / 2.0f + chunkCentreInt.GetX())/*), s_NUM_CHUNKS_PER_DIM) * s_NUM_CHUNKS_PER_DIM*/;
-		int jb = /*SmartDivision(static_cast<int>(*/static_cast<int>(-s_NUM_CHUNKS_PER_DIM / 2.0f + chunkCentreInt.GetY())/*), s_NUM_CHUNKS_PER_DIM) * s_NUM_CHUNKS_PER_DIM*/;
-		int kb = /*SmartDivision(static_cast<int>(*/static_cast<int>(-s_NUM_CHUNKS_PER_DIM / 2.0f + chunkCentreInt.GetZ())/*), s_NUM_CHUNKS_PER_DIM) * s_NUM_CHUNKS_PER_DIM*/;
+		int ib = SmartDivision(static_cast<int>(-s_NUM_CHUNKS_PER_DIM / 2.0f + chunkCentreInt.GetX()), s_NUM_CHUNKS_PER_DIM) * s_NUM_CHUNKS_PER_DIM;
+		int jb = SmartDivision(static_cast<int>(-s_NUM_CHUNKS_PER_DIM / 2.0f + chunkCentreInt.GetY()), s_NUM_CHUNKS_PER_DIM) * s_NUM_CHUNKS_PER_DIM;
+		int kb = SmartDivision(static_cast<int>(-s_NUM_CHUNKS_PER_DIM / 2.0f + chunkCentreInt.GetZ()), s_NUM_CHUNKS_PER_DIM) * s_NUM_CHUNKS_PER_DIM;
 
 		// Loop through all the chunks in the 3D array for this lod.
 		for (int i = 0; i < s_NUM_CHUNKS_PER_DIM; ++i) {
@@ -660,7 +660,7 @@ void CMarchingCubesLogic::DrawChunks()
 			auto& pIndexBuffer = m_ChunkIndexBuffers[bufferID];
 
 			pRenderer->SetRenderPass(&m_DrawChunkPass);
-			pRenderer->VRender(m_ChunkVertexDeclaration, EPrimitiveType::POINTLIST, pVertexBuffer, nullptr, chunk->numCells/*, pIndexBuffer*/);
+			pRenderer->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, pVertexBuffer, pIndexBuffer);
 		}
 	}
 }

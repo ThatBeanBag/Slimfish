@@ -26,7 +26,7 @@ float Density(float3 wsCoord) {
 	float density = -wsCoord.y;
 	//density = wsCoord.z;
 
-	density += sin(wsCoord.x * 2.0f);
+	density += sin(wsCoord.x * 1.0f);
 
 	//density += gTexture3DNoise0.Sample(gSamplerTrilinearWrap, wsCoord * 2.0f).x * 10.0f;
 	//density += gTexture3DNoise1.Sample(gSamplerTrilinearWrap, wsCoord * 4.03).x * 0.25f;
