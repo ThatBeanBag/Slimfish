@@ -44,6 +44,14 @@ public:
 	void SetIsVisible(bool isVisible);
 	/** Get the isVisible. @author Hayden Asplet */
 	const bool GetIsVisible() const;
+	/** Set the stiffness. @author Hayden Asplet */
+	void SetStiffness(float stiffness);
+	/** Get the stiffness. @author Hayden Asplet */
+	const float GetStiffness() const;
+	/** Set the restingDistance. @author Hayden Asplet */
+	void SetRestingDistance(float restingDistance);
+	/** Get the restingDistance. @author Hayden Asplet */
+	const float GetRestingDistance() const;
 protected:
 private:
 	// Member Variables

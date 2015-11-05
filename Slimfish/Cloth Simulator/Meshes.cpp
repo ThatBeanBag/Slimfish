@@ -187,10 +187,10 @@ namespace Meshes {
 		float halfHeight = height / 2.0f;
 
 		std::vector<TVertex> groundVertices = {
-			{ CVector3(-halfWidth, 0.0f, -halfHeight), CVector3::s_UP, 0.0f, 0.0f, CColourValue::s_GREEN },
-			{ CVector3(-halfWidth, 0.0f, halfHeight), CVector3::s_UP, 0.0f, 1.0f, CColourValue::s_GREEN },
-			{ CVector3(halfWidth, 0.0f, -halfHeight), CVector3::s_UP, 1.0f, 0.0f, CColourValue::s_GREEN },
-			{ CVector3(halfWidth, 0.0f, halfHeight), CVector3::s_UP, 1.0f, 1.0f, CColourValue::s_GREEN }
+			{ CVector3(-halfWidth, 0.0f, -halfHeight), CVector3::s_UP, 0.0f, 0.0f, 0.0f, CColourValue::s_GREEN },
+			{ CVector3(-halfWidth, 0.0f, halfHeight), CVector3::s_UP, 0.0f, 1.0f, 0.0f, CColourValue::s_GREEN },
+			{ CVector3(halfWidth, 0.0f, -halfHeight), CVector3::s_UP, 1.0f, 0.0f, 0.0f, CColourValue::s_GREEN },
+			{ CVector3(halfWidth, 0.0f, halfHeight), CVector3::s_UP, 1.0f, 1.0f, 0.0f, CColourValue::s_GREEN }
 		};
 
 		pVertexBuffer = g_pApp->GetRenderer()->CreateVertexBuffer(groundVertices);
@@ -199,29 +199,29 @@ namespace Meshes {
 	void CreatePyramid(std::shared_ptr<AVertexGpuBuffer>& pVertexBuffer)
 	{
 		std::vector<TVertex> pyramidVertices = {
-			{ CVector3(0.0f, 0.5f, 0.0f), CVector3(-1.0f, 1.0f, 0.0f), 1.0f, 1.0f, CColourValue::s_GREEN }, // Left side.
-			{ CVector3(-0.5f, -0.5f, 0.5f), CVector3(-1.0f, 1.0f, 0.0f), 0.0f, 0.0f, CColourValue::s_GREEN }, // Left side.
-			{ CVector3(-0.5f, -0.5f, -0.5f), CVector3(-1.0f, 1.0f, 0.0f), 0.0f, 0.0f, CColourValue::s_GREEN }, // Left side.
-
-			{ CVector3(0.0f, 0.5f, 0.0f), CVector3(1.0f, 1.0f, 0.0f), 1.0f, 1.0f, CColourValue::s_GREEN }, // Right side.
-			{ CVector3(0.5f, -0.5f, -0.5f), CVector3(1.0f, 1.0f, 0.0f), 0.0f, 0.0f, CColourValue::s_GREEN }, // Right side.
-			{ CVector3(0.5f, -0.5f, 0.5f), CVector3(1.0f, 1.0f, 0.0f), 0.0f, 0.0f, CColourValue::s_GREEN }, // Right side.
-
-			{ CVector3(0.0f, 0.5f, 0.0f), CVector3(0.0f, 1.0f, 1.0f), 1.0f, 1.0f, CColourValue::s_GREEN }, // Front side.
-			{ CVector3(0.5f, -0.5f, 0.5f), CVector3(0.0f, 1.0f, 1.0f), 0.0f, 0.0f, CColourValue::s_GREEN }, // Front side.
-			{ CVector3(-0.5f, -0.5f, 0.5f), CVector3(0.0f, 1.0f, 1.0f), 0.0f, 0.0f, CColourValue::s_GREEN }, // Front side.
-
-			{ CVector3(0.0f, 0.5f, 0.0f), CVector3(0.0f, 1.0f, -1.0f), 1.0f, 1.0f, CColourValue::s_GREEN }, // Back side.
-			{ CVector3(-0.5f, -0.5f, -0.5f), CVector3(0.0f, 1.0f, -1.0f), 0.0f, 0.0f, CColourValue::s_GREEN }, // Back side.
-			{ CVector3(0.5f, -0.5f, -0.5f), CVector3(0.0f, 1.0f, -1.0f), 0.0f, 0.0f, CColourValue::s_GREEN }, // Back side.
-
-			{ CVector3(-0.5f, -0.5f, 0.5f), CVector3(0.0f, -1.0f, 0.0f), 1.0f, 1.0f, CColourValue::s_GREEN }, // Bottom.
-			{ CVector3(0.5f, -0.5f, 0.5f), CVector3(0.0f, -1.0f, 0.0f), 0.0f, 0.0f, CColourValue::s_GREEN }, // Bottom.
-			{ CVector3(-0.5f, -0.5f, -0.5f), CVector3(0.0f, -1.0f, 0.0f), 0.0f, 0.0f, CColourValue::s_GREEN }, // Bottom.
-
-			{ CVector3(-0.5f, -0.5f, -0.5f), CVector3(0.0f, -1.0f, 0.0f), 0.0f, 0.0f, CColourValue::s_GREEN }, // Bottom 2.
-			{ CVector3(0.5f, -0.5f, 0.5f), CVector3(0.0f, -1.0f, 0.0f), 0.0f, 0.0f, CColourValue::s_GREEN }, // Bottom 2.
-			{ CVector3(0.5f, -0.5f, -0.5f), CVector3(0.0f, -1.0f, 0.0f), 1.0f, 1.0f, CColourValue::s_GREEN }, // Bottom 2.
+			{ CVector3(0.0f, 0.5f, 0.0f), CVector3(-1.0f, 1.0f, 0.0f), 1.0f, 1.0f,		0.0f, CColourValue::s_GREEN }, // Left side.
+			{ CVector3(-0.5f, -0.5f, 0.5f), CVector3(-1.0f, 1.0f, 0.0f), 0.0f, 0.0f,	0.0f, CColourValue::s_GREEN }, // Left side.
+			{ CVector3(-0.5f, -0.5f, -0.5f), CVector3(-1.0f, 1.0f, 0.0f), 0.0f, 0.0f,	0.0f, CColourValue::s_GREEN }, // Left side.
+																			
+			{ CVector3(0.0f, 0.5f, 0.0f), CVector3(1.0f, 1.0f, 0.0f), 1.0f, 1.0f,		0.0f, CColourValue::s_GREEN }, // Right side.
+			{ CVector3(0.5f, -0.5f, -0.5f), CVector3(1.0f, 1.0f, 0.0f), 0.0f, 0.0f,		0.0f, CColourValue::s_GREEN }, // Right side.
+			{ CVector3(0.5f, -0.5f, 0.5f), CVector3(1.0f, 1.0f, 0.0f), 0.0f, 0.0f,		0.0f, CColourValue::s_GREEN }, // Right side.
+																				
+			{ CVector3(0.0f, 0.5f, 0.0f), CVector3(0.0f, 1.0f, 1.0f), 1.0f, 1.0f,		0.0f, CColourValue::s_GREEN }, // Front side.
+			{ CVector3(0.5f, -0.5f, 0.5f), CVector3(0.0f, 1.0f, 1.0f), 0.0f, 0.0f,		0.0f, CColourValue::s_GREEN }, // Front side.
+			{ CVector3(-0.5f, -0.5f, 0.5f), CVector3(0.0f, 1.0f, 1.0f), 0.0f, 0.0f,		0.0f, CColourValue::s_GREEN }, // Front side.
+																					
+			{ CVector3(0.0f, 0.5f, 0.0f), CVector3(0.0f, 1.0f, -1.0f), 1.0f, 1.0f,		0.0f, CColourValue::s_GREEN }, // Back side.
+			{ CVector3(-0.5f, -0.5f, -0.5f), CVector3(0.0f, 1.0f, -1.0f), 0.0f, 0.0f,	0.0f, CColourValue::s_GREEN }, // Back side.
+			{ CVector3(0.5f, -0.5f, -0.5f), CVector3(0.0f, 1.0f, -1.0f), 0.0f, 0.0f,	0.0f, CColourValue::s_GREEN }, // Back side.
+																					
+			{ CVector3(-0.5f, -0.5f, 0.5f), CVector3(0.0f, -1.0f, 0.0f), 1.0f, 1.0f,	0.0f, CColourValue::s_GREEN }, // Bottom.
+			{ CVector3(0.5f, -0.5f, 0.5f), CVector3(0.0f, -1.0f, 0.0f), 0.0f, 0.0f,		0.0f, CColourValue::s_GREEN }, // Bottom.
+			{ CVector3(-0.5f, -0.5f, -0.5f), CVector3(0.0f, -1.0f, 0.0f), 0.0f, 0.0f,	0.0f, CColourValue::s_GREEN }, // Bottom.
+																					
+			{ CVector3(-0.5f, -0.5f, -0.5f), CVector3(0.0f, -1.0f, 0.0f), 0.0f, 0.0f,	0.0f, CColourValue::s_GREEN }, // Bottom 2.
+			{ CVector3(0.5f, -0.5f, 0.5f), CVector3(0.0f, -1.0f, 0.0f), 0.0f, 0.0f,		0.0f, CColourValue::s_GREEN }, // Bottom 2.
+			{ CVector3(0.5f, -0.5f, -0.5f), CVector3(0.0f, -1.0f, 0.0f), 1.0f, 1.0f,	0.0f, CColourValue::s_GREEN }, // Bottom 2.
 		};
 
 		pVertexBuffer = g_pApp->GetRenderer()->CreateVertexBuffer(pyramidVertices);

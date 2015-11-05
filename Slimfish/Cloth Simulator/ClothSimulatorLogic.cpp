@@ -49,6 +49,7 @@ struct TVertex {
 	CVector3 normal;
 	float u;
 	float v;
+	float burntLevel;
 	CColourValue colour;
 };
 
@@ -73,7 +74,7 @@ CClothSimulatorLogic::CClothSimulatorLogic()
 	m_Cloth.SetNumPointMassesX(30);
 	m_Cloth.SetNumPointMassesY(30);
 	m_Cloth.SetNumHooks(4);
-	m_Cloth.SetHungFromHeight(34.0f);
+	m_Cloth.SetHungFromHeight(s_MAX_CLOTH_SIZE + 5.0f);
 	m_Cloth.SetLinkBreakingDistance(1000.0f);
 	m_Cloth.SetRestingDistance(1.0f);
 	m_Cloth.SetStiffness(0.9f);
@@ -97,6 +98,7 @@ bool CClothSimulatorLogic::Initialise()
 	m_VertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT3);
 	m_VertexDeclaration.AddElement("NORMAL", CInputElement::FORMAT_FLOAT3);
 	m_VertexDeclaration.AddElement("TEXCOORD", CInputElement::FORMAT_FLOAT2);
+	m_VertexDeclaration.AddElement("BURNT", CInputElement::FORMAT_FLOAT);
 	m_VertexDeclaration.AddElement("COLOR", CInputElement::FORMAT_FLOAT4);
 
 	// Create the meshes.
@@ -153,7 +155,7 @@ bool CClothSimulatorLogic::Initialise()
 	m_ClothRenderPass.AddTextureLayer("Textures/Cloth.jpg");
 
 	// Setup camera.
-	m_Camera.SetPosition(CVector3(0.0f, 6.0f, 20.0f));
+	m_Camera.SetPosition(CVector3(0.0f, 40.0f, 60.0f));
 	m_Camera.SetProjectionMode(EProjectionMode::PERSPECTIVE);
 	m_Camera.SetNearClipDistance(0.1f);
 	m_Camera.SetFarClipDistance(300.0f);
@@ -253,6 +255,7 @@ void CClothSimulatorLogic::Update(float deltaTime)
 		}
 	}
 
+	UpdateClothIndices();
 	UpdateClothVertices();
 }
 
@@ -404,6 +407,37 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 		}
 	}
 
+	if (input.IsKeyDown(EKeyCode::B)) {
+		CPoint deltaPosition = mousePosition - m_lastMousePosition;
+
+		CRay ray = m_Camera.ScreenPointToRay(mousePosition);
+		float distance = 10.0f;
+		CPointMass* pMass = nullptr;
+		auto x = 0;
+		auto y = 0;
+
+		for (int i = 0; i < m_Cloth.GetNumPointMassesX(); ++i) {
+			for (int j = 0; j < m_Cloth.GetNumPointMassesY(); ++j) {
+				auto pPointMass = m_Cloth.GetPointMass(i, j);
+				float currentDistance = ray.GetDistanceToPointSquared(pPointMass->GetPosition());
+				if (currentDistance < distance) {
+					pMass = pPointMass;
+					distance = currentDistance;
+					x = i;
+					y = j;
+				}
+			}
+		}
+
+		if (pMass) {
+			if (pMass->IsPinned()) {
+				pMass->DetachPin();
+			}
+
+			m_Cloth.BurnCloth(x, y);
+		}
+	}
+
 	/*if (input.IsMouseButtonDown(EMouseButton::LEFT)) {
 		CPoint deltaPosition = mousePosition - m_lastMousePosition;
 
@@ -551,6 +585,7 @@ void CClothSimulatorLogic::UpdateClothVertices()
 			vert.position = pointMasses[(y * numPointMassesX) + x]->GetPosition();
 			vert.u = x / static_cast<float>(numPointMassesX);
 			vert.v = y / static_cast<float>(numPointMassesY);
+			vert.burntLevel = pointMasses[(y * numPointMassesX) + x]->GetBurntLevel();
 
 			pVertices[x + (y * numPointMassesX)] = vert;
 		}

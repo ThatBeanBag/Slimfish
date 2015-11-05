@@ -143,6 +143,27 @@ const bool CPointMass::IsPinned() const
 	return m_IsPinned;
 }
 
+void CPointMass::AddToBurntLevel(float burntLevel)
+{
+	m_BurntLevel += burntLevel;
+	for (auto link : m_Links) {
+		link.SetRestingDistance(link.GetRestingDistance() + (burntLevel * 5.0f));
+	}
+	if (m_BurntLevel >= 1.0f) {
+		ClearLinks();
+	}
+}
+
+void CPointMass::SetBurntLevel(float burntLevel)
+{
+	m_BurntLevel = burntLevel;
+}
+
+const float CPointMass::GetBurntLevel() const
+{
+	return m_BurntLevel;
+}
+
 Slim::CVector3 CPointMass::GetVelocity() const
 {
 	return m_Position - m_LastPosition;

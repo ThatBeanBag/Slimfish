@@ -57,6 +57,12 @@ public:
 	const float GetMass() const;
 	/** Get the isPinned. @author Hayden Asplet */
 	const bool IsPinned() const;
+	/** Add to burnt level.  @author Hayden Asplet */
+	void AddToBurntLevel(float burntLevel);
+	/** Set the burnt level. @author Hayden Asplet */
+	void SetBurntLevel(float burntLevel);
+	/** Get the burnt level. @author Hayden Asplet */
+	const float GetBurntLevel() const;
 
 	CVector3 GetVelocity() const;
 
@@ -66,6 +72,7 @@ public:
 
 	const std::vector<CLink>& GetLinks() const;
 	const std::vector<CLink>& GetBrokenLinks() const;
+
 protected:
 private:
 	// Member Variables
@@ -80,7 +87,7 @@ private:
 
 	float m_Mass;
 	float m_Damping;
-
+	float m_BurntLevel;
 	CVector3 m_PinPosition;
 	bool m_IsPinned;
 };

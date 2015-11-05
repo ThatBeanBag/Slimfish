@@ -152,7 +152,6 @@ bool CMarchingCubesLogic::Initialise()
 	m_NonEmptyCellListVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_UINT);
 
 	m_VertexListVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_UINT);
-//	m_SplatInputVertexDeclaration.AddElement("SV_VertexID", CInputElement::FORMAT_UINT);
 
 	m_ChunkVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT4);
 	m_ChunkVertexDeclaration.AddElement("NORMAL", CInputElement::FORMAT_FLOAT3);
@@ -519,10 +518,10 @@ void CMarchingCubesLogic::Render()
 	m_pWVPParams->SetConstant("gViewProjectionMatrix", m_Camera.GetViewProjMatrix());
 	m_DrawChunkPass.GetVertexShader()->UpdateShaderParams("CBPerFrame", m_pWVPParams);
 
-	//BuildChunk(CVector3(1, -3, 0), 0, 0);
-	//g_pApp->GetRenderer()->SetRenderPass(&m_DrawChunkPass);
-	//g_pApp->GetRenderer()->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, m_ChunkVertexBuffers[0], m_ChunkIndexBuffers[0]);
-	//return;
+	BuildChunk(CVector3(1, -3, 0), 0, 0);
+	g_pApp->GetRenderer()->SetRenderPass(&m_DrawChunkPass);
+	g_pApp->GetRenderer()->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, m_ChunkVertexBuffers[0], m_ChunkIndexBuffers[0]);
+	return;
 
 	const auto& cameraPosition = m_Camera.GetPosition();
 	auto cameraDirection = m_Camera.GetRotation().ToRotationMatrix().GetDirection();
@@ -707,7 +706,7 @@ size_t CMarchingCubesLogic::BuildChunk(const CVector3& chunkPosition, size_t lod
 
 	// Splat vertex IDs.
 	pRenderer->SetRenderPass(&m_SplatVertexIDsPass);
-	pRenderer->VRender(m_VertexListVertexDeclaration, EPrimitiveType::POINTLIST, m_pVertexListVertices, nullptr, numCells);
+	pRenderer->VRender(m_VertexListVertexDeclaration, EPrimitiveType::POINTLIST, m_pVertexListVertices, nullptr, numCells - 1);
 
 	// Generate vertices
 	pRenderer->SetRenderPass(&m_GenerateVerticesPass);

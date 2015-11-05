@@ -20,6 +20,7 @@ struct VSOutput {
 	float3 normal : NORMAL;
 	float2 texCoord : TEXCOORD1;
 	float4 lightViewProjPosition : TEXCOORD2;
+	float burntLevel : TEXCOORD3;
 	float4 colour : COLOR;
 };
 
@@ -31,6 +32,9 @@ float4 main(VSOutput pIn) : SV_TARGET
 
 	float4 diffuse = gTextureDiffuse.Sample(gSampleDiffuse, pIn.texCoord);
 	float4 specular = float4(0.2f, 0.2f, 0.2f, 1.0f);
+	float4 burntColour = float4(0.1f, 0.1f, 0.1f, 1.0f);
+
+	diffuse = lerp(diffuse, burntColour, saturate(pIn.burntLevel));
 
 	Material material = { diffuse, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 20.0f };
 

@@ -30,6 +30,7 @@ namespace Meshes {
 		CVector3 normal;
 		float u;
 		float v;
+		float burntLevel;
 		CColourValue colour;
 	};
 

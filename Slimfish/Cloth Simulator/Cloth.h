@@ -50,7 +50,13 @@ public:
 	 	@author Hayden Asplet
 	*/
 	void PinCloth();
+
+	/** Unpin the cloth from the hooks.
+	 	@author Hayden Asplet
+	*/
 	void UnPin();
+
+	void BurnCloth(size_t x, size_t y);
 
 	CPointMass* GetPointMass(size_t x, size_t y);
 
@@ -94,6 +100,8 @@ public:
 	const std::vector<std::unique_ptr<CPointMass> >& GetPointMasses() const;
 protected:
 private:
+	void UpdateBurning(float deltaTime);
+
 	// Member Variables
 public:
 protected:
@@ -110,6 +118,13 @@ private:
 	float m_HungFromHeight;
 	float m_RestingDistance;
 	float m_Stiffness;
+
+	// Burning.
+	bool m_IsBurning;
+	float m_BurningTimer;
+	float m_BurningRate = { 0.1f };
+	float m_PropagateBurningThreshold = { 0.2f };
+	std::vector<CPoint> m_BurningPoints;
 };
 
 #endif	// __CLOTH_H__

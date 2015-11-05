@@ -9,6 +9,7 @@ struct VSInput {
 	float3 position : POSITION;
 	float3 normal : NORMAL;
 	float2 texCoord : TEXCOORD;
+	float burntLevel : BURNT;
 	float4 colour : COLOR;
 };
 
@@ -18,6 +19,7 @@ struct VSOutput {
 	float3 normal : NORMAL;
 	float2 texCoord : TEXCOORD1;
 	float4 lightViewProjPosition : TEXCOORD2;
+	float burntLevel : TEXCOORD3;
 	float4 colour : COLOR;
 };
 
@@ -31,6 +33,7 @@ VSOutput main( VSInput vIn )
 	vOut.lightViewProjPosition = mul(float4(vIn.position, 1.0f), gLightViewProjMatrix);
 	vOut.colour = vIn.colour;
 	vOut.texCoord = vIn.texCoord;
+	vOut.burntLevel = vIn.burntLevel;
 
 	return vOut;
 }

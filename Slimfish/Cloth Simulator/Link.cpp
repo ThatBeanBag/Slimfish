@@ -99,3 +99,23 @@ const bool CLink::GetIsVisible() const
 {
 	return m_bIsVisible;
 }
+
+void CLink::SetStiffness(float stiffness)
+{
+	m_Stiffness = stiffness;
+}
+
+const float CLink::GetStiffness() const
+{
+	return m_Stiffness;
+}
+
+void CLink::SetRestingDistance(float restingDistance)
+{
+	m_RestingDistance = restingDistance;
+}
+
+const float CLink::GetRestingDistance() const
+{
+	return m_RestingDistance;
+}
