@@ -58,7 +58,7 @@ class CMarchingCubesLogic : public CGameLogic {
 		float distanceFromCameraSqr;
 		bool hasPolys;
 		int lod;
-		size_t numCells;
+		size_t numIndices;
 	};
 
 	// Member Functions
@@ -169,6 +169,8 @@ private:
 	CPoint m_LastMousePosition;
 
 	CLight m_Light;
+
+	bool m_bRenderPoints;
 };
 
 #endif // __MARCHINGCUBESLOGIC_H__

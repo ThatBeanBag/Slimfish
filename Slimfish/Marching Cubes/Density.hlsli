@@ -23,7 +23,8 @@ float Density(float3 wsCoord) {
 	//float density = 1.0f - (length(wsCoord) / maxDistance);
 
 	// The density value of this world-space coordinate to calculate.
-	float density = -wsCoord.y;
+	float density = (-wsCoord.x + -wsCoord.y) / 2.0f;
+	density = -wsCoord.y;
 	//density = wsCoord.z;
 
 	density += sin(wsCoord.x * 1.0f);

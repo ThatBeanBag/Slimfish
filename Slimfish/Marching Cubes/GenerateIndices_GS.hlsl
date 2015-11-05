@@ -30,7 +30,7 @@ int GetTriTableValue(uint i, uint j)
 }
 
 
-[maxvertexcount(15)]
+[maxvertexcount(18)]
 void main(point GSInput gIn[1], inout TriangleStream< GSOutput > outputStream)
 {
 	uint cubeCase = gIn[0].z8_y8_x8_case8 & 0xff;

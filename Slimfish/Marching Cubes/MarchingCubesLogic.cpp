@@ -237,7 +237,7 @@ bool CMarchingCubesLogic::Initialise()
 	m_DrawChunkPass.GetPixelShader()->UpdateShaderParams("CBLighting", m_pLightingParams);
 
 	// Setup camera.
-	m_Camera.SetPosition(CVector3(0.0f, 2.0f, 2.0f));
+	m_Camera.SetPosition(CVector3(0.0f, 1.0f, 1.0f));
 	m_Camera.SetPerspective(Math::DegreesToRadians(60.0f), 1.0f, 0.1f, 100.0f);
 
 	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
@@ -518,10 +518,15 @@ void CMarchingCubesLogic::Render()
 	m_pWVPParams->SetConstant("gViewProjectionMatrix", m_Camera.GetViewProjMatrix());
 	m_DrawChunkPass.GetVertexShader()->UpdateShaderParams("CBPerFrame", m_pWVPParams);
 
-	BuildChunk(CVector3(1, -3, 0), 0, 0);
+	/*auto numIndices = BuildChunk(CVector3(-1, -1, 0), 0, 0);
 	g_pApp->GetRenderer()->SetRenderPass(&m_DrawChunkPass);
-	g_pApp->GetRenderer()->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, m_ChunkVertexBuffers[0], m_ChunkIndexBuffers[0]);
-	return;
+	if (m_bRenderPoints) {
+		g_pApp->GetRenderer()->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, m_ChunkVertexBuffers[0], m_ChunkIndexBuffers[0], numIndices);
+	}
+	else {
+		g_pApp->GetRenderer()->VRender(m_ChunkVertexDeclaration, EPrimitiveType::POINTLIST, m_ChunkVertexBuffers[0], m_ChunkIndexBuffers[0], numIndices);
+	}
+	return;*/
 
 	const auto& cameraPosition = m_Camera.GetPosition();
 	auto cameraDirection = m_Camera.GetRotation().ToRotationMatrix().GetDirection();
@@ -536,21 +541,26 @@ void CMarchingCubesLogic::Render()
 		// where they wouldn't be seen.
 		auto chunkCentre = cameraPosition /*+ (cameraDirection * static_cast<float>(chunkSize * s_NUM_CHUNKS_PER_DIM) * 0.5f)*/;
 		CVector3 chunkCentreInt(
-			static_cast<float>(SmartDivision(RoundUp(chunkCentre.GetX()), chunkSize)),
-			static_cast<float>(SmartDivision(RoundUp(chunkCentre.GetY()), chunkSize)),
-			static_cast<float>(SmartDivision(RoundUp(chunkCentre.GetZ()), chunkSize))
+			std::floorf(chunkCentre.GetX()),
+			std::floorf(chunkCentre.GetY()),
+			std::floorf(chunkCentre.GetZ())
 		);
 
 		int ib = SmartDivision(static_cast<int>(-s_NUM_CHUNKS_PER_DIM / 2.0f + chunkCentreInt.GetX()), s_NUM_CHUNKS_PER_DIM) * s_NUM_CHUNKS_PER_DIM;
 		int jb = SmartDivision(static_cast<int>(-s_NUM_CHUNKS_PER_DIM / 2.0f + chunkCentreInt.GetY()), s_NUM_CHUNKS_PER_DIM) * s_NUM_CHUNKS_PER_DIM;
 		int kb = SmartDivision(static_cast<int>(-s_NUM_CHUNKS_PER_DIM / 2.0f + chunkCentreInt.GetZ()), s_NUM_CHUNKS_PER_DIM) * s_NUM_CHUNKS_PER_DIM;
 
+		auto chunksCentreLocal = std::floorf(s_NUM_CHUNKS_PER_DIM / 2.0f * chunkSize);
+
 		// Loop through all the chunks in the 3D array for this lod.
 		for (int i = 0; i < s_NUM_CHUNKS_PER_DIM; ++i) {
 			for (int j = 0; j < s_NUM_CHUNKS_PER_DIM; ++j) {
 				for (int k = 0; k < s_NUM_CHUNKS_PER_DIM; ++k) {
 
-					CVector3 chunkPosition = GetChunkPosition(i, j, k, chunkCentreInt, chunkSize, ib, jb, kb);
+					CVector3 chunkPosition(i * chunkSize, j * chunkSize, k * chunkSize);
+					chunkPosition += chunkCentreInt - chunksCentreLocal;
+
+					//CVector3 chunkPosition = GetChunkPosition(i, j, k, chunkCentreInt, chunkSize, ib, jb, kb);
 
 					CVector3 chunkPositionMin = chunkPosition - s_NUM_CHUNKS_PER_DIM * 0.5f;
 					CVector3 chunkPositionCentre = chunkPosition + s_NUM_CHUNKS_PER_DIM * 0.5f;
@@ -633,8 +643,8 @@ void CMarchingCubesLogic::Render()
 		}
 
 		pChunkInfo->bufferID = bufferID;
-		pChunkInfo->numCells = BuildChunk(pChunkInfo->position, pChunkInfo->lod, bufferID);
-		if (pChunkInfo->numCells == 0) {
+		pChunkInfo->numIndices = BuildChunk(pChunkInfo->position, pChunkInfo->lod, bufferID);
+		if (pChunkInfo->numIndices == 0) {
 			pChunkInfo->hasPolys = false;
 			ClearChunk(*pChunkInfo);
 			numWorkThisFrame += s_WORK_FOR_EMPTY_CHUNK;
@@ -659,7 +669,12 @@ void CMarchingCubesLogic::DrawChunks()
 			auto& pIndexBuffer = m_ChunkIndexBuffers[bufferID];
 
 			pRenderer->SetRenderPass(&m_DrawChunkPass);
-			pRenderer->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, pVertexBuffer, pIndexBuffer);
+			if (m_bRenderPoints) {
+				pRenderer->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, pVertexBuffer, pIndexBuffer, chunk->numIndices);
+			}
+			else {
+				pRenderer->VRender(m_ChunkVertexDeclaration, EPrimitiveType::POINTLIST, pVertexBuffer, pIndexBuffer, chunk->numIndices);
+			}
 		}
 	}
 }
@@ -701,22 +716,26 @@ size_t CMarchingCubesLogic::BuildChunk(const CVector3& chunkPosition, size_t lod
 	}
 
 	// List vertices.
+	pRenderer->VBeginStreamOutQuery();
 	pRenderer->SetRenderPass(&m_ListVerticesPass);
 	pRenderer->VRender(m_NonEmptyCellListVertexDeclaration, EPrimitiveType::POINTLIST, m_pNonEmptyCellListVertices, nullptr, numCells);
+	auto numVerts = pRenderer->VEndStreamOutQuery();
 
 	// Splat vertex IDs.
 	pRenderer->SetRenderPass(&m_SplatVertexIDsPass);
-	pRenderer->VRender(m_VertexListVertexDeclaration, EPrimitiveType::POINTLIST, m_pVertexListVertices, nullptr, numCells - 1);
+	pRenderer->VRender(m_VertexListVertexDeclaration, EPrimitiveType::POINTLIST, m_pVertexListVertices, nullptr, numVerts);
 
 	// Generate vertices
 	pRenderer->SetRenderPass(&m_GenerateVerticesPass);
-	pRenderer->VRender(m_VertexListVertexDeclaration, EPrimitiveType::POINTLIST, m_pVertexListVertices, nullptr, numCells);
+	pRenderer->VRender(m_VertexListVertexDeclaration, EPrimitiveType::POINTLIST, m_pVertexListVertices, nullptr, numVerts);
 
 	// Generate indices.
+	pRenderer->VBeginStreamOutQuery();
 	pRenderer->SetRenderPass(&m_GenerateIndicesPass);
 	pRenderer->VRender(m_NonEmptyCellListVertexDeclaration, EPrimitiveType::POINTLIST, m_pNonEmptyCellListVertices, nullptr, numCells);
+	auto numIndices = pRenderer->VEndStreamOutQuery() * 3;
 
-	return numCells;
+	return numIndices;
 }
 
 void CMarchingCubesLogic::BuildDensities()
@@ -761,6 +780,10 @@ void CMarchingCubesLogic::HandleInput(const CInput& input, float deltaTime)
 		else {
 			m_DrawChunkPass.SetFillMode(EFillMode::SOLID);
 		}
+	}
+
+	if (input.GetKeyPress(EKeyCode::NUM_2)) {
+		m_bRenderPoints = !m_bRenderPoints;
 	}
 
 	m_LastMousePosition = mousePosition;
