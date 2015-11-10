@@ -46,6 +46,9 @@ namespace D3D10Conversions {
 	UINT GetCPUAccessFlags(ETextureUsage usage);
 	D3D10_MAP GetLockType(EGpuBufferLockType lockType);
 
+	DXGI_FORMAT GetPixelFormat(ETexturePixelFormat format);
+	ETexturePixelFormat GetPixelFormat(DXGI_FORMAT format);
+
 	DXGI_FORMAT GetFormat(CInputElement::EFormat inputElementFormat);
 	DXGI_FORMAT GetFormat(AIndexGpuBuffer::EIndexType indexType);
 

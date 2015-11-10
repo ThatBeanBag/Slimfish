@@ -79,6 +79,8 @@
     <FxCompile Include="DepthOnly_VS.hlsl" />
     <FxCompile Include="QuadTex_VS.hlsl" />
     <FxCompile Include="QuadTex_PS.hlsl" />
+    <FxCompile Include="SkyBox_PS.hlsl" />
+    <FxCompile Include="SkyBox_VS.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LightingHelper.hlsli" />

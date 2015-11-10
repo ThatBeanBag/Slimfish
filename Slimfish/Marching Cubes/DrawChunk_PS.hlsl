@@ -18,8 +18,8 @@ float4 main(PSInput pIn) : SV_TARGET
 	float distanceToEye = length(toEye);
 	toEye /= distanceToEye;
 
-	float4 diffuse = float4(1.0f, 0.0f, 0.0f, 1.0f);
-	float4 specular = float4(0.4f, 0.4f, 0.4f, 1.0f);
+	float4 diffuse = float4(0.5f, 0.5f, 0.0f, 1.0f);
+	float4 specular = float4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	Material material = { diffuse, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 10.0f };
 
@@ -37,6 +37,8 @@ float4 main(PSInput pIn) : SV_TARGET
 	}
 
 	lightColour += diffuse.xyz * gAmbientLight.xyz;
+
+
 
 	return float4(lightColour, 1.0f);
 }

@@ -119,3 +119,13 @@ const float CLink::GetRestingDistance() const
 {
 	return m_RestingDistance;
 }
+
+void CLink::SetTearDistance(float tearDistance)
+{
+	m_TearDistance = tearDistance;
+}
+
+const float CLink::GetTearDistance() const
+{
+	return m_TearDistance;
+}

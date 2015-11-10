@@ -1,7 +1,7 @@
 #include "Chunk.hlsli"
 
 struct VSInput {
-	uint z8_y8_x8_null4_edgeNum4: POSITION;
+	uint z8_y8_x8_null4_edgeNum4: TEX;
 };
 
 struct VSOutput {
@@ -13,11 +13,8 @@ Texture3D gTexture3DDensity;
 SamplerState gSamplerPoint;
 
 cbuffer CBTables {
-	//uint gCaseToNumPolys[256];
 	float4 gEdgeStart[12];
-	float4 gEdgeDirection[12];
 	float4 gEdgeEnd[12];
-	int4 gEdgeAxis[12];
 };
 
 VSOutput PlaceVertexOnEdge(float3 wPosition, float3 uvw, int edgeNum)
@@ -27,12 +24,13 @@ VSOutput PlaceVertexOnEdge(float3 wPosition, float3 uvw, int edgeNum)
 	// Get the density values at the ends of the edge.
 	float density0 = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + gInvVoxelDimPlusMarginsMinusOne * gEdgeStart[edgeNum].xyz, 0);
 	float density1 = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + gInvVoxelDimPlusMarginsMinusOne * gEdgeEnd[edgeNum].xyz, 0);
-	// interpolate between the the densities to find the point at which the density is 0.
-	float t = density0 / (density0 - density1);
+	// Interpolate between the the densities to find the point at which the density is 0 on the edge.
+	float t = saturate(density0 / (density0 - density1));
 
-	float3 position = gEdgeStart[edgeNum].xyz + t * gEdgeDirection[edgeNum].xyz;
+	//float3 position = gEdgeStart[edgeNum].xyz + t * gEdgeDirection[edgeNum].xyz;
+	float3 position = lerp(gEdgeStart[edgeNum].xyz, gEdgeEnd[edgeNum], t);
 	vOut.wPositionAmbOcc = float4(wPosition + position * gWVoxelSize, 1.0f);
-	uvw = uvw + position * gInvVoxelDimPlusMarginsMinusOne;
+	uvw += position * gInvVoxelDimPlusMarginsMinusOne;
 
 	// TODO: Generate ambient occlusion.
 
@@ -58,12 +56,12 @@ VSOutput main(VSInput vIn)
 	unpackedPosition.z = (vIn.z8_y8_x8_null4_edgeNum4 >> 24) & 0xff;
 
 	float3 chunkWritePosition = (float3)unpackedPosition * gInvVoxelDimMinusOne;
-	float3 chunkReadPosition = (gMargin + gVoxelDimMinusOne * chunkWritePosition) * gInvVoxelDimPlusMarginsMinusOne;
+	float3 chunkReadPosition = (gMargin + unpackedPosition) * gInvVoxelDimPlusMarginsMinusOne;
 
 	float3 wPosition = gWChunkPosition + chunkWritePosition * gWChunkSize;
 
-	float3 uvw = chunkReadPosition + gInvVoxelDimPlusMarginsMinusOne;
-	uvw *= (gVoxelDimPlusMargins - 1) * gInvVoxelDimPlusMargins;
+	float3 uvw = chunkReadPosition /*+ gInvVoxelDimPlusMarginsMinusOne * 0.25f*/;
+	//uvw *= (gVoxelDimPlusMargins - 1) * gInvVoxelDimPlusMargins;
 
 	// Unpack the edge number.
 	int edgeNum = vIn.z8_y8_x8_null4_edgeNum4 & 0x0f;

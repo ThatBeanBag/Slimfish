@@ -47,6 +47,7 @@ namespace Meshes {
 				vertex.u = static_cast<float>(seg) / static_cast<float>(segments);
 				vertex.v = static_cast<float>(ring) / static_cast<float>(rings);
 				vertex.normal = CVector3::Normalise(r0 * vertex.position);
+				vertex.burntLevel = 0.0f;
 
 				vertices.push_back(vertex);
 			}
@@ -99,6 +100,7 @@ namespace Meshes {
 				vertex.normal = CVector3::Normalise(CVector3(x0, y0, z0));
 				vertex.u = seg / static_cast<float>(segments);
 				vertex.v = ring / static_cast<float>(rings) * sphereRatio;
+				vertex.burntLevel = 0.0f;
 
 				vertices.push_back(vertex);
 
@@ -129,6 +131,7 @@ namespace Meshes {
 				vertex.normal = CVector3::Normalise(CVector3(x0, 0, z0));
 				vertex.u = i / static_cast<float>(verticalSegments);
 				vertex.v = j / static_cast<float>(segments) * cylinderRatio + sphereRatio;
+				vertex.burntLevel = 0.0f;
 
 				vertices.push_back(vertex);
 
@@ -160,6 +163,7 @@ namespace Meshes {
 				vertex.normal = CVector3::Normalise(CVector3(x0, y0, z0));
 				vertex.u = seg / static_cast<float>(segments);
 				vertex.v = ring / static_cast<float>(rings) * sphereRatio + cylinderRatio + sphereRatio;
+				vertex.burntLevel = 0.0f;
 
 				vertices.push_back(vertex);
 

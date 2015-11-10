@@ -2,7 +2,7 @@
 #include "Chunk.hlsli"
 
 struct VSInput {
-	uint z8_y8_x8_null4_edgeNum4: POSITION;
+	uint z8_y8_x8_null4_edgeNum4: TEX;
 	uint nVertexID : SV_VertexID;
 };
 

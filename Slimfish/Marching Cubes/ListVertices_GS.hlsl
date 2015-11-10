@@ -1,11 +1,11 @@
 
 struct GSInput {
-	uint z8_y8_x8_null5_edgeFlags3 : POSITION;
+	uint z8_y8_x8_null5_edgeFlags3 : TEX;
 };
 
 struct GSOutput
 {
-	uint z8_y8_x8_null4_edgeNum4 : POSITION;
+	uint z8_y8_x8_null4_edgeNum4 : TEX;
 };
 
 
@@ -20,15 +20,18 @@ void main(point GSInput input[1], inout PointStream< GSOutput > outputStream)
 	if (input[0].z8_y8_x8_null5_edgeFlags3 & 1) {
 		gOut.z8_y8_x8_null4_edgeNum4 = z8_y8_x8_null8 | 3;
 		outputStream.Append(gOut);
+		outputStream.RestartStrip();
 	}
 
 	if (input[0].z8_y8_x8_null5_edgeFlags3 & 2) {
 		gOut.z8_y8_x8_null4_edgeNum4 = z8_y8_x8_null8 | 0;
 		outputStream.Append(gOut);
+		outputStream.RestartStrip();
 	}
 	
 	if (input[0].z8_y8_x8_null5_edgeFlags3 & 4) {
 		gOut.z8_y8_x8_null4_edgeNum4 = z8_y8_x8_null8 | 8;
 		outputStream.Append(gOut);
+		outputStream.RestartStrip();
 	}
 }

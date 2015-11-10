@@ -220,7 +220,10 @@ public:
 	*/
 	virtual void VLoad() = 0;
 
-	virtual void VLoadRaw() = 0;
+	template<typename T>
+	void LoadRaw(const std::vector<T>& data);
+
+	virtual void VLoadRaw(const void* pData, size_t stride) = 0;
 
 	/** Unload the texture.
 	 	@author Hayden Asplet
@@ -241,7 +244,7 @@ public:
 		@note only useful prior to loading.
 	 	@author Hayden Asplet
 	*/
-	void SetType(ETextureType textureType);
+	void SetTextureType(ETextureType textureType);
 
 	/** Get the texture type e.g. 1D, 2D, 3D or cubic.
 	 	@author Hayden Asplet
@@ -397,6 +400,12 @@ private:
 	size_t m_MSAACount;		// Number of multi-sample levels when using render targets.
 	size_t m_MSAAQuality;	// Quality of multi-sample levels when using render targets.
 };
+
+template<typename T>
+void Slim::ATexture::LoadRaw(const std::vector<T>& data)
+{
+	VLoadRaw(reinterpret_cast<const void*>(&data[0]), sizeof(T));
+}
 
 }
 

@@ -57,6 +57,7 @@
     <ClCompile Include="..\Logging\SlimExceptions.cpp" />
     <ClCompile Include="..\Logging\SlimLog.cpp" />
     <ClCompile Include="..\Logging\SlimLogger.cpp" />
+    <ClCompile Include="..\Math\SlimAxisAlignedBoundingBox.cpp" />
     <ClCompile Include="..\Math\SlimMath.cpp" />
     <ClCompile Include="..\Math\SlimMatrix4x4.cpp" />
     <ClCompile Include="..\Math\SlimPlane.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="..\Logging\SlimExceptions.h" />
     <ClInclude Include="..\Logging\SlimLog.h" />
     <ClInclude Include="..\Logging\SlimLogger.h" />
+    <ClInclude Include="..\Math\SlimAxisAlignedBoundingBox.h" />
     <ClInclude Include="..\Math\SlimMath.h" />
     <ClInclude Include="..\Math\SlimMatrix4x4.h" />
     <ClInclude Include="..\Math\SlimPlane.h" />

@@ -5,13 +5,8 @@ struct GSInput {
 };
 
 struct GSOutput {
-	float4 position : SV_POSITION;
-	float4 wPosition : TEXCOORD;
-	float4 colour : COLOR;
-};
-
-cbuffer CBPerFrame {
-	float4x4 gWorldViewProjectionMatrix;
+	float4 position : POSITION;
+	float3 normal : NORMAL;
 };
 
 cbuffer CBTriTable {
@@ -52,37 +47,51 @@ int GetTriTableValue(int i, int j)
 	return gTriTable[index/4][index%4];
 }
 
-[maxvertexcount(18)]
-void main(point GSInput input[1], inout PointStream<GSOutput> triStream)
+float3 GetNormal(float3 uvw)
 {
-	GSOutput output;
-	output.position = mul(float4(input[0].position.xyz, 1.0f), gWorldViewProjectionMatrix);
-	output.wPosition = input[0].position;
-	output.colour = float4(GetTriTableValue(0, 0), gVoxelDim, gWChunkPosition.x, 1.0f);
-	triStream.Append(output);
-	triStream.RestartStrip();
+	float2 invVoxelDimAndZero = float2(gInvVoxelDim, 0.0f);
 
-	/*float isoLevel = 0.5f;
+	float3 gradient;
+	gradient.x = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + invVoxelDimAndZero.xyy, 0) -
+				 gTexture3DDensity.SampleLevel(gSamplerPoint, uvw - invVoxelDimAndZero.xyy, 0);
+	gradient.y = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + invVoxelDimAndZero.yxy, 0) -
+				 gTexture3DDensity.SampleLevel(gSamplerPoint, uvw - invVoxelDimAndZero.yxy, 0);
+	gradient.z = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + invVoxelDimAndZero.yyx, 0) -
+				 gTexture3DDensity.SampleLevel(gSamplerPoint, uvw - invVoxelDimAndZero.yyx, 0);
+	float3 normal = -normalize(gradient);
+	return normal;
+}
 
+[maxvertexcount(18)]
+void main(point GSInput input[1], inout TriangleStream<GSOutput> triStream)
+{
+	float isoLevel = 0.5f;
+
+	float3 normal = GetNormal(input[0].position.xyz);
+	float3 normals[8];
 	float3 cubePoses[8];
 	float cubeVals[8];
 	for (int i = 0; i < 8; ++i) {
-		cubePoses[i] = input[0].position.xyz + (gCorners[i] * (2.0f / gVoxelDimMinusOne));
-		cubeVals[i] = gTexture3DDensity.SampleLevel(gSamplerPoint, (cubePoses[i] + 1.0f) / 2.0f, 0);
-		cubePoses[i] += gWChunkPosition;
+		float3 uvw = input[0].position.xyz + (gCorners[i] * gInvVoxelDimMinusOne);
+		normals[i] = GetNormal(uvw);
+		cubeVals[i] = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw, 0);
+
+		// Scale by the size of the chunk and add the chunk position.
+		cubePoses[i] = uvw * gWChunkSize + gWChunkPosition;
 	}
 
-	int cubeIndex = 0;
-	cubeIndex = int(cubeVals[0] < isoLevel);
-	cubeIndex += int(cubeVals[1] < isoLevel) * 2;
-	cubeIndex += int(cubeVals[2] < isoLevel) * 4;
-	cubeIndex += int(cubeVals[3] < isoLevel) * 8;
-	cubeIndex += int(cubeVals[4] < isoLevel) * 16;
-	cubeIndex += int(cubeVals[5] < isoLevel) * 32;
-	cubeIndex += int(cubeVals[6] < isoLevel) * 64;
-	cubeIndex += int(cubeVals[7] < isoLevel) * 128;
+	// Get the cube case.
+	int cubeCase = 0;
+	cubeCase = int(cubeVals[0] < isoLevel);
+	cubeCase += int(cubeVals[1] < isoLevel) * 2;
+	cubeCase += int(cubeVals[2] < isoLevel) * 4;
+	cubeCase += int(cubeVals[3] < isoLevel) * 8;
+	cubeCase += int(cubeVals[4] < isoLevel) * 16;
+	cubeCase += int(cubeVals[5] < isoLevel) * 32;
+	cubeCase += int(cubeVals[6] < isoLevel) * 64;
+	cubeCase += int(cubeVals[7] < isoLevel) * 128;
 
-	GSOutput output;
+	/*GSOutput output;
 	float4 colour = float4(0.0f, 0.0f, 1.0f, 1.0f);
 	float3 relativePosition = (input[0].position.xyz + 1.0f) / 2.0f;
 	float3 center = float3(0.5f, 0.5f, 0.5f);
@@ -94,10 +103,11 @@ void main(point GSInput input[1], inout PointStream<GSOutput> triStream)
 
 	colour.g = colourg;
 	colour.b -= colourg * 3.0f;
-	output.colour = colour;
+	output.colour = colour;*/
 
-	if (cubeIndex != 0 && cubeIndex != 255) {
+	if (cubeCase != 0 && cubeCase != 255) {
 		float3 vertList[12];
+		float3 normalList[12];
 
 		vertList[0] = VertexInterp(isoLevel, cubePoses[0], cubeVals[0], cubePoses[1], cubeVals[1]);
 		vertList[1] = VertexInterp(isoLevel, cubePoses[1], cubeVals[1], cubePoses[2], cubeVals[2]);
@@ -112,29 +122,40 @@ void main(point GSInput input[1], inout PointStream<GSOutput> triStream)
 		vertList[10] = VertexInterp(isoLevel, cubePoses[2], cubeVals[2], cubePoses[6], cubeVals[6]);
 		vertList[11] = VertexInterp(isoLevel, cubePoses[3], cubeVals[3], cubePoses[7], cubeVals[7]);
 
+		normalList[0] = VertexInterp(isoLevel, normals[0], cubeVals[0], normals[1], cubeVals[1]);
+		normalList[1] = VertexInterp(isoLevel, normals[1], cubeVals[1], normals[2], cubeVals[2]);
+		normalList[2] = VertexInterp(isoLevel, normals[2], cubeVals[2], normals[3], cubeVals[3]);
+		normalList[3] = VertexInterp(isoLevel, normals[3], cubeVals[3], normals[0], cubeVals[0]);
+		normalList[4] = VertexInterp(isoLevel, normals[4], cubeVals[4], normals[5], cubeVals[5]);
+		normalList[5] = VertexInterp(isoLevel, normals[5], cubeVals[5], normals[6], cubeVals[6]);
+		normalList[6] = VertexInterp(isoLevel, normals[6], cubeVals[6], normals[7], cubeVals[7]);
+		normalList[7] = VertexInterp(isoLevel, normals[7], cubeVals[7], normals[4], cubeVals[4]);
+		normalList[8] = VertexInterp(isoLevel, normals[0], cubeVals[0], normals[4], cubeVals[4]);
+		normalList[9] = VertexInterp(isoLevel, normals[1], cubeVals[1], normals[5], cubeVals[5]);
+		normalList[10] = VertexInterp(isoLevel, normals[2], cubeVals[2], normals[6], cubeVals[6]);
+		normalList[11] = VertexInterp(isoLevel, normals[3], cubeVals[3], normals[7], cubeVals[7]);
+
 		GSOutput point1;
 		GSOutput point2;
 		GSOutput point3;
-		point1.colour = colour;
-		point2.colour = colour;
-		point3.colour = colour;
+		point1.normal = normal;
+		point2.normal = normal;
+		point3.normal = normal;
 
-		for (int i = 0; GetTriTableValue(cubeIndex, i) != -1; i += 3)
+		for (int i = 0; GetTriTableValue(cubeCase, i) != -1; i += 3)
 		{
 			//Add vertices to the output stream
-			point1.wPosition = float4(vertList[GetTriTableValue(cubeIndex, i)], 1.0f);
-			point1.position = mul(point1.wPosition, gWorldViewProjectionMatrix);
-
-			point2.wPosition = float4(vertList[GetTriTableValue(cubeIndex, i + 1)], 1.0f);
-			point2.position = mul(point2.wPosition, gWorldViewProjectionMatrix);
-
-			point3.wPosition = float4(vertList[GetTriTableValue(cubeIndex, i + 2)], 1.0f);
-			point3.position = mul(point3.wPosition, gWorldViewProjectionMatrix);
+			point1.position = float4(vertList[GetTriTableValue(cubeCase, i)], 1.0f);
+			point1.normal = normalList[GetTriTableValue(cubeCase, i)];
+			point2.position = float4(vertList[GetTriTableValue(cubeCase, i + 1)], 1.0f);
+			point2.normal = normalList[GetTriTableValue(cubeCase, i + 1)];
+			point3.position = float4(vertList[GetTriTableValue(cubeCase, i + 2)], 1.0f);
+			point3.normal = normalList[GetTriTableValue(cubeCase, i + 2)];
 
 			triStream.Append(point1);
 			triStream.Append(point2);
 			triStream.Append(point3);
 			triStream.RestartStrip();
 		}
-	}*/
+	}
 }

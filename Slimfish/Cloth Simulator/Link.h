@@ -52,6 +52,10 @@ public:
 	void SetRestingDistance(float restingDistance);
 	/** Get the restingDistance. @author Hayden Asplet */
 	const float GetRestingDistance() const;
+	/** Set the tear distance. @author Hayden Asplet */
+	void SetTearDistance(float tearDistance);
+	/** Get the tear distance. @author Hayden Asplet */
+	const float GetTearDistance() const;
 protected:
 private:
 	// Member Variables

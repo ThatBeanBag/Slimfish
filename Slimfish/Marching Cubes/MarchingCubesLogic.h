@@ -71,6 +71,7 @@ public:
 	void BuildQuad();
 	void BuildDummyCorners();
 	void BuildStreamOutputBuffers();
+	void BuildDummyPoints();
 
 	void CreateRenderTextures();
 	void CreateBuildDensitiesPass();
@@ -80,14 +81,15 @@ public:
 	void CreateGenerateVerticesPass();
 	void CreateGenerateIndicesPass();
 	void CreateDrawChunkPass();
+	void CreateMarchingCubesPass();
 
 	virtual void Update(float deltaTime) override;
+
 	virtual void Render() override;
-
 	void DrawChunks();
-
+	void DrawTestChunks();
 	size_t BuildChunk(const CVector3& chunkPosition, size_t lod, size_t chunkBufferID);
-	void BuildDensities();
+	size_t BuildTestChunk(const CVector3& chunkPosition, size_t lod, size_t chunkBufferID);
 
 	virtual void HandleInput(const CInput& input, float deltaTime) override;
 
@@ -152,6 +154,11 @@ private:
 	CRenderPass m_GenerateIndicesPass;
 	CRenderPass m_DrawChunkPass;
 
+	// Temp test stuff.
+	CVertexDeclaration m_MarchingCubesVertexDeclaration;
+	CRenderPass m_MarchingCubesPass;
+	std::shared_ptr<AVertexGpuBuffer> m_pDummyPoints;
+
 	// Voxel dimensions.
 	int m_VoxelDim;
 	int m_VoxelDimPlusMargins;
@@ -171,6 +178,8 @@ private:
 	CLight m_Light;
 
 	bool m_bRenderPoints;
+	bool m_bDrawOnlyOneChunk;
+	CVector3 m_TestChunkPosition;
 };
 
 #endif // __MARCHINGCUBESLOGIC_H__

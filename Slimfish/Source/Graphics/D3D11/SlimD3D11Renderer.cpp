@@ -214,9 +214,9 @@ bool CD3D11Renderer::VInitialize()
 	// TODO: remove this it's only used to test sampler states.
 	D3D11_SAMPLER_DESC desc;
 	ZeroMemory(&desc, sizeof(D3D11_SAMPLER_DESC));
-	desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+	desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+	desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
 	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 	desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 	desc.MaxAnisotropy = 1;
@@ -544,8 +544,10 @@ void CD3D11Renderer::VSetRenderTargets(std::vector<ARenderTexture*> renderTarget
 			m_ViewPort.MinDepth = 0.0f;
 			m_ViewPort.MaxDepth = 1.0f;
 
+			m_pImmediateContext->RSSetViewports(1, &m_ViewPort);
+
 			// Prepare for rendering.
-			VPreRender();
+			//VPreRender();
 		}
 	}
 }
@@ -723,7 +725,7 @@ void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimi
 	}
 
 	if (numLayers != 0) {
-		/*if (m_pBoundGeometryShader) {
+		if (m_pBoundGeometryShader) {
 			m_pImmediateContext->GSSetSamplers(0, samplerStates.size(), &samplerStates[0]);
 			m_pImmediateContext->GSSetShaderResources(0, numLayers, &m_Textures[0]);
 		}
@@ -732,9 +734,9 @@ void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimi
 		m_pImmediateContext->VSSetShaderResources(0, numLayers, &m_Textures[0]);
 
 		m_pImmediateContext->PSSetSamplers(0, samplerStates.size(), &samplerStates[0]);
-		m_pImmediateContext->PSSetShaderResources(0, numLayers, &m_Textures[0]);*/
+		m_pImmediateContext->PSSetShaderResources(0, numLayers, &m_Textures[0]);
 
-		if (m_pBoundGeometryShader) {
+		/*if (m_pBoundGeometryShader) {
 			m_pImmediateContext->GSSetSamplers(0, 1, m_pSamplerState.GetAddressOf());
 			m_pImmediateContext->GSSetShaderResources(0, numLayers, &m_Textures[0]);
 		}
@@ -743,7 +745,7 @@ void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimi
 		m_pImmediateContext->VSSetShaderResources(0, numLayers, &m_Textures[0]);
 
 		m_pImmediateContext->PSSetSamplers(0, 1, m_pSamplerState.GetAddressOf());
-		m_pImmediateContext->PSSetShaderResources(0, numLayers, &m_Textures[0]);
+		m_pImmediateContext->PSSetShaderResources(0, numLayers, &m_Textures[0]);*/
 	}
 
 
@@ -949,11 +951,8 @@ void CD3D11Renderer::VSetTextureBorderColour(size_t layer, const CColourValue& c
 
 void CD3D11Renderer::CreateSamplerState(size_t layer)
 {
-	m_SamplerStates[layer].Reset();
-
-	HRESULT hResult = m_pD3DDevice->CreateSamplerState(&m_SamplerDescs[layer], m_SamplerStates[layer].GetAddressOf());
+	HRESULT hResult = m_pD3DDevice->CreateSamplerState(&m_SamplerDescs[layer], m_SamplerStates[layer].ReleaseAndGetAddressOf());
 	if (FAILED(hResult)) {
-		// TODO: display error.
 		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create sampler state for layer " << layer
 			<< "with error: " << GetErrorMessage(hResult);
 	}

@@ -35,7 +35,7 @@ public:
 	~CD3D11Texture();
 
 	virtual void VLoad() override;
-	virtual void VLoadRaw() override;
+	virtual void VLoadRaw(const void* pData, size_t stride) override;
 	virtual void VUnload() override;
 
 	virtual const CImage VGetImage() const;
@@ -44,9 +44,9 @@ public:
 	ID3D11Resource* GetD3DResource();
 protected:
 private:
-	void CreateRenderTarget1D();
-	void CreateRenderTarget2D();
-	void CreateRenderTarget3D();
+	void CreateRenderTarget1D(const void* pData = nullptr, size_t stride = 0);
+	void CreateRenderTarget2D(const void* pData = nullptr, size_t stride = 0);
+	void CreateRenderTarget3D(const void* pData = nullptr, size_t stride = 0);
 
 	void CreateShaderResourceView1D(D3D11_TEXTURE1D_DESC desc);
 	void CreateShaderResourceView2D(D3D11_TEXTURE2D_DESC desc);

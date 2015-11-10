@@ -193,6 +193,9 @@
     <ClCompile Include="..\Utilities\SlimRect.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="..\Math\SlimAxisAlignedBoundingBox.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -381,6 +384,9 @@
     </ClInclude>
     <ClInclude Include="..\Utilities\SlimRect.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Math\SlimAxisAlignedBoundingBox.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

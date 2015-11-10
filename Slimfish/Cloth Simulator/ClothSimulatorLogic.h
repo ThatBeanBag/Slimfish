@@ -38,7 +38,8 @@ enum class ECollisionObject {
 	NONE,
 	PYRAMID,
 	CAPSULE,
-	SPHERE
+	SPHERE,
+	MAX
 };
 
 class CClothSimulatorLogic : public CGameLogic {
@@ -59,10 +60,9 @@ public:
 protected:
 private:
 	void CreateCloth();
-	//void CreatePointMasses(int width, int height, float hungFrom, float restingDistance, float stiffness, float breakingForce);
-	//void CreatePointMasses(float width, float height, float hungFrom, float stiffness, float breakingForce);
-	//void PinCloth();
-	//CPointMass* GetPointMass(size_t x, size_t y);
+	CPointMass* GetClosestPoint(CPoint mousePosition, float minDistance);
+	void HandleSliderInput(const CInput& input, float deltaTime);
+	void HandleCameraInput(const CInput& input, float deltaTime);
 
 	// Member Variables
 public:
@@ -73,17 +73,22 @@ public:
 	static const size_t s_MIN_CLOTH_SIZE;
 	static const size_t s_MAX_HOOKS;
 	static const size_t s_MIN_HOOKS;
-	static const int s_SLIDER_MIN_X;
-	static const int s_SLIDER_MAX_X;
+	static const size_t s_MIN_SLIDER_X;
+	static const size_t s_MAX_SLIDER_X;
+
+	static const float s_MIN_FAN_FORCE;
+	static const float s_MAX_FAN_FORCE;
 protected:
 private:
 	// 2D Rendering.
 	C2DDrawer m_2DDrawer;
+	std::shared_ptr<ATexture> m_pControlsImage;
 	std::shared_ptr<ATexture> m_pSliderBarsImage;
 	std::shared_ptr<ATexture> m_pSliderImage;
 	CRect m_SliderRectClothWidth;
 	CRect m_SliderRectClothHeight;
 	CRect m_SliderRectNumHooks;
+	CRect m_SliderRectFanForce;
 
 	CRect* m_pDraggingRect;
 
@@ -94,8 +99,10 @@ private:
 	CRenderPass m_ClothRenderPass;
 	CRenderPass m_GroundRenderPass;
 	CRenderPass m_SphereRenderPass;
+	CRenderPass m_SkyBoxRenderPass;
 	shared_ptr<CShaderParams> m_pPSParams;
 	shared_ptr<CShaderParams> m_pVSParams;
+	shared_ptr<CShaderParams> m_pSkyBoxVSParams;
 
 	// Meshes.
 	std::shared_ptr<AVertexGpuBuffer> m_pClothVertexBuffer;
@@ -122,11 +129,18 @@ private:
 	CPointMass* m_pGrabbedMass;
 	float m_fTimeScale;
 
+	float m_FanForce;
+	CVector3 m_FanPosition;
+
 	CCollisionSphere m_Sphere;
 	CCollisionPlane m_GroundPlane;
 	CCollisionPyramid m_Pyrimad;
 	CCollisionCapsule m_Capsule;
 	ECollisionObject m_CurrentObject;
+
+	CVector3 m_CapsuleScale;
+	CVector3 m_SphereScale;
+	CVector3 m_PyramidScale;
 };
 
 #endif // __CLOTHSIMULATORLOGIC_H__

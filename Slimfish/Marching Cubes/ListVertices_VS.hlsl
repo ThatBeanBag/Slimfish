@@ -1,10 +1,10 @@
 
 struct VSInput {
-	uint z8_y8_x8_case8 : POSITION;
+	uint z8_y8_x8_case8 : TEX;
 };
 
 struct VSOutput {
-	uint z8_y8_x8_null5_edgeFlags3 : POSITION;
+	uint z8_y8_x8_null5_edgeFlags3 : TEX;
 };
 
 VSOutput main( VSInput vIn )
@@ -19,7 +19,7 @@ VSOutput main( VSInput vIn )
 	int bit3 = (cubeCase >> 3) & 1;
 	int bit1 = (cubeCase >> 1) & 1;
 	int bit4 = (cubeCase >> 4) & 1;
-	int3 buildVertOnEdge = abs(int3(bit3 - bit0, bit1 - bit0, bit4 - bit0));
+	int3 buildVertOnEdge = abs(int3(bit3, bit1, bit4) - bit0);
 
 	// Set the edge flags.
 	uint bits = vIn.z8_y8_x8_case8 & 0xffffff00;

@@ -21,6 +21,7 @@
 #include "Cloth.h"
 
 // Local Includes
+#include "Link.h"
 
 
 
@@ -37,6 +38,7 @@ CCloth::~CCloth()
 void CCloth::Initalise()
 {
 	m_BurningPoints.clear();
+	m_PinnedPoints.clear();
 	m_PointMasses.clear();
 	m_PointMasses.reserve(m_NumMassesX * m_NumMassesY);
 	float midWidth = (m_NumMassesX * m_RestingDistance) / 2.0f;
@@ -55,41 +57,32 @@ void CCloth::Initalise()
 
 			auto pPointMass = std::make_unique<CPointMass>(position, 1.0f, 0.01f);
 			float diagonalRestingDistance = sqrt(2 * (m_RestingDistance * m_RestingDistance));
+			auto diagonalBreakingDistnace = sqrt(2 * (m_LinkBreakingDistance * m_LinkBreakingDistance));
 
 			// Create links.
 			if (x != 0) {	// Horizontal link.
-				pPointMass->Attach(
-					GetPointMass(x - 1, y),
-					m_RestingDistance,
-					m_Stiffness,
-					m_LinkBreakingDistance);
+				pPointMass->Attach(GetPointMass(x - 1, y), m_RestingDistance, m_Stiffness, m_LinkBreakingDistance);
 
 				// Create tightly bound link.
 				if (y != 0) {
-					pPointMass->Attach(
-						GetPointMass(x - 1, y - 1),
-						diagonalRestingDistance,
-						m_Stiffness / 3.0f,
-						m_LinkBreakingDistance,
-						false);
+					pPointMass->Attach(GetPointMass(x - 1, y - 1), diagonalRestingDistance, m_Stiffness / 6.0f, diagonalBreakingDistnace, false);
+				}
+
+				if (x > 1) {
+					pPointMass->Attach(GetPointMass(x - 2, y), m_RestingDistance * 2.0f, m_Stiffness / 3.0f, m_LinkBreakingDistance * 2.0f, false);
 				}
 			}
 
 			if (y != 0) {	// Vertical link.
-				pPointMass->Attach(
-					GetPointMass(x, y - 1),
-					m_RestingDistance,
-					m_Stiffness,
-					m_LinkBreakingDistance);
+				pPointMass->Attach( GetPointMass(x, y - 1), m_RestingDistance, m_Stiffness, m_LinkBreakingDistance);
 
 				// Create tightly bound link.
 				if (x < m_NumMassesX - 1) {
-					pPointMass->Attach(
-						GetPointMass(x + 1, y - 1),
-						diagonalRestingDistance,
-						m_Stiffness / 3.0f,
-						m_LinkBreakingDistance,
-						false);
+					pPointMass->Attach(GetPointMass(x + 1, y - 1), diagonalRestingDistance, m_Stiffness / 6.0f, diagonalBreakingDistnace, false);
+				}
+
+				if (y > 1) {
+					pPointMass->Attach(GetPointMass(x, y - 2), m_RestingDistance * 2.0f, m_Stiffness / 3.0f, m_LinkBreakingDistance * 2.0f, false);
 				}
 			}
 
@@ -135,62 +128,93 @@ void CCloth::Update(float deltaTime)
 
 	// Handle collision with self.
 	for (unsigned int i = 0; i < m_PointMasses.size(); ++i) {
-		for (unsigned int j = i + 1; j < m_PointMasses.size(); ++j) {
-			auto toPointMass =
-				(m_PointMasses[j]->GetPosition()) -
-				(m_PointMasses[i]->GetPosition());
+		auto iMass = m_PointMasses[i].get();
+		auto iPosition = iMass->GetPosition();
 
-			if (toPointMass.GetLengthSquared() < minClothDistanceSqr) {
-				toPointMass = CVector3::Normalise(toPointMass);
-				//m_PointMasses[i]->SetPosition(m_PointMasses[j]->GetPosition() - (toPointMass * (minClothDistance + 0.1f)));
-				//m_PointMasses[j]->SetPosition(m_PointMasses[j]->GetPosition() + (toPointMass * (minClothDistance + 0.1f)));
-				//m_PointMasses[i]->SetPosition(m_PointMasses[i]->GetLastPosition());
-				//m_PointMasses[j]->SetPosition(m_PointMasses[j]->GetLastPosition());
-				m_PointMasses[i]->ApplyForce(-toPointMass * (200.0f));
-				m_PointMasses[j]->ApplyForce(toPointMass * (200.0f));
+		for (unsigned int j = i + 1; j < m_PointMasses.size(); ++j) {
+			auto jMass = m_PointMasses[j].get();
+			auto jPosition = jMass->GetPosition();
+			auto toPointMass = jPosition - iPosition;
+			auto sqrDistance = toPointMass.GetLengthSquared();
+
+			if (sqrDistance < minClothDistanceSqr) {
+				//iMass->SetPosition(iMass->GetLastPosition());
+				//jMass->SetPosition(jMass->GetLastPosition());
+
+				toPointMass /= sqrt(sqrDistance);
+				iMass->SetPosition(jPosition - (toPointMass * (minClothDistance + 0.0001f)));
+				jMass->SetPosition(iPosition + (toPointMass * (minClothDistance + 0.0001f)));
+
+				//m_PointMasses[i]->ApplyForce(-toPointMass * (200.0f));
+				//m_PointMasses[j]->ApplyForce(toPointMass * (200.0f));
+			}
+
+			if (m_IsBurning) {
+				// Update burning if the two masses are too close.
+				if (iMass->GetBurntLevel() - std::floor(iMass->GetBurntLevel()) > m_PropagateBurningThreshold ||
+					jMass->GetBurntLevel() - std::floor(jMass->GetBurntLevel()) > m_PropagateBurningThreshold) {
+					// Get a semi-random distance to compare with the point to burn.
+					auto randDistance = Math::Random(m_MinBurningDistance, m_MaxBurningDistance);
+
+					if (sqrDistance < randDistance * randDistance && Math::Random() < m_ChanceToPropagate) {
+						// Burn the new point if we are not already.
+						jMass->SetIsBurning(true);
+						iMass->SetIsBurning(true);
+					}
+				}
 			}
 		}
 	}
 
-	if (m_IsBurning) {
-		UpdateBurning(deltaTime);
-	}
+	//if (m_IsBurning) {
+	//	UpdateBurning(deltaTime);
+	//}
 }
 
 void CCloth::PinCloth()
 {
+	// Unpin the cloth if we are already pinned.
+	UnPin();
+
 	float midWidth = (m_NumMassesX * m_RestingDistance) / 2.0f;
 	auto pointsPerHook = static_cast<int>(m_NumMassesX / static_cast<float>(m_NumHooks));
 	pointsPerHook = std::max(pointsPerHook, 1); // Avoids division by 0.
 
 	for (size_t x = 0; x < m_NumMassesX && x < m_PointMasses.size(); ++x) {
-
-		if (x % pointsPerHook == 0 || x == m_NumMassesX - 1) {
+		if (x % m_NumHooks == 0 || x == m_NumMassesX - 1) {
 			CVector3 position(m_RestingDistance * x - midWidth, m_HungFromHeight, 0.0f);
-			GetPointMass(x, 0)->Pin(position);
-		}
-		else {
-			GetPointMass(x, 0)->DetachPin();
+			auto pPoint = GetPointMass(x, 0);
+			pPoint->Pin(position);
+			m_PinnedPoints.push_back(pPoint);
 		}
 	}
 }
 
 void CCloth::UnPin()
 {
-	for (size_t x = 0; x < m_NumMassesX && x < m_PointMasses.size(); ++x) {
-		GetPointMass(x, 0)->DetachPin();
+	for (auto& pinnedPoint : m_PinnedPoints) {
+		pinnedPoint->DetachPin();
 	}
+
+	m_PinnedPoints.clear();
 }
 
 void CCloth::BurnCloth(size_t x, size_t y)
 {
 	m_IsBurning = true;
-	m_BurningPoints.emplace_back(x, y);
+	m_PointMasses[x + y * m_NumMassesX]->SetIsBurning(true);
+	//m_BurningPoints.emplace_back(x, y);
+	//m_BurningPoints.push_back(m_PointMasses[x + y * m_NumMassesX].get());
 }
 
 CPointMass* CCloth::GetPointMass(size_t x, size_t y)
 {
 	return m_PointMasses[x + y * m_NumMassesX].get();
+}
+
+const std::vector<CPointMass*>& CCloth::GetPinnedPoints()
+{
+	return m_PinnedPoints;
 }
 
 void CCloth::SetNumPointMassesX(size_t numPointMassesX)
@@ -226,6 +250,11 @@ const size_t CCloth::GetNumHooks() const
 void CCloth::SetLinkBreakingDistance(float linkBreakingDistance)
 {
 	m_LinkBreakingDistance = linkBreakingDistance;
+	for (auto& pointMass : m_PointMasses) {
+		for (auto& link : pointMass->GetLinks()) {
+			link.SetTearDistance(linkBreakingDistance);
+		}
+	}
 }
 
 const float CCloth::GetLinkBreakingDistance() const
@@ -288,11 +317,11 @@ const std::vector<std::unique_ptr<CPointMass> >& CCloth::GetPointMasses() const
 	return m_PointMasses;
 }
 
-void CCloth::UpdateBurning(float deltaTime)
+/*void CCloth::UpdateBurning(float deltaTime)
 {
 	std::vector<CPoint> newBurningPoints;
 
-	for (auto burningPoint : m_BurningPoints) {
+	for (auto& burningPoint : m_BurningPoints) {
 		auto* pPoint = GetPointMass(burningPoint.GetX(), burningPoint.GetY());
 		assert(pPoint);
 
@@ -317,4 +346,42 @@ void CCloth::UpdateBurning(float deltaTime)
 
 	std::copy(newBurningPoints.begin(), newBurningPoints.end(), 
 		std::back_inserter(m_BurningPoints));
+}*/
+
+void CCloth::UpdateBurning(float deltaTime)
+{
+	std::vector<CPointMass*> newBurningPoints;
+
+	for (auto& pBurningPoint : m_BurningPoints) {
+		assert(pBurningPoint);
+
+		pBurningPoint->AddToBurntLevel(m_BurningRate * deltaTime);
+
+		/*// Check to see if it's time to propagate the burning.
+		if (pBurningPoint->GetBurntLevel() - std::floor(pBurningPoint->GetBurntLevel()) > m_PropagateBurningThreshold) {
+			for (auto& pPoint : m_PointMasses) {
+				// Get a semi-random distance to compare with the point to burn.
+				auto randDistance = Math::Random(m_MinBurningDistance, m_MaxBurningDistance);
+				auto toBurningPoint = pBurningPoint->GetPosition() - pPoint->GetPosition();
+
+				if (toBurningPoint.GetLengthSquared() < randDistance * randDistance) {
+					// Burn the new point if we are not already.
+					auto findIter = std::find_if(m_BurningPoints.begin(), m_BurningPoints.end(), 
+						[&pPoint](const CPointMass* pMass) { return pMass == pPoint.get(); });
+
+					if (findIter == m_BurningPoints.end()) {
+						//pPoint->DetachPin();
+						newBurningPoints.push_back(pPoint.get());
+						break;
+					}
+				}
+			}
+		}*/
+
+		// Looks cool, like paper burning allows burning points to rise up.
+		//pBurningPoint->ApplyForce(CVector3::s_UP * 10.0f);
+	}
+
+	//std::copy(newBurningPoints.begin(), newBurningPoints.end(),
+	//	std::back_inserter(m_BurningPoints));
 }

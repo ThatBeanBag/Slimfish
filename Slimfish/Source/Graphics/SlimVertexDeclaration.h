@@ -155,7 +155,7 @@ public:
 	const CInputElement& GetElement(size_t index) const;
 
 	/** Get the number of elements in the list. @author Hayden Asplet */
-	int GetNumElements() const;
+	size_t GetNumElements() const;
 
 	void SetRebuilt();
 	const bool NeedsRebuilding() const;

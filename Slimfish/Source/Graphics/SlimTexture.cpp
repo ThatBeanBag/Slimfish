@@ -51,7 +51,7 @@ namespace Slim {
 		return m_Name;
 	}
 
-	void ATexture::SetType(ETextureType textureType)
+	void ATexture::SetTextureType(ETextureType textureType)
 	{
 		m_TextureType = textureType;
 	}

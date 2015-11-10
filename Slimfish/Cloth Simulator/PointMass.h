@@ -70,9 +70,17 @@ public:
 
 	bool HasLinkTo(CPointMass* pPointMass);
 
+	std::vector<CLink>& GetLinks();
 	const std::vector<CLink>& GetLinks() const;
 	const std::vector<CLink>& GetBrokenLinks() const;
 
+	/** Get the pin position. @author Hayden Asplet */
+	const CVector3 GetPinPosition() const;
+
+	/** Set the isBurning. @author Hayden Asplet */
+	void SetIsBurning(bool isBurning);
+	/** Get the isBurning. @author Hayden Asplet */
+	const bool GetIsBurning() const;
 protected:
 private:
 	// Member Variables
@@ -87,9 +95,11 @@ private:
 
 	float m_Mass;
 	float m_Damping;
-	float m_BurntLevel;
 	CVector3 m_PinPosition;
 	bool m_IsPinned;
+
+	float m_BurntLevel;
+	bool m_IsBurning;
 };
 
 #endif	// __POINTMASS_H__

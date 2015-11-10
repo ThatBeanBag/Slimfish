@@ -16,6 +16,7 @@
 #include "ClothSimulatorStd.h"
 
 // Library Includes
+#include <numeric>
 
 // This Include
 #include "ClothSimulatorLogic.h"
@@ -28,20 +29,31 @@
 const size_t CClothSimulatorLogic::s_SHADOW_MAP_WIDTH = 2048;
 const size_t CClothSimulatorLogic::s_SHADOW_MAP_HEIGHT = 2048;
 
-const size_t CClothSimulatorLogic::s_MAX_CLOTH_SIZE = 60;
+const size_t CClothSimulatorLogic::s_MAX_CLOTH_SIZE = 35;
 const size_t CClothSimulatorLogic::s_MIN_CLOTH_SIZE = 5;
 const size_t CClothSimulatorLogic::s_MAX_HOOKS = 10;
 const size_t CClothSimulatorLogic::s_MIN_HOOKS = 1;
-const int CClothSimulatorLogic::s_SLIDER_MIN_X = 105;
-const int CClothSimulatorLogic::s_SLIDER_MAX_X = 252;
+const size_t CClothSimulatorLogic::s_MIN_SLIDER_X = 105;
+const size_t CClothSimulatorLogic::s_MAX_SLIDER_X = 252;
+const float CClothSimulatorLogic::s_MIN_FAN_FORCE = 0.0f;
+const float CClothSimulatorLogic::s_MAX_FAN_FORCE = 50.0f;
 
-int IntLerp(int from, int to, float t)
+size_t Lerp(size_t from, size_t to, float t)
 {
-	return static_cast<int>((t * static_cast<float>(to)) + (static_cast<float>(from) * (1 - t)));
+	return static_cast<size_t>((t * static_cast<float>(to)) + (static_cast<float>(from) * (1 - t)));
 }
 
-float GetLerpAmount(int min, int max, int val) {
+float Lerp(float from, float to, float t)
+{
+	return (t * to) + (from * (1 - t));
+}
+
+float GetLerpAmount(size_t min, size_t max, size_t val) {
 	return (val - min) / static_cast<float>(max - min);
+}
+
+float GetLerpAmount(float min, float max, float val) {
+	return (val - min) / (max - min);
 }
 
 struct TVertex {
@@ -58,34 +70,44 @@ CClothSimulatorLogic::CClothSimulatorLogic()
 	m_LightCamera(nullptr),
 	m_Light(nullptr),
 	m_fTimeScale(1.0f),
-	m_SliderRectNumHooks(s_SLIDER_MIN_X, 10, 10, 25),
-	m_SliderRectClothWidth(s_SLIDER_MIN_X, 40, 10, 25),
-	m_SliderRectClothHeight(s_SLIDER_MIN_X, 70, 10, 25),
+	m_SliderRectNumHooks(s_MIN_SLIDER_X, 10, 10, 25),
+	m_SliderRectClothWidth(s_MIN_SLIDER_X, 40, 10, 25),
+	m_SliderRectClothHeight(s_MIN_SLIDER_X, 70, 10, 25),
+	m_SliderRectFanForce(s_MIN_SLIDER_X, 100, 10, 25),
 	m_pDraggingRect(nullptr),
-	m_Sphere(3.1f),
+	m_Sphere(6.2f),
 	m_GroundPlane(CPlane(CVector3(0.0f, 0.1f, 0.0f), CVector3(0, 1, 0))),
-	m_Pyrimad(6.7f, 6.7f, 6.7f),
-	m_Capsule(2.1f, 6.1f)
+	m_Pyrimad(12.7f, 12.7f, 12.7f),
+	m_Capsule(4.2f, 12.2f),
+	m_FanForce(s_MIN_FAN_FORCE),
+	m_FanPosition(CVector3::s_ZERO)
 {
-	m_Sphere.SetTransform(CMatrix4x4::BuildTranslation(0.0f, 7.0f, -2.0f));
-	m_Pyrimad.SetTransform(CMatrix4x4::BuildTranslation(0.0f, 7.0f, -2.0f));
-	m_Capsule.SetTransform(CMatrix4x4::BuildTranslation(0.0f, 7.0f, -2.0f));
+	m_CapsuleScale = { 6.0f, 6.0f, 6.0f };
+	m_SphereScale = { 6.0f, 6.0f, 6.0f };
+	m_PyramidScale = { 9.0f, 9.0f, 9.0f };
+	m_Sphere.SetTransform(CMatrix4x4::BuildTranslation(0.0f, 10.0f, 5.0f));
+	m_Pyrimad.SetTransform(CMatrix4x4::BuildTranslation(0.0f, 10.0f, 5.0f));
+	m_Capsule.SetTransform(CMatrix4x4::BuildTranslation(0.0f, 10.0f, 5.0f));
 	
 	m_Cloth.SetNumPointMassesX(30);
 	m_Cloth.SetNumPointMassesY(30);
 	m_Cloth.SetNumHooks(4);
-	m_Cloth.SetHungFromHeight(s_MAX_CLOTH_SIZE + 5.0f);
-	m_Cloth.SetLinkBreakingDistance(1000.0f);
+	m_Cloth.SetHungFromHeight(s_MAX_CLOTH_SIZE + 3.0f);
+	m_Cloth.SetLinkBreakingDistance(4.0f);
 	m_Cloth.SetRestingDistance(1.0f);
 	m_Cloth.SetStiffness(0.9f);
 	m_Cloth.SetPointMassDamping(0.1f);
 	m_Cloth.SetPointMassMass(0.3f);
 
-	auto width = GetLerpAmount(s_MIN_CLOTH_SIZE, s_MAX_CLOTH_SIZE, m_Cloth.GetNumPointMassesX());
-	auto height = GetLerpAmount(s_MIN_CLOTH_SIZE, s_MAX_CLOTH_SIZE, m_Cloth.GetNumPointMassesX());
+	auto tWidth = GetLerpAmount(s_MIN_CLOTH_SIZE, s_MAX_CLOTH_SIZE, m_Cloth.GetNumPointMassesX());
+	auto tHeight = GetLerpAmount(s_MIN_CLOTH_SIZE, s_MAX_CLOTH_SIZE, m_Cloth.GetNumPointMassesX());
+	auto tNumHooks = GetLerpAmount(s_MIN_HOOKS, s_MAX_HOOKS, m_Cloth.GetNumHooks());
+	auto tFanForce = GetLerpAmount(s_MIN_FAN_FORCE, s_MAX_FAN_FORCE, m_FanForce);
 
-	m_SliderRectClothWidth.SetX(IntLerp(s_SLIDER_MIN_X, s_SLIDER_MAX_X, width));
-	m_SliderRectClothHeight.SetX(IntLerp(s_SLIDER_MIN_X, s_SLIDER_MAX_X, height));
+	m_SliderRectClothWidth.SetX(Lerp(s_MIN_SLIDER_X, s_MAX_SLIDER_X, tWidth));
+	m_SliderRectClothHeight.SetX(Lerp(s_MIN_SLIDER_X, s_MAX_SLIDER_X, tHeight));
+	m_SliderRectNumHooks.SetX(Lerp(s_MIN_SLIDER_X, s_MAX_SLIDER_X, tNumHooks));
+	m_SliderRectFanForce.SetX(Lerp(s_MIN_SLIDER_X, s_MAX_SLIDER_X, tFanForce));
 }
 
 CClothSimulatorLogic::~CClothSimulatorLogic()
@@ -113,6 +135,7 @@ bool CClothSimulatorLogic::Initialise()
 	// Create 2D Images for user interface sliders.
 	m_pSliderBarsImage = g_pApp->GetRenderer()->VLoadTexture("Textures/SliderBars.png");
 	m_pSliderImage = g_pApp->GetRenderer()->VLoadTexture("Textures/Slider.png");
+	m_pControlsImage = g_pApp->GetRenderer()->VLoadTexture("Textures/Controls.png");
 	// Initialise the 2D drawer. 
 	if (!m_2DDrawer.Initialise()) {
 		return false;
@@ -122,8 +145,14 @@ bool CClothSimulatorLogic::Initialise()
 	m_ClothRenderPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("ClothVS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
 	m_ClothRenderPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("ClothPS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
 	m_ClothRenderPass.SetCullingMode(ECullingMode::NONE);
-
 	m_pVSParams = m_ClothRenderPass.GetVertexShader()->GetShaderParams("constantBuffer");
+
+	m_SkyBoxRenderPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("SkyBox_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
+	m_SkyBoxRenderPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("SkyBox_PS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
+	m_SkyBoxRenderPass.AddTextureLayer("Textures/skybox.dds");
+	m_SkyBoxRenderPass.SetCullingMode(ECullingMode::NONE);
+	m_SkyBoxRenderPass.SetDepthCompareFunction(EComparisonFunction::LESS_EQUAL);
+	m_pSkyBoxVSParams = m_SkyBoxRenderPass.GetVertexShader()->GetShaderParams("constantBuffer");
 
 	// Setup lighting.
 	m_Light.SetType(LIGHT_DIRECTIONAL);
@@ -155,10 +184,10 @@ bool CClothSimulatorLogic::Initialise()
 	m_ClothRenderPass.AddTextureLayer("Textures/Cloth.jpg");
 
 	// Setup camera.
-	m_Camera.SetPosition(CVector3(0.0f, 40.0f, 60.0f));
+	m_Camera.SetPosition(CVector3(0.0f, 20.0f, 50.0f));
 	m_Camera.SetProjectionMode(EProjectionMode::PERSPECTIVE);
 	m_Camera.SetNearClipDistance(0.1f);
-	m_Camera.SetFarClipDistance(300.0f);
+	m_Camera.SetFarClipDistance(1000.0f);
 	m_Camera.SetFieldOfView(Math::DegreesToRadians(60.0f));
 	m_Camera.SetOrthographicSize(20.0f);
 
@@ -191,42 +220,32 @@ void CClothSimulatorLogic::Update(float deltaTime)
 	m_Camera.SetAspectRatio(static_cast<float>(screenSize.GetX()) / static_cast<float>(screenSize.GetY()));
 
 	// Update physics.
-	m_Cloth.Update(deltaTime * m_fTimeScale);
+	if (m_fTimeScale > 0.0f) {
+		m_Cloth.Update(deltaTime * m_fTimeScale);
+	}
 
 	if (m_pGrabbedMass) {
 		CRay ray = m_Camera.ScreenPointToRay(m_lastMousePosition);
-		CVector3 intersectionPoint = ray.GetIntersectionPointOnRay(m_pGrabbedMass->GetPosition());
+		CVector3 intersectionPoint = ray.GetIntersectionPoint(m_pGrabbedMass->GetPosition());
 
-		m_pGrabbedMass->ApplyForce((intersectionPoint - m_pGrabbedMass->GetPosition()) * 500.0f);
+		m_pGrabbedMass->ApplyForce((intersectionPoint - m_pGrabbedMass->GetPosition()) * 1000.0f);
+		//m_pGrabbedMass->Pin(intersectionPoint);
 	}
 
 	const auto& pointMasses = m_Cloth.GetPointMasses();
 
-	for (unsigned int i = 0; i < pointMasses.size(); ++i) {
-		// Collision with self.
-		/*for (unsigned int j = i + 1; j < m_PointMasses.size(); ++j) {
-			auto toPointMass = 
-				(m_PointMasses[j]->GetPosition()) - 
-				(m_PointMasses[i]->GetPosition());
-
-			if (toPointMass.GetLengthSquared() < minClothDistanceSqr) {
-				toPointMass = CVector3::Normalise(toPointMass);
-				//m_PointMasses[i]->SetPosition(m_PointMasses[j]->GetPosition() - (toPointMass * (minClothDistance + 0.1f)));
-				//m_PointMasses[j]->SetPosition(m_PointMasses[j]->GetPosition() + (toPointMass * (minClothDistance + 0.1f)));
-				/ *m_PointMasses[i]->SetPosition(m_PointMasses[i]->GetLastPosition());
-				m_PointMasses[j]->SetPosition(m_PointMasses[j]->GetLastPosition()); * /
-				m_PointMasses[i]->ApplyForce(-toPointMass * (400.0f));
-				m_PointMasses[j]->ApplyForce(toPointMass * (400.0f));
-			}
-		}*/
+	for (auto& pointMass : pointMasses) {
+		// Add fan force.
+		auto fanToPoint = pointMass->GetPosition() - m_FanPosition;
+		pointMass->ApplyForce(CVector3::Normalise(fanToPoint) * m_FanForce);
 
 		// Resolve collisions.
-		auto position = pointMasses[i]->GetPosition();
+		auto position = pointMass->GetPosition();
 		CVector3 intersectionPoint;
 		
 		// Handle collision with the ground.
 		if (m_GroundPlane.IsInside(position, intersectionPoint)) {
-			pointMasses[i]->SetPosition(intersectionPoint);
+			pointMass->SetPosition(intersectionPoint);
 		}
 
 		// Handle collision with the object.
@@ -236,19 +255,19 @@ void CClothSimulatorLogic::Update(float deltaTime)
 			}
 			case ECollisionObject::PYRAMID: {
 				if (m_Pyrimad.IsInside(position, intersectionPoint)) {
-					pointMasses[i]->SetPosition(intersectionPoint);
+					pointMass->SetPosition(intersectionPoint);
 				}
 				break;
 			}
 			case ECollisionObject::CAPSULE: {
 				if (m_Capsule.IsInside(position, intersectionPoint)) {
-					pointMasses[i]->SetPosition(intersectionPoint);
+					pointMass->SetPosition(intersectionPoint);
 				}
 				break;
 			}
 			case ECollisionObject::SPHERE: {
 				if (m_Sphere.IsInside(position, intersectionPoint)) {
-					pointMasses[i]->SetPosition(intersectionPoint);
+					pointMass->SetPosition(intersectionPoint);
 				}
 				break;
 			}
@@ -264,6 +283,10 @@ void CClothSimulatorLogic::Render()
 	m_Camera.UpdateViewTransform();
 
 	// Update shader params.
+	auto skyboxWorldMatrix = CMatrix4x4::BuildTransform(/*m_Camera.GetPosition()*/CVector3::s_ZERO, { 999.0f, 999.0f, 999.0f }, CQuaternion::s_IDENTITY);
+	m_pSkyBoxVSParams->SetConstant("gWorldViewProjMatrix", m_Camera.GetViewProjMatrix() * skyboxWorldMatrix);
+	m_SkyBoxRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_pSkyBoxVSParams);
+
 	m_pVSParams->SetConstant("gWorldViewProjMatrix", m_Camera.GetViewProjMatrix());
 	m_pVSParams->SetConstant("gWorldMatrix", CMatrix4x4::s_IDENTITY);
 	m_pVSParams->SetConstant("gLightViewProjMatrix", m_LightCamera.GetViewProjMatrix());
@@ -274,33 +297,43 @@ void CClothSimulatorLogic::Render()
 
 	//RenderToShadowMap();
 
+	g_pApp->GetRenderer()->SetRenderPass(&m_SkyBoxRenderPass);
+	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pSphereVertexBuffer, m_pSphereIndexBuffer);
+
 	g_pApp->GetRenderer()->SetRenderPass(&m_ClothRenderPass);
 	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pClothVertexBuffer, m_pClothIndexBuffer);
 
-	g_pApp->GetRenderer()->SetRenderPass(&m_GroundRenderPass);
-	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pGroundVertexBuffer);
+	//g_pApp->GetRenderer()->SetRenderPass(&m_GroundRenderPass);
+	//g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pGroundVertexBuffer);
 
-	CMatrix4x4 spherePosition = CMatrix4x4::BuildTranslation(0.0f, 7.0f, -2.0f) * CMatrix4x4::BuildScale(3.0f, 3.0f, 3.0f);
-	m_pVSParams->SetConstant("gWorldViewProjMatrix", m_Camera.GetViewProjMatrix() * spherePosition);
-	m_pVSParams->SetConstant("gWorldMatrix", spherePosition);
-	m_pVSParams->SetConstant("gLightViewProjMatrix", m_LightCamera.GetViewProjMatrix());
-	m_ClothRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_pVSParams);
+	auto updateParams = [this](const CMatrix4x4& worldTransform) {
+		m_pVSParams->SetConstant("gWorldViewProjMatrix", m_Camera.GetViewProjMatrix() * worldTransform);
+		m_pVSParams->SetConstant("gWorldMatrix", worldTransform);
+		m_pVSParams->SetConstant("gLightViewProjMatrix", m_LightCamera.GetViewProjMatrix());
+		m_ClothRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_pVSParams);
+	};
 
 	switch (m_CurrentObject) {
 		case ECollisionObject::NONE: {
 			break;
 		}
 		case ECollisionObject::PYRAMID: {
+			updateParams(m_Pyrimad.GetTransform() * CMatrix4x4::BuildScale(m_PyramidScale));
+
 			g_pApp->GetRenderer()->SetRenderPass(&m_SphereRenderPass);
 			g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLELIST, m_pPyramidVertexBuffer);
 			break;
 		}
 		case ECollisionObject::CAPSULE: {
+			updateParams(m_Capsule.GetTransform() * CMatrix4x4::BuildScale(m_CapsuleScale));
+
 			g_pApp->GetRenderer()->SetRenderPass(&m_SphereRenderPass);
 			g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pCapsuleVertexBuffer, m_pCapsuleIndexBuffer);
 			break;
 		}
 		case ECollisionObject::SPHERE: {
+			updateParams(m_Sphere.GetTransform() * CMatrix4x4::BuildScale(m_SphereScale));
+
 			g_pApp->GetRenderer()->SetRenderPass(&m_SphereRenderPass);
 			g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pSphereVertexBuffer, m_pSphereIndexBuffer);
 			break;
@@ -314,11 +347,18 @@ void CClothSimulatorLogic::RenderUserInterface()
 {
 	// Draw the slider bars.
 	m_2DDrawer.Render(CRect(10, 10, m_pSliderBarsImage->GetWidth(), m_pSliderBarsImage->GetHeight()), m_pSliderBarsImage);
+	m_2DDrawer.Render(
+		CRect(10, 
+		20 + m_pSliderBarsImage->GetHeight(), 
+		m_pControlsImage->GetWidth(),
+		m_pControlsImage->GetHeight()),
+		m_pControlsImage);
 
 	// Draw the sliders.
 	m_2DDrawer.Render(m_SliderRectNumHooks, m_pSliderImage);
 	m_2DDrawer.Render(m_SliderRectClothWidth, m_pSliderImage);
 	m_2DDrawer.Render(m_SliderRectClothHeight, m_pSliderImage);
+	m_2DDrawer.Render(m_SliderRectFanForce, m_pSliderImage);
 }
 
 void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
@@ -327,29 +367,77 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 		g_pApp->GetRenderer()->ToggleWindowed(); // If only :(
 	}
 
-	CPoint mousePosition = input.GetMousePosition();
+	const auto& mousePosition = input.GetMousePosition();
 
+	// Reset the cloth with R.
 	if (input.GetKeyRelease(EKeyCode::R)) {
 		CreateCloth();
 	}
 
-	if (input.GetKeyRelease(EKeyCode::NUM_1)) {
-		m_CurrentObject = ECollisionObject::NONE;
-	}
-	if (input.GetKeyRelease(EKeyCode::NUM_4)) {
-		m_CurrentObject = ECollisionObject::CAPSULE;
-	}
-	else if (input.GetKeyRelease(EKeyCode::NUM_3)) {
-		m_CurrentObject = ECollisionObject::SPHERE;
-	}
-	else if (input.GetKeyRelease(EKeyCode::NUM_2)) {
-		m_CurrentObject = ECollisionObject::PYRAMID;
+	// Move the pins in and out with keys 2 & 3.
+	if (input.IsKeyDown(EKeyCode::NUM_2) || input.IsKeyDown(EKeyCode::NUM_3)) {
+		const auto& pinnedPoints = m_Cloth.GetPinnedPoints();
+
+		auto speed = 0.0f;
+		if (input.IsKeyDown(EKeyCode::NUM_2) && !input.IsKeyDown(EKeyCode::NUM_3)) {
+			speed = 5.0f;
+		}
+		else if (input.IsKeyDown(EKeyCode::NUM_3) && !input.IsKeyDown(EKeyCode::NUM_2)) {
+			speed = -5.0f;
+		}
+
+		if (!pinnedPoints.empty()) {
+			auto addPinnedPoint = [](const CVector3& total, const CPointMass* pPoint) {
+				return total + pPoint->GetPinPosition();
+			};
+
+			auto average = std::accumulate(pinnedPoints.begin(), pinnedPoints.end(), CVector3::s_ZERO, addPinnedPoint);
+			average /= static_cast<float>(pinnedPoints.size());
+
+			for (auto& pPinnedPoint : pinnedPoints) {
+				auto toCentre = average - pPinnedPoint->GetPinPosition();
+				toCentre = CVector3::Normalise(toCentre);
+				pPinnedPoint->Pin(pPinnedPoint->GetPinPosition() + (toCentre * deltaTime * speed));
+			}
+		}
 	}
 
+	if (input.GetKeyRelease(EKeyCode::NUM_4)) {
+		if (m_Cloth.GetLinkBreakingDistance() == std::numeric_limits<float>::max()) {
+			m_Cloth.SetLinkBreakingDistance(4.0f);
+		}
+		else {
+			m_Cloth.SetLinkBreakingDistance(std::numeric_limits<float>::max());
+		}
+	}
+	
+	// Cycle collision shapes with V.
+	if (input.GetKeyPress(EKeyCode::V)) {
+		int nextObject = static_cast<int>(m_CurrentObject) + 1;
+		if (nextObject < static_cast<int>(ECollisionObject::MAX)) {
+			m_CurrentObject = static_cast<ECollisionObject>(nextObject);
+		}
+		else {
+			m_CurrentObject = ECollisionObject::NONE;
+		}
+	}
+
+	if (input.GetKeyPress(EKeyCode::F)) {
+		// Get the point on the ray. 
+		auto ray = m_Camera.ScreenPointToRay(mousePosition);
+		auto pointOnGround = CVector3::s_ZERO;
+		auto hitsGroundPlane = ray.GetIntersectionPoint(m_GroundPlane.GetPlane(), pointOnGround);
+		if (hitsGroundPlane) {
+			m_FanPosition = pointOnGround;
+		}
+	}
+
+	// Unpin the cloth with X.
 	if (input.GetKeyRelease(EKeyCode::X)) {
 		m_Cloth.UnPin();
 	}
 
+	// Enter wire frame mode with 1.
 	if (input.GetKeyPress(EKeyCode::NUM_1)) {
 		if (m_ClothRenderPass.GetFillMode() == EFillMode::SOLID) {
 			m_ClothRenderPass.SetFillMode(EFillMode::WIREFRAME);
@@ -359,65 +447,32 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 		}
 	}
 
-	if (input.GetMouseButtonPress(EMouseButton::LEFT)) {
-		if (m_SliderRectClothHeight.IsInside(mousePosition)) {
-			m_pDraggingRect = &m_SliderRectClothHeight;
-		}
-		else if (m_SliderRectClothWidth.IsInside(mousePosition)) {
-			m_pDraggingRect = &m_SliderRectClothWidth;
-		}
-		else if (m_SliderRectNumHooks.IsInside(mousePosition)) {
-			m_pDraggingRect = &m_SliderRectNumHooks;
+	// Handle Cutting.
+	if (input.IsKeyDown(EKeyCode::C)) {
+		CPointMass* pGrabbedMass = GetClosestPoint(mousePosition, 1.0f);
+
+		if (pGrabbedMass) {
+			if (pGrabbedMass->IsPinned()) {
+				pGrabbedMass->DetachPin();
+			}
+
+			pGrabbedMass->ClearLinks();
+			//UpdateClothIndices();
 		}
 	}
 
-	if (input.IsMouseButtonDown(EMouseButton::LEFT)) {
-		CPoint deltaPosition = mousePosition - m_lastMousePosition;
-		
-		CRay ray = m_Camera.ScreenPointToRay(mousePosition);
-		float distance = 10.0f;
-		CPointMass* pMass = nullptr;
-
-		for (auto& pointMass : m_Cloth.GetPointMasses()) {
-			float currentDistance = ray.GetDistanceToPointSquared(pointMass->GetPosition());
-			if (currentDistance < distance) {
-				m_pGrabbedMass = pointMass.get();
-				distance = currentDistance;
-			}
-		}
-
-		if (m_pGrabbedMass) {
-			if (m_pGrabbedMass->IsPinned()) {
-				m_pGrabbedMass->DetachPin();
-			}
-
-			m_pGrabbedMass->ClearLinks();
-			UpdateClothIndices();
-		}
-
-		// Update slider position.
-		if (m_pDraggingRect) {
-			m_pDraggingRect->SetX(mousePosition.GetX());
-			if (m_pDraggingRect->GetX() < s_SLIDER_MIN_X) {
-				m_pDraggingRect->SetX(s_SLIDER_MIN_X);
-			}
-			else if (m_pDraggingRect->GetX() > s_SLIDER_MAX_X) {
-				m_pDraggingRect->SetX(s_SLIDER_MAX_X);
-			}
-		}
-	}
-
+	// Handle burning.
 	if (input.IsKeyDown(EKeyCode::B)) {
 		CPoint deltaPosition = mousePosition - m_lastMousePosition;
 
 		CRay ray = m_Camera.ScreenPointToRay(mousePosition);
 		float distance = 10.0f;
 		CPointMass* pMass = nullptr;
-		auto x = 0;
-		auto y = 0;
+		auto x = 0U;
+		auto y = 0U;
 
-		for (int i = 0; i < m_Cloth.GetNumPointMassesX(); ++i) {
-			for (int j = 0; j < m_Cloth.GetNumPointMassesY(); ++j) {
+		for (size_t i = 0; i < m_Cloth.GetNumPointMassesX(); ++i) {
+			for (size_t j = 0; j < m_Cloth.GetNumPointMassesY(); ++j) {
 				auto pPointMass = m_Cloth.GetPointMass(i, j);
 				float currentDistance = ray.GetDistanceToPointSquared(pPointMass->GetPosition());
 				if (currentDistance < distance) {
@@ -438,53 +493,8 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 		}
 	}
 
-	/*if (input.IsMouseButtonDown(EMouseButton::LEFT)) {
-		CPoint deltaPosition = mousePosition - m_lastMousePosition;
-
-		CRay ray = m_Camera.ScreenPointToRay(mousePosition);
-		float distance = 100000000.0f;
-		CPointMass* pMass = nullptr;
-
-		for (auto& pointMass : m_PointMasses) {
-			auto toRay = ray.GetIntersectionPointOnRay(pointMass->GetPosition()) - pointMass->GetPosition();
-			float currentDistance = toRay.GetLength();
-
-			if (currentDistance < 5.0f) {
-				toRay /= currentDistance;
-				float force = std::min((1.0f / currentDistance) * 10.0f, 20.0f);
-
-				pointMass->ApplyForce(toRay * force);
-			}
-		}
-	}*/
-
-	if (input.GetMouseButtonRelease(EMouseButton::LEFT)) {
-		if (m_pGrabbedMass) {
-			m_pGrabbedMass->DetachPin();
-			m_pGrabbedMass = nullptr;
-		}
-
-		if (m_pDraggingRect) {
-			float t = (m_pDraggingRect->GetX() - s_SLIDER_MIN_X) / static_cast<float>(s_SLIDER_MAX_X - s_SLIDER_MIN_X);
-
-			if (m_pDraggingRect == &m_SliderRectClothWidth) {
-				m_Cloth.SetNumPointMassesX(IntLerp(s_MIN_CLOTH_SIZE, s_MAX_CLOTH_SIZE, t));
-
-				CreateCloth();
-			}
-			else if (m_pDraggingRect == &m_SliderRectClothHeight) {
-				m_Cloth.SetNumPointMassesY(IntLerp(s_MIN_CLOTH_SIZE, s_MAX_CLOTH_SIZE, t));
-
-				CreateCloth();
-			}
-			else if (m_pDraggingRect == &m_SliderRectNumHooks) {
-				auto numHooks = IntLerp(s_MIN_HOOKS, s_MAX_HOOKS, t);
-				m_Cloth.SetNumHooks(numHooks);
-				m_Cloth.PinCloth();
-			}
-
-			m_pDraggingRect = nullptr;
-		}
+	if (input.GetMouseButtonPress(EMouseButton::LEFT)) {
+		m_pGrabbedMass = GetClosestPoint(mousePosition, 1.0f);
 	}
 
 	if (input.GetKeyPress(EKeyCode::P)) {
@@ -505,69 +515,20 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 		CPointMass* pMass = nullptr;
 
 		for (auto& pointMass : m_Cloth.GetPointMasses()) {
-			auto toRay = pointMass->GetPosition() - ray.GetIntersectionPointOnRay(pointMass->GetPosition());
+			auto toRay = pointMass->GetPosition() - ray.GetIntersectionPoint(pointMass->GetPosition());
 			float currentDistance = toRay.GetLength();
 
 			if (currentDistance < 20.0f) {
 				toRay /= currentDistance;
-				float force = std::min((1.0f / currentDistance) * 100.0f, 500.0f);
+				float force = std::min((1.0f / currentDistance) * 700.0f, 500.0f);
 
 				pointMass->ApplyForce((toRay + m_Camera.GetRotation().GetDirection()) * force);
 			}
 		}
 	}
 
-
-	// Handle rotation of camera.
-	if (input.IsMouseButtonDown(EMouseButton::MIDDLE)) {
-		CPoint deltaPosition = mousePosition - m_lastMousePosition;
-		m_CameraYaw -= deltaPosition.GetX() * 0.01f;
-		m_CameraPitch -= deltaPosition.GetY() * 0.01f;
-
-		m_Camera.SetRotation(CQuaternion(m_CameraYaw, m_CameraPitch, 0.0f));
-	}
-
-	m_lastMousePosition = mousePosition;
-
-	// Handle translation of camera.
-	static float speed = 5.0f;
-	if (input.IsKeyDown(EKeyCode::LEFT_SHIFT)) {
-		speed = 50.0f;
-	}
-
-	CVector3 cameraTranslation = CVector3::s_ZERO;
-	const CQuaternion& cameraRotation = m_Camera.GetRotation();
-
-	if (input.IsKeyDown(EKeyCode::W)) {
-		cameraTranslation += cameraRotation.GetDirection();
-	}
-
-	if (input.IsKeyDown(EKeyCode::S)) {
-		cameraTranslation -= cameraRotation.GetDirection();
-	}
-
-	if (input.IsKeyDown(EKeyCode::A)) {
-		cameraTranslation -= cameraRotation.GetRight();
-	}
-
-	if (input.IsKeyDown(EKeyCode::D)) {
-		cameraTranslation += cameraRotation.GetRight();
-	}
-
-	if (input.IsKeyDown(EKeyCode::SPACE)) {
-		cameraTranslation += cameraRotation.GetUp();
-	}
-
-	if (input.IsKeyDown(EKeyCode::LEFT_CONTROL)) {
-		cameraTranslation -= cameraRotation.GetUp();
-	}
-
-	if (cameraTranslation != CVector3::s_ZERO) {
-		cameraTranslation = CVector3::Normalise(cameraTranslation);
-		cameraTranslation *= deltaTime * speed;
-
-		m_Camera.SetPosition(cameraTranslation + m_Camera.GetPosition());
-	}
+	HandleCameraInput(input, deltaTime);
+	HandleSliderInput(input, deltaTime);
 }
 
 void CClothSimulatorLogic::UpdateClothVertices()
@@ -591,12 +552,45 @@ void CClothSimulatorLogic::UpdateClothVertices()
 		}
 	}
 
+	/*for (unsigned int y = 0; y < numPointMassesY; ++y) {
+		for (unsigned int x = 0; x < numPointMassesX; ++x) {
+			TVertex& vert = pVertices[(y * numPointMassesX) + x];
+			// Calculate normal.
+			bool flipOrder = false;
+
+			auto neighbourX = x + 1;
+			auto neighbourZ = y + 1;
+			if (x == numPointMassesX - 1) {
+				auto neighbourX = x - 1;
+				flipOrder = !flipOrder;
+			}
+
+			if (y == numPointMassesY - 1) {
+				auto neighbourY = y - 1;
+				//flipOrder = !flipOrder;
+			}
+
+			auto neighbourPosition1 = pVertices[x + neighbourZ * numPointMassesX].position;
+			auto neighbourPosition2 = pVertices[neighbourX + y * numPointMassesX].position;
+			auto toNeighbour1 = vert.position - neighbourPosition1;
+			auto toNeighbour2 = vert.position - neighbourPosition2;
+
+			auto currentNormal = CVector3::CrossProduct(toNeighbour1, toNeighbour2);
+
+			if (flipOrder) {
+				currentNormal -= currentNormal;
+			}
+
+			vert.normal = CVector3::Normalise(currentNormal);
+		}
+	}*/
+
 	for (unsigned int y = 0; y < numPointMassesY; ++y) {
 		for (unsigned int x = 0; x < numPointMassesX; ++x) {
 			TVertex& vert = pVertices[(y * numPointMassesX) + x];
 			// Calculate normal.
-			CVector3 averagedNormal(0, 0, 0);
-			CVector3 lastLine(0, 0, 0);
+			auto averagedNormal = CVector3::s_ZERO;
+			auto lastLine = CVector3::s_ZERO;
 
 			// Start at the top right neighbour.
 			int neighbourX = x + 1;
@@ -626,6 +620,7 @@ void CClothSimulatorLogic::UpdateClothVertices()
 					// Is this neighbour outside the image?
 					// Don't evaluate it.
 					increment(i);
+					lastLine = CVector3::s_ZERO;
 
 					continue;
 				}
@@ -767,146 +762,144 @@ void CClothSimulatorLogic::CreateCloth()
 	UpdateClothIndices();
 }
 
-/*
-void CClothSimulatorLogic::CreatePointMasses(float hungFrom, float linkBreakingForce, float mass, float damping)
+CPointMass* CClothSimulatorLogic::GetClosestPoint(CPoint mousePosition, float minDistance)
 {
-	m_PointMasses.clear();
-	m_PointMasses.reserve(width * height);
-	float midWidth = (width * restingDistance) / 2.0f;
-	float midHeight = (height * restingDistance) / 2.0f;
+	auto ray = m_Camera.ScreenPointToRay(mousePosition);
+	auto distance = minDistance * minDistance;
+	CPointMass* pMass = nullptr;
 
-	for (int y = 0; y < height; ++y) {
-		float yPosition = hungFrom - (y * m_ClothRestingDistance);
+	for (auto& pointMass : m_Cloth.GetPointMasses()) {
+		float currentDistance = ray.GetDistanceToPointSquared(pointMass->GetPosition());
+		if (currentDistance < distance) {
+			pMass = pointMass.get();
+			distance = currentDistance;
+		}
+	}
 
-		for (int x = 0; x < width; ++x) {
-			CVector3 position(restingDistance * x - midWidth, ((height - y) * restingDistance) + 5.0f, 0.0f);
+	return pMass;
+}
 
-			auto pPointMass = std::make_unique<CPointMass>(position, 1.0f, 0.01f);
-			float diagonalRestingDistance = sqrt(2 * (m_ClothRestingDistance * m_ClothRestingDistance));
+void CClothSimulatorLogic::HandleSliderInput(const CInput& input, float deltaTime)
+{
+	const auto& mousePosition = input.GetMousePosition();
 
-			// Create links.
-			if (x != 0) {	// Horizontal link.
-				pPointMass->Attach(
-					GetPointMass(x - 1, y),
-					m_ClothRestingDistance,
-					m_ClothStiffness,
-					linkBreakingForce);
+	// Handle slider ui elements.
+	if (input.GetMouseButtonPress(EMouseButton::LEFT)) {
+		if (m_SliderRectClothHeight.IsInside(mousePosition)) {
+			m_pDraggingRect = &m_SliderRectClothHeight;
+		}
+		else if (m_SliderRectClothWidth.IsInside(mousePosition)) {
+			m_pDraggingRect = &m_SliderRectClothWidth;
+		}
+		else if (m_SliderRectNumHooks.IsInside(mousePosition)) {
+			m_pDraggingRect = &m_SliderRectNumHooks;
+		}
+		else if (m_SliderRectFanForce.IsInside(mousePosition)) {
+			m_pDraggingRect = &m_SliderRectFanForce;
+		}
+	}
 
-				// Create tightly bound link.
-				if (y != 0) {
-					pPointMass->Attach(
-						GetPointMass(x - 1, y - 1),
-						diagonalRestingDistance,
-						m_ClothStiffness / 3.0f,
-						linkBreakingForce,
-						false);
-				}
+	if (input.IsMouseButtonDown(EMouseButton::LEFT)) {
+		// Update slider position if we are moving it.
+		if (m_pDraggingRect) {
+			m_pDraggingRect->SetX(mousePosition.GetX());
+			if (m_pDraggingRect->GetX() < s_MIN_SLIDER_X) {
+				m_pDraggingRect->SetX(s_MIN_SLIDER_X);
+			}
+			else if (m_pDraggingRect->GetX() > s_MAX_SLIDER_X) {
+				m_pDraggingRect->SetX(s_MAX_SLIDER_X);
 			}
 
-			if (y != 0) {	// Vertical link.
-				pPointMass->Attach(
-					GetPointMass(x, y - 1),
-					m_ClothRestingDistance,
-					m_ClothStiffness,
-					linkBreakingForce);
+			float t = GetLerpAmount(s_MIN_SLIDER_X, s_MAX_SLIDER_X, m_pDraggingRect->GetX());
+			// Update sliders that update immediately.
+			if (m_pDraggingRect == &m_SliderRectNumHooks) {
+				auto numHooks = Lerp(s_MIN_HOOKS, s_MAX_HOOKS, t);
+				m_Cloth.SetNumHooks(numHooks);
+				m_Cloth.PinCloth();
+			}
+			else if (m_pDraggingRect == &m_SliderRectFanForce) {
+				m_FanForce = Lerp(s_MIN_FAN_FORCE, s_MAX_FAN_FORCE, t);
+			}
+		}
+	}
 
-				// Create tightly bound link.
-				if (x < width - 1) {
-					pPointMass->Attach(
-						GetPointMass(x + 1, y - 1),
-						diagonalRestingDistance,
-						m_ClothStiffness / 3.0f,
-						linkBreakingForce,
-						false);
-				}
+	if (input.GetMouseButtonRelease(EMouseButton::LEFT)) {
+		if (m_pGrabbedMass) {
+			m_pGrabbedMass->DetachPin();
+			m_pGrabbedMass = nullptr;
+		}
+
+		if (m_pDraggingRect) {
+			float t = GetLerpAmount(s_MIN_SLIDER_X, s_MAX_SLIDER_X, m_pDraggingRect->GetX());
+
+			if (m_pDraggingRect == &m_SliderRectClothWidth) {
+				m_Cloth.SetNumPointMassesX(Lerp(s_MIN_CLOTH_SIZE, s_MAX_CLOTH_SIZE, t));
+
+				CreateCloth();
+			}
+			else if (m_pDraggingRect == &m_SliderRectClothHeight) {
+				m_Cloth.SetNumPointMassesY(Lerp(s_MIN_CLOTH_SIZE, s_MAX_CLOTH_SIZE, t));
+
+				CreateCloth();
 			}
 
-			m_PointMasses.push_back(std::move(pPointMass));
+			m_pDraggingRect = nullptr;
 		}
 	}
 }
 
-
-void CClothSimulatorLogic::CreatePointMasses(float width, float height, float hungFrom, float stiffness, float breakingForce)
+void CClothSimulatorLogic::HandleCameraInput(const CInput& input, float deltaTime)
 {
-	m_PointMasses.clear();
-	m_PointMasses.reserve(m_ClothWidth * m_ClothHeight);
+	const auto& mousePosition = input.GetMousePosition();
 
-	m_ClothRestingDistance = width / m_ClothWidth;
-	m_ClothStiffness = stiffness;
-	m_ClothHungFromHeight = hungFrom;
+	// Handle rotation of camera.
+	if (input.IsMouseButtonDown(EMouseButton::MIDDLE)) {
+		CPoint deltaPosition = mousePosition - m_lastMousePosition;
+		m_CameraYaw -= deltaPosition.GetX() * 0.01f;
+		m_CameraPitch -= deltaPosition.GetY() * 0.01f;
 
-	float midWidth = width / 2.0f;
-	float midHeight = height / 2.0f;
-
-	for (int y = 0; y < m_ClothHeight; ++y) {
-		float yPosition = hungFrom - (y * m_ClothRestingDistance);
-
-		for (int x = 0; x < m_ClothWidth; ++x) {
-			CVector3 position(m_ClothRestingDistance * x - midWidth, yPosition, 0.0f);
-
-			auto pPointMass = std::make_unique<CPointMass>(position, 1.0f, 0.01f);
-			float diagonalRestingDistance = sqrt(2 * (m_ClothRestingDistance * m_ClothRestingDistance));
-
-			// Create links.
-			if (x != 0) {	// Horizontal link.
-				pPointMass->Attach(
-					GetPointMass(x - 1, y),
-					m_ClothRestingDistance,
-					stiffness, 
-					breakingForce);
-
-				// Create tightly bound link.
-				if (y != 0) {
-					pPointMass->Attach(
-						GetPointMass(x - 1, y - 1), 
-						diagonalRestingDistance, 
-						stiffness / 3.0f, 
-						breakingForce, 
-						false);
-				}
-			}
-
-			if (y != 0) {	// Vertical link.
-				pPointMass->Attach(
-					GetPointMass(x, y - 1), 
-					m_ClothRestingDistance,
-					stiffness,
-					breakingForce);
-
-				// Create tightly bound link.
-				if (x < width - 1) {
-					pPointMass->Attach(
-						GetPointMass(x + 1, y - 1),
-						diagonalRestingDistance, 
-						stiffness / 3.0f,
-						breakingForce,
-						false);
-				}
-			}
-
-			m_PointMasses.push_back(std::move(pPointMass));
-		}
+		m_Camera.SetRotation(CQuaternion(m_CameraYaw, m_CameraPitch, 0.0f));
 	}
 
-	PinCloth();
-}
+	m_lastMousePosition = mousePosition;
 
-void CClothSimulatorLogic::PinCloth()
-{
-	for (int x = 0; x < m_ClothWidth && x < m_PointMasses.size(); ++x) {
-		auto pointsPerHook = static_cast<int>(m_ClothWidth / static_cast<float>(m_ClothHooks));
-		pointsPerHook = std::max(pointsPerHook, 1); // Avoids division by 0.
+	// Handle translation of camera.
+	static float speed = 5.0f;
+	if (input.IsKeyDown(EKeyCode::LEFT_SHIFT)) {
+		speed = 50.0f;
+	}
 
-		if (x % pointsPerHook == 0 || x == m_ClothWidth - 1) {
-			CVector3 position(m_ClothRestingDistance * x - 45.0f / 2.0f, m_ClothHungFromHeight, 0.0f);
-			GetPointMass(x, 0)->Pin(position);
-		}
+	CVector3 cameraTranslation = CVector3::s_ZERO;
+	const CQuaternion& cameraRotation = m_Camera.GetRotation();
+
+	if (input.IsKeyDown(EKeyCode::W)) {
+		cameraTranslation += cameraRotation.GetDirection();
+	}
+
+	if (input.IsKeyDown(EKeyCode::S)) {
+		cameraTranslation -= cameraRotation.GetDirection();
+	}
+
+	if (input.IsKeyDown(EKeyCode::A)) {
+		cameraTranslation -= cameraRotation.GetRight();
+	}
+
+	if (input.IsKeyDown(EKeyCode::D)) {
+		cameraTranslation += cameraRotation.GetRight();
+	}
+
+	if (input.IsKeyDown(EKeyCode::SPACE)) {
+		cameraTranslation += cameraRotation.GetUp();
+	}
+
+	if (input.IsKeyDown(EKeyCode::LEFT_CONTROL)) {
+		cameraTranslation -= cameraRotation.GetUp();
+	}
+
+	if (cameraTranslation != CVector3::s_ZERO) {
+		cameraTranslation = CVector3::Normalise(cameraTranslation);
+		cameraTranslation *= deltaTime * speed;
+
+		m_Camera.SetPosition(cameraTranslation + m_Camera.GetPosition());
 	}
 }
-
-CPointMass* CClothSimulatorLogic::GetPointMass(size_t x, size_t y)
-{
-	return m_PointMasses[x + y * m_ClothWidth].get();
-}
-*/

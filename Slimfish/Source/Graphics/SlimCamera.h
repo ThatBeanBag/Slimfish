@@ -51,6 +51,8 @@ public:
 	*/
 	const CRay ScreenPointToRay(const CPoint& point) const;
 
+	bool IsInView(const CAxisAlignedBoundingBox& aabb);
+
 	/** Set the projection of the camera to perspective using the given properties.
 	 	@author Hayden Asplet
 		@param

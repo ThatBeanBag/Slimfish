@@ -84,6 +84,7 @@ namespace Slim {
 		loadInfo.BindFlags = D3DX11_DEFAULT;
 		loadInfo.MiscFlags = D3DX11_DEFAULT;
 		loadInfo.Format = imageInfo.Format;
+		loadInfo.MiscFlags = imageInfo.MiscFlags;
 		loadInfo.Filter = D3DX11_DEFAULT;
 		loadInfo.MipFilter = D3DX11_DEFAULT;
 		loadInfo.pSrcInfo = &imageInfo;
@@ -96,8 +97,8 @@ namespace Slim {
 			loadInfo.BindFlags = 0;
 		}
 
-		if (GetTextureType() == ETextureType::TYPE_CUBIC) {
-			loadInfo.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+		if (imageInfo.MiscFlags & D3D11_RESOURCE_MISC_TEXTURECUBE) {
+			SetTextureType(ETextureType::TYPE_CUBIC);
 		}
 
 		hResult = D3DX11CreateTextureFromFileA(m_pD3DDevice, GetName().c_str(), &loadInfo, NULL, m_pTexture.GetAddressOf(), NULL);
@@ -176,20 +177,20 @@ namespace Slim {
 		}
 	}
 
-	void CD3D11Texture::VLoadRaw()
+	void CD3D11Texture::VLoadRaw(const void* pData, size_t stride)
 	{
 		switch (GetTextureType()) {
 			case ETextureType::TYPE_1D: {
-				CreateRenderTarget1D();
+				CreateRenderTarget1D(pData, stride);
 				break;
 			}
 			case ETextureType::TYPE_CUBIC:	// Fall through.
 			case ETextureType::TYPE_2D: {
-				CreateRenderTarget2D();
+				CreateRenderTarget2D(pData, stride);
 				break;
 			}
 			case ETextureType::TYPE_3D: {
-				CreateRenderTarget3D();
+				CreateRenderTarget3D(pData, stride);
 				break;
 			}
 			default: {
@@ -249,7 +250,7 @@ namespace Slim {
 		return m_pTexture.Get();
 	}
 
-	void CD3D11Texture::CreateRenderTarget1D()
+	void CD3D11Texture::CreateRenderTarget1D(const void* pData /*= nullptr*/, size_t stride /*= 0*/)
 	{
 		assert(GetWidth() > 0);
 
@@ -267,7 +268,21 @@ namespace Slim {
 
 		SetSourceWidth(desc.Width);
 
-		HRESULT hResult = m_pD3DDevice->CreateTexture1D(&desc, NULL, m_pTexture1D.GetAddressOf());
+		HRESULT hResult;
+
+		if (pData) {
+			D3D11_SUBRESOURCE_DATA initData;
+			ZeroMemory(&initData, sizeof(D3D11_SUBRESOURCE_DATA));
+			initData.SysMemPitch = GetWidth() * stride;
+			initData.SysMemSlicePitch = 0;
+			initData.pSysMem = pData;
+
+			hResult = m_pD3DDevice->CreateTexture1D(&desc, &initData, m_pTexture1D.GetAddressOf());
+		}
+		else {
+			hResult = m_pD3DDevice->CreateTexture1D(&desc, NULL, m_pTexture1D.GetAddressOf());
+		}
+
 		if (FAILED(hResult)) {
 			VUnload();
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create 1D render target for " << GetName() << " with error: " << GetErrorMessage(hResult);
@@ -284,7 +299,7 @@ namespace Slim {
 		CreateShaderResourceView1D(desc);
 	}
 
-	void CD3D11Texture::CreateRenderTarget2D()
+	void CD3D11Texture::CreateRenderTarget2D(const void* pData /*= nullptr*/, size_t stride /*= 0*/)
 	{
 		assert(GetWidth() > 0 && GetHeight() > 0);
 
@@ -313,7 +328,21 @@ namespace Slim {
 			desc.ArraySize = 6;
 		}
 		
-		HRESULT hResult = m_pD3DDevice->CreateTexture2D(&desc, nullptr, m_pTexture2D.GetAddressOf());
+		HRESULT hResult;
+
+		if (pData) {
+			D3D11_SUBRESOURCE_DATA initData;
+			ZeroMemory(&initData, sizeof(D3D11_SUBRESOURCE_DATA));
+			initData.SysMemPitch = GetWidth() * stride;
+			initData.SysMemSlicePitch = 0;
+			initData.pSysMem = pData;
+
+			hResult = m_pD3DDevice->CreateTexture2D(&desc, &initData, m_pTexture2D.GetAddressOf());
+		}
+		else {
+			hResult = m_pD3DDevice->CreateTexture2D(&desc, NULL, m_pTexture2D.GetAddressOf());
+		}
+
 		if (FAILED(hResult)) {
 			VUnload();
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create 2D render target for " << GetName() << " with error: " << GetErrorMessage(hResult);
@@ -329,7 +358,7 @@ namespace Slim {
 		CreateShaderResourceView2D(desc);
 	}
 
-	void CD3D11Texture::CreateRenderTarget3D()
+	void CD3D11Texture::CreateRenderTarget3D(const void* pData /*= nullptr*/, size_t stride /*= 0*/)
 	{
 		assert(GetWidth() > 0 && GetHeight() > 0 && GetDepth() > 0);
 
@@ -352,36 +381,25 @@ namespace Slim {
 
 		HRESULT hResult;
 
-		std::ifstream ifs(GetName().c_str());
-		if (ifs.is_open() && GetUsage() != ETextureUsage::RENDER_TARGET) {
-			ifs.seekg(0, ifs.end);
-			auto length = ifs.tellg();
-			ifs.seekg(0, ifs.beg);
+		if (pData) {
+			D3D11_SUBRESOURCE_DATA initData;
+			ZeroMemory(&initData, sizeof(D3D11_SUBRESOURCE_DATA));
+			initData.SysMemPitch = GetWidth() * stride;
+			initData.SysMemSlicePitch = GetWidth() * GetHeight() * stride;
+			initData.pSysMem = pData;
 
-			std::vector<char> byteCode(static_cast<size_t>(length));
-			ifs.read(&byteCode[0], length);
-
-			D3D11_SUBRESOURCE_DATA data;
-			data.pSysMem = &byteCode[0];
-			data.SysMemPitch = GetWidth() * sizeof(float);
-			data.SysMemSlicePitch = GetWidth() * GetHeight() * sizeof(float);
-
-			hResult = m_pD3DDevice->CreateTexture3D(&desc, nullptr, m_pTexture3D.GetAddressOf());
-			if (FAILED(hResult)) {
-				VUnload();
-				SLIM_THROW(EExceptionType::RENDERING) << "Failed to create 2D render target for " << GetName() << " with error: " << GetErrorMessage(hResult);
-			}
+			hResult = m_pD3DDevice->CreateTexture3D(&desc, &initData, m_pTexture3D.GetAddressOf());
 		}
 		else {
 			hResult = m_pD3DDevice->CreateTexture3D(&desc, NULL, m_pTexture3D.GetAddressOf());
-			if (FAILED(hResult)) {
-				VUnload();
-				SLIM_THROW(EExceptionType::RENDERING) << "Failed to create 3D  render target for " << GetName() << " with error: " << GetErrorMessage(hResult);
-			}
+		}
+
+		if (FAILED(hResult)) {
+			VUnload();
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create 3D  render target for " << GetName() << " with error: " << GetErrorMessage(hResult);
 		}
 
 		// Grab the base resource.
-		//hResult = m_pTexture3D->QueryInterface(__uuidof(ID3D11Resource), reinterpret_cast<void**>(&m_pTexture));
 		hResult = m_pTexture3D.As(&m_pTexture);
 		if (FAILED(hResult)) {
 			VUnload();

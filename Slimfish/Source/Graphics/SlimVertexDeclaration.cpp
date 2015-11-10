@@ -156,7 +156,7 @@ const CInputElement& CVertexDeclaration::GetElement(size_t index) const
 	return m_ElementList[index];
 }
 
-int CVertexDeclaration::GetNumElements() const
+size_t CVertexDeclaration::GetNumElements() const
 {
 	return m_ElementList.size();
 }

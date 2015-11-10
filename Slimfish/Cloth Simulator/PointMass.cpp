@@ -42,16 +42,25 @@ CPointMass::~CPointMass()
 void CPointMass::Update(float timeStep)
 {
 	// Add the effects of gravity.
-	m_Acceleration -= CVector3(0.0f, g_GRAVITY, 0.0f);
+	if (!m_IsPinned) {
+		m_Acceleration -= CVector3(0.0f, g_GRAVITY, 0.0f);
 
-	float timeStepSquared = timeStep * timeStep;
+		float timeStepSquared = timeStep * timeStep;
 
-	CVector3 velocity = m_Position - m_LastPosition;
+		CVector3 velocity = m_Position - m_LastPosition;
 
-	m_LastPosition = m_Position;
-	m_Position += velocity * (1.0f - m_Damping) + m_Acceleration * timeStepSquared;
+		m_LastPosition = m_Position;
+		m_Position += velocity * (1.0f - m_Damping) + m_Acceleration * timeStepSquared;
 
-	m_Acceleration = CVector3::s_ZERO;
+		m_Acceleration = CVector3::s_ZERO;
+	}
+	else {
+		m_Position = m_PinPosition;
+	}
+
+	if (m_IsBurning) {
+		AddToBurntLevel(Math::Random(0.0f, 0.3f) * timeStep);
+	}
 }
 
 void CPointMass::SolveConstraints()
@@ -63,10 +72,6 @@ void CPointMass::SolveConstraints()
 		else {
 			++iter;
 		}
-	}
-
-	if (m_IsPinned) {
-		m_Position = m_PinPosition;
 	}
 }
 
@@ -185,7 +190,27 @@ const std::vector<CLink>& CPointMass::GetLinks() const
 	return m_Links;
 }
 
+std::vector<CLink>& CPointMass::GetLinks()
+{
+	return m_Links;
+}
+
 const std::vector<CLink>& CPointMass::GetBrokenLinks() const
 {
 	return m_BrokenLinks;
+}
+
+const CVector3 CPointMass::GetPinPosition() const
+{
+	return m_PinPosition;
+}
+
+void CPointMass::SetIsBurning(bool isBurning)
+{
+	m_IsBurning = isBurning;
+}
+
+const bool CPointMass::GetIsBurning() const
+{
+	return m_IsBurning;
 }

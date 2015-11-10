@@ -1,9 +1,9 @@
 struct GSInput {
-	uint z8_y8_x8_case8 : POSITION;
+	uint z8_y8_x8_case8 : TEX;
 };
 
 struct GSOutput {
-	uint z8_y8_x8_case8 : POSITION;
+	uint z8_y8_x8_case8 : TEX;
 };
 
 [maxvertexcount(1)]

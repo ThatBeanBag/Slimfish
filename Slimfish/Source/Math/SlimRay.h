@@ -74,7 +74,15 @@ public:
 	/** Get the point of intersection on the ray from a given point.
 	 	@author Hayden Asplet
 	*/
-	const CVector3 GetIntersectionPointOnRay(const CVector3& point) const;
+	const CVector3 GetIntersectionPoint(const CVector3& point) const;
+
+	/** Get the point of intersection where the plane intersects with the ray.
+	 	@author Hayden Asplet
+	 	@param plane Plane to test for intersection.
+	 	@param intersectionPoint Resultant intersection point.
+	 	@return bool True if ray and plane intersect.
+	*/
+	const bool GetIntersectionPoint(const CPlane& plane, CVector3& intersectionPoint) const;
 
 	/** Set the origin. @author Hayden Asplet */
 	void SetOrigin(const CVector3& origin);

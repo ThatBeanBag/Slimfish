@@ -85,6 +85,11 @@ namespace Slim {
 		return CRay(rayOrigin, rayDirection);
 	}
 
+	bool CCamera::IsInView(const CAxisAlignedBoundingBox& aabb)
+	{
+		return CFrustum::IsInside(aabb);
+	}
+
 	void CCamera::SetPerspective(float radFieldOfView, float aspectRatio, float nearClipDistance, float farClipDistance)
 	{
 		CFrustum::SetFieldOfView(radFieldOfView);

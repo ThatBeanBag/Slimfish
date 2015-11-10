@@ -19,6 +19,7 @@
 
 // This Include
 #include "SlimFrustum.h"
+#include "..\Math\SlimAxisAlignedBoundingBox.h"
 
 // Local Includes
 
@@ -46,13 +47,29 @@ namespace Slim {
 		// Calculate the frustums in case they are invalid.
 		CalculateFrustumSides();
 
-		for (int i = 0; i < static_cast<int>(ESide::FS_MAX); ++i) {
+		for (auto i = 0; i < static_cast<int>(ESide::FS_MAX); ++i) {
 			// If the point is outside any one of the planes then it's outside the frustum.
 			if (!m_Sides[i].IsInside(vertex)) {
 				return false;
 			}
 		}
 
+		return true;
+	}
+
+	bool CFrustum::IsInside(const CAxisAlignedBoundingBox& aabb) const
+	{
+		// Calculate the frustums in case they are invalid.
+		CalculateFrustumSides();
+
+		for (auto i = 0; i < static_cast<int>(ESide::FS_MAX); ++i) {
+			// Is both the min and max is outside a plane then the entire box is outside the frustum.
+			if (!m_Sides[i].IsInside(aabb.GetMin()) && !m_Sides[i].IsInside(aabb.GetMax())) {
+				return false;
+			}
+		}
+
+		// Bounding box intersects with the frustum.
 		return true;
 	}
 
@@ -184,35 +201,35 @@ namespace Slim {
 			// rebuild themselves if necessary.
 			CMatrix4x4 viewProj = GetProjectionMatrix() * GetViewMatrix();
 
-			m_Sides[static_cast<int>(ESide::FS_NEAR)].SetA(viewProj[3][0] + viewProj[2][0]);
-			m_Sides[static_cast<int>(ESide::FS_NEAR)].SetB(viewProj[3][1] + viewProj[2][1]);
-			m_Sides[static_cast<int>(ESide::FS_NEAR)].SetC(viewProj[3][2] + viewProj[2][2]);
-			m_Sides[static_cast<int>(ESide::FS_NEAR)].SetD(viewProj[3][3] + viewProj[2][3]);
+			m_Sides[static_cast<int>(ESide::FS_NEAR)].SetA(-(viewProj[3][0] + viewProj[2][0]));
+			m_Sides[static_cast<int>(ESide::FS_NEAR)].SetB(-(viewProj[3][1] + viewProj[2][1]));
+			m_Sides[static_cast<int>(ESide::FS_NEAR)].SetC(-(viewProj[3][2] + viewProj[2][2]));
+			m_Sides[static_cast<int>(ESide::FS_NEAR)].SetD(-(viewProj[3][3] + viewProj[2][3]));
 
-			m_Sides[static_cast<int>(ESide::FS_FAR)].SetA(viewProj[3][0] - viewProj[2][0]);
-			m_Sides[static_cast<int>(ESide::FS_FAR)].SetB(viewProj[3][1] - viewProj[2][1]);
-			m_Sides[static_cast<int>(ESide::FS_FAR)].SetC(viewProj[3][2] - viewProj[2][2]);
-			m_Sides[static_cast<int>(ESide::FS_FAR)].SetD(viewProj[3][3] - viewProj[2][3]);
+			m_Sides[static_cast<int>(ESide::FS_FAR)].SetA(viewProj[2][0] - viewProj[3][0]);
+			m_Sides[static_cast<int>(ESide::FS_FAR)].SetB(viewProj[2][1] - viewProj[3][1]);
+			m_Sides[static_cast<int>(ESide::FS_FAR)].SetC(viewProj[2][2] - viewProj[3][2]);
+			m_Sides[static_cast<int>(ESide::FS_FAR)].SetD(viewProj[2][3] - viewProj[3][3]);
 
-			m_Sides[static_cast<int>(ESide::FS_LEFT)].SetA(viewProj[3][0] + viewProj[0][0]);
-			m_Sides[static_cast<int>(ESide::FS_LEFT)].SetB(viewProj[3][1] + viewProj[0][1]);
-			m_Sides[static_cast<int>(ESide::FS_LEFT)].SetC(viewProj[3][2] + viewProj[0][2]);
-			m_Sides[static_cast<int>(ESide::FS_LEFT)].SetD(viewProj[3][3] + viewProj[0][3]);
+			m_Sides[static_cast<int>(ESide::FS_LEFT)].SetA(-(viewProj[3][0] + viewProj[0][0]));
+			m_Sides[static_cast<int>(ESide::FS_LEFT)].SetB(-(viewProj[3][1] + viewProj[0][1]));
+			m_Sides[static_cast<int>(ESide::FS_LEFT)].SetC(-(viewProj[3][2] + viewProj[0][2]));
+			m_Sides[static_cast<int>(ESide::FS_LEFT)].SetD(-(viewProj[3][3] + viewProj[0][3]));
 
-			m_Sides[static_cast<int>(ESide::FS_RIGHT)].SetA(viewProj[3][0] - viewProj[0][0]);
-			m_Sides[static_cast<int>(ESide::FS_RIGHT)].SetB(viewProj[3][1] - viewProj[0][1]);
-			m_Sides[static_cast<int>(ESide::FS_RIGHT)].SetC(viewProj[3][2] - viewProj[0][2]);
-			m_Sides[static_cast<int>(ESide::FS_RIGHT)].SetD(viewProj[3][3] - viewProj[0][3]);
+			m_Sides[static_cast<int>(ESide::FS_RIGHT)].SetA(viewProj[0][0] - viewProj[3][0]);
+			m_Sides[static_cast<int>(ESide::FS_RIGHT)].SetB(viewProj[0][1] - viewProj[3][1]);
+			m_Sides[static_cast<int>(ESide::FS_RIGHT)].SetC(viewProj[0][2] - viewProj[3][2]);
+			m_Sides[static_cast<int>(ESide::FS_RIGHT)].SetD(viewProj[0][3] - viewProj[3][3]);
 
-			m_Sides[static_cast<int>(ESide::FS_TOP)].SetA(viewProj[3][0] - viewProj[1][0]);
-			m_Sides[static_cast<int>(ESide::FS_TOP)].SetB(viewProj[3][1] - viewProj[1][1]);
-			m_Sides[static_cast<int>(ESide::FS_TOP)].SetC(viewProj[3][2] - viewProj[1][2]);
-			m_Sides[static_cast<int>(ESide::FS_TOP)].SetD(viewProj[3][3] - viewProj[1][3]);
+			m_Sides[static_cast<int>(ESide::FS_TOP)].SetA(viewProj[1][0] - viewProj[3][0]);
+			m_Sides[static_cast<int>(ESide::FS_TOP)].SetB(viewProj[1][1] - viewProj[3][1]);
+			m_Sides[static_cast<int>(ESide::FS_TOP)].SetC(viewProj[1][2] - viewProj[3][2]);
+			m_Sides[static_cast<int>(ESide::FS_TOP)].SetD(viewProj[1][3] - viewProj[3][3]);
 
-			m_Sides[static_cast<int>(ESide::FS_BOTTOM)].SetA(viewProj[3][0] + viewProj[1][0]);
-			m_Sides[static_cast<int>(ESide::FS_BOTTOM)].SetB(viewProj[3][1] + viewProj[1][1]);
-			m_Sides[static_cast<int>(ESide::FS_BOTTOM)].SetC(viewProj[3][2] + viewProj[1][2]);
-			m_Sides[static_cast<int>(ESide::FS_BOTTOM)].SetD(viewProj[3][3] + viewProj[1][3]);
+			m_Sides[static_cast<int>(ESide::FS_BOTTOM)].SetA(-(viewProj[3][0] + viewProj[1][0]));
+			m_Sides[static_cast<int>(ESide::FS_BOTTOM)].SetB(-(viewProj[3][1] + viewProj[1][1]));
+			m_Sides[static_cast<int>(ESide::FS_BOTTOM)].SetC(-(viewProj[3][2] + viewProj[1][2]));
+			m_Sides[static_cast<int>(ESide::FS_BOTTOM)].SetD(-(viewProj[3][3] + viewProj[1][3]));
 
 			// Normalise the planes
 			for (int i = 0; i < static_cast<int>(ESide::FS_MAX); ++i) {

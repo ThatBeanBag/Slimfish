@@ -21,6 +21,7 @@
 #include "SlimRay.h"
 
 // Local Includes
+#include "SlimPlane.h"
 
 namespace Slim {
 
@@ -51,9 +52,22 @@ namespace Slim {
 		return CVector3::CrossProduct(m_Direction, point - m_Origin).GetLengthSquared();
 	}
 
-	const CVector3 CRay::GetIntersectionPointOnRay(const CVector3& point) const
+	const CVector3 CRay::GetIntersectionPoint(const CVector3& point) const
 	{
 		return m_Origin + m_Direction * CVector3::DotProduct(m_Direction, point - m_Origin);
+	}
+
+	const bool CRay::GetIntersectionPoint(const CPlane& plane, CVector3& intersectionPoint) const
+	{
+		auto planeNormal = plane.GetNormal();
+		float nDotD = CVector3::DotProduct(planeNormal, m_Direction);
+		if (nDotD == 0.0f) {
+			return false;
+		}
+		
+		float t = -(CVector3::DotProduct(m_Origin, planeNormal) - plane.GetD()) / nDotD;
+		intersectionPoint = GetPoint(t);
+		return true;
 	}
 
 	void CRay::SetOrigin(const CVector3& origin)

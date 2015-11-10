@@ -33,7 +33,7 @@ public:
 	~CD3D10Texture();
 
 	virtual void VLoad() override;
-	virtual void VLoadRaw() override;
+	virtual void VLoadRaw(const void* pData, size_t stride) override;
 	virtual void VUnload() override;
 
 	virtual const CImage VGetImage() const;
@@ -42,9 +42,9 @@ public:
 	ID3D10Resource* GetD3DResource();
 protected:
 private:
-	void CreateRenderTarget1D();
-	void CreateRenderTarget2D();
-	void CreateRenderTarget3D();
+	void CreateRenderTarget1D(const void* pData = nullptr, size_t stride = 0);
+	void CreateRenderTarget2D(const void* pData = nullptr, size_t stride = 0);
+	void CreateRenderTarget3D(const void* pData = nullptr, size_t stride = 0);
 
 	void CreateShaderResourceView1D(D3D10_TEXTURE1D_DESC desc);
 	void CreateShaderResourceView2D(D3D10_TEXTURE2D_DESC desc);
@@ -56,12 +56,12 @@ protected:
 private:
 	ID3D10Device* m_pD3DDevice;		// The D3D Device.
 
-	ID3D10Texture1D* m_pTexture1D;	// DirectX 10 1D texture. Only valid if the texture is of type TEXTURE_TYPE_1D.
-	ID3D10Texture2D* m_pTexture2D;	// DirectX 10 2D texture. Only valid if the texture is of type TEXTURE_TYPE_2D.
-	ID3D10Texture3D* m_pTexture3D;	// DirectX 10 3D texture. Only valid if the texture is of type TEXTURE_TYPE_3D.
-	ID3D10Resource* m_pTexture;		// Actual texture handle.
+	ComPtr<ID3D10Texture1D> m_pTexture1D;	// DirectX 10 1D texture. Only valid if the texture is of type TEXTURE_TYPE_1D.
+	ComPtr<ID3D10Texture2D> m_pTexture2D;	// DirectX 10 2D texture. Only valid if the texture is of type TEXTURE_TYPE_2D.
+	ComPtr<ID3D10Texture3D> m_pTexture3D;	// DirectX 10 3D texture. Only valid if the texture is of type TEXTURE_TYPE_3D.
+	ComPtr<ID3D10Resource> m_pTexture;		// Actual texture handle.
 
-	ID3D10ShaderResourceView* m_pShaderResourceView;	// View for shaders.
+	ComPtr<ID3D10ShaderResourceView> m_pShaderResourceView;	// View for shaders.
 };
 
 }

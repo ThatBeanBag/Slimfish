@@ -1,7 +1,7 @@
 #include "Chunk.hlsli"
 
 struct GSInput {
-	uint z8_y8_x8_case8 : POSITION;
+	uint z8_y8_x8_case8 : TEX;
 };
 
 struct GSOutput {
@@ -10,8 +10,6 @@ struct GSOutput {
 
 cbuffer CBTables {
 	float4 gEdgeStart[12];
-	float4 gEdgeDirection[12];
-	float4 gEdgeEnd[12];
 	int4 gEdgeAxis[12];
 	int4 gTriTable[4096 / 4]; // The triangle table for lookup when create polys.
 };
@@ -30,7 +28,7 @@ int GetTriTableValue(uint i, uint j)
 }
 
 
-[maxvertexcount(18)]
+[maxvertexcount(15)]
 void main(point GSInput gIn[1], inout TriangleStream< GSOutput > outputStream)
 {
 	uint cubeCase = gIn[0].z8_y8_x8_case8 & 0xff;

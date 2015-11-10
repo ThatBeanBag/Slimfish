@@ -59,6 +59,7 @@ public:
 	void BurnCloth(size_t x, size_t y);
 
 	CPointMass* GetPointMass(size_t x, size_t y);
+	const std::vector<CPointMass*>& GetPinnedPoints();
 
 	/** Set the  number point masses on the x axis.  @author Hayden Asplet */
 	void SetNumPointMassesX(size_t numPointMassesX);
@@ -119,12 +120,19 @@ private:
 	float m_RestingDistance;
 	float m_Stiffness;
 
+	std::vector<CPointMass*> m_PinnedPoints;
+
 	// Burning.
 	bool m_IsBurning;
 	float m_BurningTimer;
-	float m_BurningRate = { 0.1f };
-	float m_PropagateBurningThreshold = { 0.2f };
-	std::vector<CPoint> m_BurningPoints;
+	float m_BurningRate = { 0.07f };
+	float m_PropagateBurningThreshold = { 0.5f };
+	float m_MinBurningDistance = { 0.1f };
+	float m_MaxBurningDistance = { 4.0f };
+	float m_ChanceToPropagate = { 0.01f };
+	//std::vector<CPoint> m_BurningPoints;
+
+	std::vector<CPointMass*> m_BurningPoints;
 };
 
 #endif	// __CLOTH_H__
