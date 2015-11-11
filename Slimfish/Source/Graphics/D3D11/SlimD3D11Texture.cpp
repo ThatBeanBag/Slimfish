@@ -62,6 +62,9 @@ namespace Slim {
 				}
 			}
 
+			// Generate mips for the render target.
+			m_pD3DImmediateContext->GenerateMips(m_pShaderResourceView.Get());
+
 			return;
 		}
 
@@ -82,13 +85,11 @@ namespace Slim {
 		loadInfo.FirstMipLevel = D3DX11_DEFAULT;
 		loadInfo.MipLevels = D3DX11_DEFAULT;
 		loadInfo.BindFlags = D3DX11_DEFAULT;
-		loadInfo.MiscFlags = D3DX11_DEFAULT;
 		loadInfo.Format = imageInfo.Format;
 		loadInfo.MiscFlags = imageInfo.MiscFlags;
 		loadInfo.Filter = D3DX11_DEFAULT;
-		loadInfo.MipFilter = D3DX11_DEFAULT;
+		loadInfo.MipFilter = D3DX11_FILTER_LINEAR;
 		loadInfo.pSrcInfo = &imageInfo;
-
 
 		if (loadInfo.Usage == D3D11_USAGE_DYNAMIC) {
 			loadInfo.MipLevels = 1;

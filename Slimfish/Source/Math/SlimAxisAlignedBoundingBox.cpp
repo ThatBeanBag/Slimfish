@@ -109,9 +109,14 @@ namespace Slim {
 		}
 	}
 
-	const CVector3 CAxisAlignedBoundingBox::GetCentre()
+	const CVector3 CAxisAlignedBoundingBox::GetCentre() const
 	{
 		return (m_Min + m_Max) * 0.5f;
+	}
+
+	const CVector3 CAxisAlignedBoundingBox::GetExtent() const
+	{
+		return (m_Max - m_Min) * 0.5f;
 	}
 
 	void CAxisAlignedBoundingBox::SetMin(const CVector3& min)

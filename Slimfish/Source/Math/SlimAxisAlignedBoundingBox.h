@@ -72,10 +72,15 @@ public:
 
 	/** Get the centre position of the box.
 		@remarks
-		Retrieves the point halfway between the minimum and maximum points.
+			Retrieves the point halfway between the minimum and maximum points.
 		@author Hayden Asplet
-		*/
-	const CVector3 GetCentre();
+	*/
+	const CVector3 GetCentre() const;
+
+	/** Get the extent of the box.
+		@author Hayden Asplet
+	*/
+	const CVector3 GetExtent() const;
 
 	/** Set the minimum corner of the box. @author Hayden Asplet */
 	void SetMin(const CVector3& min);

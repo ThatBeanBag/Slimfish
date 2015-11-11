@@ -654,7 +654,7 @@ void CMarchingCubesLogic::Render()
 					CVector3 chunkPositionMax = chunkPosition + chunkSize * 1.5f;
 
 					// Check to see if the chunk is in the view frustum.
-					bool isInView = true || m_Camera.IsInView(CAxisAlignedBoundingBox(chunkPositionMin, chunkPositionMax));
+					bool isInView = m_Camera.IsInView(CAxisAlignedBoundingBox(chunkPositionMin, chunkPositionMax));
 
 					auto& chunkInfo = m_Chunks[lod][i][j][k];
 

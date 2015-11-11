@@ -134,10 +134,7 @@ const bool CCollisionCapsule::IsInside(const CVector3& point, CVector3& intersec
 	auto lineNormal = transform.GetUp();
 
 	// Project the point onto the line.
-	float projection = CVector3::DotProduct(point, lineNormal);
-	float centre = CVector3::DotProduct(transform.GetPosition(), lineNormal);
-
-	projection -= centre;
+	float projection = CVector3::DotProduct(point - transform.GetPosition(), lineNormal);
 
 	float halfHeight = m_fHeight / 2.0f;
 

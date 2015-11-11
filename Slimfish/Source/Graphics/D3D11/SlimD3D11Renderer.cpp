@@ -951,6 +951,7 @@ void CD3D11Renderer::VSetTextureBorderColour(size_t layer, const CColourValue& c
 
 void CD3D11Renderer::CreateSamplerState(size_t layer)
 {
+	m_SamplerDescs[layer].MaxLOD = D3D11_FLOAT32_MAX;
 	HRESULT hResult = m_pD3DDevice->CreateSamplerState(&m_SamplerDescs[layer], m_SamplerStates[layer].ReleaseAndGetAddressOf());
 	if (FAILED(hResult)) {
 		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create sampler state for layer " << layer

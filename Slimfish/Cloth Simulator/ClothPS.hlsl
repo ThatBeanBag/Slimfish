@@ -10,7 +10,8 @@ cbuffer constantBuffer {
 static const float bias = 0.1f;
 
 Texture2D gTextureDiffuse;
-Texture2D gTextureShadowMap;
+Texture2D gTextureFire;
+Texture2D gTextureBurnt;
 SamplerState gSampleDiffuse;
 SamplerState gSampleShadowMap;
 
@@ -32,9 +33,8 @@ float4 main(VSOutput pIn) : SV_TARGET
 
 	float4 diffuse = gTextureDiffuse.Sample(gSampleDiffuse, pIn.texCoord);
 	float4 specular = float4(0.2f, 0.2f, 0.2f, 1.0f);
-	float4 burntColour = float4(0.1f, 0.1f, 0.1f, 1.0f);
-
-	diffuse = lerp(diffuse, burntColour, saturate(pIn.burntLevel));
+	float4 halfBurntColour = gTextureFire.Sample(gSampleDiffuse, pIn.texCoord);
+	float4 burntColour = gTextureBurnt.Sample(gSampleDiffuse, pIn.texCoord);
 
 	Material material = { diffuse, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 20.0f };
 
@@ -72,6 +72,8 @@ float4 main(VSOutput pIn) : SV_TARGET
 	}
 
 	lightColour += diffuse.xyz * gAmbientLight.xyz;
+	lightColour = lerp(lightColour, halfBurntColour, saturate(pIn.burntLevel * pIn.burntLevel * pIn.burntLevel * 2.0f));
+	lightColour = lerp(lightColour, burntColour, saturate(pIn.burntLevel * pIn.burntLevel * pIn.burntLevel));
 
 	return float4(lightColour, 1.0f);
 }

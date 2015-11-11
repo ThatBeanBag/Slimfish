@@ -65,7 +65,7 @@ void CCloth::Initalise()
 
 				// Create tightly bound link.
 				if (y != 0) {
-					pPointMass->Attach(GetPointMass(x - 1, y - 1), diagonalRestingDistance, m_Stiffness / 6.0f, diagonalBreakingDistnace, false);
+					pPointMass->Attach(GetPointMass(x - 1, y - 1), diagonalRestingDistance, m_Stiffness / 20.0f, diagonalBreakingDistnace, false);
 				}
 
 				if (x > 1) {
@@ -78,7 +78,7 @@ void CCloth::Initalise()
 
 				// Create tightly bound link.
 				if (x < m_NumMassesX - 1) {
-					pPointMass->Attach(GetPointMass(x + 1, y - 1), diagonalRestingDistance, m_Stiffness / 6.0f, diagonalBreakingDistnace, false);
+					pPointMass->Attach(GetPointMass(x + 1, y - 1), diagonalRestingDistance, m_Stiffness / 20.0f, diagonalBreakingDistnace, false);
 				}
 
 				if (y > 1) {

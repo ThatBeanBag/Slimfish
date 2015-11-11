@@ -162,10 +162,10 @@ bool CClothSimulatorLogic::Initialise()
 
 	// Create the light camera.
 	m_LightCamera.SetProjectionMode(EProjectionMode::PERSPECTIVE);
-	m_LightCamera.SetPosition(CVector3(0, 50, 50));
+	m_LightCamera.SetPosition(m_Light.GetRotation().GetDirection() * -100.0f);
 	m_LightCamera.SetRotation(m_Light.GetRotation());
 	m_LightCamera.SetNearClipDistance(0.1f);
-	m_LightCamera.SetFarClipDistance(100.0f);
+	m_LightCamera.SetFarClipDistance(500.0f);
 	m_LightCamera.SetFieldOfView(90.0f);
 	m_LightCamera.SetAspectRatio(static_cast<float>(s_SHADOW_MAP_WIDTH) / static_cast<float>(s_SHADOW_MAP_HEIGHT));
 	m_LightCamera.SetOrthographicSize(1.0f);
@@ -181,7 +181,9 @@ bool CClothSimulatorLogic::Initialise()
 	m_pPSParams->SetConstant("gAmbientLight", CColourValue(0.3f, 0.3f, 0.3f));
 
 	m_ClothRenderPass.GetPixelShader()->UpdateShaderParams("constantBuffer", m_pPSParams);
-	m_ClothRenderPass.AddTextureLayer("Textures/Cloth.jpg");
+	m_ClothRenderPass.AddTextureLayer("Textures/ClothTexture.png")->SetTextureFilter(ETextureFilterType::ANISOTROPIC);
+	m_ClothRenderPass.AddTextureLayer("Textures/ClothTextureFire.png");
+	m_ClothRenderPass.AddTextureLayer("Textures/ClothTextureBurnt.png");
 
 	// Setup camera.
 	m_Camera.SetPosition(CVector3(0.0f, 20.0f, 50.0f));
@@ -209,7 +211,7 @@ bool CClothSimulatorLogic::Initialise()
 	m_GroundRenderPass = m_ClothRenderPass;
 	m_SphereRenderPass = m_ClothRenderPass;
 	m_GroundRenderPass.GetTextureLayer(0)->SetTexture(g_pApp->GetRenderer()->VLoadTexture("Textures/Ground.jpg"));
-	m_SphereRenderPass.GetTextureLayer(0)->SetTexture(g_pApp->GetRenderer()->VLoadTexture("Textures/Planet.png"));
+	m_SphereRenderPass.GetTextureLayer(0)->SetTexture(g_pApp->GetRenderer()->VLoadTexture("Textures/BlandTexture.png"));
 
 	return true;
 }
