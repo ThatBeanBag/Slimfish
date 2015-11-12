@@ -321,13 +321,13 @@ void CMarchingCubesLogic::BuildStreamOutputBuffers()
 void CMarchingCubesLogic::BuildDummyPoints()
 {
 	std::vector<CVector3> vertices;
-	for (auto i = 0; i < m_VoxelDim - 1; ++i) {
-		for (auto j = 0; j < m_VoxelDim - 1; ++j) {
-			for (auto k = 0; k < m_VoxelDim - 1; ++k) {
+	for (auto i = 0; i < m_VoxelDim; ++i) {
+		for (auto j = 0; j < m_VoxelDim; ++j) {
+			for (auto k = 0; k < m_VoxelDim; ++k) {
 				vertices.emplace_back(
-					i / static_cast<float>((m_VoxelDim - 1)),
-					j / static_cast<float>((m_VoxelDim - 1)),
-					k / static_cast<float>((m_VoxelDim - 1)));
+					(i / static_cast<float>(m_VoxelDim - 1)),
+					(j / static_cast<float>(m_VoxelDim - 1)),
+					(k / static_cast<float>(m_VoxelDim - 1)));
 			}
 		}
 	}
@@ -562,9 +562,9 @@ void CMarchingCubesLogic::CreateMarchingCubesPass()
 	// Add texture layers.
 	auto pDensityTextureLayer = m_MarchingCubesPass.AddTextureLayer(m_pDensityRenderTarget->GetTexture());
 	pDensityTextureLayer->SetTextureFilter(ETextureFilterType::POINT);
-	//pDensityTextureLayer->SetTextureAddressModes(ETextureAddressMode::CLAMP);
-	pDensityTextureLayer->SetTextureAddressModes(ETextureAddressMode::BORDER);
-	pDensityTextureLayer->SetTextureBorderColour(CColourValue(1.0f, 0.0f, 0.0f));
+	pDensityTextureLayer->SetTextureAddressModes(ETextureAddressMode::CLAMP);
+	//pDensityTextureLayer->SetTextureAddressModes(ETextureAddressMode::BORDER);
+	//pDensityTextureLayer->SetTextureBorderColour(CColourValue(1.0f, 0.0f, 0.0f));
 	// No texture layers to add.
 
 	// Set stream output targets.
@@ -959,7 +959,7 @@ void CMarchingCubesLogic::HandleInput(const CInput& input, float deltaTime)
 	// Handle translation of camera.
 	static float speed = 2.0f;
 	if (input.IsKeyDown(EKeyCode::LEFT_SHIFT)) {
-		speed = 3.0f;
+		speed = 10.0f;
 	}
 
 	CVector3 cameraTranslation = CVector3::s_ZERO;

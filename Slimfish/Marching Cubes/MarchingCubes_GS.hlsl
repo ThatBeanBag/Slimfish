@@ -71,8 +71,13 @@ void main(point GSInput input[1], inout TriangleStream<GSOutput> triStream)
 	float3 normals[8];
 	float3 cubePoses[8];
 	float cubeVals[8];
+
 	for (int i = 0; i < 8; ++i) {
-		float3 uvw = (input[0].position.xyz * gVoxelDimMinusOne * gInvVoxelDim)  + (gCorners[i] * gInvVoxelDimMinusOne);
+		float3 uvw = input[0].position.xyz + (gCorners[i] * gInvVoxelDimMinusOne) /*+ float3(0.0f, 0.0f, gInvVoxelDimMinusOne)*/;
+		if (input[0].position.z == 0.0f) {
+			uvw.z += 8.0f * gInvVoxelDimMinusOne;
+		}
+
 		normals[i] = GetNormal(uvw);
 		cubeVals[i] = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw, 0);
 
