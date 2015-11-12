@@ -150,7 +150,7 @@ namespace Slim {
 	{
 		// Update our position so if we are following a target.
 		if (m_pTarget) {
-			CVector3 targetPosition = m_pTarget->GetPosition() + m_TargetTranslationOffset;
+			CVector3 targetPosition = m_pTarget->GetPosition() + (m_TargetTranslationOffset * m_pTarget->GetRotation());
 			SetPosition(targetPosition);
 
 			if (m_TrackRotation) {
@@ -245,6 +245,11 @@ namespace Slim {
 	const CMatrix4x4 CCamera::GetViewProjMatrix() const
 	{
 		return CFrustum::GetProjectionMatrix() * CFrustum::GetViewMatrix();
+	}
+
+	const bool CCamera::HasTarget() const
+	{
+		return m_pTarget != nullptr;
 	}
 
 }

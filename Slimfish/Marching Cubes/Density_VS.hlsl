@@ -18,7 +18,7 @@ VSOutput main( VSInput vIn )
 {
 	VSOutput vOut;
 
-	float3 chunkPosition = float3(vIn.texCoord, vIn.nInstanceID * gInvVoxelDim/*PlusMargins*/);
+	float3 chunkPosition = float3(vIn.texCoord, float(vIn.nInstanceID) * gInvVoxelDim/*PlusMargins*/);
 	chunkPosition.xyz *= gVoxelDim.x * gInvVoxelDimMinusOne;
 	//chunkPosition.xy *= gVoxelDimPlusMargins * gInvVoxelDimPlusMarginsMinusOne;
 

@@ -35,7 +35,7 @@ namespace Meshes {
 	};
 
 	void CreateSphere(int rings, int segments, std::shared_ptr<AVertexGpuBuffer>& pVertexBuffer, std::shared_ptr<AIndexGpuBuffer>& pIndexBuffer);
-	void CreateCapsule(float radius, float height, int rings, int segments, int verticalSegments, std::shared_ptr<AVertexGpuBuffer>& pVertexBuffer, std::shared_ptr<AIndexGpuBuffer>& pIndexBuffer);
+	void CreateCapsule(float radius, float height, size_t rings, size_t segments, size_t verticalSegments, std::shared_ptr<AVertexGpuBuffer>& pVertexBuffer, std::shared_ptr<AIndexGpuBuffer>& pIndexBuffer);
 	void CreateQuad(float width, float height, std::shared_ptr<AVertexGpuBuffer>& pVertexBuffer);
 	void CreatePyramid(std::shared_ptr<AVertexGpuBuffer>& pVertexBuffer);
 }

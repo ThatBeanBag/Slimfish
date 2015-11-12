@@ -192,10 +192,10 @@ bool CQuaternion::operator!=(const CQuaternion& other)
 
 const CQuaternion CQuaternion::operator*(const CQuaternion& other) const
 {
-	return CQuaternion(m_w * other.m_w - m_x * other.m_x - m_y * other.m_y - m_z * other.m_z,
-					   m_w * other.m_x + m_x * other.m_w + m_y * other.m_z - m_z * other.m_y,
+	return CQuaternion(m_w * other.m_x + m_x * other.m_w + m_y * other.m_z - m_z * other.m_y,
 					   m_w * other.m_y + m_y * other.m_w + m_z * other.m_x - m_x * other.m_z,
-					   m_w * other.m_z + m_z * other.m_w + m_w * other.m_y - m_y * other.m_x);
+					   m_w * other.m_z + m_z * other.m_w + m_w * other.m_y - m_y * other.m_x,
+					   m_w * other.m_w - m_x * other.m_x - m_y * other.m_y - m_z * other.m_z);
 }
 
 const CQuaternion CQuaternion::operator+(const CQuaternion& other) const

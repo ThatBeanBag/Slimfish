@@ -177,6 +177,11 @@ public:
 	 	@author Hayden Asplet
 	*/
 	const CMatrix4x4 GetViewProjMatrix() const;
+
+	/** Get whether the camera has a target or not.
+	 	@author Hayden Asplet
+	*/
+	const bool HasTarget() const;
 protected:
 private:
 	// Member Variables

@@ -4,6 +4,9 @@ cbuffer CBLighting {
 	Light gLight;
 	float3 gAmbientLight;
 	float3 gEyePosition;
+	float gFogStart;
+	float gFogRange;
+	float4 gFogColour;
 };
 
 struct PSInput {
@@ -38,7 +41,8 @@ float4 main(PSInput pIn) : SV_TARGET
 
 	lightColour += diffuse.xyz * gAmbientLight.xyz;
 
-
+	float fogLerp = saturate((distanceToEye - gFogStart) / gFogRange);
+	lightColour = lerp(lightColour, gFogColour, fogLerp);
 
 	return float4(lightColour, 1.0f);
 }

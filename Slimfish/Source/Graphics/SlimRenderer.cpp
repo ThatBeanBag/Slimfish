@@ -127,6 +127,17 @@ shared_ptr<AIndexGpuBuffer> ARenderer::CreateIndexBuffer(const std::vector<short
 	return VCreateIndexBuffer(indices.size(), AIndexGpuBuffer::INDEX_TYPE_16, reinterpret_cast<const void*>(&indices[0]), usage, false, isInSystemMemory);
 }
 
+void ARenderer::SetBackgroundColour(const CColourValue& colour)
+{
+	m_BackgroundColour = colour;
+	VSetBackgroundColour(colour);
+}
+
+const CColourValue& ARenderer::GetBackgroundColour() const
+{
+	return m_BackgroundColour;
+}
+
 void ARenderer::SetTextureLayer(size_t layer, CTextureLayer& textureLayer)
 {
 	// Set the texture to the layer.

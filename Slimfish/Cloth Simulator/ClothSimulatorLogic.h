@@ -132,6 +132,7 @@ private:
 	float m_FanForce;
 	CVector3 m_FanPosition;
 
+	CSceneNode m_ObjectNode;
 	CCollisionSphere m_Sphere;
 	CCollisionPlane m_GroundPlane;
 	CCollisionPyramid m_Pyrimad;
@@ -141,6 +142,7 @@ private:
 	CVector3 m_CapsuleScale;
 	CVector3 m_SphereScale;
 	CVector3 m_PyramidScale;
+	bool m_IsMovingObjects;
 };
 
 #endif // __CLOTHSIMULATORLOGIC_H__

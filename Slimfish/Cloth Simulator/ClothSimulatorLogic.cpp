@@ -80,7 +80,9 @@ CClothSimulatorLogic::CClothSimulatorLogic()
 	m_Pyrimad(12.7f, 12.7f, 12.7f),
 	m_Capsule(4.2f, 12.2f),
 	m_FanForce(s_MIN_FAN_FORCE),
-	m_FanPosition(CVector3::s_ZERO)
+	m_FanPosition(CVector3::s_ZERO),
+	m_ObjectNode(nullptr),
+	m_IsMovingObjects(false)
 {
 	m_CapsuleScale = { 6.0f, 6.0f, 6.0f };
 	m_SphereScale = { 6.0f, 6.0f, 6.0f };
@@ -93,7 +95,7 @@ CClothSimulatorLogic::CClothSimulatorLogic()
 	m_Cloth.SetNumPointMassesY(30);
 	m_Cloth.SetNumHooks(4);
 	m_Cloth.SetHungFromHeight(s_MAX_CLOTH_SIZE + 3.0f);
-	m_Cloth.SetLinkBreakingDistance(4.0f);
+	m_Cloth.SetLinkBreakingDistance(3.0f);
 	m_Cloth.SetRestingDistance(1.0f);
 	m_Cloth.SetStiffness(0.9f);
 	m_Cloth.SetPointMassDamping(0.1f);
@@ -192,6 +194,8 @@ bool CClothSimulatorLogic::Initialise()
 	m_Camera.SetFarClipDistance(1000.0f);
 	m_Camera.SetFieldOfView(Math::DegreesToRadians(60.0f));
 	m_Camera.SetOrthographicSize(20.0f);
+	m_ObjectNode.SetPosition(m_Camera.GetPosition());
+	m_Camera.SetTarget(&m_ObjectNode, true, CVector3(0.0, 0.0f, 0.0f));
 
 	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
 
@@ -218,6 +222,12 @@ bool CClothSimulatorLogic::Initialise()
 
 void CClothSimulatorLogic::Update(float deltaTime)
 {
+	if (m_IsMovingObjects) {
+		m_Pyrimad.SetTransform(m_ObjectNode.GetWorldTransform());
+		m_Sphere.SetTransform(m_ObjectNode.GetWorldTransform());
+		m_Capsule.SetTransform(m_ObjectNode.GetWorldTransform());
+	}
+
 	CPoint screenSize = g_pApp->GetRenderer()->GetWindowSize();
 	m_Camera.SetAspectRatio(static_cast<float>(screenSize.GetX()) / static_cast<float>(screenSize.GetY()));
 
@@ -388,7 +398,7 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 			speed = -5.0f;
 		}
 
-		if (!pinnedPoints.empty()) {
+		if (pinnedPoints.size() > 1) {
 			auto addPinnedPoint = [](const CVector3& total, const CPointMass* pPoint) {
 				return total + pPoint->GetPinPosition();
 			};
@@ -396,17 +406,45 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 			auto average = std::accumulate(pinnedPoints.begin(), pinnedPoints.end(), CVector3::s_ZERO, addPinnedPoint);
 			average /= static_cast<float>(pinnedPoints.size());
 
+			auto halfPoints = static_cast<int>(pinnedPoints.size() / 2.0f);
+			auto i = 0;
 			for (auto& pPinnedPoint : pinnedPoints) {
-				auto toCentre = average - pPinnedPoint->GetPinPosition();
-				toCentre = CVector3::Normalise(toCentre);
-				pPinnedPoint->Pin(pPinnedPoint->GetPinPosition() + (toCentre * deltaTime * speed));
+				auto toCentre = CVector3::s_ZERO;
+				if (i < halfPoints) {
+					toCentre = pinnedPoints[i + 1]->GetPinPosition() - pPinnedPoint->GetPinPosition();
+				}
+				else {
+					toCentre = pinnedPoints[i - 1]->GetPinPosition() - pPinnedPoint->GetPinPosition();
+				}
+
+				toCentre.SetY(0.0f);
+
+				if (speed <= 0.0f || toCentre.GetLengthSquared() >= 0.5f) {
+					toCentre = CVector3::Normalise(toCentre);
+					pPinnedPoint->Pin(pPinnedPoint->GetPinPosition() + (toCentre * deltaTime * speed));
+				}
+
+				i++;
 			}
+		}
+	}
+
+	if (input.GetKeyPress(EKeyCode::N)) {
+		if (m_IsMovingObjects) {
+			m_IsMovingObjects = false;
+			m_ObjectNode.SetPosition(m_Camera.GetPosition());
+			m_Camera.SetTargetTranslationOffset(CVector3::s_ZERO);
+		}
+		else if(m_CurrentObject != ECollisionObject::NONE) {
+			m_IsMovingObjects = true;
+			m_ObjectNode.SetPosition(m_Sphere.GetTransform().GetPosition());
+			m_Camera.SetTargetTranslationOffset(CVector3(0.0f, 0.0f, 50.0f));
 		}
 	}
 
 	if (input.GetKeyRelease(EKeyCode::NUM_4)) {
 		if (m_Cloth.GetLinkBreakingDistance() == std::numeric_limits<float>::max()) {
-			m_Cloth.SetLinkBreakingDistance(4.0f);
+			m_Cloth.SetLinkBreakingDistance(3.0f);
 		}
 		else {
 			m_Cloth.SetLinkBreakingDistance(std::numeric_limits<float>::max());
@@ -421,6 +459,11 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 		}
 		else {
 			m_CurrentObject = ECollisionObject::NONE;
+			if (m_IsMovingObjects) {
+				m_IsMovingObjects = false;
+				m_ObjectNode.SetPosition(m_Camera.GetPosition());
+				m_Camera.SetTargetTranslationOffset(CVector3::s_ZERO);
+			}
 		}
 	}
 
@@ -648,7 +691,7 @@ void CClothSimulatorLogic::UpdateClothIndices()
 	CGpuBufferLock indexLock(m_pClothIndexBuffer, 0, m_pClothIndexBuffer->GetSize(), EGpuBufferLockType::DISCARD);
 	int* pIndices = reinterpret_cast<int*>(indexLock.GetLockedContents());
 
-	auto index = 0;
+	auto index = 0U;
 	auto n = m_Cloth.GetNumPointMassesX();
 	auto m = m_Cloth.GetNumPointMassesY();
 
@@ -658,7 +701,7 @@ void CClothSimulatorLogic::UpdateClothIndices()
 			bool alreadyGenerate = false;
 
 			// Is this an even row?
-			for (int x = 0; x < static_cast<int>(n); ++x) {
+			for (unsigned int x = 0; x < static_cast<int>(n); ++x) {
 				pIndices[index++] = x + z * n;
 
 				// Is the link broken? If so insert a degenerate triangle.
@@ -692,7 +735,7 @@ void CClothSimulatorLogic::UpdateClothIndices()
 			bool alreadyDegenerate = false;
 
 			// This is an odd row.
-			for (int x = static_cast<int>(n)-1; x >= 0; --x) {
+			for (int x = static_cast<int>(n) - 1; x >= 0; --x) {
 				pIndices[index++] = x + z * n;
 
 				// Is the link broken? If so, insert a degenerate triangle.
@@ -700,7 +743,7 @@ void CClothSimulatorLogic::UpdateClothIndices()
 				if (z < m - 1 && !m_Cloth.GetPointMass(x, z + 1)->HasLinkTo(pointMass)) {
 					pIndices[index++] = x + z * n;	// Insert degenerate triangle.
 				}
-				else if (x < n - 1 && z < m - 1 && !m_Cloth.GetPointMass(x + 1, z + 1)->HasLinkTo(m_Cloth.GetPointMass(x, z + 1))) {
+				else if (x < static_cast<int>(n) - 1 && z < m - 1 && !m_Cloth.GetPointMass(x + 1, z + 1)->HasLinkTo(m_Cloth.GetPointMass(x, z + 1))) {
 					pIndices[index++] = x + z * n;	// Insert degenerate triangle.
 				}
 
@@ -852,7 +895,7 @@ void CClothSimulatorLogic::HandleSliderInput(const CInput& input, float deltaTim
 
 void CClothSimulatorLogic::HandleCameraInput(const CInput& input, float deltaTime)
 {
-	const auto& mousePosition = input.GetMousePosition();
+	/*const auto& mousePosition = input.GetMousePosition();
 
 	// Handle rotation of camera.
 	if (input.IsMouseButtonDown(EMouseButton::MIDDLE)) {
@@ -903,5 +946,58 @@ void CClothSimulatorLogic::HandleCameraInput(const CInput& input, float deltaTim
 		cameraTranslation *= deltaTime * speed;
 
 		m_Camera.SetPosition(cameraTranslation + m_Camera.GetPosition());
+	}*/
+
+	const auto& mousePosition = input.GetMousePosition();
+
+	// Handle rotation of camera.
+	if (input.IsMouseButtonDown(EMouseButton::MIDDLE)) {
+		CPoint deltaPosition = mousePosition - m_lastMousePosition;
+		m_CameraYaw -= deltaPosition.GetX() * 0.01f;
+		m_CameraPitch -= deltaPosition.GetY() * 0.01f;
+
+		m_ObjectNode.SetRotation(CQuaternion(m_CameraYaw, m_CameraPitch, 0.0f));
+	}
+
+	m_lastMousePosition = mousePosition;
+
+	// Handle translation of camera.
+	static float speed = 5.0f;
+	if (input.IsKeyDown(EKeyCode::LEFT_SHIFT)) {
+		speed = 50.0f;
+	}
+
+	CVector3 cameraTranslation = CVector3::s_ZERO;
+	const CQuaternion& cameraRotation = m_ObjectNode.GetRotation();
+
+	if (input.IsKeyDown(EKeyCode::W)) {
+		cameraTranslation += cameraRotation.GetDirection();
+	}
+
+	if (input.IsKeyDown(EKeyCode::S)) {
+		cameraTranslation -= cameraRotation.GetDirection();
+	}
+
+	if (input.IsKeyDown(EKeyCode::A)) {
+		cameraTranslation -= cameraRotation.GetRight();
+	}
+
+	if (input.IsKeyDown(EKeyCode::D)) {
+		cameraTranslation += cameraRotation.GetRight();
+	}
+
+	if (input.IsKeyDown(EKeyCode::SPACE)) {
+		cameraTranslation += cameraRotation.GetUp();
+	}
+
+	if (input.IsKeyDown(EKeyCode::LEFT_CONTROL)) {
+		cameraTranslation -= cameraRotation.GetUp();
+	}
+
+	if (cameraTranslation != CVector3::s_ZERO) {
+		cameraTranslation = CVector3::Normalise(cameraTranslation);
+		cameraTranslation *= deltaTime * speed;
+
+		m_ObjectNode.SetPosition(cameraTranslation + m_ObjectNode.GetPosition());
 	}
 }

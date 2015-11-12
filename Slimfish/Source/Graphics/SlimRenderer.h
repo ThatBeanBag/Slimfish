@@ -301,8 +301,11 @@ namespace Slim {
 		virtual void VSetProjectionTransform(const CMatrix4x4& projectionTransform) = 0;
 		/** Set the ambient colour. */
 		virtual void VSetAmbientColour(const CColour& colour) = 0;
-		/** Set the background the colour. */
-		virtual void VSetBackgroundColour(const CColourValue& colour) = 0;
+
+		/** Set the background colour. @author Hayden Asplet */
+		void SetBackgroundColour(const CColourValue& colour);
+		/** Get the background colour. @author Hayden Asplet */
+		const CColourValue& GetBackgroundColour() const;
 		
 		/** Set the fog options for future rendering of geometry.
 		 	@author Hayden Asplet
@@ -455,6 +458,9 @@ namespace Slim {
 		*/
 		virtual void VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBuffer) = 0;
 
+		/** Internal delegating method to set the background the colour. */
+		virtual void VSetBackgroundColour(const CColourValue& colour) = 0;
+
 		// Member Variables
 	public:
 	protected:
@@ -463,6 +469,7 @@ namespace Slim {
 		int m_Width;
 		int m_Height;
 	private:
+		CColourValue m_BackgroundColour;
 		size_t m_disableTextureLayerFrom;	// Texture layer from this to g_MAX_TEXTURE_LAYERS are currently disabled.
 	};
 

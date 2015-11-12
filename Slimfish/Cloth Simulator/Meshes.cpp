@@ -72,16 +72,16 @@ namespace Meshes {
 		pIndexBuffer = g_pApp->GetRenderer()->CreateIndexBuffer(indices);
 	}
 
-	void CreateCapsule(float radius, float height, int rings, int segments, int verticalSegments, std::shared_ptr<AVertexGpuBuffer>& pVertexBuffer, std::shared_ptr<AIndexGpuBuffer>& pIndexBuffer)
+	void CreateCapsule(float radius, float height, size_t rings, size_t segments, size_t verticalSegments, std::shared_ptr<AVertexGpuBuffer>& pVertexBuffer, std::shared_ptr<AIndexGpuBuffer>& pIndexBuffer)
 	{
 		std::vector<TVertex> vertices;
 		std::vector<int> indices;
 
-		float deltaRingAngle = (Math::s_PI / 2.0) / static_cast<float>(rings);
-		float deltaSegAngle = (Math::s_PI * 2.0) / static_cast<float>(segments);
+		auto deltaRingAngle = (Math::s_PI / 2.0f) / static_cast<float>(rings);
+		auto deltaSegAngle = (Math::s_PI * 2.0f) / static_cast<float>(segments);
 
-		float sphereRatio = radius / (2.0f * radius + height);
-		float cylinderRatio = height / (2.0f * radius + height);
+		auto sphereRatio = radius / (2.0f * radius + height);
+		auto cylinderRatio = height / (2.0f * radius + height);
 
 		size_t offset = 0;
 

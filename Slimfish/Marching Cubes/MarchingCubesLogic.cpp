@@ -236,20 +236,23 @@ bool CMarchingCubesLogic::Initialise()
 	m_pWVPParams = m_DrawChunkPass.GetVertexShader()->GetShaderParams("CBPerFrame");
 	m_pLightingParams = m_DrawChunkPass.GetPixelShader()->GetShaderParams("CBLighting");
 
+	g_pApp->GetRenderer()->SetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
+
 	m_pLightingParams->SetConstant("gLight.type", m_Light.GetType());
 	m_pLightingParams->SetConstant("gLight.diffuse", m_Light.GetDiffuse());
 	m_pLightingParams->SetConstant("gLight.specular", m_Light.GetSpecular());
 	m_pLightingParams->SetConstant("gLight.direction", m_Light.GetRotation().GetDirection());
 	m_pLightingParams->SetConstant("gLight.range", m_Light.GetRange());
 	m_pLightingParams->SetConstant("gLight.attenuation", m_Light.GetAttenuation());
+	m_pLightingParams->SetConstant("gFogStart", 20.0f);
+	m_pLightingParams->SetConstant("gFogRange", 5.0f);
+	m_pLightingParams->SetConstant("gFogColour", g_pApp->GetRenderer()->GetBackgroundColour());
 	m_pLightingParams->SetConstant("gAmbientLight", CColourValue(0.3f, 0.3f, 0.3f));
 	m_DrawChunkPass.GetPixelShader()->UpdateShaderParams("CBLighting", m_pLightingParams);
 
 	// Setup camera.
 	m_Camera.SetPosition(CVector3(0.0f, 1.0f, 1.0f));
 	m_Camera.SetPerspective(Math::DegreesToRadians(60.0f), 1.0f, 0.1f, 100.0f);
-
-	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
 
 	return true;
 }
@@ -559,7 +562,9 @@ void CMarchingCubesLogic::CreateMarchingCubesPass()
 	// Add texture layers.
 	auto pDensityTextureLayer = m_MarchingCubesPass.AddTextureLayer(m_pDensityRenderTarget->GetTexture());
 	pDensityTextureLayer->SetTextureFilter(ETextureFilterType::POINT);
-	pDensityTextureLayer->SetTextureAddressModes(ETextureAddressMode::CLAMP);
+	//pDensityTextureLayer->SetTextureAddressModes(ETextureAddressMode::CLAMP);
+	pDensityTextureLayer->SetTextureAddressModes(ETextureAddressMode::BORDER);
+	pDensityTextureLayer->SetTextureBorderColour(CColourValue(1.0f, 0.0f, 0.0f));
 	// No texture layers to add.
 
 	// Set stream output targets.
@@ -586,6 +591,9 @@ void CMarchingCubesLogic::Render()
 	m_pWVPParams->SetConstant("gViewProjectionMatrix", m_Camera.GetViewProjMatrix());
 	m_DrawChunkPass.GetVertexShader()->UpdateShaderParams("CBPerFrame", m_pWVPParams);
 
+	m_pLightingParams->SetConstant("gEyePosition", m_Camera.GetPosition());
+	m_DrawChunkPass.GetPixelShader()->UpdateShaderParams("CBLighting", m_pLightingParams);
+
 	if (m_bDrawOnlyOneChunk) {
 		/*auto numIndices = BuildChunk(m_TestChunkPosition, 0, 0);
 		g_pApp->GetRenderer()->SetRenderPass(&m_DrawChunkPass);
@@ -599,11 +607,21 @@ void CMarchingCubesLogic::Render()
 		auto numIndices = BuildTestChunk(m_TestChunkPosition, 0, 0);
 		g_pApp->GetRenderer()->SetRenderPass(&m_DrawChunkPass);
 		if (m_bRenderPoints) {
-			g_pApp->GetRenderer()->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, m_ChunkVertexBuffers[0]);
+			g_pApp->GetRenderer()->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, m_ChunkVertexBuffers[0], nullptr, numIndices);
 		}
 		else {
-			g_pApp->GetRenderer()->VRender(m_ChunkVertexDeclaration, EPrimitiveType::POINTLIST, m_ChunkVertexBuffers[0]);
+			g_pApp->GetRenderer()->VRender(m_ChunkVertexDeclaration, EPrimitiveType::POINTLIST, m_ChunkVertexBuffers[0], nullptr, numIndices);
 		}
+
+		numIndices = BuildTestChunk(m_TestChunkPosition + CVector3::s_FORWARD * m_ChunkSizes[0], 0, 0);
+		g_pApp->GetRenderer()->SetRenderPass(&m_DrawChunkPass);
+		if (m_bRenderPoints) {
+			g_pApp->GetRenderer()->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, m_ChunkVertexBuffers[0], nullptr, numIndices);
+		}
+		else {
+			g_pApp->GetRenderer()->VRender(m_ChunkVertexDeclaration, EPrimitiveType::POINTLIST, m_ChunkVertexBuffers[0], nullptr, numIndices);
+		}
+
 		return;
 	}
 
@@ -618,7 +636,7 @@ void CMarchingCubesLogic::Render()
 		// Get the centre of the array of chunks for this lod that we are interested in.
 		// This is so that the centre of the chunks is in front of the camera and not behind
 		// where they wouldn't be seen.
-		auto chunkCentre = cameraPosition + (cameraDirection * static_cast<float>(chunkSize * s_NUM_CHUNKS_PER_DIM) * 0.5f);
+		auto chunkCentre = cameraPosition /*+ (cameraDirection * static_cast<float>(chunkSize * s_NUM_CHUNKS_PER_DIM) * 0.5f)*/;
 		/*CVector3 chunkCentreInt(
 			std::roundf(chunkCentre.GetX()),
 			std::roundf(chunkCentre.GetY()),
@@ -683,7 +701,7 @@ void CMarchingCubesLogic::Render()
 	};
 	std::sort(m_SortedChunks.begin(), m_SortedChunks.end(), lessDistanceFromCamera);
 
-	static const int s_MAX_WORK_PER_FRAME = 11;
+	static const int s_MAX_WORK_PER_FRAME = 21;
 	static const int s_WORK_FOR_EMPTY_CHUNK = 1;
 	static const int s_WORK_FOR_NONEMPTY_CHUNK = 4;
 
@@ -730,7 +748,7 @@ void CMarchingCubesLogic::Render()
 		}
 
 		pChunkInfo->bufferID = bufferID;
-		pChunkInfo->numIndices = BuildChunk(pChunkInfo->position, pChunkInfo->lod, bufferID);
+		pChunkInfo->numIndices = BuildTestChunk(pChunkInfo->position, pChunkInfo->lod, bufferID);
 		if (pChunkInfo->numIndices == 0) {
 			ClearChunk(*pChunkInfo);
 			pChunkInfo->hasPolys = false;
@@ -742,7 +760,7 @@ void CMarchingCubesLogic::Render()
 		}
 	}
 
-	DrawChunks();
+	DrawTestChunks();
 }
 
 void CMarchingCubesLogic::DrawChunks()
