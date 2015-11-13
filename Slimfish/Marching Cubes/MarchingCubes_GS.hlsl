@@ -49,7 +49,7 @@ int GetTriTableValue(int i, int j)
 
 float3 GetNormal(float3 uvw)
 {
-	float2 invVoxelDimAndZero = float2(gInvVoxelDim, 0.0f);
+	float2 invVoxelDimAndZero = float2(gInvVoxelDimMinusOne, 0.0f);
 
 	float3 gradient;
 	gradient.x = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + invVoxelDimAndZero.xyy, 0) -
@@ -73,13 +73,14 @@ void main(point GSInput input[1], inout TriangleStream<GSOutput> triStream)
 	float cubeVals[8];
 
 	for (int i = 0; i < 8; ++i) {
-		float3 uvw = input[0].position.xyz + (gCorners[i] * gInvVoxelDimMinusOne) /*+ float3(0.0f, 0.0f, gInvVoxelDimMinusOne)*/;
+		float3 uvw = input[0].position.xyz + (gCorners[i] * (gInvVoxelDimMinusOne)) /*+ float3(0.0f, 0.0f, gInvVoxelDimMinusOne)*/;
+		float3 sampleVal = uvw;
 		if (input[0].position.z == 0.0f) {
-			uvw.z += 8.0f * gInvVoxelDimMinusOne;
+			sampleVal.z += gInvVoxelDimMinusOne;
 		}
 
 		normals[i] = GetNormal(uvw);
-		cubeVals[i] = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw, 0);
+		cubeVals[i] = gTexture3DDensity.SampleLevel(gSamplerPoint, sampleVal, 0);
 
 		// Scale by the size of the chunk and add the chunk position.
 		cubePoses[i] = uvw * gWChunkSize + gWChunkPosition;

@@ -95,7 +95,7 @@ float4 main(PS_INPUT pIn) : SV_TARGET
 
 		// Calculate tri-planar blending.
 		float3 triPlanarBlending = abs(pIn.normal);
-			float b = (triPlanarBlending.x + triPlanarBlending.y + triPlanarBlending.z);
+		float b = (triPlanarBlending.x + triPlanarBlending.y + triPlanarBlending.z);
 		triPlanarBlending /= b;
 
 		// Get the planar projections.

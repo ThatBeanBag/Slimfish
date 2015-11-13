@@ -17,7 +17,7 @@
 
 // Library Includes
 #include <new>	// For bad alloc.
-#include <vld.h>	
+//#include <vld.h>	
 
 // Local Includes
 #include "SlimGameApp.h"

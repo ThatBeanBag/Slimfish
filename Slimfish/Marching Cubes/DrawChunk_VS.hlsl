@@ -19,7 +19,7 @@ VSOutput main(VSInput vIn) {
 	VSOutput vOut;
 
 	vOut.hPosition = mul(float4(vIn.wPositionAmbOcc.xyz, 1.0f), gViewProjectionMatrix);
-	vOut.wPosition = float4(vIn.wPositionAmbOcc.xyz, 1.0f);
+	vOut.wPosition = vIn.wPositionAmbOcc.xyzw;
 	vOut.wNormal = vIn.wNormal;
 
 	return vOut;

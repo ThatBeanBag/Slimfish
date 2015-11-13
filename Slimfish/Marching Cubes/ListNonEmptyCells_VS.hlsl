@@ -22,8 +22,8 @@ VSOuput main( VSInput vIn )
 	float3 chunkWritePosition = float3(vIn.writeUV, (float(vIn.nInstanceID) * gInvVoxelDim));
 
 	float3 wPosition = gWChunkPosition + chunkWritePosition * gWChunkSize;
-	float3 uvw = chunkReadPosition /*+ gInvVoxelDimPlusMarginsMinusOne.xxx * 0.125f*/;
-	//uvw.xy *= gVoxelDimPlusMarginsMinusOne * gInvVoxelDimPlusMargins;
+	float3 uvw = chunkReadPosition + gInvVoxelDimPlusMarginsMinusOne * 0.125f;
+	uvw.xy *= gVoxelDimPlusMarginsMinusOne * gInvVoxelDimPlusMargins;
 	
 	float2 invVoxelDimPlusMarginsMinusOneAndZero = float2(gInvVoxelDimPlusMarginsMinusOne, 0.0f);
 	float4 field0123;
@@ -45,6 +45,8 @@ VSOuput main( VSInput vIn )
 	// If the density if positive, set it to 1.
 	uint4 i0123 = (uint4)saturate(ceil(field0123));
 	uint4 i4567 = (uint4)saturate(ceil(field4567));
+	//uint4 i0123 = (uint4)saturate(field0123 * 99999);
+	//uint4 i4567 = (uint4)saturate(field4567 * 99999);
 	int cubeCase = (i0123.x)	  | (i0123.y << 1) | (i0123.z << 2) | (i0123.w << 3) |
 				   (i4567.x << 4) | (i4567.y << 5) | (i4567.z << 6) | (i4567.w << 7);
 

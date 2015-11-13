@@ -29,6 +29,10 @@ namespace Tables {
 	extern const int g_TRI_TABLE[256][16];
 	extern const int g_TRI_TABLE2[5120];
 
+	extern const float g_AMBO_DISTANCE[16][4];
+	extern const float g_AMBO_OCCLUSION[16][4];
+	extern const float g_AMBO_RAY_DIRECTIONS[256][4];
+
 	template <typename T, std::size_t N, std::size_t M>
 	std::size_t GetSize(T(&)[N][M])
 	{

@@ -35,9 +35,7 @@
 	Declare an array like so: TMultiDimArray<int, 50, 30, 50> ints;
 	This creates a 50 x 30 x 50 array of integers.
 */
-
-/*
-template<typename T, size_t I, size_t... J>
+/*template<typename T, size_t I, size_t... J>
 struct TGetMultiDimArray {
 	using TNested = typename TGetMultiDimArray<T, J...>::TType;
 	using TType = std::array<TNested, I>; 
@@ -99,9 +97,12 @@ protected:
 private:
 	// Member Variables
 public:
-	static const int s_NUM_BUFFERS = 300;
+	static const int s_NUM_BUFFERS = 500;
 	static const int s_NUM_LOD = 3;
-	static const int s_NUM_CHUNKS_PER_DIM = 13;
+	static const int s_NUM_CHUNKS_PER_DIM = 21;
+	static const int s_MAX_WORK_PER_FRAME = 41;
+	static const int s_WORK_FOR_EMPTY_CHUNK = 1;
+	static const int s_WORK_FOR_NONEMPTY_CHUNK = 4;
 
 	using TChunks = std::array<std::array<std::array<
 		std::array<TChunkInfo, s_NUM_CHUNKS_PER_DIM>, 
@@ -145,6 +146,12 @@ private:
 	std::unique_ptr<ARenderTexture> m_pDensityRenderTarget;
 	std::unique_ptr<ARenderTexture> m_pVertexIDRenderTarget;
 
+	// Textures
+	std::shared_ptr<ATexture> m_pNoiseVolume0;
+	std::shared_ptr<ATexture> m_pNoiseVolume1;
+	std::shared_ptr<ATexture> m_pNoiseVolume2;
+	std::shared_ptr<ATexture> m_pNoiseVolume3;
+
 	// Render passes.
 	CRenderPass m_BuildDensitiesPass;
 	CRenderPass m_ListNonEmptyCellsPass;
@@ -179,6 +186,7 @@ private:
 
 	bool m_bRenderPoints;
 	bool m_bDrawOnlyOneChunk;
+	bool m_bDrawTest;
 	CVector3 m_TestChunkPosition;
 };
 
