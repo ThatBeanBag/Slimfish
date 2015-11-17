@@ -33,7 +33,8 @@ const float Math::s_RADIANS_TO_DEGREES = 180 / s_PI;
 Math::Math()
 {
 	std::random_device randomDevice;
-	m_RandomGenerator.seed(randomDevice());
+	m_Seed = randomDevice();
+	m_RandomGenerator.seed(m_Seed);
 }
 
 

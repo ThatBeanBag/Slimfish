@@ -63,7 +63,7 @@ float SmoothSnap(float t, float m)
 {
 	float c = (t > 0.5) ? 1 : 0;
 	float s = 1 - c * 2;
-	return c + s*pow((c + s*t) * 2, m)*0.5;
+	return c + s*pow(abs((c + s*t) * 2), m) * 0.5f;
 }
 
 /** Calculate the density for a coordinate in world-space.
@@ -74,7 +74,9 @@ float SmoothSnap(float t, float m)
 		wsCoord The coordinate in world-space to calculate the density 
 		value for.
 */
-float Density(float3 wsCoord) {
+
+// Crazy caves and such.
+/*float Density(float3 wsCoord) {
 
 	// Take a copy of the world-space coordinate.
 	float3 wsCoordCopy = wsCoord;
@@ -123,10 +125,10 @@ float Density(float3 wsCoord) {
 	//density = -wsCoordCopy.y;
 
 	// Sample 9 octaves
-	density += SampleNoiseLQS(wsCoordCopy*0.3200*0.934, gTexture3DNoise3).x*0.16*1.20; // skipped for long-range ambo
-	density += SampleNoiseLQS(wsCoordCopy*0.1600*1.021, gTexture3DNoise1).x*0.32*1.16;  // skipped for long-range ambo
-	density += SampleNoiseLQS(wsCoordCopy*0.0800*0.985, gTexture3DNoise2).x*0.64*1.12;  // skipped for long-range ambo
-	density += SampleNoiseLQS(wsCoordCopy*0.0400*1.051, gTexture3DNoise0).x*1.28*1.08;  // skipped for long-range ambo
+	density += SampleNoiseLQS(wsCoordCopy*0.3200*0.934, gTexture3DNoise3).x*0.16*1.20; 
+	density += SampleNoiseLQS(wsCoordCopy*0.1600*1.021, gTexture3DNoise1).x*0.32*1.16; 
+	density += SampleNoiseLQS(wsCoordCopy*0.0800*0.985, gTexture3DNoise2).x*0.64*1.12; 
+	density += SampleNoiseLQS(wsCoordCopy*0.0400*1.051, gTexture3DNoise0).x*1.28*1.08;
 	density += SampleNoiseLQS(wsCoordCopy*0.0200*1.020, gTexture3DNoise1).x*2.56*1.04;
 	density += SampleNoiseLQS(wsCoordCopy*0.0100*0.968, gTexture3DNoise3).x * 2;
 	density += SampleNoiseMQS(wsCoordCopy*0.0050*0.994, gTexture3DNoise0).x * 10 * 1.0; // MQ
@@ -137,7 +139,38 @@ float Density(float3 wsCoord) {
 	//density += gTexture3DNoise1.Sample(gSamplerTrilinearWrap, wsCoord * 4.03).x * 0.25f;
 	//density += gTexture3DNoise2.Sample(gSamplerTrilinearWrap, wsCoord * 1.96).x * 0.5f;
 	//density += gTexture3DNoise3.Sample(gSamplerTrilinearWrap, wsCoord * 1.01).x * 1.0f;
-	//density += 0.34f;*/
+	//density += 0.34f;
+
+	density -= gWChunkSize * 0.0000001f;
+
+	return density;
+}*/
+
+// Awesome mountainess terrain. With some warping.
+float Density(float3 wsCoord) {
+
+	// Take a copy of the world-space coordinate.
+	float3 wsCoordCopy = wsCoord;
+
+	float3 warp = SampleNoiseLQS(wsCoordCopy * 0.004f, gTexture3DNoise1).x;
+	wsCoordCopy += warp * 8;
+
+	//float rad = 80;
+	//float density = rad - length(wsCoordCopy - float3(0, -rad, 0));
+	float density = -wsCoord.y;
+
+	wsCoordCopy.y *= 0.4f;
+
+	density += SampleNoiseLQS(wsCoordCopy * 1.66200f, gTexture3DNoise3).x * 0.03f;
+	density += SampleNoiseLQS(wsCoordCopy * 0.56200f, gTexture3DNoise3).x * 0.05f;
+	density += SampleNoiseLQS(wsCoordCopy * 0.12600f, gTexture3DNoise1).x * 0.2f; 
+	density += SampleNoiseLQS(wsCoordCopy * 0.0300f, gTexture3DNoise1).x * 0.33f;
+	density += SampleNoiseLQS(wsCoordCopy * 0.0200f, gTexture3DNoise2).x * 0.58f; 
+	density += SampleNoiseLQS(wsCoordCopy * 0.0190f, gTexture3DNoise0).x * 1.28f;
+	density += SampleNoiseMQS(wsCoordCopy * 0.0070f, gTexture3DNoise3).x * 3.32f;
+	density += SampleNoiseMQS(wsCoordCopy * 0.0056f, gTexture3DNoise0).x * 10.0f;
+	//density += SampleNoiseMQS(wsCoordCopy * 0.0032f, gTexture3DNoise1).x * 20.0f;
+	//density += SampleNoiseMQS(wsCoordCopy * 0.0021f, gTexture3DNoise2).x * 40.0f;
 
 	density -= gWChunkSize * 0.0000001f;
 

@@ -115,6 +115,8 @@ void ARenderer::SetRenderPass(CRenderPass* pPass)
 	}
 
 	VSetStreamOutTargets(pPass->GetStreamOutputTargets());
+
+	VBuildStates();
 }
 
 shared_ptr<AIndexGpuBuffer> ARenderer::CreateIndexBuffer(const std::vector<int>& indices, EGpuBufferUsage usage /*= EGpuBufferUsage::STATIC*/, bool isInSystemMemory /*= false*/)

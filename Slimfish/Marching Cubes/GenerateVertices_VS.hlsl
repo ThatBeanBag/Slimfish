@@ -11,6 +11,7 @@ struct VSOutput {
 
 Texture3D<float> gTexture3DDensity;
 SamplerState gSamplerPoint;
+SamplerState gSamplerTrilinearClamp;
 
 cbuffer CBTables {
 	float4 gEdgeStart[12];
@@ -31,10 +32,10 @@ SamplerState gSamplerTrilinearWrap;
 
 #include "Density.hlsli"
 
-#define AMBO_RAYS 64
-#define AMBO_STEPS 16
+static const int gAmboRays = 32;
+static const int gAmboSteps = 8;
 
-float GetAmbientOcclusion(float3 wPosition, float3 uvw)
+/*(float GetAmbientOcclusion(float3 wPosition, float3 uvw)
 {
 	float cellsToSkipAtRayStart = 1.25f;
 	float amboRayDistanceCells = gVoxelDimPlusMargins * 0.25f;
@@ -42,7 +43,7 @@ float GetAmbientOcclusion(float3 wPosition, float3 uvw)
 
 	float ambo = 0.0f;
 
-	for (int i = 0; i < AMBO_RAYS; ++i) {
+	[loop] for (int i = 0; i < gAmboRays; ++i) {
 		float3 rayDirection = gRayDirections[i].xyz;
 		float3 ray = uvw + rayDirection * gInvVoxelDimPlusMargins * cellsToSkipAtRayStart;
 		float3 rayDelta = rayDirection * invVoxelDimTweaked * amboRayDistanceCells;
@@ -50,17 +51,17 @@ float GetAmbientOcclusion(float3 wPosition, float3 uvw)
 		float amboCurrent = 1.0f;
 
 		// Short range ambient rays.
-		rayDelta *= (1.0f / AMBO_STEPS);
-		for (int j = 0; j < AMBO_STEPS; ++j) {
+		rayDelta *= (1.0f / gAmboSteps);
+		[loop] for (int j = 0; j < gAmboSteps; ++j) {
 			ray += rayDelta;
 			float t = gTexture3DDensity.SampleLevel(gSamplerPoint, ray, 0);
 			amboCurrent = lerp(amboCurrent, 0, saturate(t * 6.0f) * gOcclusion[j].z);
 		}
 
 		// Long range ambient rays.
-		for (int j = 0; j < 5; ++j) {
+		[loop] for (int j = 0; j < 5; ++j) {
 			float distance = (j + 2) / 5.0f;
-			distance = pow(distance, 1.8f);
+			distance = pow(abs(distance), 1.8f);
 			distance *= 40.0f;
 			float t = Density(wPosition + rayDirection * distance);
 			const float shadow_hardness = 0.5f;
@@ -69,18 +70,13 @@ float GetAmbientOcclusion(float3 wPosition, float3 uvw)
 
 		amboCurrent *= 1.4f;
 		ambo += amboCurrent;
-
-		/*for (int j = 1; j <= AMBO_STEPS; ++j) {
-			float t = gTexture3DDensity.SampleLevel(gSamplerPoint, ray * i, 0);
-			amboCurrent *= lerp(amboCurrent, 0, saturate(t * 6) * gOcclusion[j].z);
-		}*/
 	}
 
-	ambo *= (1.0f / AMBO_RAYS);
-	ambo *= 5.0f;
+	ambo *= 1.0f / gAmboRays;
+	ambo *= 1.0f;
 
 	return ambo;
-}
+}*/
 
 VSOutput PlaceVertexOnEdge(float3 wPosition, float3 uvw, int edgeNum)
 {
@@ -93,22 +89,67 @@ VSOutput PlaceVertexOnEdge(float3 wPosition, float3 uvw, int edgeNum)
 	float t = saturate(density0 / (density0 - density1));
 
 	//float3 position = gEdgeStart[edgeNum].xyz + t * gEdgeDirection[edgeNum].xyz;
-	float3 position = lerp(gEdgeStart[edgeNum].xyz, gEdgeEnd[edgeNum], t);
+	float3 position = lerp(gEdgeStart[edgeNum].xyz, gEdgeEnd[edgeNum].xyz, t);
 	vOut.wPositionAmbOcc = float4(wPosition + position * gWVoxelSize, 1.0f);
-	uvw += position * gInvVoxelDimPlusMarginsMinusOne;
+	uvw = uvw + position * gInvVoxelDimPlusMarginsMinusOne;
 
 	// TODO: Generate ambient occlusion.
-	vOut.wPositionAmbOcc.w = GetAmbientOcclusion(vOut.wPositionAmbOcc.xyz, uvw);
+	//vOut.wPositionAmbOcc.w = GetAmbientOcclusion(vOut.wPositionAmbOcc.xyz, uvw);
+	// Hack. Gets rid of seams produced by normals and ambo sampling past 1.
+	// There might be an actual solution to this problem, but for now this suffices.
+	uvw *= 1 - gInvVoxelDimPlusMargins;
+
+	float cellsToSkipAtRayStart = 1.25f;
+	float amboRayDistanceCells = gVoxelDimPlusMargins * 0.25f;
+	float3 invVoxelDimTweaked = gInvVoxelDimPlusMargins /** gVoxelDimPlusMargins / 160.0f*/;
+
+	float ambo = 0.0f;
+
+	[loop] for (int i = 0; i < gAmboRays; ++i) {
+		float3 rayDirection = gRayDirections[i].xyz;
+		float3 ray = vOut.wPositionAmbOcc.xyz + rayDirection * gInvVoxelDimPlusMargins * cellsToSkipAtRayStart;
+		float3 rayDelta = rayDirection * invVoxelDimTweaked * amboRayDistanceCells;
+
+		float amboCurrent = 1.0f;
+
+		// Short range ambient rays.
+		rayDelta *= (1.0f / gAmboSteps);
+
+		[loop] for (int j = 0; j < gAmboSteps; ++j) {
+			ray += rayDelta;
+			//float t = gTexture3DDensity.SampleLevel(gSamplerPoint, ray, 0);
+			float t = Density(ray);
+			amboCurrent = lerp(amboCurrent, 0, saturate(t * 8.0f) * gOcclusion[j].z);
+		}
+
+		// Long range ambient rays.
+		[loop] for (int k = 0; k < 5; ++k) {
+			float distance = (k + 2) / 5.0f;
+			distance = pow(abs(distance), 1.8f);
+			distance *= 40.0f;
+			float t = Density(vOut.wPositionAmbOcc.xyz + rayDirection * distance);
+			const float shadow_hardness = 0.5f;
+			amboCurrent *= 0.1f + 0.9f * saturate(-t * shadow_hardness + 0.3f);
+		}
+
+		amboCurrent *= 1.4f;
+		ambo += amboCurrent;
+	}
+
+	ambo *= 1.0f / gAmboRays;
+	vOut.wPositionAmbOcc.w = ambo;
+	//vOut.wPositionAmbOcc.w = 1.0f;
+
 
 	float2 invVoxelDimPlusMarginsAndZero = float2(gInvVoxelDimPlusMargins, 0.0f);
 
 	float3 gradient;
-	gradient.x = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + invVoxelDimPlusMarginsAndZero.xyy, 0).x
-			   - gTexture3DDensity.SampleLevel(gSamplerPoint, uvw - invVoxelDimPlusMarginsAndZero.xyy, 0).x;
-	gradient.y = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + invVoxelDimPlusMarginsAndZero.yxy, 0).x
-			   - gTexture3DDensity.SampleLevel(gSamplerPoint, uvw - invVoxelDimPlusMarginsAndZero.yxy, 0).x;
-	gradient.z = gTexture3DDensity.SampleLevel(gSamplerPoint, uvw + invVoxelDimPlusMarginsAndZero.yyx, 0).x
-			   - gTexture3DDensity.SampleLevel(gSamplerPoint, uvw - invVoxelDimPlusMarginsAndZero.yyx, 0).x;
+	gradient.x = gTexture3DDensity.SampleLevel(gSamplerTrilinearClamp, uvw + invVoxelDimPlusMarginsAndZero.xyy, 0).x
+			   - gTexture3DDensity.SampleLevel(gSamplerTrilinearClamp, uvw - invVoxelDimPlusMarginsAndZero.xyy, 0).x;
+	gradient.y = gTexture3DDensity.SampleLevel(gSamplerTrilinearClamp, uvw + invVoxelDimPlusMarginsAndZero.yxy, 0).x
+			   - gTexture3DDensity.SampleLevel(gSamplerTrilinearClamp, uvw - invVoxelDimPlusMarginsAndZero.yxy, 0).x;
+	gradient.z = gTexture3DDensity.SampleLevel(gSamplerTrilinearClamp, uvw + invVoxelDimPlusMarginsAndZero.yyx, 0).x
+			   - gTexture3DDensity.SampleLevel(gSamplerTrilinearClamp, uvw - invVoxelDimPlusMarginsAndZero.yyx, 0).x;
 	vOut.wNormal = -normalize(gradient);
 
 	return vOut;
@@ -126,8 +167,8 @@ VSOutput main(VSInput vIn)
 
 	float3 wPosition = gWChunkPosition + chunkWritePosition * gWChunkSize;
 
-	float3 uvw = chunkReadPosition + gInvVoxelDimPlusMarginsMinusOne * 0.125f;
-	uvw *= (gVoxelDimPlusMargins - 1) * gInvVoxelDimPlusMargins;
+	float3 uvw = chunkReadPosition + gInvVoxelDimPlusMarginsMinusOne * 0.25f;
+	uvw *= (gVoxelDimPlusMarginsMinusOne) * gInvVoxelDimPlusMargins;
 
 	// Unpack the edge number.
 	int edgeNum = vIn.z8_y8_x8_null4_edgeNum4 & 0x0f;

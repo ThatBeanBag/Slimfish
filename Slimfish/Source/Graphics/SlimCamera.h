@@ -51,7 +51,12 @@ public:
 	*/
 	const CRay ScreenPointToRay(const CPoint& point) const;
 
-	bool IsInView(const CAxisAlignedBoundingBox& aabb);
+	/** Test to see if an axis-aligned bounding box is in the view of the camera.
+	 	@author Hayden Asplet
+	 	@param aabb Axis-aligned bounding box to test.
+	 	@return True if the aabb is in the view of camera. False if it's entirely outside of the camera's view.
+	*/
+	bool IsInView(const CAxisAlignedBoundingBox& aabb) const;
 
 	/** Set the projection of the camera to perspective using the given properties.
 	 	@author Hayden Asplet

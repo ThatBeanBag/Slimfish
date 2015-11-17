@@ -157,6 +157,9 @@ private:
 	/* @copydoc ARenderer::VSetIndexBuffer */
 	virtual void VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBuffer);
 
+	/* @copydoc ARenderer::VBuildStates */
+	virtual void VBuildStates();
+
 	/** Internal helper method for creating a sampler state for a texture layer.
 	 	@author Hayden Asplet
 	*/

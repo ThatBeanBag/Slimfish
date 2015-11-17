@@ -292,6 +292,14 @@ public:
 	*/
 	const size_t GetDepth() const;
 
+	/** Set the dimensions of the texture.
+		@note
+			Only applicable prior to loading and when texture is being used as a
+			render target (usage is RENDER_TARGET).
+		@author Hayden Asplet 
+	*/
+	void SetDimensions(size_t width, size_t height, size_t depth);
+
 	/** Set the width of the texture.
 		@note 
 			Only applicable prior to loading and when texture is being used as a 

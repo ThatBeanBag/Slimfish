@@ -177,7 +177,7 @@ CQuaternion& CQuaternion::operator*=(float scalar)
 	return *this;
 }
 
-bool CQuaternion::operator==(const CQuaternion& other)
+bool CQuaternion::operator==(const CQuaternion& other) const
 {
 	return (m_w == other.m_w &&
 			m_x == other.m_x &&
@@ -185,7 +185,7 @@ bool CQuaternion::operator==(const CQuaternion& other)
 			m_z == other.m_z);
 }
 
-bool CQuaternion::operator!=(const CQuaternion& other)
+bool CQuaternion::operator!=(const CQuaternion& other) const
 {
 	return !(*this == other);
 }

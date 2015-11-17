@@ -85,7 +85,7 @@ namespace Slim {
 		return CRay(rayOrigin, rayDirection);
 	}
 
-	bool CCamera::IsInView(const CAxisAlignedBoundingBox& aabb)
+	bool CCamera::IsInView(const CAxisAlignedBoundingBox& aabb) const
 	{
 		return CFrustum::IsInside(aabb);
 	}

@@ -88,12 +88,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ChunkManager.h" />
     <ClInclude Include="MarchingCubesApp.h" />
     <ClInclude Include="MarchingCubesLogic.h" />
     <ClInclude Include="MarchingCubesStd.h" />
     <ClInclude Include="Tables.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ChunkManager.cpp" />
     <ClCompile Include="MarchingCubesApp.cpp" />
     <ClCompile Include="MarchingCubesLogic.cpp" />
     <ClCompile Include="MarchingCubesStd.cpp">

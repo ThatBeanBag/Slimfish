@@ -489,7 +489,16 @@ void CD3D11Renderer::VSetRenderTargets(std::vector<ARenderTexture*> renderTarget
 {
 	if (!renderTargets.empty()) {
 		// Clear existing bound render targets and make room for new targets.
-		m_BoundRenderTargets.clear();
+		if (!m_BoundRenderTargets.empty()) {
+			// TODO: Shouldn't be generating mips here.
+			for (auto& renderTarget : m_BoundRenderTargets) {
+				auto pD3DTexture = static_pointer_cast<CD3D11Texture>(renderTarget->GetTexture());
+				m_pImmediateContext->GenerateMips(pD3DTexture->GetD3DTexture());
+			}
+
+			m_BoundRenderTargets.clear();
+		}
+
 		m_BoundRenderTargets.resize(renderTargets.size());
 
 		// Cast the render targets to their actual type and store in the bound targets.
@@ -682,34 +691,32 @@ void CD3D11Renderer::VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBu
 }
 
 
-void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimitiveType primitiveType, shared_ptr<AVertexGpuBuffer> pVertexBuffer, shared_ptr<AIndexGpuBuffer> pIndexBuffer /*= nullptr*/, size_t countOverride /*= 0*/, size_t instances /*= 1*/)
+void CD3D11Renderer::VBuildStates()
 {
-	m_pBlendState.Reset();
-	m_pRasterizerState.Reset();
-	m_pDepthStencilState.Reset();
-
-	HRESULT hResult = m_pD3DDevice->CreateBlendState(&m_BlendDesc, &m_pBlendState);
+	HRESULT hResult = m_pD3DDevice->CreateBlendState(&m_BlendDesc, m_pBlendState.ReleaseAndGetAddressOf());
 	if (FAILED(hResult)) {
 		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create blend state with error: " << GetErrorMessage(hResult);
 	}
 
-	hResult = m_pD3DDevice->CreateRasterizerState(&m_RasterizerDesc, &m_pRasterizerState);
+	hResult = m_pD3DDevice->CreateRasterizerState(&m_RasterizerDesc, m_pRasterizerState.ReleaseAndGetAddressOf());
 	if (FAILED(hResult)) {
 		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create rasterizer state with error: " << GetErrorMessage(hResult);
 	}
 
-	hResult = m_pD3DDevice->CreateDepthStencilState(&m_DepthStencilDesc, &m_pDepthStencilState);
+	hResult = m_pD3DDevice->CreateDepthStencilState(&m_DepthStencilDesc, m_pDepthStencilState.ReleaseAndGetAddressOf());
 	if (FAILED(hResult)) {
 		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create depth-stencil state with error: " << GetErrorMessage(hResult);
 	}
 
+	// Set pipelines states.
 	m_pImmediateContext->RSSetState(m_pRasterizerState.Get());
 	m_pImmediateContext->OMSetDepthStencilState(m_pDepthStencilState.Get(), m_StencilReferenceValue);
 	m_pImmediateContext->OMSetBlendState(m_pBlendState.Get(), 0, 0xffffffff);
 
+	// Set the sampler and texture states.
 	std::vector<ID3D11SamplerState*> samplerStates;
 	samplerStates.reserve(m_Textures.size());
-		
+
 	// Get number of valid texture stages.
 	int numLayers = 0;
 	for (size_t i = 0; i < m_Textures.size(); ++i) {
@@ -737,8 +744,8 @@ void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimi
 		m_pImmediateContext->PSSetShaderResources(0, numLayers, &m_Textures[0]);
 
 		/*if (m_pBoundGeometryShader) {
-			m_pImmediateContext->GSSetSamplers(0, 1, m_pSamplerState.GetAddressOf());
-			m_pImmediateContext->GSSetShaderResources(0, numLayers, &m_Textures[0]);
+		m_pImmediateContext->GSSetSamplers(0, 1, m_pSamplerState.GetAddressOf());
+		m_pImmediateContext->GSSetShaderResources(0, numLayers, &m_Textures[0]);
 		}
 
 		m_pImmediateContext->VSSetSamplers(0, 1, m_pSamplerState.GetAddressOf());
@@ -747,15 +754,18 @@ void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimi
 		m_pImmediateContext->PSSetSamplers(0, 1, m_pSamplerState.GetAddressOf());
 		m_pImmediateContext->PSSetShaderResources(0, numLayers, &m_Textures[0]);*/
 	}
+}
 
-
+void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimitiveType primitiveType, shared_ptr<AVertexGpuBuffer> pVertexBuffer, shared_ptr<AIndexGpuBuffer> pIndexBuffer /*= nullptr*/, size_t countOverride /*= 0*/, size_t instances /*= 1*/)
+{
+	// Set the vertex declaration and primitive type.
 	VSetVertexDeclaration(vertexDeclaration);
 	m_pImmediateContext->IASetPrimitiveTopology(D3D11Conversions::GetPrimitiveType(primitiveType));
 
 	// Set buffers.
 	VSetVertexBuffer(pVertexBuffer);
 
-	bool isUsingIndices = pIndexBuffer != nullptr;
+	bool isUsingIndices = pIndexBuffer != nullptr;	// If there's no index buffer we are not using indices.
 	if (isUsingIndices) {
 		VSetIndexBuffer(pIndexBuffer);
 
@@ -787,8 +797,8 @@ void CD3D11Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimi
 		}
 	}
 
-	m_pImmediateContext->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
-	m_pImmediateContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
+	//m_pImmediateContext->IASetVertexBuffers(0, 0, nullptr, nullptr, nullptr);
+	//m_pImmediateContext->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
 }
 
 void CD3D11Renderer::VSetColourWritesEnabled(const TColourWritesEnabled& colourWritesEnabled)

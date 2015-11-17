@@ -60,6 +60,17 @@ public:
 		return distribution(ASingleton::GetInstance()->m_RandomGenerator);
 	}
 
+	static inline void Seed(size_t seed)
+	{
+		ASingleton::GetInstance()->m_Seed = seed;
+		ASingleton::GetInstance()->m_RandomGenerator.seed(seed);
+	}
+
+	static inline size_t GetSeed()
+	{
+		return ASingleton::GetInstance()->m_Seed;
+	}
+
 	/** Retrieve a random integer in the range [min,max).
 		@remarks
 			Returns the minimum value whenever the range is [min,min] (asin whenever min == max - 1).
@@ -102,6 +113,7 @@ public:
 protected:
 private:
 	std::mt19937 m_RandomGenerator;
+	size_t m_Seed;
 };
 
 }

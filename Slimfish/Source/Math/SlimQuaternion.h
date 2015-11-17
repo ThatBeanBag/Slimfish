@@ -89,9 +89,9 @@ public:
 	// Operators
 
 	/** Equate a quaternion to another. @author Hayden Asplet. */
-	bool operator==(const CQuaternion& other);
+	bool operator==(const CQuaternion& other) const;
 	/** Determine if a quaternion is not equal to another. @author Hayden Asplet */
-	bool operator!=(const CQuaternion& other);
+	bool operator!=(const CQuaternion& other) const;
 
 	/** Add two quaternions together. @author Hayden Asplet */
 	const CQuaternion operator+(const CQuaternion& other) const;

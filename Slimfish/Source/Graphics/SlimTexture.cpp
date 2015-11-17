@@ -101,6 +101,13 @@ namespace Slim {
 		return m_Depth;
 	}
 
+	void ATexture::SetDimensions(size_t width, size_t height, size_t depth)
+	{
+		SetWidth(width);
+		SetHeight(height);
+		SetDepth(depth);
+	}
+
 	void ATexture::SetWidth(size_t width)
 	{
 		m_Width = width;

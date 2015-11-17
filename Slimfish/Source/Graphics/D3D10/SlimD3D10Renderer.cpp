@@ -582,8 +582,7 @@ void CD3D10Renderer::VSetIndexBuffer(const shared_ptr<AIndexGpuBuffer>& pIndexBu
 	m_pD3DDevice->IASetIndexBuffer(pD3DBuffer, D3D10Conversions::GetFormat(pD3DIndexBuffer->GetIndexType()), 0);
 }
 
-
-void CD3D10Renderer::VRender( const CVertexDeclaration& vertexDeclaration, EPrimitiveType primitiveType, shared_ptr<AVertexGpuBuffer> pVertexBuffer, shared_ptr<AIndexGpuBuffer> pIndexBuffer /*= nullptr*/, size_t countOverride /*= 0*/, size_t instances /*= 1*/ )
+void CD3D10Renderer::VBuildStates()
 {
 	// Recreate pipeline states.
 	HRESULT hResult = m_pD3DDevice->CreateBlendState(&m_BlendDesc, m_pBlendState.ReleaseAndGetAddressOf());
@@ -605,7 +604,7 @@ void CD3D10Renderer::VRender( const CVertexDeclaration& vertexDeclaration, EPrim
 	m_pD3DDevice->RSSetState(m_pRasterizerState.Get());
 	m_pD3DDevice->OMSetDepthStencilState(m_pDepthStencilState.Get(), m_StencilReferenceValue);
 	m_pD3DDevice->OMSetBlendState(m_pBlendState.Get(), 0, 0xffffffff);
-	
+
 	std::vector<ID3D10SamplerState*> samplerStates;
 	samplerStates.reserve(m_Textures.size());
 
@@ -618,7 +617,6 @@ void CD3D10Renderer::VRender( const CVertexDeclaration& vertexDeclaration, EPrim
 		}
 
 		CreateSamplerState(i);
-
 		samplerStates.push_back(m_SamplerStates[i].Get());
 
 		numLayers++;
@@ -633,7 +631,10 @@ void CD3D10Renderer::VRender( const CVertexDeclaration& vertexDeclaration, EPrim
 		m_pD3DDevice->PSSetSamplers(0, samplerStates.size(), &samplerStates[0]);
 		m_pD3DDevice->PSSetShaderResources(0, numLayers, &m_Textures[0]);
 	}
+}
 
+void CD3D10Renderer::VRender(const CVertexDeclaration& vertexDeclaration, EPrimitiveType primitiveType, shared_ptr<AVertexGpuBuffer> pVertexBuffer, shared_ptr<AIndexGpuBuffer> pIndexBuffer /*= nullptr*/, size_t countOverride /*= 0*/, size_t instances /*= 1*/)
+{
 	VSetVertexDeclaration(vertexDeclaration);
 	m_pD3DDevice->IASetPrimitiveTopology(D3D10Conversions::GetPrimitiveType(primitiveType));
 

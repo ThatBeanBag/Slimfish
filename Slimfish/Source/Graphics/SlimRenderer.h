@@ -461,6 +461,9 @@ namespace Slim {
 		/** Internal delegating method to set the background the colour. */
 		virtual void VSetBackgroundColour(const CColourValue& colour) = 0;
 
+		/** Internal delegating method to build states to prepare for rendering. */
+		virtual void VBuildStates() = 0;
+
 		// Member Variables
 	public:
 	protected:
