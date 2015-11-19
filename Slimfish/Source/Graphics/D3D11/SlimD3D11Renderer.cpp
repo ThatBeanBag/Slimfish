@@ -238,7 +238,16 @@ void CD3D11Renderer::VPreRender()
 				pDepthStencilView = m_pDepthStencilView.Get();
 			}
 
-			m_pImmediateContext->ClearRenderTargetView(renderTarget->GetRenderTargetView(), m_pBackgroundColour);
+			// Get the backgroud colour of the render target to clear it with.
+			auto backgroundColour = renderTarget->GetBackgroundColour();
+			float clearColour[] = {
+				backgroundColour.GetRed(),
+				backgroundColour.GetGreen(),
+				backgroundColour.GetBlue(),
+				backgroundColour.GetAlpha(),
+			};
+
+			m_pImmediateContext->ClearRenderTargetView(renderTarget->GetRenderTargetView(), clearColour);
 			m_pImmediateContext->ClearDepthStencilView(pDepthStencilView, D3D10_CLEAR_DEPTH | D3D10_CLEAR_STENCIL, 1.0f, 0);
 		}
 	}
@@ -345,7 +354,10 @@ std::unique_ptr<ARenderTexture> CD3D11Renderer::VCreateRenderTexture(const std::
 
 std::unique_ptr<ARenderTexture> CD3D11Renderer::VCreateRenderTexture(std::shared_ptr<ATexture> pTexture)
 {
-	return std::make_unique<CD3D11RenderTexture>(m_pD3DDevice.Get(), pTexture);
+	auto pRenderTexture = std::make_unique<CD3D11RenderTexture>(m_pD3DDevice.Get(), pTexture);
+	pRenderTexture->SetBackgroundColour(GetBackgroundColour());
+
+	return std::move(pRenderTexture);
 }
 
 

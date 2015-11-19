@@ -21,7 +21,7 @@ void main( triangle GSInput gIn[3], inout TriangleStream< GSOutput > gOut)
 	{
 		GSOutput element;
 		element.position = gIn[i].position;
-		element.wPosition = gIn[i].wPosition;
+		element.wPosition = gIn[i].wPosition.xyz;
 		element.chunkPosition = gIn[i].chunkPosition;
 		element.renderTargetIndex = gIn[i].nInstanceID;
 		gOut.Append(element);

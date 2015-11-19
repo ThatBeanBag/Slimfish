@@ -87,7 +87,10 @@ const std::array<int, 3> CChunkManager::s_CHUNK_SIZES = { 4, 10 , 20 };
 CChunkManager::CChunkManager()
 	:m_FreeBufferIDs(s_NUM_BUFFERS),
 	m_VoxelDim(33),
-	m_VoxelMargins(4)
+	m_VoxelMargins(4),
+	m_WireFrame(false),
+	m_RenderPoints(false),
+	m_AmboEnabled(true)
 {
 	for (size_t i = 0; i < m_FreeBufferIDs.size(); ++i) {
 		m_FreeBufferIDs[i] = i;
@@ -135,6 +138,8 @@ bool CChunkManager::Initialise()
 	SLIM_INFO() << "Finished GenerateVerticesPass.";
 	CreateGenerateIndicesPass();
 	SLIM_INFO() << "Finished GenerateIndicesPass.";
+	CreateDrawDepthPass();
+	SLIM_INFO() << "Finished DrawDepthPass.";
 	CreateDrawChunkPass();
 	SLIM_INFO() << "Finished DrawChunkPass.";
 
@@ -194,6 +199,13 @@ bool CChunkManager::Initialise()
 	m_pWVPParams = m_DrawChunkPass.GetVertexShader()->GetShaderParams("CBPerFrame");
 	m_pLightingParams = m_DrawChunkPass.GetPixelShader()->GetShaderParams("CBLighting");
 
+	if (m_AmboEnabled) {
+		m_pLightingParams->SetConstant("gAmbientOcclusionInfluence", 1.0f);
+	}
+	else {
+		m_pLightingParams->SetConstant("gAmbientOcclusionInfluence", 0.0f);
+	}
+
 	return true;
 }
 
@@ -214,7 +226,7 @@ void CChunkManager::Update(const CCamera& camera)
 			// Get the centre of the array of chunks for this lod that we are interested in.
 			// This is so that the centre of the chunks is in front of the camera and not behind
 			// where they wouldn't be seen.
-			auto chunkCentre = m_CameraPosition + (cameraDirection * static_cast<float>(chunkSize * s_NUM_CHUNKS_PER_DIM) * 0.5f);
+			auto chunkCentre = m_CameraPosition /*+ (cameraDirection * static_cast<float>(chunkSize * s_NUM_CHUNKS_PER_DIM) * 0.5f)*/;
 
 			/*CVector3 chunkCentreInt(
 				static_cast<float>(std::roundf(chunkCentre.GetX() / chunkSize)),
@@ -252,7 +264,8 @@ void CChunkManager::Update(const CCamera& camera)
 						CVector3 chunkPositionMax = chunkPosition + chunkSize * 1.5f;
 
 						// Check to see if the chunk is in the view frustum.
-						bool isInView = camera.IsInView(CAxisAlignedBoundingBox(chunkPositionMin, chunkPositionMax));
+						bool isInView = true;
+						//bool isInView = camera.IsInView(CAxisAlignedBoundingBox(chunkPositionMin, chunkPositionMax));
 
 						auto& chunkInfo = m_Chunks[lod][i][j][k];
 						if (!isInView || chunkInfo.position != chunkPosition) {
@@ -352,7 +365,60 @@ void CChunkManager::BuildChunks()
 	}*/
 }
 
-void CChunkManager::DrawChunks(const CCamera& camera, const CLight& light)
+void CChunkManager::ToggleAmbientOcclusionEnabled()
+{
+	m_AmboEnabled = !m_AmboEnabled;
+	if (m_AmboEnabled) {
+		m_pLightingParams->SetConstant("gAmbientOcclusionInfluence", 1.0f);
+	}
+	else {
+		m_pLightingParams->SetConstant("gAmbientOcclusionInfluence", 0.0f);
+	}
+}
+
+void CChunkManager::ToggleWireFrame()
+{
+	m_WireFrame = !m_WireFrame;
+	if (m_WireFrame) {
+		m_DrawChunkPass.SetFillMode(EFillMode::WIREFRAME);
+	}
+	else {
+		m_DrawChunkPass.SetFillMode(EFillMode::SOLID);
+	}
+}
+
+void CChunkManager::ToggleRenderPoints()
+{
+	m_RenderPoints = !m_RenderPoints;
+}
+
+void CChunkManager::DrawShadowMap(const CCamera& lightCamera)
+{
+	// Update parameters.
+	m_pDrawDepthParams->SetConstant("gWorldViewProjectionMatrix", lightCamera.GetViewProjMatrix());
+	m_pDrawDepthParams->SetConstant("gZFar", lightCamera.GetFarClipDistance());
+	m_DrawDepthRenderPass.GetVertexShader()->UpdateShaderParams("CBPerFrame", m_pDrawDepthParams);
+
+	auto pRenderer = g_pApp->GetRenderer();
+
+	pRenderer->SetRenderPass(&m_DrawDepthRenderPass);
+
+	for (auto& chunk : m_VisibleChunkList) {
+		if (chunk) {
+			auto bufferID = chunk->bufferID;
+			if (bufferID >= 0) {
+				// Draw the mesh.
+				auto& pVertexBuffer = m_ChunkBuffers[bufferID].pVertexBuffer;
+				auto& pIndexBuffer = m_ChunkBuffers[bufferID].pIndexBuffer;
+				auto numIndices = m_ChunkBuffers[bufferID].numIndices;
+
+				pRenderer->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, pVertexBuffer, pIndexBuffer, numIndices);
+			}
+		}
+	}
+}
+
+void CChunkManager::DrawChunks(const CCamera& camera, const CCamera& lightCamera, const CLight& light)
 {
 	// Update parameters.
 	m_pLightingParams->SetConstant("gLight.type", light.GetType());
@@ -369,9 +435,12 @@ void CChunkManager::DrawChunks(const CCamera& camera, const CLight& light)
 	m_DrawChunkPass.GetPixelShader()->UpdateShaderParams("CBLighting", m_pLightingParams);
 
 	m_pWVPParams->SetConstant("gViewProjectionMatrix", camera.GetViewProjMatrix());
+	m_pWVPParams->SetConstant("gLightViewProjectionMatrix", lightCamera.GetViewProjMatrix());
 	m_DrawChunkPass.GetVertexShader()->UpdateShaderParams("CBPerFrame", m_pWVPParams);
 
 	auto pRenderer = g_pApp->GetRenderer();
+
+	pRenderer->SetRenderPass(&m_DrawChunkPass);
 
 	for (auto& chunk : m_VisibleChunkList) {
 		if (!chunk) {
@@ -386,15 +455,19 @@ void CChunkManager::DrawChunks(const CCamera& camera, const CLight& light)
 			auto& pIndexBuffer = m_ChunkBuffers[bufferID].pIndexBuffer;
 			auto numIndices = m_ChunkBuffers[bufferID].numIndices;
 
-			pRenderer->SetRenderPass(&m_DrawChunkPass);
-			if (!m_bRenderPoints) {
+			if (!m_RenderPoints) {
 				pRenderer->VRender(m_ChunkVertexDeclaration, EPrimitiveType::TRIANGLELIST, pVertexBuffer, pIndexBuffer, numIndices);
 			}
 			else {
-				pRenderer->VRender(m_ChunkVertexDeclaration, EPrimitiveType::POINTLIST, pVertexBuffer);
+				pRenderer->VRender(m_ChunkVertexDeclaration, EPrimitiveType::POINTLIST, pVertexBuffer, pIndexBuffer, numIndices);
 			}
 		}
 	}
+}
+
+std::shared_ptr<ATexture> CChunkManager::GetShadowMap()
+{
+	return m_pShadowMapRenderTarget->GetTexture();
 }
 
 void CChunkManager::UnloadChunk(const CVector3& chunkPosition)
@@ -563,6 +636,12 @@ void CChunkManager::CreateRenderTextures()
 	pVertexIDsTexture->SetPixelFormat(ETexturePixelFormat::UINT_32_R);
 	pVertexIDsTexture->VLoad();
 	m_pVertexIDRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture(pVertexIDsTexture);
+
+	// Create the shadow map render target.
+	m_pShadowMapRenderTarget = g_pApp->GetRenderer()->VCreateRenderTexture(
+		"ShadowMap", s_SHADOW_MAP_WIDTH, s_SHADOW_MAP_HEIGHT);
+
+	m_pShadowMapRenderTarget->SetBackgroundColour(CColourValue::s_WHITE);
 }
 
 void CChunkManager::CreateBuildDensitiesPass()
@@ -712,6 +791,21 @@ void CChunkManager::CreateGenerateIndicesPass()
 	m_GenerateIndicesPass.SetColourWritesEnabled(false);
 }
 
+void CChunkManager::CreateDrawDepthPass()
+{
+	// Set shaders.
+	m_DrawDepthRenderPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("DepthOnly_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
+	m_DrawDepthRenderPass.SetGeometryShader(g_pApp->GetRenderer()->VCreateShaderProgram("DepthOnly_PS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
+
+	// Add texture layers.
+	m_pDrawDepthParams = m_DrawDepthRenderPass.GetVertexShader()->GetShaderParams("CBPerFrame");
+
+	// Set stream output targets.
+
+	// Set states.
+	m_DrawDepthRenderPass.AddRenderTarget(m_pShadowMapRenderTarget.get());
+}
+
 void CChunkManager::CreateDrawChunkPass()
 {
 	// Set shaders.
@@ -719,6 +813,11 @@ void CChunkManager::CreateDrawChunkPass()
 	m_DrawChunkPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("DrawChunk_PS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
 
 	// Add texture layers.
+	auto pShadowMapLayer = m_DrawChunkPass.AddTextureLayer(m_pShadowMapRenderTarget->GetTexture());
+	pShadowMapLayer->SetTextureFilter(ETextureFilterType::POINT);
+	pShadowMapLayer->SetTextureAddressModes(ETextureAddressMode::BORDER);
+	pShadowMapLayer->SetTextureBorderColour(CColourValue::s_WHITE);
+
 	m_DrawChunkPass.AddTextureLayer("Textures/GrassDiffuse.png");
 	m_DrawChunkPass.AddTextureLayer("Textures/StoneDiffuse.png");
 	m_DrawChunkPass.AddTextureLayer("Textures/StoneDiffuse.png");

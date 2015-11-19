@@ -41,4 +41,14 @@ shared_ptr<ATexture> ARenderTexture::GetTexture()
 	return m_pTexture;
 }
 
+void ARenderTexture::SetBackgroundColour(const CColourValue& backgroundColour)
+{
+	m_BackgroundColour = backgroundColour;
+}
+
+const CColourValue& ARenderTexture::GetBackgroundColour() const
+{
+	return m_BackgroundColour;
+}
+
 }

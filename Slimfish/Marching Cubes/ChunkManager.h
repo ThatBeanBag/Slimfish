@@ -100,7 +100,14 @@ public:
 	void Update(const CCamera& camera);
 	void BuildChunks();
 
-	void DrawChunks(const CCamera& camera, const CLight& light);
+	void ToggleAmbientOcclusionEnabled();
+	void ToggleWireFrame();
+	void ToggleRenderPoints();
+
+	void DrawShadowMap(const CCamera& lightCamera);
+	void DrawChunks(const CCamera& camera, const CCamera& lightCamera, const CLight& light);
+
+	std::shared_ptr<ATexture> GetShadowMap();
 protected:
 private:
 	void UnloadChunk(const CVector3& chunkPosition);
@@ -120,6 +127,7 @@ private:
 	void CreateSplatVertexIDsPass();
 	void CreateGenerateVerticesPass();
 	void CreateGenerateIndicesPass();
+	void CreateDrawDepthPass();
 	void CreateDrawChunkPass();
 
 	CVector3 GetChunkPosition(int i, int j, int k, const CVector3& centreChunkPosition, int chunkSize, int ib, int jb, int kb);
@@ -133,6 +141,9 @@ public:
 	static const int s_WORK_FOR_EMPTY_CHUNK = 1;
 	static const int s_WORK_FOR_NONEMPTY_CHUNK = 4;
 	static const std::array<int, 3> s_CHUNK_SIZES;
+
+	static const size_t s_SHADOW_MAP_WIDTH = 2048;
+	static const size_t s_SHADOW_MAP_HEIGHT = 2048;
 
 	static const size_t s_NOISE_VOLUME_DIM = 16;
 	static const size_t s_NUM_NOISE_VOLUMES = 4;
@@ -184,10 +195,12 @@ private:
 	std::shared_ptr<CShaderParams> m_pLodParams;
 	std::shared_ptr<CShaderParams> m_pWVPParams;
 	std::shared_ptr<CShaderParams> m_pLightingParams;
+	std::shared_ptr<CShaderParams> m_pDrawDepthParams;
 
 	// Render targets.
 	std::unique_ptr<ARenderTexture> m_pDensityRenderTarget;
 	std::unique_ptr<ARenderTexture> m_pVertexIDRenderTarget;
+	std::unique_ptr<ARenderTexture> m_pShadowMapRenderTarget;
 
 	// Textures
 	std::array<std::shared_ptr<ATexture>, s_NUM_NOISE_VOLUMES> m_NoiseVolumes;
@@ -199,10 +212,13 @@ private:
 	CRenderPass m_SplatVertexIDsPass;
 	CRenderPass m_GenerateVerticesPass;
 	CRenderPass m_GenerateIndicesPass;
+	CRenderPass m_DrawDepthRenderPass;
 	CRenderPass m_DrawChunkPass;
 
 	// Flags for different ways to draw.
-	bool m_bRenderPoints;
+	bool m_RenderPoints;
+	bool m_AmboEnabled;
+	bool m_WireFrame;
 };
 
 #endif	// __CHUNKMANAGER_H__

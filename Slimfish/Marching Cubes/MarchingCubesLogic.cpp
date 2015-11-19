@@ -30,28 +30,6 @@ CMarchingCubesLogic::CMarchingCubesLogic()
 	:m_Camera(nullptr),
 	m_Light(nullptr)
 {
-	/*for (size_t i = 0; i < m_FreeBufferIDs.size(); ++i) {
-		m_FreeBufferIDs[i] = i;
-	}
-
-	m_VoxelDimPlusMargins = m_VoxelDim + m_VoxelMargins;
-	m_ChunkSizes[0] = 4;
-	m_ChunkSizes[1] = 10;
-	m_ChunkSizes[2] = 32;
-
-	for (int lod = 0; lod < s_NUM_LOD; ++lod) {
-		for (int i = 0; i < s_NUM_CHUNKS_PER_DIM; ++i) {
-			for (int j = 0; j < s_NUM_CHUNKS_PER_DIM; ++j) {
-				for (int k = 0; k < s_NUM_CHUNKS_PER_DIM; ++k) {
-					auto& chunk = m_Chunks[lod][i][j][k];
-					chunk.lod = lod;
-					chunk.bufferID = -1;
-					ClearChunk(chunk);
-				}
-			}
-		}
-	}*/
-
 	m_Light.SetType(LIGHT_DIRECTIONAL);
 	m_Light.SetDiffuse(ToColourValue(CColour(255, 184, 19)));
 	m_Light.SetDiffuse(ToColourValue(CColour(222, 222, 222)));
@@ -66,128 +44,14 @@ CMarchingCubesLogic::~CMarchingCubesLogic()
 
 bool CMarchingCubesLogic::Initialise()
 {
-	/*// Build vertex declarations.
-	m_QuadVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT3);
-	m_QuadVertexDeclaration.AddElement("TEXCOORD", CInputElement::FORMAT_FLOAT2);
-	
-	m_DummyCornersVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT2);
-	m_DummyCornersVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT2);
-
-	m_NonEmptyCellListVertexDeclaration.AddElement("TEX", CInputElement::FORMAT_UINT);
-
-	m_VertexListVertexDeclaration.AddElement("TEX", CInputElement::FORMAT_UINT);
-
-	m_ChunkVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT4);
-	m_ChunkVertexDeclaration.AddElement("NORMAL", CInputElement::FORMAT_FLOAT3);
-
-	m_MarchingCubesVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT3);
-
-	// Create geometry.
-	BuildQuad();
-	BuildDummyCorners();
-	BuildStreamOutputBuffers();
-	BuildDummyPoints();
-
-	CreateRenderTextures();
-
-	// Create render passes.
-	CreateBuildDensitiesPass();
-	SLIM_INFO() << "Finished BuildDensitiesPass.";
-	CreateListNonEmptyCellsPass();
-	SLIM_INFO() << "Finished ListNonEmptyCellsPass.";
-	CreateListVerticesPass();
-	SLIM_INFO() << "Finished ListVerticesPass.";
-	CreateSplatVertexIDsPass();
-	SLIM_INFO() << "Finished SplatVertexIDsPass.";
-	CreateGenerateVerticesPass();
-	SLIM_INFO() << "Finished GenerateVerticesPass.";
-	CreateGenerateIndicesPass();
-	SLIM_INFO() << "Finished GenerateIndicesPass.";
-	CreateDrawChunkPass();
-	SLIM_INFO() << "Finished DrawChunkPass.";
-	CreateMarchingCubesPass(); // TODO: Remove this.
-	SLIM_INFO() << "Finished MarchingCubesPass.";
-
-	// Setup shader parameters.
-	// Set the tables on the generate indices geometry shader.
-	auto pTableBuffer = m_GenerateIndicesPass.GetGeometryShader()->GetShaderParams("CBTables");
-	pTableBuffer->SetConstant("gEdgeStart", Tables::g_EDGE_START[0], Tables::GetSize(Tables::g_EDGE_START));
-	pTableBuffer->SetConstant("gEdgeAxis", Tables::g_EDGE_AXIS[0], Tables::GetSize(Tables::g_EDGE_AXIS));
-	pTableBuffer->SetConstant("gTriTable", Tables::g_TRI_TABLE[0], Tables::GetSize(Tables::g_TRI_TABLE));
-	m_GenerateIndicesPass.GetGeometryShader()->UpdateShaderParams("CBTables", pTableBuffer);
-
-	// Set the tables on the generate vertices vertex shader.
-	pTableBuffer = m_GenerateVerticesPass.GetVertexShader()->GetShaderParams("CBTables");
-	pTableBuffer->SetConstant("gEdgeStart", Tables::g_EDGE_START[0], Tables::GetSize(Tables::g_EDGE_START));
-	pTableBuffer->SetConstant("gEdgeEnd", Tables::g_EDGE_END[0], Tables::GetSize(Tables::g_EDGE_END));
-	m_GenerateVerticesPass.GetVertexShader()->UpdateShaderParams("CBTables", pTableBuffer);
-
-	pTableBuffer = m_GenerateVerticesPass.GetVertexShader()->GetShaderParams("CBAmbientOcclusion");
-	pTableBuffer->SetConstant("gAmboDistance", Tables::g_AMBO_DISTANCE[0], Tables::GetSize(Tables::g_AMBO_DISTANCE));
-	pTableBuffer->SetConstant("gOcclusion", Tables::g_AMBO_OCCLUSION[0], Tables::GetSize(Tables::g_AMBO_OCCLUSION));
-	pTableBuffer->SetConstant("gRayDirections", Tables::g_AMBO_RAY_DIRECTIONS[0], Tables::GetSize(Tables::g_AMBO_RAY_DIRECTIONS));
-	m_GenerateVerticesPass.GetVertexShader()->UpdateShaderParams("CBAmbientOcclusion", pTableBuffer);
-
-	pTableBuffer = m_MarchingCubesPass.GetGeometryShader()->GetShaderParams("CBTriTable");
-	pTableBuffer->SetConstant("gTriTable", Tables::g_TRI_TABLE[0], Tables::GetSize(Tables::g_TRI_TABLE));
-	m_MarchingCubesPass.GetGeometryShader()->UpdateShaderParams("CBTriTable", pTableBuffer);
-
-	m_pLodParams = m_BuildDensitiesPass.GetVertexShader()->GetShaderParams("CBLod");
-	m_BuildDensitiesPass.GetVertexShader()->GetShaderParams("CBLod");
-	m_BuildDensitiesPass.GetPixelShader()->GetShaderParams("CBLod");
-	m_ListNonEmptyCellsPass.GetVertexShader()->GetShaderParams("CBLod");
-	m_SplatVertexIDsPass.GetVertexShader()->GetShaderParams("CBLod");
-	m_GenerateVerticesPass.GetVertexShader()->GetShaderParams("CBLod");
-	m_GenerateIndicesPass.GetGeometryShader()->GetShaderParams("CBLod");
-	m_MarchingCubesPass.GetGeometryShader()->GetShaderParams("CBLod");
-
-	m_pChunkParams = m_BuildDensitiesPass.GetVertexShader()->GetShaderParams("CBChunk");
-	m_BuildDensitiesPass.GetVertexShader()->GetShaderParams("CBChunk");
-	m_GenerateVerticesPass.GetVertexShader()->GetShaderParams("CBChunk");
-	m_MarchingCubesPass.GetGeometryShader()->GetShaderParams("CBChunk");
-
-	// Set the lod parameters of the chunk.
-	m_pLodParams->SetConstant("gVoxelDim", static_cast<float>(m_VoxelDim));
-	m_pLodParams->SetConstant("gVoxelDimMinusOne", static_cast<float>(m_VoxelDim - 1));
-	m_pLodParams->SetConstant("gWVoxelSize", static_cast<float>(m_ChunkSizes[0]) / static_cast<float>(m_VoxelDim - 1));
-	m_pLodParams->SetConstant("gWChunkSize", static_cast<float>(m_ChunkSizes[0]));
-	m_pLodParams->SetConstant("gInvVoxelDim", 1.0f / static_cast<float>(m_VoxelDim));
-	m_pLodParams->SetConstant("gInvVoxelDimMinusOne", 1 / static_cast<float>(m_VoxelDim - 1));
-	m_pLodParams->SetConstant("gMargin", static_cast<float>(m_VoxelMargins));
-	m_pLodParams->SetConstant("gVoxelDimPlusMargins", static_cast<float>(m_VoxelDimPlusMargins));
-	m_pLodParams->SetConstant("gVoxelDimPlusMarginsMinusOne", static_cast<float>(m_VoxelDimPlusMargins - 1));
-	m_pLodParams->SetConstant("gInvVoxelDimPlusMargins", 1.0f / static_cast<float>(m_VoxelDimPlusMargins));
-	m_pLodParams->SetConstant("gInvVoxelDimPlusMarginsMinusOne", 1.0f / static_cast<float>(m_VoxelDimPlusMargins - 1));
-
-	// Update all the CBLod buffers for shaders that use it.
-	m_BuildDensitiesPass.GetVertexShader()->UpdateShaderParams("CBLod", m_pLodParams);
-	m_BuildDensitiesPass.GetPixelShader()->UpdateShaderParams("CBLod", m_pLodParams);
-	m_ListNonEmptyCellsPass.GetVertexShader()->UpdateShaderParams("CBLod", m_pLodParams);
-	m_SplatVertexIDsPass.GetVertexShader()->UpdateShaderParams("CBLod", m_pLodParams);
-	m_GenerateVerticesPass.GetVertexShader()->UpdateShaderParams("CBLod", m_pLodParams);
-	m_GenerateIndicesPass.GetGeometryShader()->UpdateShaderParams("CBLod", m_pLodParams);
-	m_MarchingCubesPass.GetGeometryShader()->UpdateShaderParams("CBLod", m_pLodParams);
-
-	m_pWVPParams = m_DrawChunkPass.GetVertexShader()->GetShaderParams("CBPerFrame");
-	m_pLightingParams = m_DrawChunkPass.GetPixelShader()->GetShaderParams("CBLighting");
-
-
-	m_pLightingParams->SetConstant("gLight.type", m_Light.GetType());
-	m_pLightingParams->SetConstant("gLight.diffuse", m_Light.GetDiffuse());
-	m_pLightingParams->SetConstant("gLight.specular", m_Light.GetSpecular());
-	m_pLightingParams->SetConstant("gLight.direction", m_Light.GetRotation().GetDirection());
-	m_pLightingParams->SetConstant("gLight.range", m_Light.GetRange());
-	m_pLightingParams->SetConstant("gLight.attenuation", m_Light.GetAttenuation());
-	m_pLightingParams->SetConstant("gFogStart", 50.0f);
-	m_pLightingParams->SetConstant("gFogRange", 5.0f);
-	m_pLightingParams->SetConstant("gFogColour", g_pApp->GetRenderer()->GetBackgroundColour());
-	m_pLightingParams->SetConstant("gAmbientLight", CColourValue(0.5f, 0.5f, 0.5f));
-	m_DrawChunkPass.GetPixelShader()->UpdateShaderParams("CBLighting", m_pLightingParams);*/
-
 	// Setup camera.
 	m_Camera.SetPosition(CVector3(0.0f, 1.0f, 1.0f));
-	m_Camera.SetPerspective(Math::DegreesToRadians(60.0f), 1.0f, 0.1f, 100.0f);
+	m_Camera.SetPerspective(Math::DegreesToRadians(60.0f), 1.0f, 0.1f, 400.0f);
 	g_pApp->GetRenderer()->SetBackgroundColour(ToColourValue(CColour(135, 206, 250)));
+
+	if (!m_2DRenderer.Initialise()) {
+		return false;
+	}
 
 	return m_ChunkManager.Initialise();
 }
@@ -203,8 +67,22 @@ void CMarchingCubesLogic::Render()
 	// Update camera.
 	m_Camera.UpdateViewTransform();
 
+	CCamera lightCamera(nullptr);
+	lightCamera.SetOrthographic(100.0f, 1.0f, 0.0f, 110);
+	lightCamera.SetPosition(m_Camera.GetPosition() - m_Light.GetRotation().GetDirection() * 100);
+	lightCamera.SetRotation(m_Light.GetRotation());
+	lightCamera.UpdateViewTransform();
+	//CCamera lightCamera = m_Camera;
+	//lightCamera.SetAspectRatio(1.0f);
+	//lightCamera.SetPosition(m_Camera.GetPosition() - m_Light.GetRotation().GetDirection() * 100);
+	//lightCamera.SetRotation(m_Light.GetRotation());
+	//lightCamera.UpdateViewTransform();
+
 	m_ChunkManager.Update(m_Camera);
-	m_ChunkManager.DrawChunks(m_Camera, m_Light);
+	m_ChunkManager.DrawShadowMap(lightCamera);
+	m_ChunkManager.DrawChunks(m_Camera, lightCamera, m_Light);
+
+	m_2DRenderer.Render(CRect(0, 0, 300, 300), m_ChunkManager.GetShadowMap());
 }
 
 void CMarchingCubesLogic::HandleInput(const CInput& input, float deltaTime)
@@ -221,7 +99,13 @@ void CMarchingCubesLogic::HandleInput(const CInput& input, float deltaTime)
 	}
 
 	if (input.GetKeyPress(EKeyCode::NUM_1)) {
-		// Set fill mode.
+		m_ChunkManager.ToggleWireFrame();
+	}
+	if (input.GetKeyPress(EKeyCode::NUM_2)) {
+		m_ChunkManager.ToggleRenderPoints();
+	}
+	if (input.GetKeyPress(EKeyCode::NUM_3)) {
+		m_ChunkManager.ToggleAmbientOcclusionEnabled();
 	}
 
 	if (input.GetKeyPress(EKeyCode::UP_ARROW)) {

@@ -31,6 +31,7 @@
 #include <Graphics/SlimRenderTexture.h>
 #include <Graphics/SlimLight.h>
 #include "ChunkManager.h"
+#include "2DDrawer.h"
 
 class CMarchingCubesLogic : public CGameLogic {
 	// Member Functions
@@ -49,6 +50,7 @@ public:
 protected:
 private:
 	CChunkManager m_ChunkManager;
+	C2DDrawer m_2DRenderer;
 
 	CCamera m_Camera;
 	float m_CameraYaw;

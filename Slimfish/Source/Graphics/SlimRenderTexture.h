@@ -33,10 +33,23 @@ class ATexture;
 class ARenderTexture {
 	// Member Functions
 public:
+	/** Default constructor. 
+	 	@author Hayden Asplet
+	*/
 	ARenderTexture(shared_ptr<ATexture> pTexture);
+
+	/** Destructor.
+	 	@author Hayden Asplet
+	*/
 	virtual ~ARenderTexture();
 
+	/** Get the underlying texture resource. @author Hayden Asplet */
 	shared_ptr<ATexture> GetTexture();
+
+	/** Set the background colour. @author Hayden Asplet */
+	void SetBackgroundColour(const CColourValue& backgroundColour);
+	/** Get the background colour. @author Hayden Asplet */
+	const CColourValue& GetBackgroundColour() const;
 protected:
 private:
 	// Member Variables
@@ -44,6 +57,7 @@ public:
 protected:
 	shared_ptr<ATexture> m_pTexture;
 private:
+	CColourValue m_BackgroundColour;
 };
 
 }
