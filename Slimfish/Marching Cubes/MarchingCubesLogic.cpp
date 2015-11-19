@@ -28,12 +28,14 @@
 
 CMarchingCubesLogic::CMarchingCubesLogic()
 	:m_Camera(nullptr),
-	m_Light(nullptr)
+	m_Light(nullptr),
+	m_DisplayShadowMap(false),
+	m_DisplayControls(true)
 {
 	m_Light.SetType(LIGHT_DIRECTIONAL);
 	m_Light.SetDiffuse(ToColourValue(CColour(255, 184, 19)));
 	m_Light.SetDiffuse(ToColourValue(CColour(222, 222, 222)));
-	m_Light.SetSpecular(ToColourValue(CColour(255, 184, 19)));
+	m_Light.SetSpecular(ToColourValue(CColour(255, 255, 255)));
 	m_Light.SetRotation(CQuaternion(Math::DegreesToRadians(-45), Math::DegreesToRadians(-45), 0));
 }
 
@@ -46,12 +48,14 @@ bool CMarchingCubesLogic::Initialise()
 {
 	// Setup camera.
 	m_Camera.SetPosition(CVector3(0.0f, 1.0f, 1.0f));
-	m_Camera.SetPerspective(Math::DegreesToRadians(60.0f), 1.0f, 0.1f, 400.0f);
+	m_Camera.SetPerspective(Math::DegreesToRadians(60.0f), 1.0f, 0.1f, 200.0f);
 	g_pApp->GetRenderer()->SetBackgroundColour(ToColourValue(CColour(135, 206, 250)));
 
 	if (!m_2DRenderer.Initialise()) {
 		return false;
 	}
+
+	m_pControlsImage = g_pApp->GetRenderer()->VLoadTexture("Textures/Controls.png");
 
 	return m_ChunkManager.Initialise();
 }
@@ -68,8 +72,8 @@ void CMarchingCubesLogic::Render()
 	m_Camera.UpdateViewTransform();
 
 	CCamera lightCamera(nullptr);
-	lightCamera.SetOrthographic(100.0f, 1.0f, 0.0f, 110);
-	lightCamera.SetPosition(m_Camera.GetPosition() - m_Light.GetRotation().GetDirection() * 100);
+	lightCamera.SetOrthographic(100.0f, 1.0f, 0.0f, m_Camera.GetFarClipDistance());
+	lightCamera.SetPosition(m_Camera.GetPosition() - m_Light.GetRotation().GetDirection() * (lightCamera.GetFarClipDistance() / 2.0f));
 	lightCamera.SetRotation(m_Light.GetRotation());
 	lightCamera.UpdateViewTransform();
 	//CCamera lightCamera = m_Camera;
@@ -79,10 +83,15 @@ void CMarchingCubesLogic::Render()
 	//lightCamera.UpdateViewTransform();
 
 	m_ChunkManager.Update(m_Camera);
-	m_ChunkManager.DrawShadowMap(lightCamera);
 	m_ChunkManager.DrawChunks(m_Camera, lightCamera, m_Light);
 
-	m_2DRenderer.Render(CRect(0, 0, 300, 300), m_ChunkManager.GetShadowMap());
+	if (m_DisplayShadowMap) {
+		m_2DRenderer.Render(CRect(0, 155, 300, 300), m_ChunkManager.GetShadowMap());
+	}
+
+	if (m_DisplayControls) {
+		m_2DRenderer.Render(CRect(0, 0, m_pControlsImage->GetWidth(), m_pControlsImage->GetHeight()), m_pControlsImage);
+	}
 }
 
 void CMarchingCubesLogic::HandleInput(const CInput& input, float deltaTime)
@@ -102,10 +111,19 @@ void CMarchingCubesLogic::HandleInput(const CInput& input, float deltaTime)
 		m_ChunkManager.ToggleWireFrame();
 	}
 	if (input.GetKeyPress(EKeyCode::NUM_2)) {
-		m_ChunkManager.ToggleRenderPoints();
+		m_ChunkManager.ToggleAmbientOcclusionEnabled();
 	}
 	if (input.GetKeyPress(EKeyCode::NUM_3)) {
-		m_ChunkManager.ToggleAmbientOcclusionEnabled();
+		m_ChunkManager.ToggleShadows();
+	}
+	if (input.GetKeyPress(EKeyCode::NUM_4)) {
+		m_DisplayShadowMap = !m_DisplayShadowMap;
+	}
+	if (input.GetKeyPress(EKeyCode::NUM_5)) {
+		m_ChunkManager.ToggleRenderPoints();
+	}
+	if (input.GetKeyPress(EKeyCode::H)) {
+		m_DisplayControls = !m_DisplayControls;
 	}
 
 	if (input.GetKeyPress(EKeyCode::UP_ARROW)) {

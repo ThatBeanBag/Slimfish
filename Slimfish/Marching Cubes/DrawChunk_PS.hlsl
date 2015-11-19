@@ -37,7 +37,7 @@ static const float gCliffFull = 0.7f;
 static const float gTransitionStart = 0.2f;
 static const float gTransitionFull = 0.5f;
 
-static const float gShadowMapBias = 0.02f;
+static const float gShadowMapBias = 0.008f;
 static const float gShadowMapSize = 2048.0f;
 static const float gInvShadowMapSize = 1.0f / gShadowMapSize;
 
@@ -137,7 +137,7 @@ float4 main(PSInput pIn) : SV_TARGET
 			float4 cliffDiffuse = SampleTriPlanar(gCliffTexture, pIn.wPosition.xyz, triPlanarBlendVal);
 			float3 cliffNormalSample = SampleTriPlanar(gCliffNormalMap, pIn.wPosition.xyz, triPlanarBlendVal).xyz;
 
-			specular = lerp(specular, float4(0.7f, 0.7f, 0.7f, 1.0f), cliffBlend);
+			specular = lerp(specular, float4(0.3f, 0.3f, 0.3f, 1.0f), cliffBlend);
 			diffuse = lerp(diffuse, cliffDiffuse, cliffBlend);
 			normalSample = lerp(normalSample, cliffNormalSample, cliffBlend);
 		}
@@ -158,7 +158,7 @@ float4 main(PSInput pIn) : SV_TARGET
 
 	// Calculate lighting.
 	float3 lightColour = 0.0f;
-	Material material = { diffuse, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 40.0f };
+	Material material = { diffuse, specular, float4(0.0f, 0.0f, 0.0f, 0.0f), 30.0f };
 
 	if (gLight.type == 0) {
 		lightColour = ParallelLight(finalNormal, material, gLight, toEye);

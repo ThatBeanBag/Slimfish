@@ -201,8 +201,6 @@ private:
 	std::vector<ComPtr<ID3D11SamplerState> > m_SamplerStates;
 	std::vector<ID3D11ShaderResourceView*> m_Textures;
 
-	ComPtr<ID3D11SamplerState> m_pSamplerState;
-
 	float m_pBackgroundColour[4];	// The clear colour.
 	D3D11_VIEWPORT m_ViewPort;		// Current view port.
 	

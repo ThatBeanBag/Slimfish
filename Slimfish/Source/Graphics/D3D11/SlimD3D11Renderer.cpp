@@ -53,12 +53,27 @@ CD3D11Renderer::~CD3D11Renderer()
 	m_pBoundPixelShader = nullptr;
 	m_pBoundVertexShader = nullptr;
 
+	// Clean up.
+	m_pRasterizerState.Reset();
+	m_pBlendState.Reset();
+	m_pDepthStencilState.Reset();
+	m_pSOQuery.Reset();
+	m_pSwapChain.Reset();
+	m_pImmediateContext.Reset();
+	m_pDepthStencilBuffer.Reset();
+	m_pDepthStencilView.Reset();
+	m_pRenderTargetView.Reset();
+	for (auto& samplerState : m_SamplerStates) {
+		samplerState.Reset();
+	}
+
 #ifdef _DEBUG
 	// Report live objects.
 	ComPtr<ID3D11Debug> pDebug;
 	m_pD3DDevice.As(&pDebug);
 	pDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 #endif // _DEBUG
+
 }
 
 bool CD3D11Renderer::VInitialize()
@@ -211,21 +226,6 @@ bool CD3D11Renderer::VInitialize()
 		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create query for stream out statistics with error: " << GetErrorMessage(hResult);
 	}
 
-	// TODO: remove this it's only used to test sampler states.
-	D3D11_SAMPLER_DESC desc;
-	ZeroMemory(&desc, sizeof(D3D11_SAMPLER_DESC));
-	desc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-	desc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-	desc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	desc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-	desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	desc.MaxAnisotropy = 1;
-	hResult = m_pD3DDevice->CreateSamplerState(&desc, m_pSamplerState.GetAddressOf());
-
-	if (FAILED(hResult)) {
-		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create sampler state." << GetErrorMessage(hResult);
-	}
-
 	return true;
 }
 
@@ -238,7 +238,7 @@ void CD3D11Renderer::VPreRender()
 				pDepthStencilView = m_pDepthStencilView.Get();
 			}
 
-			// Get the backgroud colour of the render target to clear it with.
+			// Get the background colour of the render target to clear it with.
 			auto backgroundColour = renderTarget->GetBackgroundColour();
 			float clearColour[] = {
 				backgroundColour.GetRed(),

@@ -75,6 +75,7 @@ float SmoothSnap(float t, float m)
 		value for.
 */
 
+/*
 // Crazy caves and such.
 float Density(float3 wsCoord) {
 	// Take a copy of the world-space coordinate.
@@ -142,9 +143,9 @@ float Density(float3 wsCoord) {
 	density -= gWChunkSize * 0.0000001f;
 
 	return density;
-}
+}*/
 
-/*
+
 // Awesome mountainess terrain. With some warping.
 float Density(float3 wsCoord) {
 
@@ -174,12 +175,18 @@ float Density(float3 wsCoord) {
 	density -= gWChunkSize * 0.0000001f;
 
 	return density;
-}*/
+}
 
-/*float Density(float3 wsCoord) {
-
+/*
+float Density(float3 wsCoord) 
+{
 	// Take a copy of the world-space coordinate.
 	float3 wsCoordCopy = wsCoord;
+
+	float4 uulf_rand1 = saturate(SampleNoiseMQU(wsCoord * 0.000718, gTexture3DNoise0) * 2 - 0.5f);
+	float4 uulf_rand2 = SampleNoiseMQU(wsCoord * 0.000632, gTexture3DNoise1);
+	float4 uulf_rand3 = SampleNoiseMQU(wsCoord * 0.000695, gTexture3DNoise2);
+
 
 	float3 warp = SampleNoiseLQS(wsCoordCopy * 0.004f, gTexture3DNoise1).x;
 	wsCoordCopy += warp * 8;
@@ -188,17 +195,30 @@ float Density(float3 wsCoord) {
 	//float density = rad - length(wsCoordCopy - float3(0, -rad, 0));
 	float density = -wsCoord.y;
 
-	//wsCoordCopy.y *= 0.4f;
+	// Flat terracing.
+	const float terraces_can_warp = 0.5 * uulf_rand2.y;
+	const float terrace_freq_y = 0.13;
+	const float terrace_str = 3 * saturate(uulf_rand1.z * 2 - 1);
+	const float overhang_str = 1 * saturate(uulf_rand1.z * 2 - 1);
+	float fy = -lerp(wsCoordCopy.y, wsCoord.y, terraces_can_warp)*terrace_freq_y;
+	float orig_t = frac(fy);
+	float t = orig_t;
+	t = SmoothSnap(t, 16);  // faster than using 't = t*t*(3-2*t)' four times
+	fy = floor(fy) + t;
+	density += fy*terrace_str;
+	density += (t - orig_t) * overhang_str;
+
+	wsCoordCopy.y *= 0.4f;
 
 	density += SampleNoiseLQS(wsCoordCopy * 1.66200f, gTexture3DNoise3).x * 0.03f;
 	density += SampleNoiseLQS(wsCoordCopy * 0.56200f, gTexture3DNoise3).x * 0.05f;
-	density += SampleNoiseLQS(wsCoordCopy * 0.12600f, gTexture3DNoise1).x * 0.2f;
+	density += SampleNoiseLQS(wsCoordCopy * 0.12600f, gTexture3DNoise1).x * 0.2f; 
 	density += SampleNoiseLQS(wsCoordCopy * 0.0300f, gTexture3DNoise1).x * 0.33f;
-	density += SampleNoiseLQS(wsCoordCopy * 0.0200f, gTexture3DNoise2).x * 0.58f;
+	density += SampleNoiseLQS(wsCoordCopy * 0.0200f, gTexture3DNoise2).x * 0.58f; 
 	density += SampleNoiseLQS(wsCoordCopy * 0.0190f, gTexture3DNoise0).x * 1.28f;
-	density += SampleNoiseMQS(wsCoordCopy * 0.0070f, gTexture3DNoise3).x * 6.32f;
-	density += SampleNoiseMQS(wsCoordCopy * 0.0056f, gTexture3DNoise0).x * 50.0f;
-	//density += SampleNoiseMQS(wsCoordCopy * 0.0032f, gTexture3DNoise1).x * 20.0f;
+	density += SampleNoiseMQS(wsCoordCopy * 0.0070f, gTexture3DNoise3).x * 3.32f;
+	density += SampleNoiseMQS(wsCoordCopy * 0.0056f, gTexture3DNoise0).x * 10.0f;
+	density += SampleNoiseMQS(wsCoordCopy * 0.0022f, gTexture3DNoise1).x * 20.0f;
 	//density += SampleNoiseMQS(wsCoordCopy * 0.0021f, gTexture3DNoise2).x * 40.0f;
 
 	density -= gWChunkSize * 0.0000001f;

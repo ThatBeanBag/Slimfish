@@ -18,8 +18,6 @@
 #define __MARCHINGCUBESLOGIC_H__
 
 // Library Includes
-#include <array>
-#include <unordered_map>
 
 // Local Includes
 #include <GameBase/SlimGameLogic.h>
@@ -36,12 +34,35 @@
 class CMarchingCubesLogic : public CGameLogic {
 	// Member Functions
 public:
+	/** Default constructor.
+	 	@author Hayden Asplet
+	*/
 	CMarchingCubesLogic();
+
+	/** Destructor.
+	 	@author Hayden Asplet
+	*/
 	~CMarchingCubesLogic();
 
+	/** Intialise the marching cubes logic.
+	 	@author Hayden Asplet
+	 	@return True if initialisation was successful.
+	*/
 	virtual bool Initialise() override;
+
+	/** Update the marching cubes logic.
+	 	@author Hayden Asplet
+	*/
 	virtual void Update(float deltaTime) override;
+
+	/** Render stuff to the screen.
+	 	@author Hayden Asplet
+	*/
 	virtual void Render() override;
+
+	/** Allow the logic to handle input.
+	 	@author Hayden Asplet
+	*/
 	virtual void HandleInput(const CInput& input, float deltaTime) override;
 protected:
 private:
@@ -60,6 +81,8 @@ private:
 	CLight m_Light;
 	CVector3 m_TestChunkPosition;
 
+	bool m_DisplayShadowMap;
+	bool m_DisplayControls;
 	// Declarations
 
 	// Buffers
@@ -70,6 +93,7 @@ private:
 	// Render targets.
 
 	// Textures
+	std::shared_ptr<ATexture> m_pControlsImage;
 
 	// Render passes.
 

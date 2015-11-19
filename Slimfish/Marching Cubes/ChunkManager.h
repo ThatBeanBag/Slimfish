@@ -96,40 +96,122 @@ public:
 	*/
 	~CChunkManager();
 
+	/** Initialise the chunk manager.
+	 	@author Hayden Asplet
+	 	@return True if the manager initailised successfully.
+	*/
 	bool Initialise();
-	void Update(const CCamera& camera);
-	void BuildChunks();
 
+	/** Update the chunk manager.
+	 	@author Hayden Asplet
+	 	@param camera Camera used for rendering.
+	*/
+	void Update(const CCamera& camera);
+
+	/** Toggle ambient occlusion enabled.
+	 	@author Hayden Asplet
+	*/
 	void ToggleAmbientOcclusionEnabled();
+
+	/** Toggle wire frame mode for drawing the chunks.
+		@author Hayden Asplet
+	*/
 	void ToggleWireFrame();
+
+	/** Toggle rendering th chunks as just the vertex points.
+		@author Hayden Asplet
+	*/
 	void ToggleRenderPoints();
 
-	void DrawShadowMap(const CCamera& lightCamera);
+	/** Toggle shadows enabled.
+	 	@author Hayden Asplet
+	*/
+	void ToggleShadows();
+
+	/** Draw all the currently loaded chunks.
+	 	@author Hayden Asplet
+	 	@param camera Camera to render all the chunks in view of.
+	 	@param lightCamera The light camera for shadow mapping.
+	 	@param light The light information for lighting the chunks.
+	*/
 	void DrawChunks(const CCamera& camera, const CCamera& lightCamera, const CLight& light);
 
 	std::shared_ptr<ATexture> GetShadowMap();
 protected:
 private:
-	void UnloadChunk(const CVector3& chunkPosition);
+	/** Internal method for drawing the chunks to the shadow map.
+		@author Hayden Asplet
+		@param lightCamera The light's camera to project the chunks by.
+	*/
+	void DrawShadowMap(const CCamera& lightCamera);
+
+	/** Internal method for building the chunks that need loading.
+	 	@author Hayden Asplet
+	*/
+	void BuildChunks();
+
+	/** Clear a chunk.
+	 	@author Hayden Asplet
+	*/
 	void ClearChunk(TChunkInfo& chunkInfo);
 
+	/** Build a single chunk.
+	 	@author Hayden Asplet
+	 	@param chunkInfo chunkInfo thats used to build the chunk. Also gets populated with loaded information.
+	 	@return True if the chunk has polygons.
+	*/
 	bool BuildChunk(TChunkInfo& chunkInfo);
 
 	// Initialization stuff for rendering and building chunks.
+	// Methods for building static meshes.
 	void BuildQuad();
 	void BuildDummyCorners();
 	void BuildStreamOutputBuffers();
 
+	// Methods for creating the render passes to build and draw chunks.
+	/** Create render textures, density volume, vertex ID volume and shadow map.
+	 	@author Hayden Asplet
+	*/
 	void CreateRenderTextures();
+	/** Create the render pass, which builds the density volume.
+		@author Hayden Asplet
+	*/
 	void CreateBuildDensitiesPass();
-	void CreateListNonEmptyCellsPass();
+	/**Create the render pass, which lists all the non empty cells.
+		@author Hayden Asplet
+	*/
+	void CreateListNonEmptyCellsPass();	
+	/** Create the render pass, which lists all vertices on the edges 3, 0 and 8.
+		@author Hayden Asplet
+	*/
 	void CreateListVerticesPass();
+	/** Create the render pass, which splats the vertex IDs onto the vertex ID volume.
+		@author Hayden Asplet
+	*/
 	void CreateSplatVertexIDsPass();
+	/** Create the render pass, which steams out the generated vertices of a chunk.
+		@author Hayden Asplet
+	*/
 	void CreateGenerateVerticesPass();
+	/** Create the render pass, which steams out the generated indices of a chunk.
+		@author Hayden Asplet
+	*/
 	void CreateGenerateIndicesPass();
-	void CreateDrawDepthPass();
+	/** Create the render pass, which draws a chunk's depth information from the perspective of a light.
+		@author Hayden Asplet
+	*/
+	void CreateDrawDepthPass();	
+	/** Create the render pass, which draws a chunk.
+		@author Hayden Asplet
+	*/
 	void CreateDrawChunkPass();
 
+	/** Internal convenience with for getting a work space chunk position based on i, j, k indices.
+	 	@author Hayden Asplet
+	 	@param centreChunkPosition Centre position for all the chunks being propagated.
+	 	@param chunkSize The size of the chunk
+	 	@return World space position of the bottom left corner of the chunk.
+	*/
 	CVector3 GetChunkPosition(int i, int j, int k, const CVector3& centreChunkPosition, int chunkSize, int ib, int jb, int kb);
 
 	// Member Variables
@@ -219,6 +301,7 @@ private:
 	bool m_RenderPoints;
 	bool m_AmboEnabled;
 	bool m_WireFrame;
+	bool m_EnableShadows;
 };
 
 #endif	// __CHUNKMANAGER_H__

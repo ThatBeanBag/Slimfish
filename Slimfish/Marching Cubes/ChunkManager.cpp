@@ -212,7 +212,7 @@ bool CChunkManager::Initialise()
 void CChunkManager::Update(const CCamera& camera)
 {
 	// Only need to update visible chunks if the camera has moved or rotated.
-	if (camera.GetRotation() != m_CameraRotation || camera.GetPosition() != m_CameraPosition) {
+	if (camera.GetRotation() != m_CameraRotation || camera.GetPosition() != m_CameraPosition || true) {
 		m_CameraRotation = camera.GetRotation();
 		m_CameraPosition = camera.GetPosition();
 		auto cameraDirection = m_CameraRotation.GetDirection();
@@ -226,7 +226,7 @@ void CChunkManager::Update(const CCamera& camera)
 			// Get the centre of the array of chunks for this lod that we are interested in.
 			// This is so that the centre of the chunks is in front of the camera and not behind
 			// where they wouldn't be seen.
-			auto chunkCentre = m_CameraPosition /*+ (cameraDirection * static_cast<float>(chunkSize * s_NUM_CHUNKS_PER_DIM) * 0.5f)*/;
+			auto chunkCentre = m_CameraPosition + (cameraDirection * static_cast<float>(chunkSize * s_NUM_CHUNKS_PER_DIM) * 0.5f);
 
 			/*CVector3 chunkCentreInt(
 				static_cast<float>(std::roundf(chunkCentre.GetX() / chunkSize)),
@@ -246,7 +246,7 @@ void CChunkManager::Update(const CCamera& camera)
 			int kb = SmartDivision(static_cast<int>(chunkCentreInt.GetZ() - s_NUM_CHUNKS_PER_DIM / 2.0f), s_NUM_CHUNKS_PER_DIM) * s_NUM_CHUNKS_PER_DIM;
 
 			// Loop through all the chunks in the 3D array for this lod.
-			for (int i = 0; i < s_NUM_CHUNKS_PER_DIM; ++i) {
+ 			for (int i = 0; i < s_NUM_CHUNKS_PER_DIM; ++i) {
 				for (int j = 0; j < s_NUM_CHUNKS_PER_DIM; ++j) {
 					for (int k = 0; k < s_NUM_CHUNKS_PER_DIM; ++k) {
 
@@ -264,8 +264,8 @@ void CChunkManager::Update(const CCamera& camera)
 						CVector3 chunkPositionMax = chunkPosition + chunkSize * 1.5f;
 
 						// Check to see if the chunk is in the view frustum.
-						bool isInView = true;
-						//bool isInView = camera.IsInView(CAxisAlignedBoundingBox(chunkPositionMin, chunkPositionMax));
+						//bool isInView = true;
+						bool isInView = camera.IsInView(CAxisAlignedBoundingBox(chunkPositionMin, chunkPositionMax));
 
 						auto& chunkInfo = m_Chunks[lod][i][j][k];
 						if (!isInView || chunkInfo.position != chunkPosition) {
@@ -392,6 +392,11 @@ void CChunkManager::ToggleRenderPoints()
 	m_RenderPoints = !m_RenderPoints;
 }
 
+void CChunkManager::ToggleShadows()
+{
+	m_EnableShadows = !m_EnableShadows;
+}
+
 void CChunkManager::DrawShadowMap(const CCamera& lightCamera)
 {
 	// Update parameters.
@@ -420,6 +425,16 @@ void CChunkManager::DrawShadowMap(const CCamera& lightCamera)
 
 void CChunkManager::DrawChunks(const CCamera& camera, const CCamera& lightCamera, const CLight& light)
 {
+	auto pRenderer = g_pApp->GetRenderer();
+
+	if (m_EnableShadows) {
+		DrawShadowMap(lightCamera);
+	}
+	else {
+		// Clear the shadow map with in a really inefficient way.
+		pRenderer->SetRenderPass(&m_DrawDepthRenderPass);
+	}
+
 	// Update parameters.
 	m_pLightingParams->SetConstant("gLight.type", light.GetType());
 	m_pLightingParams->SetConstant("gLight.diffuse", light.GetDiffuse());
@@ -438,7 +453,6 @@ void CChunkManager::DrawChunks(const CCamera& camera, const CCamera& lightCamera
 	m_pWVPParams->SetConstant("gLightViewProjectionMatrix", lightCamera.GetViewProjMatrix());
 	m_DrawChunkPass.GetVertexShader()->UpdateShaderParams("CBPerFrame", m_pWVPParams);
 
-	auto pRenderer = g_pApp->GetRenderer();
 
 	pRenderer->SetRenderPass(&m_DrawChunkPass);
 
@@ -468,20 +482,6 @@ void CChunkManager::DrawChunks(const CCamera& camera, const CCamera& lightCamera
 std::shared_ptr<ATexture> CChunkManager::GetShadowMap()
 {
 	return m_pShadowMapRenderTarget->GetTexture();
-}
-
-void CChunkManager::UnloadChunk(const CVector3& chunkPosition)
-{
-	/*auto iter = m_Chunks.find(ToString(chunkPosition));
-	if (iter != m_Chunks.end()) {
-		// Free up the buffer ID if the chunk is using one from the pool.
-		if (iter->second->bufferID >= 0) {
-			m_FreeBufferIDs.push_back(static_cast<size_t>(iter->second->bufferID));
-		}
-
-		// Remove the chunk.
-		m_Chunks.erase(iter);
-	}*/
 }
 
 void CChunkManager::ClearChunk(TChunkInfo& chunkInfo)
@@ -574,7 +574,22 @@ void CChunkManager::BuildDummyCorners()
 	std::vector<CVector2> writeUVs;
 	std::vector<CVector2> readUVs;
 
-	AddPointsSwizzled(writeUVs,
+	std::vector<TDummyCornerVertex> dummyCorners(m_VoxelDim * m_VoxelDim);
+	for (auto i = 0U; i < m_VoxelDim; ++i) {
+		for (auto j = 0U; j < m_VoxelDim; ++j) {
+			dummyCorners[j + i * m_VoxelDim].writeUV = {
+				i / static_cast<float>(m_VoxelDim - 1),
+				j / static_cast<float>(m_VoxelDim - 1)
+			};
+
+			dummyCorners[j + i * m_VoxelDim].readUV = {
+				(m_VoxelMargins + i) / static_cast<float>(m_VoxelDim + m_VoxelMargins - 1),
+				(m_VoxelMargins + j) / static_cast<float>(m_VoxelDim + m_VoxelMargins - 1)
+			};
+		}
+	}
+
+	/*AddPointsSwizzled(writeUVs,
 		0,
 		m_VoxelDim - 1,
 		0,
@@ -589,11 +604,10 @@ void CChunkManager::BuildDummyCorners()
 		m_VoxelDim + m_VoxelMargins,
 		m_VoxelDim + m_VoxelMargins);
 
-	std::vector<TDummyCornerVertex> dummyCorners(writeUVs.size());
 	for (size_t i = 0; i < dummyCorners.size(); ++i) {
 		dummyCorners[i].writeUV = writeUVs[i];
 		dummyCorners[i].readUV = readUVs[i];
-	}
+	}*/
 
 	m_pDummyCornersVertices = g_pApp->GetRenderer()->CreateVertexBuffer(dummyCorners);
 }
@@ -834,18 +848,18 @@ void CChunkManager::CreateDrawChunkPass()
 
 CVector3 CChunkManager::GetChunkPosition(int i, int j, int k, const CVector3& centreChunkPosition, int chunkSize, int ib, int jb, int kb)
 {
-	static const int s_HalfNumChunkPerDim = static_cast<int>(s_NUM_CHUNKS_PER_DIM / 2.0f);
+	static const float s_HalfNumChunkPerDim = s_NUM_CHUNKS_PER_DIM / 2.0f;
 	int i1 = i + ib;
 	int j1 = j + jb;
 	int k1 = k + kb;
 
-	if (i < SmartModulus(static_cast<int>(centreChunkPosition.GetX()) - s_HalfNumChunkPerDim, s_NUM_CHUNKS_PER_DIM)) {
+	if (i < SmartModulus(static_cast<int>(centreChunkPosition.GetX() - s_HalfNumChunkPerDim), s_NUM_CHUNKS_PER_DIM)) {
 		i1 += s_NUM_CHUNKS_PER_DIM;
 	}
-	if (j < SmartModulus(static_cast<int>(centreChunkPosition.GetY()) - s_HalfNumChunkPerDim, s_NUM_CHUNKS_PER_DIM)) {
-		j1 += s_NUM_CHUNKS_PER_DIM;
-	}
-	if (k < SmartModulus(static_cast<int>(centreChunkPosition.GetZ()) - s_HalfNumChunkPerDim, s_NUM_CHUNKS_PER_DIM)) {
+	if (j < SmartModulus(static_cast<int>(centreChunkPosition.GetY() - s_HalfNumChunkPerDim), s_NUM_CHUNKS_PER_DIM)) {
+		j1 += s_NUM_CHUNKS_PER_DIM;												
+	}																			
+	if (k < SmartModulus(static_cast<int>(centreChunkPosition.GetZ() - s_HalfNumChunkPerDim), s_NUM_CHUNKS_PER_DIM)) {
 		k1 += s_NUM_CHUNKS_PER_DIM;
 	}
 
