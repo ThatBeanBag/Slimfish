@@ -47,33 +47,6 @@ int RoundUp(float x)
 	return static_cast<int>(std::ceilf(x));
 }
 
-void AddPointsSwizzled(std::vector<CVector2>& points, int x0, int x1, int y0, int y1, int spanX, int spanY)
-{
-	int xm = static_cast<int>((x0 + x1) / 2.0f);
-	int ym = static_cast<int>((y0 + y1) / 2.0f);
-	if (x0 == x1) {
-		if (y0 == y1) {
-			float x = x0 / static_cast<float>(spanX - 1);
-			float y = y0 / static_cast<float>(spanY - 1);
-			points.push_back(CVector2(x, y));
-		}
-		else { // 1 x spanY.
-			AddPointsSwizzled(points, x0, x1, y0, ym, spanX, spanY);
-			AddPointsSwizzled(points, x0, x1, ym + 1, y1, spanX, spanY);
-		}
-	}
-	else if (y0 == y1) {	// spanX x 1.
-		AddPointsSwizzled(points, x0, xm, y0, y1, spanX, spanY);
-		AddPointsSwizzled(points, xm + 1, x1, y0, y1, spanX, spanY);
-	}
-	else {	// 2 x 2 or greater.
-		AddPointsSwizzled(points, x0, xm, y0, ym, spanX, spanY);
-		AddPointsSwizzled(points, xm + 1, x1, y0, ym, spanX, spanY);
-		AddPointsSwizzled(points, x0, xm, ym + 1, y1, spanX, spanY);
-		AddPointsSwizzled(points, xm + 1, x1, ym + 1, y1, spanX, spanY);
-	}
-}
-
 std::string ToString(const CVector3& position)
 {
 	std::ostringstream ss;
@@ -82,7 +55,8 @@ std::string ToString(const CVector3& position)
 	return ss.str();
 }
 
-const std::array<int, 3> CChunkManager::s_CHUNK_SIZES = { 4, 10 , 20 };
+const std::array<int, CChunkManager::s_NUM_LOD> CChunkManager::s_CHUNK_SIZES = { 5, 10, 20 };
+const std::array<float, CChunkManager::s_NUM_LOD> CChunkManager::s_LOD_DISTANCE_BIASES = { 1.0f, 0.7f, 0.5f };
 
 CChunkManager::CChunkManager()
 	:m_FreeBufferIDs(s_NUM_BUFFERS),
@@ -90,7 +64,8 @@ CChunkManager::CChunkManager()
 	m_VoxelMargins(4),
 	m_WireFrame(false),
 	m_RenderPoints(false),
-	m_AmboEnabled(true)
+	m_AmboEnabled(true),
+	m_EnableShadows(true)
 {
 	for (size_t i = 0; i < m_FreeBufferIDs.size(); ++i) {
 		m_FreeBufferIDs[i] = i;
@@ -212,7 +187,7 @@ bool CChunkManager::Initialise()
 void CChunkManager::Update(const CCamera& camera)
 {
 	// Only need to update visible chunks if the camera has moved or rotated.
-	if (camera.GetRotation() != m_CameraRotation || camera.GetPosition() != m_CameraPosition || true) {
+	if (camera.GetRotation() != m_CameraRotation || camera.GetPosition() != m_CameraPosition) {
 		m_CameraRotation = camera.GetRotation();
 		m_CameraPosition = camera.GetPosition();
 		auto cameraDirection = m_CameraRotation.GetDirection();
@@ -228,13 +203,6 @@ void CChunkManager::Update(const CCamera& camera)
 			// where they wouldn't be seen.
 			auto chunkCentre = m_CameraPosition + (cameraDirection * static_cast<float>(chunkSize * s_NUM_CHUNKS_PER_DIM) * 0.5f);
 
-			/*CVector3 chunkCentreInt(
-				static_cast<float>(std::roundf(chunkCentre.GetX() / chunkSize)),
-				static_cast<float>(std::roundf(chunkCentre.GetY() / chunkSize)),
-				static_cast<float>(std::roundf(chunkCentre.GetZ() / chunkSize)));
-
-			auto chunksCentreLocal = std::roundf(s_NUM_CHUNKS_PER_DIM / 2.0f * chunkSize);*/
-
 			CVector3 chunkCentreInt(
 				static_cast<float>(SmartDivision(RoundUp(chunkCentre.GetX()), chunkSize)),
 				static_cast<float>(SmartDivision(RoundUp(chunkCentre.GetY()), chunkSize)),
@@ -249,14 +217,6 @@ void CChunkManager::Update(const CCamera& camera)
  			for (int i = 0; i < s_NUM_CHUNKS_PER_DIM; ++i) {
 				for (int j = 0; j < s_NUM_CHUNKS_PER_DIM; ++j) {
 					for (int k = 0; k < s_NUM_CHUNKS_PER_DIM; ++k) {
-
-						// Find the chunk position.
-						/*CVector3 chunkPosition(
-							static_cast<float>(i * chunkSize),
-							static_cast<float>(j * chunkSize),
-							static_cast<float>(k * chunkSize));
-						chunkPosition += chunkCentreInt - chunksCentreLocal;*/
-
 						CVector3 chunkPosition = GetChunkPosition(i, j, k, chunkCentreInt, chunkSize, ib, jb, kb);
 
 						CVector3 chunkPositionMin = chunkPosition - chunkSize * 0.5f;
@@ -279,8 +239,9 @@ void CChunkManager::Update(const CCamera& camera)
 							CVector3 toChunk = chunkPositionCentre - m_CameraPosition;
 
 							chunkInfo.position = chunkPosition;
-							chunkInfo.distanceFromCameraSqr = toChunk.GetLengthSquared();
+							chunkInfo.distanceFromCameraSqr = toChunk.GetLengthSquared() * s_LOD_DISTANCE_BIASES[lod];
 							chunkInfo.isVisible = true;
+							chunkInfo.lod = lod;
 
 							m_VisibleChunkList.push_back(&chunkInfo);
 						}
@@ -442,9 +403,9 @@ void CChunkManager::DrawChunks(const CCamera& camera, const CCamera& lightCamera
 	m_pLightingParams->SetConstant("gLight.direction", light.GetRotation().GetDirection());
 	m_pLightingParams->SetConstant("gLight.range", light.GetRange());
 	m_pLightingParams->SetConstant("gLight.attenuation", light.GetAttenuation());
-	m_pLightingParams->SetConstant("gFogStart", 50.0f);
+	m_pLightingParams->SetConstant("gFogStart", 60.0f);
 	m_pLightingParams->SetConstant("gFogRange", 5.0f);
-	m_pLightingParams->SetConstant("gFogColour", g_pApp->GetRenderer()->GetBackgroundColour());
+	m_pLightingParams->SetConstant("gFogColour", CColourValue(0.36862f, 0.36862f, 0.43137f));
 	m_pLightingParams->SetConstant("gAmbientLight", CColourValue(0.5f, 0.5f, 0.5f));
 	m_pLightingParams->SetConstant("gEyePosition", camera.GetPosition());
 	m_DrawChunkPass.GetPixelShader()->UpdateShaderParams("CBLighting", m_pLightingParams);
@@ -464,6 +425,19 @@ void CChunkManager::DrawChunks(const CCamera& camera, const CCamera& lightCamera
 		auto bufferID = chunk->bufferID;
 
 		if (bufferID >= 0) {
+			// Not doing this at the moment as we are not using the different lods.
+			//// Set the lod parameters of the chunk.
+			//m_pLodParams->SetConstant("gWVoxelSize", static_cast<float>(s_CHUNK_SIZES[chunk->lod]) / static_cast<float>(m_VoxelDim - 1));
+			//m_pLodParams->SetConstant("gWChunkSize", static_cast<float>(s_CHUNK_SIZES[chunk->lod]));
+			//
+			//// Update all the CBLod buffers for shaders that use it.
+			//m_BuildDensitiesPass.GetVertexShader()->UpdateShaderParams("CBLod", m_pLodParams);
+			//m_BuildDensitiesPass.GetPixelShader()->UpdateShaderParams("CBLod", m_pLodParams);
+			//m_ListNonEmptyCellsPass.GetVertexShader()->UpdateShaderParams("CBLod", m_pLodParams);
+			//m_SplatVertexIDsPass.GetVertexShader()->UpdateShaderParams("CBLod", m_pLodParams);
+			//m_GenerateVerticesPass.GetVertexShader()->UpdateShaderParams("CBLod", m_pLodParams);
+			//m_GenerateIndicesPass.GetGeometryShader()->UpdateShaderParams("CBLod", m_pLodParams);
+
 			// Draw the mesh.
 			auto& pVertexBuffer = m_ChunkBuffers[bufferID].pVertexBuffer;
 			auto& pIndexBuffer = m_ChunkBuffers[bufferID].pIndexBuffer;

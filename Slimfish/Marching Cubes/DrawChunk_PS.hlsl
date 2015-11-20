@@ -26,7 +26,6 @@ Texture2D gStandardNormalMap;
 Texture2D gTransitionNormalMap;
 Texture2D gCliffNormalMap;
 
-
 SamplerState gSampleShadowMap;
 SamplerState gSampleDiffuse;
 SamplerState gSampleNoise;
@@ -37,8 +36,8 @@ static const float gCliffFull = 0.7f;
 static const float gTransitionStart = 0.2f;
 static const float gTransitionFull = 0.5f;
 
-static const float gShadowMapBias = 0.008f;
-static const float gShadowMapSize = 2048.0f;
+static const float gShadowMapBias = 0.008f; //0.008f;
+static const float gShadowMapSize = 4096.0f;
 static const float gInvShadowMapSize = 1.0f / gShadowMapSize;
 
 static const float2 gShadowMapOffsets[9] = {

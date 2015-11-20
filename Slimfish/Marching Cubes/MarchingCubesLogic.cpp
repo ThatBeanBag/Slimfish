@@ -26,17 +26,37 @@
 #include <Math/SlimAxisAlignedBoundingBox.h>
 #include "Tables.h"
 
+struct TSphereVertex {
+	CVector3 position;
+	CVector2 texCoord;
+};
+
 CMarchingCubesLogic::CMarchingCubesLogic()
 	:m_Camera(nullptr),
 	m_Light(nullptr),
+	m_LightCamera(nullptr),
 	m_DisplayShadowMap(false),
 	m_DisplayControls(true)
 {
+	m_LightYaw = Math::DegreesToRadians(-45);
+	m_LightPitch = Math::DegreesToRadians(-45);
+
 	m_Light.SetType(LIGHT_DIRECTIONAL);
 	m_Light.SetDiffuse(ToColourValue(CColour(255, 184, 19)));
 	m_Light.SetDiffuse(ToColourValue(CColour(222, 222, 222)));
 	m_Light.SetSpecular(ToColourValue(CColour(255, 255, 255)));
-	m_Light.SetRotation(CQuaternion(Math::DegreesToRadians(-45), Math::DegreesToRadians(-45), 0));
+	m_Light.SetRotation(CQuaternion(m_LightYaw, m_LightPitch, 0));
+
+	m_Camera.SetPosition(CVector3(0.0f, 1.0f, 1.0f));
+	m_Camera.SetPerspective(Math::DegreesToRadians(60.0f), 1.0f, 0.1f, 200.0f);
+
+	m_LightCamera.SetOrthographic(100.0f, 1.0f, 0.0f, m_Camera.GetFarClipDistance());
+
+	m_SkyDomeScale = { 
+		m_Camera.GetFarClipDistance() * 0.9f,
+		m_Camera.GetFarClipDistance() * 0.9f,
+		m_Camera.GetFarClipDistance() * 0.9f,
+	};
 }
 
 CMarchingCubesLogic::~CMarchingCubesLogic()
@@ -46,9 +66,11 @@ CMarchingCubesLogic::~CMarchingCubesLogic()
 
 bool CMarchingCubesLogic::Initialise()
 {
+	// Create vertex declarations
+	m_SphereVertexDeclaration.AddElement("POSITION", CInputElement::FORMAT_FLOAT3);
+	m_SphereVertexDeclaration.AddElement("TEXCOORD", CInputElement::FORMAT_FLOAT2);
+
 	// Setup camera.
-	m_Camera.SetPosition(CVector3(0.0f, 1.0f, 1.0f));
-	m_Camera.SetPerspective(Math::DegreesToRadians(60.0f), 1.0f, 0.1f, 200.0f);
 	g_pApp->GetRenderer()->SetBackgroundColour(ToColourValue(CColour(135, 206, 250)));
 
 	if (!m_2DRenderer.Initialise()) {
@@ -56,6 +78,16 @@ bool CMarchingCubesLogic::Initialise()
 	}
 
 	m_pControlsImage = g_pApp->GetRenderer()->VLoadTexture("Textures/Controls.png");
+
+	m_DrawSkyDomePass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("SkyBox_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
+	m_DrawSkyDomePass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("SkyBox_PS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
+	m_DrawSkyDomePass.AddTextureLayer("Textures/skybox.dds");
+	m_DrawSkyDomePass.SetDepthCheckEnabled(false);
+	m_DrawSkyDomePass.SetCullingMode(ECullingMode::NONE);
+
+	m_pSkyBoxParams = m_DrawSkyDomePass.GetVertexShader()->GetShaderParams("CBPerFrame");
+
+	CreateSkyDome(10, 10);
 
 	return m_ChunkManager.Initialise();
 }
@@ -71,22 +103,26 @@ void CMarchingCubesLogic::Render()
 	// Update camera.
 	m_Camera.UpdateViewTransform();
 
-	CCamera lightCamera(nullptr);
-	lightCamera.SetOrthographic(100.0f, 1.0f, 0.0f, m_Camera.GetFarClipDistance());
-	lightCamera.SetPosition(m_Camera.GetPosition() - m_Light.GetRotation().GetDirection() * (lightCamera.GetFarClipDistance() / 2.0f));
-	lightCamera.SetRotation(m_Light.GetRotation());
-	lightCamera.UpdateViewTransform();
-	//CCamera lightCamera = m_Camera;
-	//lightCamera.SetAspectRatio(1.0f);
-	//lightCamera.SetPosition(m_Camera.GetPosition() - m_Light.GetRotation().GetDirection() * 100);
-	//lightCamera.SetRotation(m_Light.GetRotation());
-	//lightCamera.UpdateViewTransform();
+	// Update sky box parameters.
+	m_pSkyBoxParams->SetConstant("gWorldViewProjectionMatrix", m_Camera.GetViewProjMatrix() *
+		CMatrix4x4::BuildTransform(m_Camera.GetPosition(), m_SkyDomeScale, CQuaternion::s_IDENTITY));
+	m_DrawSkyDomePass.GetVertexShader()->UpdateShaderParams("CBPerFrame", m_pSkyBoxParams);
 
+	m_LightCamera.SetPosition(m_Camera.GetPosition() - m_Light.GetRotation().GetDirection() * (m_LightCamera.GetFarClipDistance() / 2.0f));
+	m_LightCamera.SetRotation(m_Light.GetRotation());
+	m_LightCamera.UpdateViewTransform();
+
+	// Draw the sky dome.
+	g_pApp->GetRenderer()->SetRenderPass(&m_DrawSkyDomePass);
+	g_pApp->GetRenderer()->VRender(m_SphereVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pSphereVertices, m_pSphereIndices);
+
+	// Load and draw chunks.
 	m_ChunkManager.Update(m_Camera);
-	m_ChunkManager.DrawChunks(m_Camera, lightCamera, m_Light);
+	m_ChunkManager.DrawChunks(m_Camera, m_LightCamera, m_Light);
 
+	// Draw UI elements.
 	if (m_DisplayShadowMap) {
-		m_2DRenderer.Render(CRect(0, 155, 300, 300), m_ChunkManager.GetShadowMap());
+		m_2DRenderer.Render(CRect(0, 170, 300, 300), m_ChunkManager.GetShadowMap());
 	}
 
 	if (m_DisplayControls) {
@@ -107,6 +143,14 @@ void CMarchingCubesLogic::HandleInput(const CInput& input, float deltaTime)
 		m_Camera.SetRotation(CQuaternion(m_CameraYaw, m_CameraPitch, 0.0f));
 	}
 
+	if (input.IsMouseButtonDown(EMouseButton::RIGHT)) {
+		CPoint deltaPosition = mousePosition - m_LastMousePosition;
+		m_LightYaw -= deltaPosition.GetX() * 0.005f;
+		m_LightPitch -= deltaPosition.GetY() * 0.005f;
+
+		m_Light.SetRotation(CQuaternion(m_LightYaw, m_LightPitch, 0.0f));
+	}
+
 	if (input.GetKeyPress(EKeyCode::NUM_1)) {
 		m_ChunkManager.ToggleWireFrame();
 	}
@@ -124,19 +168,6 @@ void CMarchingCubesLogic::HandleInput(const CInput& input, float deltaTime)
 	}
 	if (input.GetKeyPress(EKeyCode::H)) {
 		m_DisplayControls = !m_DisplayControls;
-	}
-
-	if (input.GetKeyPress(EKeyCode::UP_ARROW)) {
-		m_TestChunkPosition += CVector3::s_FORWARD;
-	}
-	if (input.GetKeyPress(EKeyCode::DOWN_ARROW)) {
-		m_TestChunkPosition -= CVector3::s_FORWARD;
-	}
-	if (input.GetKeyPress(EKeyCode::RIGHT_ARROW)) {
-		m_TestChunkPosition += CVector3::s_RIGHT;
-	}
-	if (input.GetKeyPress(EKeyCode::LEFT_ARROW)) {
-		m_TestChunkPosition -= CVector3::s_RIGHT;
 	}
 
 	m_LastMousePosition = mousePosition;
@@ -184,4 +215,51 @@ void CMarchingCubesLogic::HandleInput(const CInput& input, float deltaTime)
 
 		m_Camera.SetPosition(cameraTranslation + m_Camera.GetPosition());
 	}
+}
+
+void CMarchingCubesLogic::CreateSkyDome(size_t rings, size_t segments)
+{
+	std::vector<TSphereVertex> vertices;
+	std::vector<int> indices;
+
+	float fDeltaRingAngle = Math::s_PI / rings;
+	float fDeltaSegAngle = 2 * Math::s_PI / segments;
+
+	for (size_t ring = 0; ring <= rings; ++ring) {
+		float r0 = std::sinf(ring * fDeltaRingAngle);
+		float y0 = std::cosf(ring * fDeltaRingAngle);
+
+		for (size_t seg = 0; seg <= segments; ++seg) {
+			float x0 = r0 * std::sinf(seg * fDeltaSegAngle);
+			float z0 = r0 * std::cosf(seg * fDeltaSegAngle);
+
+			TSphereVertex vertex;
+
+			vertex.position = CVector3(x0, y0, z0);
+			vertex.texCoord = {
+				static_cast<float>(seg) / static_cast<float>(segments),
+				static_cast<float>(ring) / static_cast<float>(rings),
+			};
+	
+			vertices.push_back(vertex);
+		}
+	}
+
+	for (size_t ring = 0; ring < rings; ++ring) {
+		for (size_t seg = 0; seg < segments; ++seg) {
+			int first = (ring * (segments + 1) + seg);
+			int second = first + segments + 1;
+
+			indices.push_back(first);
+			indices.push_back(second);
+			indices.push_back(first + 1);
+
+			indices.push_back(second);
+			indices.push_back(second + 1);
+			indices.push_back(first + 1);
+		}
+	}
+
+	m_pSphereVertices = g_pApp->GetRenderer()->CreateVertexBuffer(vertices);
+	m_pSphereIndices = g_pApp->GetRenderer()->CreateIndexBuffer(indices);
 }

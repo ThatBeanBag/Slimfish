@@ -66,6 +66,8 @@ public:
 	virtual void HandleInput(const CInput& input, float deltaTime) override;
 protected:
 private:
+	void CreateSkyDome(size_t rings, size_t segments);
+
 	// Member Variables
 public:
 protected:
@@ -78,15 +80,20 @@ private:
 	float m_CameraPitch;
 	CPoint m_LastMousePosition;
 
+	CCamera m_LightCamera;
 	CLight m_Light;
-	CVector3 m_TestChunkPosition;
+	float m_LightPitch;
+	float m_LightYaw;
 
 	bool m_DisplayShadowMap;
 	bool m_DisplayControls;
+
 	// Declarations
+	CVertexDeclaration m_SphereVertexDeclaration;
 
 	// Buffers
-	// For building densities.
+	std::shared_ptr<AVertexGpuBuffer> m_pSphereVertices;
+	std::shared_ptr<AIndexGpuBuffer> m_pSphereIndices;
 	
 	// Shader params.
 
@@ -96,7 +103,9 @@ private:
 	std::shared_ptr<ATexture> m_pControlsImage;
 
 	// Render passes.
-
+	CRenderPass m_DrawSkyDomePass;
+	shared_ptr<CShaderParams> m_pSkyBoxParams;
+	CVector3 m_SkyDomeScale;
 };
 
 #endif // __MARCHINGCUBESLOGIC_H__

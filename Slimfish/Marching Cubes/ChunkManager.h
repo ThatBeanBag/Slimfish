@@ -222,10 +222,11 @@ public:
 	static const int s_MAX_WORK_PER_FRAME = 41;
 	static const int s_WORK_FOR_EMPTY_CHUNK = 1;
 	static const int s_WORK_FOR_NONEMPTY_CHUNK = 4;
-	static const std::array<int, 3> s_CHUNK_SIZES;
+	static const std::array<int, s_NUM_LOD> s_CHUNK_SIZES;
+	static const std::array<float, s_NUM_LOD> s_LOD_DISTANCE_BIASES;
 
-	static const size_t s_SHADOW_MAP_WIDTH = 2048;
-	static const size_t s_SHADOW_MAP_HEIGHT = 2048;
+	static const size_t s_SHADOW_MAP_WIDTH = 4096;
+	static const size_t s_SHADOW_MAP_HEIGHT = 4096;
 
 	static const size_t s_NOISE_VOLUME_DIM = 16;
 	static const size_t s_NUM_NOISE_VOLUMES = 4;
