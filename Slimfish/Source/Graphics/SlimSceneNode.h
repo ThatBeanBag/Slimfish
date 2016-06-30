@@ -78,6 +78,9 @@ public:
 	/** Get the visibility of the node. @author Hayden Asplet */
 	const bool IsVisible() const;
 
+	/** Translate the node's position. @author Hayden Asplet */
+	void Translate(const CVector3& translation);
+
 	/** Set the position. @author Hayden Asplet */
 	void SetPosition(const CVector3& position);
 	/** Get the position. @author Hayden Asplet */

@@ -77,7 +77,7 @@ namespace Slim {
 		void SetWindowed(bool windowed);
 		void ToggleWindowed();
 		bool IsWindowed() const;
-		CPoint GetWindowSize();
+		CPoint<> GetWindowSize();
 		void Resize(size_t width, size_t height);
 
 		/** Set the render pass for any succeeding render calls.
@@ -390,7 +390,7 @@ namespace Slim {
 		 	@param position Position of the text in screen coordinates.
 		 	@param colour Colour of the text.
 		*/
-		virtual void VDrawText(const std::string text, const CPoint& position, const CColour& colour) = 0;
+		virtual void VDrawText(const std::string text, const CPoint<>& position, const CColour& colour) = 0;
 	protected:
 	private:
 		// Windows functions that should be in a windows class.

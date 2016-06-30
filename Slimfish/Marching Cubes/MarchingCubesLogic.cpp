@@ -94,7 +94,7 @@ bool CMarchingCubesLogic::Initialise()
 
 void CMarchingCubesLogic::Update(float deltaTime)
 {
-	CPoint screenSize = g_pApp->GetRenderer()->GetWindowSize();
+	CPoint<> screenSize = g_pApp->GetRenderer()->GetWindowSize();
 	m_Camera.SetAspectRatio(static_cast<float>(screenSize.GetX()) / static_cast<float>(screenSize.GetY()));
 }
 
@@ -122,21 +122,21 @@ void CMarchingCubesLogic::Render()
 
 	// Draw UI elements.
 	if (m_DisplayShadowMap) {
-		m_2DRenderer.Render(CRect(0, 170, 300, 300), m_ChunkManager.GetShadowMap());
+		m_2DRenderer.Render(CRect<>(0, 170, 300, 300), m_ChunkManager.GetShadowMap());
 	}
 
 	if (m_DisplayControls) {
-		m_2DRenderer.Render(CRect(0, 0, m_pControlsImage->GetWidth(), m_pControlsImage->GetHeight()), m_pControlsImage);
+		m_2DRenderer.Render(CRect<>(0, 0, m_pControlsImage->GetWidth(), m_pControlsImage->GetHeight()), m_pControlsImage);
 	}
 }
 
 void CMarchingCubesLogic::HandleInput(const CInput& input, float deltaTime)
 {
-	CPoint mousePosition = input.GetMousePosition();
+	const auto& mousePosition = input.GetMousePosition();
 
 	// Handle rotation of camera.
 	if (input.IsMouseButtonDown(EMouseButton::LEFT)) {
-		CPoint deltaPosition = mousePosition - m_LastMousePosition;
+		auto deltaPosition = mousePosition - m_LastMousePosition;
 		m_CameraYaw -= deltaPosition.GetX() * 0.005f;
 		m_CameraPitch -= deltaPosition.GetY() * 0.005f;
 
@@ -144,7 +144,7 @@ void CMarchingCubesLogic::HandleInput(const CInput& input, float deltaTime)
 	}
 
 	if (input.IsMouseButtonDown(EMouseButton::RIGHT)) {
-		CPoint deltaPosition = mousePosition - m_LastMousePosition;
+		auto deltaPosition = mousePosition - m_LastMousePosition;
 		m_LightYaw -= deltaPosition.GetX() * 0.005f;
 		m_LightPitch -= deltaPosition.GetY() * 0.005f;
 

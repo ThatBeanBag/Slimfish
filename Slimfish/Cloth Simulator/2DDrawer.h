@@ -44,7 +44,7 @@ public:
 
 	bool Initialise();
 
-	void Render(const CRect& destRect, std::shared_ptr<ATexture> pImage);
+	void Render(const CRect<>& destRect, std::shared_ptr<ATexture> pImage);
 protected:
 private:
 	// Member Variables

@@ -49,9 +49,9 @@ bool ARenderer::IsWindowed() const
 	return m_IsWindowed;
 }
 
-CPoint ARenderer::GetWindowSize()
+CPoint<> ARenderer::GetWindowSize()
 {
-	CPoint windowSize(m_Width, m_Height);
+	CPoint<> windowSize(m_Width, m_Height);
 	return windowSize;
 }
 

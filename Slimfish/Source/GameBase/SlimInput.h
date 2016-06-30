@@ -156,7 +156,7 @@ public:
 	/** Get the mouse position as a point on the screen.
 	 	@author Hayden Asplet
 	*/
-	const CPoint& GetMousePosition() const;
+	const CPoint<>& GetMousePosition() const;
 
 	/** Get whether a key is currently pressed down or not.
 	 	@author Hayden Asplet
@@ -223,7 +223,7 @@ protected:
 private:
 	std::vector<EButtonState> m_KeyStates;	// Keeps track of a keys per frame state (whether it was pressed or released this frame or not).
 	std::vector<EButtonState> m_MouseButtonStates;
-	CPoint m_MousePosition;
+	CPoint<> m_MousePosition;
 };
 
 }

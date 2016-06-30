@@ -7,7 +7,7 @@
 // (c) 2005 - 2015 Media Design School
 //
 // File Name	: SlimD3D11Forward.h
-// Description	: CSlimD3D11Forward declaration file.
+// Description	: D3D11 forward declarations.
 // Author		: Hayden Asplet.
 // Mail			: hayden.asplet@mediadesignschool.com
 //

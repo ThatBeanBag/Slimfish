@@ -40,19 +40,19 @@ namespace Slim {
 
 	}
 
-	const CRay CCamera::ScreenPointToRay(const CPoint& point) const
+	const CRay CCamera::ScreenPointToRay(const CPoint<>& point) const
 	{
-		CPoint screenSize = g_pApp->GetRenderer()->GetWindowSize();
-		const CMatrix4x4& projectionMatrix = CFrustum::GetProjectionMatrix();
+		auto screenSize = g_pApp->GetRenderer()->GetWindowSize();
+		const auto& projectionMatrix = CFrustum::GetProjectionMatrix();
 
 		// Convert mouse cursor to normalised device coordinates (between -1, 1) and then to view space.
-		CVector3 viewMousePos;
-		viewMousePos.SetX((((2.0f * point.GetX()) / static_cast<float>(screenSize.GetX())) - 1) / projectionMatrix[0][0]);
-		viewMousePos.SetY(-(((2.0f * point.GetY()) / static_cast<float>(screenSize.GetY())) - 1) / projectionMatrix[1][1]);
-		viewMousePos.SetZ(-1.0f);
+		CVector3 viewMousePos = {
+			(((2.0f * point.GetX()) / static_cast<float>(screenSize.GetX())) - 1) / projectionMatrix[0][0],
+			-(((2.0f * point.GetY()) / static_cast<float>(screenSize.GetY())) - 1) / projectionMatrix[1][1],
+			-1.0f };
 
-		CMatrix4x4 inverseViewMatrix = GetWorldTransform();
-		inverseViewMatrix.GetInverse();
+		const auto& inverseViewMatrix = GetWorldTransform();
+		//inverseViewMatrix = inverseViewMatrix.GetInverse();
 
 		CVector3 rayOrigin;
 		CVector3 rayDirection;

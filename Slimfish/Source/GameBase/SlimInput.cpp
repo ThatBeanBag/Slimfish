@@ -52,7 +52,7 @@ bool CInput::GetMouseButtonRelease(EMouseButton mouseButton) const
 }
 
 
-const CPoint& CInput::GetMousePosition() const
+const CPoint<>& CInput::GetMousePosition() const
 {
 	return m_MousePosition;
 }
@@ -84,7 +84,7 @@ void CInput::SetMouseButtonRelease(EMouseButton button)
 
 void CInput::SetMousePosition(int x, int y)
 {
-	m_MousePosition = CPoint(x, y);
+	m_MousePosition = CPoint<>(x, y);
 }
 
 void CInput::SetKeyPress(EKeyCode key)

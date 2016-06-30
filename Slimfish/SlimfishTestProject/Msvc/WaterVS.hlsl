@@ -217,10 +217,10 @@ VS_OUT main(VS_IN vIn)
 	GerstnerWave waves[gNumWaves] = { { 0.7f, 10.0f, 0.4f, 0.01f, normalize(float2(1.0f, 1.0f)) },
 									  { 0.7f, 6.0f, 0.2f, 0.015f, normalize(float2(-1.0f, 0.4f)) },
 							          { 0.7f, 2.0f, 0.08f, 0.02f, normalize(float2(1.0f, -0.6f)) } };
-	float3 position;
-	float3 normal;
-	float3 tangent;
-	SimulateWater(waves, gElapsedTime, vIn.position, position, normal, tangent);
+	float3 position = vIn.position;
+	float3 normal = vIn.normal;
+	float3 tangent = vIn.tangent;
+	//SimulateWater(waves, gElapsedTime, vIn.position, position, normal, tangent);
 
 	float4x4 worldViewProj = mul(mul(gWorldMatrix, gViewMatrix), gProjectionMatrix);
 	float4x4 reflectProjWorld = mul(mul(gWorldMatrix, gReflectionMatrix), gProjectionMatrix);

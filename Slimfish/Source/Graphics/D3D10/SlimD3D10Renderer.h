@@ -121,7 +121,7 @@ public:
 	/** @copydoc ARenderer::VSetFillMode */
 	virtual void VSetFillMode(EFillMode fillMode) override;
 
-	virtual void VDrawText(const std::string text, const CPoint& position, const CColour& colour) override;
+	virtual void VDrawText(const std::string text, const CPoint<>& position, const CColour& colour) override;
 protected:
 private:
 	// Windows functions that should be in a windows class.

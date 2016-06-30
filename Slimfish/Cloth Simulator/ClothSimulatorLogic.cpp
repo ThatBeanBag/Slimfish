@@ -197,7 +197,7 @@ bool CClothSimulatorLogic::Initialise()
 	m_ObjectNode.SetPosition(m_Camera.GetPosition());
 	m_Camera.SetTarget(&m_ObjectNode, true, CVector3(0.0, 0.0f, 0.0f));
 
-	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
+	g_pApp->GetRenderer()->SetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
 
 	// Setup shadow map.
 	m_DepthRenderPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("DepthOnly_VS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
@@ -228,7 +228,7 @@ void CClothSimulatorLogic::Update(float deltaTime)
 		m_Capsule.SetTransform(m_ObjectNode.GetWorldTransform());
 	}
 
-	CPoint screenSize = g_pApp->GetRenderer()->GetWindowSize();
+	CPoint<> screenSize = g_pApp->GetRenderer()->GetWindowSize();
 	m_Camera.SetAspectRatio(static_cast<float>(screenSize.GetX()) / static_cast<float>(screenSize.GetY()));
 
 	// Update physics.
@@ -358,9 +358,9 @@ void CClothSimulatorLogic::Render()
 void CClothSimulatorLogic::RenderUserInterface()
 {
 	// Draw the slider bars.
-	m_2DDrawer.Render(CRect(10, 10, m_pSliderBarsImage->GetWidth(), m_pSliderBarsImage->GetHeight()), m_pSliderBarsImage);
+	m_2DDrawer.Render(CRect<>(10, 10, m_pSliderBarsImage->GetWidth(), m_pSliderBarsImage->GetHeight()), m_pSliderBarsImage);
 	m_2DDrawer.Render(
-		CRect(10, 
+		CRect<>(10, 
 		20 + m_pSliderBarsImage->GetHeight(), 
 		m_pControlsImage->GetWidth(),
 		m_pControlsImage->GetHeight()),
@@ -508,7 +508,7 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 
 	// Handle burning.
 	if (input.IsKeyDown(EKeyCode::B)) {
-		CPoint deltaPosition = mousePosition - m_lastMousePosition;
+		CPoint<> deltaPosition = mousePosition - m_lastMousePosition;
 
 		CRay ray = m_Camera.ScreenPointToRay(mousePosition);
 		float distance = 10.0f;
@@ -553,7 +553,7 @@ void CClothSimulatorLogic::HandleInput(const CInput& input, float deltaTime)
 
 	if (input.IsMouseButtonDown(EMouseButton::RIGHT)) {
 		// Push the point masses around.
-		CPoint deltaPosition = mousePosition - m_lastMousePosition;
+		CPoint<> deltaPosition = mousePosition - m_lastMousePosition;
 
 		CRay ray = m_Camera.ScreenPointToRay(mousePosition);
 		float distance = 100000000.0f;
@@ -777,7 +777,7 @@ void CClothSimulatorLogic::UpdateClothIndices()
 void CClothSimulatorLogic::RenderToShadowMap()
 {
 	// Set the render target to start writing to the shadow map.
-	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue::s_WHITE);
+	g_pApp->GetRenderer()->SetBackgroundColour(CColourValue::s_WHITE);
 	//g_pApp->GetRenderer()->VPreRender();
 
 	g_pApp->GetRenderer()->SetRenderPass(&m_DepthRenderPass);
@@ -807,7 +807,7 @@ void CClothSimulatorLogic::CreateCloth()
 	UpdateClothIndices();
 }
 
-CPointMass* CClothSimulatorLogic::GetClosestPoint(CPoint mousePosition, float minDistance)
+CPointMass* CClothSimulatorLogic::GetClosestPoint(CPoint<> mousePosition, float minDistance)
 {
 	auto ray = m_Camera.ScreenPointToRay(mousePosition);
 	auto distance = minDistance * minDistance;
@@ -899,7 +899,7 @@ void CClothSimulatorLogic::HandleCameraInput(const CInput& input, float deltaTim
 
 	// Handle rotation of camera.
 	if (input.IsMouseButtonDown(EMouseButton::MIDDLE)) {
-		CPoint deltaPosition = mousePosition - m_lastMousePosition;
+		CPoint<> deltaPosition = mousePosition - m_lastMousePosition;
 		m_CameraYaw -= deltaPosition.GetX() * 0.01f;
 		m_CameraPitch -= deltaPosition.GetY() * 0.01f;
 
@@ -952,7 +952,7 @@ void CClothSimulatorLogic::HandleCameraInput(const CInput& input, float deltaTim
 
 	// Handle rotation of camera.
 	if (input.IsMouseButtonDown(EMouseButton::MIDDLE)) {
-		CPoint deltaPosition = mousePosition - m_lastMousePosition;
+		CPoint<> deltaPosition = mousePosition - m_lastMousePosition;
 		m_CameraYaw -= deltaPosition.GetX() * 0.01f;
 		m_CameraPitch -= deltaPosition.GetY() * 0.01f;
 

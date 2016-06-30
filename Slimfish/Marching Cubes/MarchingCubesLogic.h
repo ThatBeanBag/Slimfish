@@ -78,7 +78,7 @@ private:
 	CCamera m_Camera;
 	float m_CameraYaw;
 	float m_CameraPitch;
-	CPoint m_LastMousePosition;
+	CPoint<> m_LastMousePosition;
 
 	CCamera m_LightCamera;
 	CLight m_Light;

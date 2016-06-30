@@ -114,18 +114,18 @@ CQuaternion::CQuaternion(const CMatrix4x4& rotationMatrix)
 	}
 }
 
-CQuaternion::CQuaternion(float yaw, float pitch, float roll)
+CQuaternion::CQuaternion(float radYaw, float radPitch, float radRoll)
 {
-	*this = /*CQuaternion(CVector3::s_UP, yaw) **/ CQuaternion(CVector3::s_RIGHT, pitch)/* * CQuaternion(CVector3::s_FORWARD, roll)*/;
+	*this = /*CQuaternion(CVector3::s_UP, yaw) **/ CQuaternion(CVector3::s_RIGHT, radPitch)/* * CQuaternion(CVector3::s_FORWARD, roll)*/;
 
 	// Implementation from:
 	// http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/
-	float c1 = std::cosf(yaw * 0.5f);
-	float s1 = std::sinf(yaw * 0.5f);
-	float c2 = std::cosf(roll * 0.5f);
-	float s2 = std::sinf(roll * 0.5f);
-	float c3 = std::cosf(pitch * 0.5f);
-	float s3 = std::sinf(pitch * 0.5f);
+	float c1 = std::cosf(radYaw * 0.5f);
+	float s1 = std::sinf(radYaw * 0.5f);
+	float c2 = std::cosf(radRoll * 0.5f);
+	float s2 = std::sinf(radRoll * 0.5f);
+	float c3 = std::cosf(radPitch * 0.5f);
+	float s3 = std::sinf(radPitch * 0.5f);
 	m_w = (c1 * c2 * c3) - (s1 * s2 * s3);
 	m_x = (c1 * c2 * s3) + (s1 * s2 * c3);
 	m_y = (s1 * c2 * c3) + (c1 * s2 * s3);

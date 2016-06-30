@@ -48,7 +48,8 @@ const std::string CTestProjLogic::m_ScreenText = "WASD keys to move.\nClick and 
 CTestProjLogic::CTestProjLogic()
 	:m_Camera(nullptr),
 	m_LightCamera(nullptr),
-	m_OrthoCamera(nullptr)
+	m_OrthoCamera(nullptr),
+	m_Light(nullptr)
 {
 	m_WaterTransform = CMatrix4x4::BuildScale(400.0f, 1.0f, 400.0f);
 	m_TerrainWorldTransform = CMatrix4x4::BuildTranslation(0.0f, -10.0f, 0.0f);
@@ -141,11 +142,11 @@ bool CTestProjLogic::Initialise()
 	m_Light.SetType(LIGHT_DIRECTIONAL);
 	m_Light.SetDiffuse(CColourValue(0.7f, 0.7f, 0.7f));
 	m_Light.SetSpecular(CColourValue(1.0f, 1.0f, 1.0f, 100.0f));
-	m_Light.SetDirection(CVector3::Normalise(CVector3(-1.0f, -0.8f, 1.0f)));
+	m_Light.SetRotation(CQuaternion(Math::DegreesToRadians(135.0f), Math::DegreesToRadians(-45.0f), 0.0f));
 
 	// Create the light camera.
 	m_LightCamera.SetProjectionMode(EProjectionMode::ORTHOGRAPHIC);
-	m_LightCamera.SetPosition(-m_Light.GetDirection() * 300.0f);
+	m_LightCamera.SetPosition(-m_Light.GetRotation().GetDirection() * 300.0f);
 	m_LightCamera.SetRotation(CQuaternion(Math::DegreesToRadians(10.0f), Math::DegreesToRadians(45.0f), Math::DegreesToRadians(10.0f)));
 	m_LightCamera.SetNearClipDistance(0.0f);
 	m_LightCamera.SetFarClipDistance(700.0f);
@@ -156,7 +157,7 @@ bool CTestProjLogic::Initialise()
 	// Setup shadow map.
 	m_RenderDepth.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("ShadowMappingVS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
 	m_RenderDepth.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("ShadowMappingPS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
-	m_pRenderDepthShaderParams = m_RenderDepth.GetVertexShader()->VCreateShaderParams("constantBuffer");
+	m_pRenderDepthShaderParams = m_RenderDepth.GetVertexShader()->GetShaderParams("constantBuffer");
 
 	// Create the shadow map.
 	m_pShadowMap = g_pApp->GetRenderer()->VCreateRenderTexture("ShadowMap", s_SHADOW_MAP_WIDTH, s_SHADOW_MAP_HEIGHT);
@@ -206,7 +207,7 @@ void CTestProjLogic::Update(float deltaTime)
 	m_WaterWaveTransform4 = CMatrix4x4::BuildTranslation(m_ElapsedTime * 0.1f, m_ElapsedTime * 0.07f, 0.0f)    * CMatrix4x4::BuildScale(6.0f, 6.0f, 1.0f);
 
 	// Update aspect ratio and render targets if the window size has changed.
-	CPoint screenSize = g_pApp->GetRenderer()->GetWindowSize();
+	CPoint<> screenSize = g_pApp->GetRenderer()->GetWindowSize();
 	if (m_lastScreenSize != screenSize && screenSize.GetX() != 0 && screenSize.GetY() != 0) {
 		m_lastScreenSize = screenSize;
 
@@ -229,10 +230,6 @@ void CTestProjLogic::Render()
 	RenderToRefractionMap();
 	RenderToReflectionMap();
 
-	// Remove render target.
-	g_pApp->GetRenderer()->VSetRenderTarget(nullptr);
-	g_pApp->GetRenderer()->VPreRender();
-
 	CMatrix4x4 lightView = CMatrix4x4::BuildLookAt(m_LightCamera.GetPosition(), CVector3::s_ZERO, CVector3::s_UP);
 
 	// Draw the water.
@@ -247,10 +244,10 @@ void CTestProjLogic::Render()
 	m_WaterVSParams->SetConstant("gProjectionMatrix", m_Camera.GetProjectionMatrix());
 	m_WaterVSParams->SetConstant("gLightViewMatrix", lightView);
 	m_WaterVSParams->SetConstant("gLightProjectionMatrix", m_LightCamera.GetProjectionMatrix());
-	m_WaterRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_WaterVSParams);
+	m_WaterRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_WaterVSParams);
 
 	m_WaterPSParams->SetConstant("gEyePosition", m_Camera.GetPosition());
-	m_WaterRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_WaterPSParams);
+	m_WaterRenderPass.GetPixelShader()->UpdateShaderParams("constantBuffer", m_WaterPSParams);
 
 	m_WaterRenderPass.SetCullingMode(ECullingMode::NONE);
 
@@ -263,7 +260,7 @@ void CTestProjLogic::Render()
 	m_pSkyBoxShaderParams->SetConstant("gViewMatrix", m_Camera.GetViewMatrix());
 	m_pSkyBoxShaderParams->SetConstant("gWorldMatrix", m_SkyBoxWorldTransform);
 	m_pSkyBoxShaderParams->SetConstant("gClipPlane", plane);
-	m_SkyBoxRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pSkyBoxShaderParams);
+	m_SkyBoxRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_pSkyBoxShaderParams);
 
 	// Draw the skybox.
 	g_pApp->GetRenderer()->SetRenderPass(&m_SkyBoxRenderPass);
@@ -273,19 +270,19 @@ void CTestProjLogic::Render()
 	m_TerrainVSParams->SetConstant("gViewMatrix", m_Camera.GetViewMatrix());
 	m_TerrainVSParams->SetConstant("gWorldMatrix", m_TerrainWorldTransform);
 	m_TerrainVSParams->SetConstant("gClipPlane", plane);
-	m_TerrainRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_TerrainVSParams);
-	m_TerrainRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_WaterPSParams);
+	m_TerrainRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_TerrainVSParams);
+	m_TerrainRenderPass.GetPixelShader()->UpdateShaderParams("constantBuffer", m_WaterPSParams);
 
 	// Draw the terrain.
-	//g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
-	//g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
+	g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
+	g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
 
 	// Draw the controls
 	g_pApp->GetRenderer()->SetRenderPass(&m_QuadRenderPass);
 	g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pQuadVertexBuffer);
 
-	CPoint screenPosition(10, 75);
-	CPoint size(236, 68);
+	CPoint<> screenPosition(10, 75);
+	CPoint<> size(236, 68);
 
 	float x = static_cast<float>(screenPosition.GetX()) / static_cast<float>(m_lastScreenSize.GetX()) * 2.0f - 1.0f;
 	float y = -(static_cast<float>(screenPosition.GetY()) / static_cast<float>(m_lastScreenSize.GetY()) * 2.0f - 1.0f);
@@ -295,10 +292,10 @@ void CTestProjLogic::Render()
 
 	CMatrix4x4 worldMatrix = CMatrix4x4::BuildTranslation(x, y, 0) * CMatrix4x4::BuildScale(width, height, 1.0f);
 
-	m_pQuadVSParams = m_QuadRenderPass.GetVertexShader()->VCreateShaderParams("constantBuffer");
+	m_pQuadVSParams = m_QuadRenderPass.GetVertexShader()->GetShaderParams("constantBuffer");
 	m_pQuadVSParams->SetConstant("gProjectionMatrix", CMatrix4x4::s_IDENTITY);
 	m_pQuadVSParams->SetConstant("gWorldMatrix", worldMatrix);
-	m_QuadRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pQuadVSParams);
+	m_QuadRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_pQuadVSParams);
 
 	/*// Update skybox parameters.
 	m_pSkyBoxShaderParams->SetConstant("gViewMatrix", m_ViewMatrix);
@@ -397,11 +394,11 @@ void CTestProjLogic::Render()
 
 void CTestProjLogic::HandleInput(const CInput& input, float deltaTime)
 {
-	CPoint mousePosition = input.GetMousePosition();
+	CPoint<> mousePosition = input.GetMousePosition();
 
 	// Handle rotation of camera.
 	if (input.IsMouseButtonDown(EMouseButton::LEFT)) {
-		CPoint deltaPosition = mousePosition - m_lastMousePosition;
+		CPoint<> deltaPosition = mousePosition - m_lastMousePosition;
 		m_CameraYaw -= deltaPosition.GetX() * 0.01f;
 		m_CameraPitch -= deltaPosition.GetY() * 0.01f;
 
@@ -492,14 +489,14 @@ bool CTestProjLogic::InitialiseWater()
 	m_WaterRenderPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("WaterPS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
 
 	// Get shader parameters.
-	m_WaterVSParams = m_WaterRenderPass.GetVertexShader()->VCreateShaderParams("constantBuffer");
-	m_WaterPSParams = m_WaterRenderPass.GetPixelShader()->VCreateShaderParams("constantBuffer");
+	m_WaterVSParams = m_WaterRenderPass.GetVertexShader()->GetShaderParams("constantBuffer");
+	m_WaterPSParams = m_WaterRenderPass.GetPixelShader()->GetShaderParams("constantBuffer");
 
 	// Setup initial constants.
 	m_WaterPSParams->SetConstant("gLight.type", m_Light.GetType());
 	m_WaterPSParams->SetConstant("gLight.diffuse", m_Light.GetDiffuse());
 	m_WaterPSParams->SetConstant("gLight.specular", m_Light.GetSpecular());
-	m_WaterPSParams->SetConstant("gLight.direction", m_Light.GetDirection());
+	m_WaterPSParams->SetConstant("gLight.direction", m_Light.GetRotation().GetDirection());
 	m_WaterPSParams->SetConstant("gLight.range", m_Light.GetRange());
 	m_WaterPSParams->SetConstant("gLight.attenuation", m_Light.GetAttenuation());
 	m_WaterPSParams->SetConstant("gFogStart", 200.0f);
@@ -517,10 +514,10 @@ bool CTestProjLogic::InitialiseTerrain()
 	// Init shaders.
 	m_TerrainRenderPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("TerrainVS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
 	m_TerrainRenderPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("TerrainPS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
-	m_TerrainVSParams = m_TerrainRenderPass.GetVertexShader()->VCreateShaderParams("constantBuffer");
+	m_TerrainVSParams = m_TerrainRenderPass.GetVertexShader()->GetShaderParams("constantBuffer");
 	m_TerrainVSParams->SetConstant("gWorldMatrix", m_TerrainWorldTransform);
 	m_TerrainVSParams->SetConstant("gTexMatrix", CMatrix4x4::BuildScale(10.0f, 10.0f, 1.0f));
-	m_TerrainRenderPass.GetPixelShader()->VCreateShaderParams("constantBuffer");
+	m_TerrainRenderPass.GetPixelShader()->GetShaderParams("constantBuffer");
 
 	// Init texture layers.
 	m_TerrainRenderPass.AddTextureLayer("TerrainTextures/grass_01_v1.png")->SetTextureFilter(ETextureFilterType::ANISOTROPIC);
@@ -531,7 +528,7 @@ bool CTestProjLogic::InitialiseTerrain()
 	m_TerrainRenderPass.AddTextureLayer("TerrainTextures/cliff_01_normal.png")->SetTextureFilter(ETextureFilterType::ANISOTROPIC);
 	m_TerrainRenderPass.AddTextureLayer("TerrainTextures/sand_normal.png")->SetTextureFilter(ETextureFilterType::ANISOTROPIC);
 
-	//LoadTerrain(CVector3(400.0f, 75.0f, 400.0f));
+	LoadTerrain(CVector3(400.0f, 75.0f, 400.0f));
 
 	return true;
 }
@@ -554,7 +551,7 @@ bool CTestProjLogic::InitialiseSkyBox()
 	m_SkyBoxRenderPass.SetCullingMode(ECullingMode::NONE);
 
 	// Get the shader parameters.
-	m_pSkyBoxShaderParams = m_SkyBoxRenderPass.GetVertexShader()->VCreateShaderParams("constantBuffer");
+	m_pSkyBoxShaderParams = m_SkyBoxRenderPass.GetVertexShader()->GetShaderParams("constantBuffer");
 
 	BuildSkySphere(10, 10);
 
@@ -601,7 +598,7 @@ bool CTestProjLogic::InitialiseControlsText()
 	m_OrthoCamera.SetNearClipDistance(0.0f);
 	m_OrthoCamera.SetFarClipDistance(1.0f);
 
-	m_pQuadVSParams = m_QuadRenderPass.GetVertexShader()->VCreateShaderParams("constantBuffer");
+	m_pQuadVSParams = m_QuadRenderPass.GetVertexShader()->GetShaderParams("constantBuffer");
 
 	return true;
 }
@@ -609,9 +606,7 @@ bool CTestProjLogic::InitialiseControlsText()
 void CTestProjLogic::RenderToShadowMap()
 {
 	// Set the render target and prepare for rendering.
-	g_pApp->GetRenderer()->VSetRenderTarget(m_pShadowMap.get());
-	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue::s_WHITE);
-	g_pApp->GetRenderer()->VPreRender();
+	g_pApp->GetRenderer()->SetBackgroundColour(CColourValue::s_WHITE);
 
 	CMatrix4x4 lightView = CMatrix4x4::BuildLookAt(m_LightCamera.GetPosition(), CVector3::s_ZERO, CVector3::s_UP);
 
@@ -619,7 +614,7 @@ void CTestProjLogic::RenderToShadowMap()
 	m_pRenderDepthShaderParams->SetConstant("gLightViewMatrix", lightView);
 	m_pRenderDepthShaderParams->SetConstant("gLightProjectionMatrix", m_LightCamera.GetProjectionMatrix());
 	m_pRenderDepthShaderParams->SetConstant("gWorldMatrix", m_TerrainWorldTransform);
-	m_RenderDepth.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pRenderDepthShaderParams);
+	m_RenderDepth.GetVertexShader()->UpdateShaderParams("constantBuffer", m_pRenderDepthShaderParams);
 
 	// Draw the terrain to the shadow map.
 	//g_pApp->GetRenderer()->SetRenderPass(&m_RenderDepth);
@@ -628,58 +623,63 @@ void CTestProjLogic::RenderToShadowMap()
 
 void CTestProjLogic::RenderToRefractionMap()
 {
-	g_pApp->GetRenderer()->VSetRenderTarget(m_pRefractionRenderTarget.get());
-	g_pApp->GetRenderer()->VPreRender();
-
 	m_pSkyBoxShaderParams->SetConstant("gViewMatrix", m_Camera.GetViewMatrix());
 	m_pSkyBoxShaderParams->SetConstant("gWorldMatrix", m_SkyBoxWorldTransform);
-	m_SkyBoxRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pSkyBoxShaderParams);
+	m_SkyBoxRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_pSkyBoxShaderParams);
+	m_SkyBoxRenderPass.AddRenderTarget(m_pRefractionRenderTarget.get());
 
 	// Draw the skybox.
 	g_pApp->GetRenderer()->SetRenderPass(&m_SkyBoxRenderPass);
 	g_pApp->GetRenderer()->VRender(m_SkyBoxVertexDeclaration, EPrimitiveType::TRIANGLELIST, m_pSkyBoxVertices, m_pSkyBoxIndices);
 
+	m_SkyBoxRenderPass.ClearRenderTargets();
+
 	// Update terrain parameters.
 	m_TerrainVSParams->SetConstant("gViewMatrix", m_Camera.GetViewMatrix());
 	m_TerrainVSParams->SetConstant("gProjectionMatrix", m_Camera.GetProjectionMatrix());
 	m_TerrainVSParams->SetConstant("gWorldMatrix", m_TerrainWorldTransform);
-	m_TerrainRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_TerrainVSParams);
-	m_TerrainRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_WaterPSParams);
+	m_TerrainRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_TerrainVSParams);
+	m_TerrainRenderPass.GetPixelShader()->UpdateShaderParams("constantBuffer", m_WaterPSParams);
+	m_TerrainRenderPass.AddRenderTarget(m_pRefractionRenderTarget.get());
 
 	// Draw the terrain.
-	//g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
-	//g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
+	g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
+	g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
+
+	m_TerrainRenderPass.ClearRenderTargets();
 }
 
 void CTestProjLogic::RenderToReflectionMap()
 {
-	g_pApp->GetRenderer()->VSetRenderTarget(m_pReflectionRenderTarget.get());
-	g_pApp->GetRenderer()->VPreRender();
-
 	CPlane waterPlane = CPlane(0, 1, 0, 0);
 
 	m_pSkyBoxShaderParams->SetConstant("gViewMatrix", m_ReflectionViewMatrix);
 	m_pSkyBoxShaderParams->SetConstant("gWorldMatrix", m_SkyBoxWorldTransform);
 	m_pSkyBoxShaderParams->SetConstant("gProjectionMatrix", m_Camera.GetProjectionMatrix());
 	m_pSkyBoxShaderParams->SetConstant("gClipPlane", waterPlane);
-	m_SkyBoxRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pSkyBoxShaderParams);
+	m_SkyBoxRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_pSkyBoxShaderParams);
+	m_SkyBoxRenderPass.AddRenderTarget(m_pReflectionRenderTarget.get());
 
 	// Draw the skybox.
 	g_pApp->GetRenderer()->SetRenderPass(&m_SkyBoxRenderPass);
 	g_pApp->GetRenderer()->VRender(m_SkyBoxVertexDeclaration, EPrimitiveType::TRIANGLELIST, m_pSkyBoxVertices, m_pSkyBoxIndices);
+
+	m_SkyBoxRenderPass.ClearRenderTargets();
 
 	// Update terrain parameters.
 	m_TerrainVSParams->SetConstant("gViewMatrix", m_ReflectionViewMatrix);
 	m_TerrainVSParams->SetConstant("gWorldMatrix", m_TerrainWorldTransform);
 	m_TerrainVSParams->SetConstant("gProjectionMatrix", m_Camera.GetProjectionMatrix());
 	m_TerrainVSParams->SetConstant("gClipPlane", waterPlane);
-	m_TerrainRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_TerrainVSParams);
-	m_TerrainRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_WaterPSParams);
+	m_TerrainRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_TerrainVSParams);
+	m_TerrainRenderPass.GetPixelShader()->UpdateShaderParams("constantBuffer", m_WaterPSParams);
+	m_TerrainRenderPass.AddRenderTarget(m_pReflectionRenderTarget.get());
 
 	// Draw the terrain.
-	//g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
-	//g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
+	g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
+	g_pApp->GetRenderer()->VRender(m_WaterVertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
 
+	m_TerrainRenderPass.ClearRenderTargets();
 }
 
 void CTestProjLogic::CreateRenderTextures()

@@ -49,7 +49,7 @@ public:
 	/** Convert a point on the screen to a ray in 3D space.
 	 	@author Hayden Asplet
 	*/
-	const CRay ScreenPointToRay(const CPoint& point) const;
+	const CRay ScreenPointToRay(const CPoint<>& point) const;
 
 	/** Test to see if an axis-aligned bounding box is in the view of the camera.
 	 	@author Hayden Asplet

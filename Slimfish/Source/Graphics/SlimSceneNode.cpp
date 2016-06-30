@@ -85,6 +85,12 @@ namespace Slim {
 		return m_bIsVisible;
 	}
 
+	void CSceneNode::Translate(const CVector3& translation)
+	{
+		m_Position += translation;
+		m_CachedTransformIsDirty = true;
+	}
+
 	void CSceneNode::SetPosition(const CVector3& position)
 	{
 		m_Position = position;

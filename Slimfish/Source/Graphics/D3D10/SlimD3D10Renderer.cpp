@@ -865,7 +865,7 @@ std::vector<D3D10_INPUT_ELEMENT_DESC> CD3D10Renderer::GetD3DVertexDeclaration(co
 	return std::move(d3dInputElements);
 }
 
-void CD3D10Renderer::VDrawText(const std::string text, const CPoint& position, const CColour& colour)
+void CD3D10Renderer::VDrawText(const std::string text, const CPoint<>& position, const CColour& colour)
 {
 	throw std::logic_error("The method or operation is not implemented.");
 }

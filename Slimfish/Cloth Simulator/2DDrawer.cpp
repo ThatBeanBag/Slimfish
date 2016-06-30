@@ -60,7 +60,7 @@ bool C2DDrawer::Initialise()
 	return true;
 }
 
-void C2DDrawer::Render(const CRect& destRect, std::shared_ptr<ATexture> pImage)
+void C2DDrawer::Render(const CRect<>& destRect, std::shared_ptr<ATexture> pImage)
 {
 	auto pRenderer = g_pApp->GetRenderer();
 
@@ -70,7 +70,7 @@ void C2DDrawer::Render(const CRect& destRect, std::shared_ptr<ATexture> pImage)
 		CGpuBufferLock lock(m_pQuadBuffer, 0, m_pQuadBuffer->GetSize(), EGpuBufferLockType::DISCARD);
 		TQuadVertex* pVertices = reinterpret_cast<TQuadVertex*>(lock.GetLockedContents());
 
-		CPoint screenSize = pRenderer->GetWindowSize();
+		CPoint<> screenSize = pRenderer->GetWindowSize();
 		float invScreenWidth = 1.0f / static_cast<float>(screenSize.GetX());
 		float invScreenHeight = 1.0f / static_cast<float>(screenSize.GetY());
 

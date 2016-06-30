@@ -28,7 +28,7 @@ namespace Slim {
 @remarks
 	This class is not intended to be used as a class at all. Instead it's
 	to be used like a namespace (hence the lack of proper naming conventions). 
-	The reason for the class is to encapsulate implementation detail that 
+	The reason for the class is to encapsulate implementation details that 
 	otherwise would be exposed had Math be a namespace. 
 */
 class Math : private ASingleton<Math> {

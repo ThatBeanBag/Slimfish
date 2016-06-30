@@ -49,7 +49,10 @@ public:
 	*/
 	CQuaternion(const CVector3& axis, float radAngle);
 
-	CQuaternion(float yaw, float pitch, float roll);
+	/** Construct a quaternion from Euler angles.
+		@author Hayden Asplet
+	*/
+	CQuaternion(float radYaw, float radPitch, float radRoll);
 
 	/** Construct a quaternion from a rotation matrix.
 	 	@author Hayden Asplet

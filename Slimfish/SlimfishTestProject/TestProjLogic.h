@@ -127,8 +127,8 @@ private:
 	float m_CameraDistance;
 
 	// Input.
-	CPoint m_lastMousePosition;
-	CPoint m_lastScreenSize;
+	CPoint<> m_lastMousePosition;
+	CPoint<> m_lastScreenSize;
 };
 
 #endif // __TESTPROJLOGIC_H__

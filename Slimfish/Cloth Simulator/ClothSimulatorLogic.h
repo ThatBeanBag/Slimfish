@@ -60,7 +60,7 @@ public:
 protected:
 private:
 	void CreateCloth();
-	CPointMass* GetClosestPoint(CPoint mousePosition, float minDistance);
+	CPointMass* GetClosestPoint(CPoint<> mousePosition, float minDistance);
 	void HandleSliderInput(const CInput& input, float deltaTime);
 	void HandleCameraInput(const CInput& input, float deltaTime);
 
@@ -85,12 +85,12 @@ private:
 	std::shared_ptr<ATexture> m_pControlsImage;
 	std::shared_ptr<ATexture> m_pSliderBarsImage;
 	std::shared_ptr<ATexture> m_pSliderImage;
-	CRect m_SliderRectClothWidth;
-	CRect m_SliderRectClothHeight;
-	CRect m_SliderRectNumHooks;
-	CRect m_SliderRectFanForce;
+	CRect<> m_SliderRectClothWidth;
+	CRect<> m_SliderRectClothHeight;
+	CRect<> m_SliderRectNumHooks;
+	CRect<> m_SliderRectFanForce;
 
-	CRect* m_pDraggingRect;
+	CRect<>* m_pDraggingRect;
 
 	std::unique_ptr<ARenderTexture> m_pShadowMap;
 	CRenderPass m_DepthRenderPass;
@@ -118,7 +118,7 @@ private:
 	CCamera m_Camera;
 	float m_CameraYaw;
 	float m_CameraPitch;
-	CPoint m_lastMousePosition;
+	CPoint<> m_lastMousePosition;
 
 	CLight m_Light;
 	CCamera m_LightCamera;
