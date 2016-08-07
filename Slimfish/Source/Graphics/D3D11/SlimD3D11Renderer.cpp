@@ -898,38 +898,6 @@ void CD3D11Renderer::VSetBlendingMode(const TBlendingMode& blendingMode)
 	}
 }
 
-DXGI_SAMPLE_DESC CD3D11Renderer::DetermineMultiSampleLevels()
-{
-	unsigned int msaaCount = 4;
-	unsigned int msaaQuality = -1;
-
-	for (int samples = 4; samples <= D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT; samples *= 2) {
-		UINT currentMSAAQuality = -1;
-		HRESULT hResult = m_pD3DDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, samples, &currentMSAAQuality);
-
-		if (FAILED(hResult)) {
-			SLIM_THROW(EExceptionType::RENDERING) << "Failed to determine multi-sampling levels with error: " << GetErrorMessage(hResult);
-		}
-
-		if (currentMSAAQuality == 0) {
-			break;
-		}
-		else {
-			msaaCount = samples;
-			msaaQuality = currentMSAAQuality - 1;
-		}
-	}
-
-	ZeroMemory(&m_SampleDesc, sizeof(DXGI_SAMPLE_DESC));
-	m_SampleDesc.Count = msaaCount;
-	m_SampleDesc.Quality = msaaQuality;
-
-	// DirectX 10 should always support at least 4 levels of multi-sampling.
-	assert(msaaQuality != -1);
-
-	return m_SampleDesc;
-}
-
 void CD3D11Renderer::VSetTextureLayerFiltering(size_t layer, ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter)
 {
 	m_SamplerDescs[layer].Filter = D3D11Conversions::GetFilter(minFilter, magFilter, mipFilter);
@@ -969,6 +937,38 @@ void CD3D11Renderer::VSetTextureBorderColour(size_t layer, const CColourValue& c
 	m_SamplerDescs[layer].BorderColor[1] = colour.m_g;
 	m_SamplerDescs[layer].BorderColor[2] = colour.m_b;
 	m_SamplerDescs[layer].BorderColor[3] = colour.m_a;
+}
+
+DXGI_SAMPLE_DESC CD3D11Renderer::DetermineMultiSampleLevels()
+{
+	unsigned int msaaCount = 4;
+	unsigned int msaaQuality = -1;
+
+	for (int samples = 4; samples <= D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT; samples *= 2) {
+		UINT currentMSAAQuality = -1;
+		HRESULT hResult = m_pD3DDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, samples, &currentMSAAQuality);
+
+		if (FAILED(hResult)) {
+			SLIM_THROW(EExceptionType::RENDERING) << "Failed to determine multi-sampling levels with error: " << GetErrorMessage(hResult);
+		}
+
+		if (currentMSAAQuality == 0) {
+			break;
+		}
+		else {
+			msaaCount = samples;
+			msaaQuality = currentMSAAQuality - 1;
+		}
+	}
+
+	ZeroMemory(&m_SampleDesc, sizeof(DXGI_SAMPLE_DESC));
+	m_SampleDesc.Count = msaaCount;
+	m_SampleDesc.Quality = msaaQuality;
+
+	// DirectX 10 should always support at least 4 levels of multi-sampling.
+	assert(msaaQuality != -1);
+
+	return m_SampleDesc;
 }
 
 void CD3D11Renderer::CreateSamplerState(size_t layer)

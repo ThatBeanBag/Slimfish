@@ -23,8 +23,16 @@
 
 // Local Includes
 #include "SlimGameLogic.h"
+
+#define SLIM_RENDERSYSTEM_D3D11
+
+#ifdef SLIM_RENDERSYSTEM_D3D11
 #include "..\Graphics\D3D11\SlimD3D11Renderer.h"
-//#include "..\Graphics\D3D10\SlimD3D10Renderer.h"
+#elif defined SLIM_RENDERSYSTEM_D3D10
+#include "..\Graphics\D3D10\SlimD3D10Renderer.h"
+#elif defined SLIM_RENDERSYSTEM_OPENGL
+#include "..\Graphics\OpenGL\SlimOpenGLRenderer.h"
+#endif
 
 namespace Slim {
 
@@ -103,7 +111,14 @@ bool CGameApp::VInitialise(HINSTANCE hInstance, LPSTR lpCmdLine, HWND hWnd, size
 	RECT clientRect;
 	GetClientRect(m_hWnd, &clientRect);
 
+#ifdef SLIM_RENDERSYSTEM_D3D10
+	m_pRenderer.reset(new CD3D10Renderer(clientRect.right - clientRect.left, clientRect.bottom - clientRect.top, true));
+#elif defined SLIM_RENDERSYSTEM_D3D11 
 	m_pRenderer.reset(new CD3D11Renderer(clientRect.right - clientRect.left, clientRect.bottom - clientRect.top, true));
+#elif defined SLIM_RENDERSYSTEM_OPENGL
+	m_pRenderer.reset(new COpenGLRenderer(clientRect.right - clientRect.left, clientRect.bottom - clientRect.top, true));
+#endif
+
 	if (!m_pRenderer) {
 	// Failed to create the renderer.
 	// TODO: display error.

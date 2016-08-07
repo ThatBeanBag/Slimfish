@@ -61,10 +61,17 @@ namespace Slim {
 			m_desc.Usage = D3D10Conversions::GetUsage(usage);
 		}
 
-		D3D10_SUBRESOURCE_DATA initData;
-		initData.pSysMem = pSource;
+		HRESULT hResult = S_OK;
 
-		HRESULT hResult = pDevice->CreateBuffer(&m_desc, &initData, m_pBuffer.GetAddressOf());
+		if (pSource) {
+			D3D10_SUBRESOURCE_DATA initData;
+			initData.pSysMem = pSource;
+
+			hResult = pDevice->CreateBuffer(&m_desc, &initData, m_pBuffer.GetAddressOf());
+		} 
+		else {
+			hResult = pDevice->CreateBuffer(&m_desc, nullptr, m_pBuffer.GetAddressOf());
+		}
 
 		if (FAILED(hResult)) {
 			SLIM_THROW(EExceptionType::RENDERING) << "Failed to create vertex or index buffer with error: " << GetErrorMessage(hResult);

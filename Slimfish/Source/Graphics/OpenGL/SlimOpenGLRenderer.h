@@ -1,47 +1,28 @@
-// 
-// Bachelor of Software Engineering
-// Media Design School
-// Auckland
-// New Zealand
-//
-// (c) 2005 - 2015 Media Design School
-//
-// File Name	: SlimD3D11Renderer.h
-// Description	: CSlimD3D11Renderer declaration file.
-// Author		: Hayden Asplet.
-// Mail			: hayden.asplet@mediadesignschool.com
-//
-
 #pragma once
 
-#ifndef __SLIMD3D11RENDERER_H__
-#define __SLIMD3D11RENDERER_H__
+#ifndef __SLIMOPENGLRENDERER_H__
+#define __SLIMOPENGLRENDERER_H__
 
 // Library Includes
-//#include <D3D11.h>
-//#include <D3DX11.h>
 
 // Local Includes
 #include "../SlimRenderer.h"
-#include "SlimD3D11Forward.h"
+#include "SlimOpenGLForward.h"
 
 namespace Slim {
 
-/** Specialization of ARenderer for rendering in DirectX 10.
-	@remarks
-*/
-class CD3D11Renderer :public ARenderer {
+class COpenGLRenderer : public ARenderer {
 	// Member Functions
 public:
 	/** Default Constructor.
-	 	@author Hayden Asplet
+		@author Hayden Asplet
 	*/
-	CD3D11Renderer(int width, int height, bool isWindowed);
+	COpenGLRenderer(int width, int height, bool isWindowed);
 
 	/** Destructor.
-	 	@author Hayden Asplet
+		@author Hayden Asplet
 	*/
-	virtual ~CD3D11Renderer();
+	virtual ~COpenGLRenderer();
 
 	/** @copydoc ARenderer::VInitialize */
 	virtual bool VInitialize() override;
@@ -73,11 +54,11 @@ public:
 
 	/** @copydoc ARenderer::VRender */
 	virtual void VRender(const CVertexDeclaration& vertexDeclaration,
-						 EPrimitiveType primitiveType, 
-						 shared_ptr<AVertexGpuBuffer> pVertexBuffer,
-						 shared_ptr<AIndexGpuBuffer> pIndexBuffer = nullptr,
-						 size_t countOverride = 0,
-						 size_t instances = 1);
+		EPrimitiveType primitiveType,
+		shared_ptr<AVertexGpuBuffer> pVertexBuffer,
+		shared_ptr<AIndexGpuBuffer> pIndexBuffer = nullptr,
+		size_t countOverride = 0,
+		size_t instances = 1);
 
 	/** @copydoc ARenderer::VSetShaderProgram */
 	virtual void VSetShaderProgram(shared_ptr<AShaderProgram> pShader);
@@ -126,14 +107,11 @@ public:
 	virtual void VSetCullingMode(ECullingMode cullingMode) override;
 	/** @copydoc ARenderer::VSetFillMode */
 	virtual void VSetFillMode(EFillMode fillMode) override;
-
-	virtual void VDrawText(const std::string text, const CPoint<>& position, const CColour& colour) override;
 protected:
 private:
 	// Windows functions that should be in a windows class.
 	virtual void VSetWindowed(bool windowed);
 	virtual void VOnResize();
-
 
 	/* @copydoc ARenderer::VSetTextureLayerFiltering */
 	virtual void VSetTextureLayerFiltering(size_t layer, ETextureFilterType minFilter, ETextureFilterType magFilter, ETextureFilterType mipFilter);
@@ -156,66 +134,15 @@ private:
 	/* @copydoc ARenderer::VBuildStates */
 	virtual void VBuildStates();
 
-	/** Internal method for determining maximum multi-sample levels for the graphics device.
-	 	@author Hayden Asplet
-	*/
-	DXGI_SAMPLE_DESC DetermineMultiSampleLevels();
-
-	/** Internal helper method for creating a sampler state for a texture layer.
-	 	@author Hayden Asplet
-	*/
-	void CreateSamplerState(size_t layer);
-
-	/** Internal helper method for converting a vertex declaration to input element descriptions
-		that directX can use.
-	 	@author Hayden Asplet
-	*/
-	std::vector<D3D11_INPUT_ELEMENT_DESC> GetD3DVertexDeclaration(const CVertexDeclaration& vertexDeclaration);
-
 	// Member Variables
 public:
 protected:
 private:
-	ComPtr<ID3D11Device> m_pD3DDevice;
-	ComPtr<ID3D11DeviceContext> m_pImmediateContext;
-	ComPtr<ID3D11Query> m_pSOQuery;
-	ComPtr<IDXGISwapChain> m_pSwapChain;
-	ComPtr<ID3D11RenderTargetView> m_pRenderTargetView;
-	ComPtr<ID3D11Texture2D> m_pDepthStencilBuffer;
-	ComPtr<ID3D11DepthStencilView> m_pDepthStencilView;
-
-	// Blending.
-	D3D11_BLEND_DESC m_BlendDesc;
-	ComPtr<ID3D11BlendState> m_pBlendState;
-
-	// Rasterizer.
-	D3D11_RASTERIZER_DESC m_RasterizerDesc;
-	ComPtr<ID3D11RasterizerState> m_pRasterizerState;
-
-	// Depth-stencil buffer.
-	D3D11_DEPTH_STENCIL_DESC m_DepthStencilDesc;
-	ComPtr<ID3D11DepthStencilState> m_pDepthStencilState;
-	size_t m_StencilReferenceValue;
-
-	// Texture layering.
-	std::vector<D3D11_SAMPLER_DESC> m_SamplerDescs;
-	std::vector<ComPtr<ID3D11SamplerState> > m_SamplerStates;
-	std::vector<ID3D11ShaderResourceView*> m_Textures;
-
-	float m_pBackgroundColour[4];	// The clear colour.
-	D3D11_VIEWPORT m_ViewPort;		// Current view port.
 	
-	DXGI_SAMPLE_DESC m_SampleDesc;	// The description of the multi-sampling levels currently being used.
-	DXGI_SWAP_CHAIN_DESC m_d3dpp;	// Presentation parameters.
-
-	// Bound shaders.
-	shared_ptr<CD3D11ShaderProgram> m_pBoundVertexShader;
-	shared_ptr<CD3D11ShaderProgram> m_pBoundPixelShader;
-	shared_ptr<CD3D11ShaderProgram> m_pBoundGeometryShader;
-
-	std::vector<CD3D11RenderTexture*> m_BoundRenderTargets;
 };
 
 }
 
-#endif	// __SLIMD3D11RENDERER_H__
+#endif	// __SLIMOPENGLRENDERER_H__
+
+

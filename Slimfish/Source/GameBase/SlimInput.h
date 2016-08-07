@@ -20,6 +20,7 @@
 // Library Includes
 
 // Local Includes
+#include "../Utilities/SlimEnumIndexedArray.h"
 
 namespace Slim {
 
@@ -107,23 +108,89 @@ enum class EMouseButton {
 	MAX
 };
 
+/** List of gamepads.
+	@remarks
+		Use this to refer to a particular gamepad currently only four are supported.
+*/
+enum class EGamepadIndex {
+	// The main gamepad.
+	GAMEPAD_0,
+	// The second gamepad.
+	GAMEPAD_1,
+	// The third gamepad.
+	GAMEPAD_2,
+	// The fourth gamepad.
+	GAMEPAD_3,
+	// Don't use this, it's used to retrieve the maximum number of gamepads.
+	MAX
+};
+
+/** List of gamepad buttons
+	@remarks
+		Represents a binary button on a gamepad which can either be in a pressed or
+		released state.
+*/
+enum class EGamepadButton {
+	GAMEPAD_A,
+	GAMEPAD_B,
+	GAMEPAD_X,
+	GAMEPAD_Y,
+	GAMEPAD_START,
+	GAMEPAD_BACK,
+	GAMEPAD_LEFT_BUMPER,
+	GAMEPAD_RIGHT_BUMPER,
+	GAMEPAD_DPAD_UP,
+	GAMEPAD_DPAD_DOWN,
+	GAMEPAD_DPAD_LEFT,
+	GAMEPAD_DPAD_RIGHT,
+	// Left stick clicked in.
+	GAMEPAD_LEFT_STICK,
+	// Right stick clicked in.
+	GAMEPAD_RIGHT_STICK,
+	GAMEPAD_LEFT_TRIGGER,
+	GAMEPAD_RIGHT_TRIGGER,
+	GAMEPAD_LEFT_STICK_UP,
+	GAMEPAD_LEFT_STICK_DOWN,
+	GAMEPAD_LEFT_STICK_LEFT,
+	GAMEPAD_LEFT_STICK_RIGHT,
+	GAMEPAD_RIGHT_STICK_UP,
+	GAMEPAD_RIGHT_STICK_DOWN,
+	GAMEPAD_RIGHT_STICK_LEFT,
+	GAMEPAD_RIGHT_STICK_RIGHT,
+	// Don't use this, it's used to retrieve the maximum number of gamepad buttons.
+	MAX
+};
+
+/** List of gamepad axis.
+	@remarks
+		Represents an axis on a controller that is a associated with a value.
+*/
+enum class EGamepadAxis {
+	// Horizontal component of the left stick, goes from -1 to 1.
+	GAMEPAD_LEFT_STICK_X,
+	// Vertical component of the left stick, goes from -1 to 1.
+	GAMEPAD_LEFT_STICK_Y,
+	// Horizontal component of the right stick, goes from -1 to 1.
+	GAMEPAD_RIGHT_STICK_X,
+	// Vertical component of the right stick, goes from -1 to 1.
+	GAMEPAD_RIGHT_STICK_Y,
+	// Left trigger, goes from 0 to 1.
+	GAMEPAD_LEFT_TRIGGER,
+	// Right trigger, goes from 0 to 1.
+	GAMEPAD_RIGHT_TRIGGER,
+	// Don't use this, it's used to retrieve the maximum number of gamepad axis.
+	MAX
+};
+
 /** 
 	@remarks
 		
 */
 class CInput {
-	// Member Functions
-	enum class EButtonState {
-		// The button is up.
-		UP,
-		// The button is down.
-		DOWN,
-		// The button was released this frame.
-		RELEASE,
-		// The button was pressed down this frame.
-		PRESS,
-	};
+	using TGamepadButtonStateList = CEnumIndexedArray<bool, EGamepadButton>;
+	using TGamepadAxisStateList = CEnumIndexedArray<float, EGamepadAxis>;
 
+	// Member Functions
 public:
 	/** Constructor.
 	 	@author Hayden Asplet
@@ -206,6 +273,33 @@ public:
 	*/
 	void SetKeyRelease(EKeyCode key);
 
+	// Gamepad input
+
+	inline bool GetGamepadButtonPress(EGamepadIndex index, EGamepadButton button) const
+	{
+		return m_CurrentGamepadButtonStates[index][button] && !m_PreviousGamepadButtonStates[index][button];
+	}
+
+	inline bool GetGamepadButtonDown(EGamepadIndex index, EGamepadButton button) const
+	{
+		return m_CurrentGamepadButtonStates[index][button];
+	}
+
+	inline bool GetGamepadButtonRelease(EGamepadIndex index, EGamepadButton button) const
+	{
+		return !m_CurrentGamepadButtonStates[index][button] && m_PreviousGamepadButtonStates[index][button];
+	}
+
+	inline float GetGamepadAxis(EGamepadIndex index, EGamepadAxis axis, bool raw = false) const
+	{
+		auto axisState = m_CurrentGamepadAxisStates[index][axis];
+		if (!raw && std::fabs(axisState) < m_GamepadDeadZone) {
+			axisState = 0.0f;
+		}
+
+		return axisState;
+	}
+
 	/** Flushes the per frame states of the key codes.
 		@note This is to be called internally every tick. Do NOT call it yourself.
 	 	@author Hayden Asplet
@@ -214,15 +308,24 @@ public:
 protected:
 private:
 
-	static bool IsButtonDown(EButtonState buttonState) { return buttonState == EButtonState::DOWN ||
-																buttonState == EButtonState::PRESS; }
-
 	// Member Variables
 public:
 protected:
 private:
-	std::vector<EButtonState> m_KeyStates;	// Keeps track of a keys per frame state (whether it was pressed or released this frame or not).
-	std::vector<EButtonState> m_MouseButtonStates;
+	CEnumIndexedArray<bool, EKeyCode> m_CurrentKeyStates;
+	CEnumIndexedArray<bool, EKeyCode> m_PreviousKeyStates;
+
+	CEnumIndexedArray<bool, EMouseButton> m_CurrentMouseButtonStates;
+	CEnumIndexedArray<bool, EMouseButton> m_PreviousMouseButtonStates;
+
+	CEnumIndexedArray<TGamepadButtonStateList, EGamepadIndex> m_CurrentGamepadButtonStates;
+	CEnumIndexedArray<TGamepadButtonStateList, EGamepadIndex> m_PreviousGamepadButtonStates;
+
+	CEnumIndexedArray<TGamepadAxisStateList, EGamepadIndex> m_CurrentGamepadAxisStates;
+	CEnumIndexedArray<TGamepadAxisStateList, EGamepadIndex> m_PreviousGamepadAxisStates;
+
+	float m_GamepadDeadZone = { 0.3f };
+
 	CPoint<> m_MousePosition;
 };
 

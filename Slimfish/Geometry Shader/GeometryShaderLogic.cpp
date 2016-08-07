@@ -67,14 +67,14 @@ bool CGeometryShaderLogic::Initialise()
 	m_Camera.SetFieldOfView(Math::DegreesToRadians(60.0f));
 	m_Camera.SetOrthographicSize(20.0f);
 
-	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
+	g_pApp->GetRenderer()->SetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
 
 	return true;
 }
 
 void CGeometryShaderLogic::Update(float deltaTime)
 {
-	CPoint screenSize = g_pApp->GetRenderer()->GetWindowSize();
+	CPoint<> screenSize = g_pApp->GetRenderer()->GetWindowSize();
 	m_Camera.SetAspectRatio(static_cast<float>(screenSize.GetX()) / static_cast<float>(screenSize.GetY()));
 }
 
@@ -91,11 +91,11 @@ void CGeometryShaderLogic::Render()
 
 void CGeometryShaderLogic::HandleInput(const CInput& input, float deltaTime)
 {
-	CPoint mousePosition = input.GetMousePosition();
+	CPoint<> mousePosition = input.GetMousePosition();
 
 	// Handle rotation of camera.
 	if (input.IsMouseButtonDown(EMouseButton::LEFT)) {
-		CPoint deltaPosition = mousePosition - m_lastMousePosition;
+		CPoint<> deltaPosition = mousePosition - m_lastMousePosition;
 		m_CameraYaw -= deltaPosition.GetX() * 0.01f;
 		m_CameraPitch -= deltaPosition.GetY() * 0.01f;
 

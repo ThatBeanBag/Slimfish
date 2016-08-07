@@ -53,14 +53,14 @@ CD3D10Renderer::~CD3D10Renderer()
 	m_pBoundPixelShader = nullptr;
 	m_pBoundVertexShader = nullptr;
 
+/*
 #ifdef _DEBUG
 	// Report live objects.
 	ComPtr<ID3D11Debug> pDebug;
 	m_pD3DDevice.As(&pDebug);
 	pDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-#endif // _DEBUG
+#endif // _DEBUG*/
 
-	//SLIM_SAFE_RELEASE(m_pD3DDevice);
 }
 
 bool CD3D10Renderer::VInitialize()
@@ -196,6 +196,15 @@ bool CD3D10Renderer::VInitialize()
 		
 	m_pD3DDevice->CreateRasterizerState(&m_RasterizerDesc, &m_pRasterizerState);
 	m_pD3DDevice->RSSetState(m_pRasterizerState.Get());
+
+	D3D10_QUERY_DESC queryDesc;
+	queryDesc.Query = D3D10_QUERY_SO_STATISTICS;
+	queryDesc.MiscFlags = 0;
+
+	hResult = m_pD3DDevice->CreateQuery(&queryDesc, m_pQuery.GetAddressOf());
+	if (FAILED(hResult)) {
+		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create query for stream out statistics with error: " << GetErrorMessage(hResult);
+	}
 
 	return true;
 }
@@ -471,6 +480,14 @@ void CD3D10Renderer::VSetRenderTargets(std::vector<ARenderTexture*> renderTarget
 		// Set the render target.
 		m_pD3DDevice->OMSetRenderTargets(1, &renderTargetViews[0], pDepthStencilView);
 
+		ZeroMemory(&m_ViewPort, sizeof(D3D10_VIEWPORT));
+		m_ViewPort.TopLeftX = 0;
+		m_ViewPort.TopLeftY = 0;
+		m_ViewPort.Width = static_cast<UINT>(renderTargets[0]->GetTexture()->GetWidth());
+		m_ViewPort.Height = static_cast<UINT>(renderTargets[0]->GetTexture()->GetHeight());
+		m_ViewPort.MinDepth = 0.0f;
+		m_ViewPort.MaxDepth = 1.0f;
+
 		// Prepare for rendering.
 		VPreRender();
 	}
@@ -484,18 +501,31 @@ void CD3D10Renderer::VSetRenderTargets(std::vector<ARenderTexture*> renderTarget
 			// Set the render target.
 			m_pD3DDevice->OMSetRenderTargets(1, m_pRenderTargetView.GetAddressOf(), m_pDepthStencilView.Get());
 
+			ZeroMemory(&m_ViewPort, sizeof(D3D10_VIEWPORT));
+			m_ViewPort.TopLeftX = 0;
+			m_ViewPort.TopLeftY = 0;
+			m_ViewPort.Width = static_cast<UINT>(m_Width);
+			m_ViewPort.Height = static_cast<UINT>(m_Height);
+			m_ViewPort.MinDepth = 0.0f;
+			m_ViewPort.MaxDepth = 1.0f;
+
+			m_pD3DDevice->RSSetViewports(1, &m_ViewPort);
+
 			// Prepare for rendering.
-			VPreRender();
+			//VPreRender();
 		}
 	}
 }
 
 void CD3D10Renderer::VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpuBuffer> >& buffers)
 {
-	if (buffers.empty()) {
-		m_pD3DDevice->SOSetTargets(0, nullptr, nullptr);
-	}
-	else {
+	UINT offset[1] = { 0 };
+	ID3D10Buffer* iBuffer[1];
+	iBuffer[0] = NULL;
+
+	m_pD3DDevice->SOSetTargets(1, iBuffer, offset);
+
+	if (!buffers.empty()) {
 		std::vector<ID3D10Buffer*> d3dBuffers;
 		std::vector<UINT> offsets;
 		d3dBuffers.reserve(buffers.size());
@@ -504,10 +534,30 @@ void CD3D10Renderer::VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpu
 		UINT offset = 0;
 
 		for (auto& pBuffer : buffers) {
-			auto pD3DBuffer = std::static_pointer_cast<CD3D10GpuBuffer>(pBuffer);
-			d3dBuffers.push_back(pD3DBuffer->GetD3DBuffer());
+			// Cast the buffer so that we can get the actual directX buffer.
+			// Can't cast directly to CD3D10GpuBuffer as vertex and index buffers don't derive from CD3D10GpuBuffer.
+			ID3D10Buffer* pD3DBuffer = nullptr;
+			switch (pBuffer->GetType()) {
+				case EGpuBufferType::VERTEX: {
+					pD3DBuffer = static_pointer_cast<CD3D10VertexGpuBuffer>(pBuffer)->GetD3DBuffer();
+					break;
+				}
+				case EGpuBufferType::INDEX: {
+					pD3DBuffer = static_pointer_cast<CD3D10IndexGpuBuffer>(pBuffer)->GetD3DBuffer();
+					break;
+				}
+				case EGpuBufferType::UNKNOWN: {
+					pD3DBuffer = static_pointer_cast<CD3D10GpuBuffer>(pBuffer)->GetD3DBuffer();
+					break;
+				}
+				default: {
+					break;
+				}
+			}
+
+			d3dBuffers.push_back(pD3DBuffer);
 			offsets.push_back(offset);
-			offset += pD3DBuffer->GetSize();
+			offset += pBuffer->GetSize();
 		}
 
 		m_pD3DDevice->SOSetTargets(buffers.size(), &d3dBuffers[0], &offsets[0]);
@@ -516,21 +566,31 @@ void CD3D10Renderer::VSetStreamOutTargets(const std::vector<std::shared_ptr<AGpu
 
 void CD3D10Renderer::VSetStreamOutTarget(const std::shared_ptr<AGpuBuffer>& pBuffer)
 {
-	auto pD3DBuffer = std::static_pointer_cast<CD3D10GpuBuffer>(pBuffer)->GetD3DBuffer();
+	ID3D10Buffer* pD3DBuffer = nullptr;
+	switch (pBuffer->GetType()) {
+		case EGpuBufferType::VERTEX: {
+			pD3DBuffer = static_pointer_cast<CD3D10VertexGpuBuffer>(pBuffer)->GetD3DBuffer();
+			break;
+		}
+		case EGpuBufferType::INDEX: {
+			pD3DBuffer = static_pointer_cast<CD3D10IndexGpuBuffer>(pBuffer)->GetD3DBuffer();
+			break;
+		}
+		case EGpuBufferType::UNKNOWN: {
+			pD3DBuffer = static_pointer_cast<CD3D10GpuBuffer>(pBuffer)->GetD3DBuffer();
+			break;
+		}
+		default: {
+			break;
+		}
+	}
+
+	assert(pD3DBuffer);
 	m_pD3DDevice->SOSetTargets(1, &pD3DBuffer, nullptr);
 }
 
 void CD3D10Renderer::VBeginStreamOutQuery()
 {
-	D3D10_QUERY_DESC queryDesc;
-	queryDesc.Query = D3D10_QUERY_SO_STATISTICS;
-	queryDesc.MiscFlags = 0;
-
-	HRESULT hResult = m_pD3DDevice->CreateQuery(&queryDesc, m_pQuery.ReleaseAndGetAddressOf());
-	if (FAILED(hResult)) {
-		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create query for stream out statistics with error: " << GetErrorMessage(hResult);
-	}
-
 	m_pQuery->Begin();
 }
 
@@ -628,6 +688,9 @@ void CD3D10Renderer::VBuildStates()
 			m_pD3DDevice->GSSetShaderResources(0, numLayers, &m_Textures[0]);
 		}
 
+		m_pD3DDevice->VSSetSamplers(0, samplerStates.size(), &samplerStates[0]);
+		m_pD3DDevice->VSSetShaderResources(0, numLayers, &m_Textures[0]);
+
 		m_pD3DDevice->PSSetSamplers(0, samplerStates.size(), &samplerStates[0]);
 		m_pD3DDevice->PSSetShaderResources(0, numLayers, &m_Textures[0]);
 	}
@@ -697,8 +760,8 @@ void CD3D10Renderer::VSetStencilBufferSettings(const TStencilBufferSettings& set
 {
 	m_StencilReferenceValue = settings.stencilReferenceValue;
 	m_DepthStencilDesc.StencilEnable = settings.stencilCheckEnabled;
-	m_DepthStencilDesc.StencilReadMask = settings.stencilWriteMask;
-	m_DepthStencilDesc.StencilWriteMask = settings.stencilWriteMask;
+	m_DepthStencilDesc.StencilReadMask = static_cast<UINT8>(settings.stencilWriteMask);
+	m_DepthStencilDesc.StencilWriteMask = static_cast<UINT8>(settings.stencilWriteMask);
 
 	m_DepthStencilDesc.BackFace.StencilFunc = D3D10Conversions::GetComparisonFunction(settings.stencilCompareFunction);
 	m_DepthStencilDesc.BackFace.StencilFailOp = D3D10Conversions::GetStencilOperation(settings.stencilFailOperation);
@@ -830,11 +893,8 @@ void CD3D10Renderer::VSetTextureBorderColour(size_t layer, const CColourValue& c
 
 void CD3D10Renderer::CreateSamplerState(size_t layer)
 {
-	m_SamplerStates[layer].Reset();
-
-	HRESULT hResult = m_pD3DDevice->CreateSamplerState(&m_SamplerDescs[layer], &m_SamplerStates[layer]);
+	HRESULT hResult = m_pD3DDevice->CreateSamplerState(&m_SamplerDescs[layer], m_SamplerStates[layer].ReleaseAndGetAddressOf());
 	if (FAILED(hResult)) {
-		// TODO: display error.
 		SLIM_THROW(EExceptionType::RENDERING) << "Failed to create sampler state for layer " << layer
 			<< "with error: " << GetErrorMessage(hResult);
 	}

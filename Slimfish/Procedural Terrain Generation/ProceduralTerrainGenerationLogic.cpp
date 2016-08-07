@@ -65,8 +65,8 @@ bool CProceduralTerrainGenerationLogic::Initialise()
 	// Create shaders.
 	m_TerrainRenderPass.SetVertexShader(g_pApp->GetRenderer()->VCreateShaderProgram("TerrainVS.hlsl", EShaderProgramType::VERTEX, "main", "vs_4_0"));
 	m_TerrainRenderPass.SetPixelShader(g_pApp->GetRenderer()->VCreateShaderProgram("TerrainPS.hlsl", EShaderProgramType::PIXEL, "main", "ps_4_0"));
-	m_pTerrainVSParams = m_TerrainRenderPass.GetVertexShader()->VCreateShaderParams("constantBuffer");
-	m_pTerrainPSParams = m_TerrainRenderPass.GetPixelShader()->VCreateShaderParams("constantBuffer");
+	m_pTerrainVSParams = m_TerrainRenderPass.GetVertexShader()->GetShaderParams("constantBuffer");
+	m_pTerrainPSParams = m_TerrainRenderPass.GetPixelShader()->GetShaderParams("constantBuffer");
 	m_pTerrainVSParams->SetConstant("gWorldMatrix", m_TerrainWorldTransform);
 	m_pTerrainVSParams->SetConstant("gTexMatrix", CMatrix4x4::BuildScale(10.0f, 10.0f, 1.0f));
 
@@ -96,7 +96,7 @@ bool CProceduralTerrainGenerationLogic::Initialise()
 	m_pTerrainPSParams->SetConstant("gFogRange", 40.0f);
 	m_pTerrainPSParams->SetConstant("gFogColour", CColourValue(0.3686f, 0.3686f, 0.43137f, 1.0f));
 	m_pTerrainPSParams->SetConstant("gAmbientLight", CColourValue(0.3f, 0.3f, 0.3f));
-	m_TerrainRenderPass.GetPixelShader()->VUpdateShaderParams("constantBuffer", m_pTerrainPSParams);
+	m_TerrainRenderPass.GetPixelShader()->UpdateShaderParams("constantBuffer", m_pTerrainPSParams);
 
 	// Setup camera.
 	m_Camera.SetPosition(CVector3(150.0f, 150.0f, 150.0f));
@@ -110,14 +110,14 @@ bool CProceduralTerrainGenerationLogic::Initialise()
 	m_CameraPitch = Math::DegreesToRadians(-45.0f);
 	m_Camera.SetRotation(CQuaternion(m_CameraYaw, m_CameraPitch, 0.0f));
 
-	g_pApp->GetRenderer()->VSetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
+	g_pApp->GetRenderer()->SetBackgroundColour(CColourValue(0.8f, 0.8f, 0.8f));
 
 	return true;
 }
 
 void CProceduralTerrainGenerationLogic::Update(float deltaTime)
 {
-	CPoint screenSize = g_pApp->GetRenderer()->GetWindowSize();
+	CPoint<> screenSize = g_pApp->GetRenderer()->GetWindowSize();
 	m_Camera.SetAspectRatio(static_cast<float>(screenSize.GetX()) / static_cast<float>(screenSize.GetY()));
 }
 
@@ -128,7 +128,7 @@ void CProceduralTerrainGenerationLogic::Render()
 	m_pTerrainVSParams->SetConstant("gProjectionMatrix", m_Camera.GetProjectionMatrix());
 	m_pTerrainVSParams->SetConstant("gViewMatrix", m_Camera.GetViewMatrix());
 	m_pTerrainVSParams->SetConstant("gWorldMatrix", m_TerrainWorldTransform);
-	m_TerrainRenderPass.GetVertexShader()->VUpdateShaderParams("constantBuffer", m_pTerrainVSParams);
+	m_TerrainRenderPass.GetVertexShader()->UpdateShaderParams("constantBuffer", m_pTerrainVSParams);
 
 	g_pApp->GetRenderer()->SetRenderPass(&m_TerrainRenderPass);
 	g_pApp->GetRenderer()->VRender(m_VertexDeclaration, EPrimitiveType::TRIANGLESTRIP, m_pTerrainVertices, m_pTerrainIndices);
@@ -137,7 +137,7 @@ void CProceduralTerrainGenerationLogic::Render()
 void CProceduralTerrainGenerationLogic::HandleInput(const CInput& input, float deltaTime)
 
 {
-	if (input.GetKeyPress(EKeyCode::NUM_1)) {
+	if (input.IsKeyDown(EKeyCode::NUM_1)) {
 		// Step the diamond square algorithm.
 		for (int i = 0; i < 3; ++i) {
 			m_Terrain.Step();
@@ -177,11 +177,11 @@ void CProceduralTerrainGenerationLogic::HandleInput(const CInput& input, float d
 		CreateTerrainVertices({ 200.0f, 100.0f, 200.0f }, true);
 	}
 
-	CPoint mousePosition = input.GetMousePosition();
+	CPoint<> mousePosition = input.GetMousePosition();
 
 	// Handle rotation of camera.
 	if (input.IsMouseButtonDown(EMouseButton::LEFT)) {
-		CPoint deltaPosition = mousePosition - m_lastMousePosition;
+		CPoint<> deltaPosition = mousePosition - m_lastMousePosition;
 		m_CameraYaw -= deltaPosition.GetX() * 0.01f;
 		m_CameraPitch -= deltaPosition.GetY() * 0.01f;
 

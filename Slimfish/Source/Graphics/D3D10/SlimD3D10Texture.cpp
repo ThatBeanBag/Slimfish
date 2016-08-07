@@ -84,7 +84,7 @@ namespace Slim {
 		loadInfo.MiscFlags = imageInfo.MiscFlags;
 
 		// TODO: This should be here and working.
-		//this->SetPixelFormat(D3D10Conversions::GetFormat(imageInfo.Format));
+		SetPixelFormat(D3D10Conversions::GetPixelFormat(imageInfo.Format));
 
 		if (loadInfo.Usage == D3D10_USAGE_DYNAMIC) {
 			loadInfo.MipLevels = 1;
@@ -92,8 +92,9 @@ namespace Slim {
 		else if (loadInfo.Usage == D3D10_USAGE_STAGING) {
 			loadInfo.BindFlags = 0;
 		}
-		if (GetTextureType() == ETextureType::TYPE_CUBIC) {
-			loadInfo.MiscFlags = D3D10_RESOURCE_MISC_TEXTURECUBE;
+
+		if (imageInfo.MiscFlags & D3D10_RESOURCE_MISC_TEXTURECUBE) {
+			SetTextureType(ETextureType::TYPE_CUBIC);
 		}
 
 		hResult = D3DX10CreateTextureFromFileA(m_pD3DDevice, GetName().c_str(), &loadInfo, NULL, m_pTexture.GetAddressOf(), NULL);
@@ -117,6 +118,7 @@ namespace Slim {
 				m_pTexture1D->GetDesc(&desc);
 
 				SetSourceWidth(desc.Width);
+				SetWidth(desc.Width);
 
 				if (GetUsage() == ETextureUsage::STATIC) {
 					CreateShaderResourceView1D(desc);
@@ -133,6 +135,8 @@ namespace Slim {
 
 				SetSourceWidth(desc.Width);
 				SetSourceHeight(desc.Height);
+				SetWidth(desc.Width);
+				SetHeight(desc.Height);
 
 				if (GetUsage() == ETextureUsage::STATIC) {
 					CreateShaderResourceView2D(desc);
@@ -150,6 +154,9 @@ namespace Slim {
 				SetSourceWidth(desc.Width);
 				SetSourceHeight(desc.Height);
 				SetSourceDepth(desc.Depth);
+				SetWidth(desc.Width);
+				SetHeight(desc.Height);
+				SetDepth(desc.Depth);
 
 				if (GetUsage() == ETextureUsage::STATIC) {
 					CreateShaderResourceView3D(desc);

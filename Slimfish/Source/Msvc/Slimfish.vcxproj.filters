@@ -28,6 +28,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{6c0f906b-348a-42f5-8e0d-ccee97d04709}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Graphics\OpenGL">
+      <UniqueIdentifier>{449e0396-c0f8-41c6-a48d-a288201b6f0a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Math\SlimMatrix4x4.cpp">
@@ -196,6 +199,8 @@
     <ClCompile Include="..\Math\SlimAxisAlignedBoundingBox.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="..\Graphics\OpenGL\SlimOpenGLRenderer.cpp" />
+    <ClCompile Include="..\Graphics\OpenGL\SlimOpenGLTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Graphics\SlimColour.h">
@@ -387,6 +392,18 @@
     </ClInclude>
     <ClInclude Include="..\Math\SlimAxisAlignedBoundingBox.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\OpenGL\SlimOpenGLForward.h">
+      <Filter>Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\OpenGL\SlimOpenGLRenderer.h">
+      <Filter>Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Utilities\SlimEnumIndexedArray.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Graphics\OpenGL\SlimOpenGLTexture.h">
+      <Filter>Graphics\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

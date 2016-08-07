@@ -17,12 +17,13 @@
 
 // Library Includes
 #include <new>	// For bad alloc.
-#include <vld.h>	
 
 // Local Includes
 #include "SlimGameApp.h"
 
 using namespace Slim;
+
+#if SLIM_PLATFORM == SLIM_PLATFORM_WIN32
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
@@ -73,3 +74,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		MessageBoxA(nullptr, "Unknown error occurred.", "Error", MB_OK | MB_ICONERROR);
 	}
 }
+
+#elif SLIM_PLATFORM == SLIM_PLATFORM_PS4
+
+
+#endif

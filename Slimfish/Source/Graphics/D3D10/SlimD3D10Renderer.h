@@ -191,7 +191,7 @@ private:
 	// Texture layering.
 	std::vector<D3D10_SAMPLER_DESC> m_SamplerDescs;
 	std::vector<ComPtr<ID3D10SamplerState>> m_SamplerStates;
-	std::vector<ComPtr<ID3D10ShaderResourceView>> m_Textures;
+	std::vector<ID3D10ShaderResourceView*> m_Textures;
 
 	D3DXCOLOR m_BackgroundColour;	// The clear colour.
 	D3D10_VIEWPORT m_ViewPort;		// Current view port.

@@ -421,6 +421,7 @@ namespace Slim {
 			d3dInputElements[i].AlignedByteOffset = accumulativeOffset;
 			d3dInputElements[i].Format = D3D10Conversions::GetFormat(element.GetFormat());
 			d3dInputElements[i].InputSlotClass = D3D10_INPUT_PER_VERTEX_DATA;
+			d3dInputElements[i].SemanticIndex = element.GetSemanticIndex();
 
 			accumulativeOffset += element.GetSize();
 		}

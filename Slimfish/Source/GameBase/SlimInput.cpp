@@ -25,8 +25,6 @@
 namespace Slim {
 
 CInput::CInput()
-	:m_KeyStates(static_cast<int>(EKeyCode::MAX), EButtonState::UP),
-	m_MouseButtonStates(static_cast<int>(EMouseButton::MAX), EButtonState::UP)
 {
 
 }
@@ -38,19 +36,18 @@ CInput::~CInput()
 
 bool CInput::IsMouseButtonDown(EMouseButton mouseButton) const
 {
-	return IsButtonDown(m_MouseButtonStates[static_cast<int>(mouseButton)]);
+	return m_CurrentMouseButtonStates[mouseButton];
 }
 
 bool CInput::GetMouseButtonPress(EMouseButton mouseButton) const
 {
-	return m_MouseButtonStates[static_cast<int>(mouseButton)] == EButtonState::PRESS;
+	return m_CurrentMouseButtonStates[mouseButton] && !m_PreviousMouseButtonStates[mouseButton];
 }
 
 bool CInput::GetMouseButtonRelease(EMouseButton mouseButton) const
 {
-	return m_MouseButtonStates[static_cast<int>(mouseButton)] == EButtonState::RELEASE;
+	return !m_CurrentMouseButtonStates[mouseButton] && m_PreviousMouseButtonStates[mouseButton];
 }
-
 
 const CPoint<>& CInput::GetMousePosition() const
 {
@@ -59,27 +56,27 @@ const CPoint<>& CInput::GetMousePosition() const
 
 bool CInput::IsKeyDown(EKeyCode key) const
 {
-	return IsButtonDown(m_KeyStates[static_cast<int>(key)]);
+	return m_CurrentKeyStates[key];
 }
 
 bool CInput::GetKeyPress(EKeyCode key) const
 {
-	return m_KeyStates[static_cast<int>(key)] == EButtonState::PRESS;
+	return m_CurrentKeyStates[key] && !m_PreviousKeyStates[key];
 }
 
 bool CInput::GetKeyRelease(EKeyCode key) const
 {
-	return m_KeyStates[static_cast<int>(key)] == EButtonState::RELEASE;
+	return !m_CurrentKeyStates[key] && m_PreviousKeyStates[key];
 }
 
 void CInput::SetMouseButtonPress(EMouseButton button)
 {
-	m_MouseButtonStates[static_cast<int>(button)] = EButtonState::PRESS;
+	m_CurrentMouseButtonStates[button] = true;
 }
 
 void CInput::SetMouseButtonRelease(EMouseButton button)
 {
-	m_MouseButtonStates[static_cast<int>(button)] = EButtonState::RELEASE;
+	m_CurrentMouseButtonStates[button] = false;
 }
 
 void CInput::SetMousePosition(int x, int y)
@@ -89,27 +86,21 @@ void CInput::SetMousePosition(int x, int y)
 
 void CInput::SetKeyPress(EKeyCode key)
 {
-	m_KeyStates[static_cast<int>(key)] = EButtonState::PRESS;
+	m_CurrentKeyStates[key] = true;
 }
 
 void CInput::SetKeyRelease(EKeyCode key)
 {
-	m_KeyStates[static_cast<int>(key)] = EButtonState::RELEASE;
+	m_CurrentKeyStates[key] = false;
 }
 
 void CInput::FlushPerFrameStates()
 {
-	static auto flushState = [](EButtonState& buttonState) { 
-		if (buttonState == EButtonState::PRESS) {
-			buttonState = EButtonState::DOWN;
-		}
-		else if (buttonState == EButtonState::RELEASE) {
-			buttonState = EButtonState::UP;
-		}
-	};
+	m_PreviousKeyStates = m_CurrentKeyStates;
+	m_PreviousMouseButtonStates = m_CurrentMouseButtonStates;
+	m_PreviousGamepadButtonStates = m_CurrentGamepadButtonStates;
+	m_PreviousGamepadAxisStates = m_CurrentGamepadAxisStates;
 
-	std::for_each(m_KeyStates.begin(), m_KeyStates.end(), flushState);
-	std::for_each(m_MouseButtonStates.begin(), m_MouseButtonStates.end(), flushState);
 }
 
 }

@@ -51,7 +51,7 @@ private:
 	CCamera m_Camera;
 	float m_CameraYaw;
 	float m_CameraPitch;
-	CPoint m_lastMousePosition;
+	CPoint<> m_lastMousePosition;
 };
 
 #endif // __GEOMETRYSHADERLOGIC_H__
